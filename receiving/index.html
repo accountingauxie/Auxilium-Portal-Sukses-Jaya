@@ -454,18 +454,19 @@
   height: 18px;
 }
 
-    /* ---------- NAVBAR ---------- */
+/* ---------- NAVBAR ---------- */
 .topnav {
   width: 100%;
   background: white;
-  padding: 12px 40px;
+  padding: 14px 40px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #e6e6e6;
+  border-bottom: 1px solid #e7e7e7;
   position: sticky;
   top: 0;
   z-index: 100;
+  font-family: "Segoe UI", sans-serif;
 }
 
 .nav-left {
@@ -476,31 +477,40 @@
 .nav-brand {
   font-size: 20px;
   font-weight: 700;
-  letter-spacing: 1px;
   color: #222;
+  letter-spacing: 0.5px;
 }
 
 .nav-sub {
   font-size: 12px;
-  color: #777;
+  color: #6f6f6f;
   margin-top: -2px;
 }
 
 .nav-right {
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: 26px;
 }
 
+/* Link styles */
 .nav-link {
   font-size: 15px;
-  color: #333;
+  color: #303030;
   cursor: pointer;
   text-decoration: none;
+  font-weight: 500;
 }
 
 .nav-link:hover {
   color: #0077e4;
+}
+
+/* Disabled style */
+.disabled-link {
+  font-size: 15px;
+  color: #b9b9b9;
+  cursor: default;
 }
 
 /* Dropdown */
@@ -511,9 +521,11 @@
 .dropdown-btn {
   border: none;
   background: none;
+  padding: 0;
   font-size: 15px;
+  font-weight: 500;
   cursor: pointer;
-  color: #333;
+  color: #303030;
 }
 
 .dropdown-btn:hover {
@@ -525,41 +537,32 @@
   position: absolute;
   background: white;
   min-width: 180px;
-  border: 1px solid #ddd;
   border-radius: 8px;
-  box-shadow: 0px 4px 14px rgba(0,0,0,0.08);
+  box-shadow: 0px 4px 20px rgba(0,0,0,0.12);
   padding: 6px 0;
+  border: 1px solid #e5e5e5;
   z-index: 200;
 }
 
 .dropdown-content a,
 .dropdown-content span {
+  font-size: 14px;
   padding: 10px 16px;
   display: block;
   text-decoration: none;
   color: #333;
-  font-size: 14px;
 }
 
 .dropdown-content a:hover {
-  background: #eef4ff;
+  background: #eef5ff;
   color: #0077e4;
 }
 
-.dropdown-content .disabled {
-  color: #aaa;
-  cursor: default;
-}
-
-/* Show dropdown on hover */
+/* Show dropdown */
 .nav-dropdown:hover .dropdown-content {
   display: block;
 }
 
-.disabled {
-  color: #aaa !important;
-  cursor: default !important;
-}
 
     
   </style>
@@ -584,13 +587,14 @@
       <div class="dropdown-content">
         <a href="../receiving/">Receiving PO Entry</a>
         <a href="../production/">Production Entry</a>
-        <span class="disabled">Order Form (Coming Soon)</span>
+        <span class="disabled-link">Order Form</span>
       </div>
     </div>
 
-    <span class="nav-link disabled">Settings (Coming Soon)</span>
+    <a class="nav-link disabled-link">Settings</a>
   </div>
 </div>
+
 
 
 <div class="page">
