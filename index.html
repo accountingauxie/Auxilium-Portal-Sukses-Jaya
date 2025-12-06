@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UXILIUM – Main Menu</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #f6f8fa;
+    }
+
+    /* Xero Top Bar */
+    .nav {
+      width: 100%;
+      background: #0077C8;
+      padding: 14px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #fff;
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 50px auto;
+      padding: 0 25px;
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #2d2d2d;
+      margin-bottom: 35px;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 30px;
+      border: 1px solid #e2e8f0;
+      cursor: pointer;
+      box-shadow: 0px 4px 14px rgba(0,0,0,0.05);
+      transition: 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0px 6px 18px rgba(0,0,0,0.08);
+      border-color: #0077C8;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #1f2937;
+    }
+
+    .card-desc {
+      font-size: 14px;
+      color: #6b7280;
+      line-height: 1.4;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- Top Navigation -->
+  <div class="nav">
+    UXILIUM Portal
+  </div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="title">Main Menu</div>
+
+    <div class="menu-grid">
+
+      <!-- Production -->
+      <div class="card" onclick="window.location.href='production/'">
+        <div class="card-title">Production Entry</div>
+        <div class="card-desc">Input hasil produksi per mesin, meter, và KPC.</div>
+      </div>
+
+      <!-- Receiving -->
+      <div class="card" onclick="window.location.href='receiving/'">
+        <div class="card-title">Receiving Entry</div>
+        <div class="card-desc">Penerimaan coil berdasarkan Purchase Order.</div>
+      </div>
+
+      <!-- Order Form (coming later) -->
+      <div class="card" style="opacity:0.4; cursor:not-allowed;">
+        <div class="card-title">Order Form (Coming Soon)</div>
+        <div class="card-desc">Modul ini akan ditambahkan setelah Order Form siap.</div>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>
