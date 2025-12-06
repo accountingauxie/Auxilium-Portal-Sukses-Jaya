@@ -23,7 +23,9 @@
 body {
   overflow-x: hidden;
 }
-
+/* Tambahkan DI SINI */
+html {
+  overflow-x: hidden !important;
 /* ---------- NAVBAR CLEAN RESPONSIVE ---------- */
 .topnav {
   width: 100%;
@@ -289,8 +291,9 @@ table {
   background: #ffffff;
   border-radius: 6px;
   border: 1px solid #e3e6ea;
-  overflow: visible !important;
+  overflow: hidden !important;  /* FIX UTAMA */
 }
+
 
 thead tr { height: 32px; }
 
@@ -339,9 +342,10 @@ table tr { height: 34px !important; }
    DROPDOWN FIX
 ========================================================== */
 table, tbody, tr, td {
-  overflow: visible !important;
+  overflow: hidden !important;  /* FIX */
   position: relative !important;
 }
+
 
 .choices__list--dropdown,
 .choices__list[aria-expanded] {
