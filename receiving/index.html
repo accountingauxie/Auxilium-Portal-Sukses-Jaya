@@ -8,161 +8,101 @@
   <style>
     body {
       margin: 0;
-      font-family: 'Segoe UI', 'Inter', sans-serif;
-      background: #f4f4f7;
-      display: flex;
-    }
-
-    /* Sidebar */
-    .sidebar {
-      width: 220px;
+      font-family: 'Inter', sans-serif;
       background: #ffffff;
-      border-right: 1px solid #e1e1e1;
-      height: 100vh;
-      position: fixed;
-      left: 0;
-      top: 0;
-      padding: 20px 15px;
-    }
-
-    .sidebar h2 {
-      margin: 0 0 30px 0;
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    .menu-item {
-      padding: 12px 10px;
-      margin-bottom: 5px;
-      cursor: pointer;
-      border-radius: 6px;
-    }
-
-    .menu-item:hover {
-      background: #ececec;
-    }
-
-    /* Main Area */
-    .main {
-      margin-left: 240px;
-      width: calc(100% - 240px);
     }
 
     /* Top Header */
     .header {
-      background: #673ab7; /* Microsoft Purple */
-      color: #fff;
-      padding: 18px 30px;
+      width: 100%;
+      padding: 20px 40px;
       font-size: 20px;
-      font-weight: 600;
-    }
-
-    .content {
-      padding: 30px;
-    }
-
-    .card {
-      background: #ffffff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0px 3px 10px rgba(0,0,0,0.08);
-      margin-bottom: 25px;
+      font-weight: 700;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: flex-start;
+      border-bottom: 1px solid #e5e7eb;
     }
 
-    .card-title {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 5px;
-    }
-
-    .card-desc {
-      color: #666;
+    .header span {
       font-size: 14px;
+      font-weight: 400;
+      margin-left: 10px;
+      color: #6b7280;
     }
 
-    .card-buttons button {
-      padding: 8px 16px;
-      margin-left: 8px;
+    /* Main Container (same as your Receiving UI style) */
+    .container {
+      max-width: 1100px;
+      margin: 40px auto;
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 25px;
+      color: #1f2937;
+    }
+
+    /* Buttons layout */
+    .menu-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .menu-btn {
+      background: #0077C8;
+      color: white;
+      font-size: 16px;
+      padding: 16px;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 14px;
+      text-align: left;
+      transition: 0.2s;
     }
 
-    .btn-edit {
-      background: #673ab7;
-      color: #fff;
+    .menu-btn:hover {
+      background: #005fa3;
     }
 
-    .btn-open {
-      background: #0078d4;
-      color: #fff;
-    }
-
-    .btn-preview {
-      background: #e1e1e1;
-      color: #333;
+    .disabled-btn {
+      background: #cbd5e1;
+      cursor: not-allowed;
     }
   </style>
-
 </head>
+
 <body>
 
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <h2>UXILIUM</h2>
-    <div class="menu-item">Home</div>
-    <div class="menu-item">Modules</div>
-    <div class="menu-item">Settings</div>
+  <!-- Header -->
+  <div class="header">
+    UXILIUM <span>Portal Menu</span>
   </div>
 
-  <!-- Main -->
-  <div class="main">
-    <div class="header">UXILIUM Portal — Production Environment</div>
+  <!-- Main Content -->
+  <div class="container">
+    <div class="title">Select a Module</div>
 
-    <div class="content">
+    <div class="menu-list">
+      <button class="menu-btn" onclick="window.location.href='production/'">
+        Production Entry
+      </button>
 
-      <!-- Production Card -->
-      <div class="card">
-        <div>
-          <div class="card-title">Production Entry</div>
-          <div class="card-desc">Input hasil produksi per mesin & KPC</div>
-        </div>
+      <button class="menu-btn" onclick="window.location.href='receiving/'">
+        Receiving Entry (PO Coil)
+      </button>
 
-        <div class="card-buttons">
-          <button class="btn-open" onclick="window.location.href='production/'">Open</button>
-        </div>
-      </div>
-
-      <!-- Receiving Card -->
-      <div class="card">
-        <div>
-          <div class="card-title">Receiving Entry</div>
-          <div class="card-desc">Penerimaan coil berdasarkan PO</div>
-        </div>
-
-        <div class="card-buttons">
-          <button class="btn-open" onclick="window.location.href='receiving/'">Open</button>
-        </div>
-      </div>
-
-      <!-- Order Form Card -->
-      <div class="card">
-        <div>
-          <div class="card-title">Order Form</div>
-          <div class="card-desc">Coming soon</div>
-        </div>
-
-        <div class="card-buttons">
-          <button class="btn-preview">Coming Soon</button>
-        </div>
-      </div>
-
+      <button class="menu-btn disabled-btn">
+        Order Form (Coming Soon)
+      </button>
     </div>
-
   </div>
 
 </body>
