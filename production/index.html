@@ -337,115 +337,7 @@ textarea {
   width: 18px;
   height: 18px;
 }
-/* ---------- NAVBAR CLEAN PREMIUM ---------- */
-.topnav {
-  width: 100%;
-  background: white;
-  padding: 14px 40px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #ececec;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  font-family: "Segoe UI", sans-serif;
-}
 
-/* Left side brand */
-.nav-left .nav-brand {
-  font-size: 19px;
-  font-weight: 700;
-  color: #1e1e1e;
-  letter-spacing: 0.3px;
-}
-
-.nav-left .nav-sub {
-  font-size: 12px;
-  color: #9aa1ac;
-  margin-top: -2px;
-}
-
-/* Right side */
-.nav-right {
-  display: flex;
-  align-items: center;
-  gap: 26px;
-}
-
-/* Menu link default state — soft color */
-.nav-link {
-  font-size: 14.5px;
-  color: #9aa1ac;        /* soft grey */
-  cursor: pointer;
-  text-decoration: none;
-  font-weight: 500;
-  transition: 0.2s ease;
-}
-
-/* Disabled but consistent */
-.disabled-link {
-  font-size: 14.5px;
-  color: #c7cbd1;
-  font-weight: 500;
-}
-
-/* Hover effect — bold + darker */
-.nav-link:hover,
-.dropdown-btn:hover {
-  color: #1e1e1e;
-  font-weight: 600;
-}
-
-/* Dropdown button */
-.dropdown-btn {
-  border: none;
-  background: none;
-  padding: 0;
-  font-size: 14.5px;
-  font-weight: 500;
-  cursor: pointer;
-  color: #9aa1ac;
-  transition: 0.2s ease;
-}
-
-/* Dropdown content */
-.nav-dropdown {
-  position: relative;
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background: white;
-  min-width: 180px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 14px rgba(0,0,0,0.07);
-  padding: 8px 0;
-  border: 1px solid #e5e5e5;
-  z-index: 200;
-}
-
-.dropdown-content a,
-.dropdown-content span {
-  font-size: 14px;
-  padding: 10px 16px;
-  display: block;
-  text-decoration: none;
-  color: #6a737c;
-  transition: 0.2s ease;
-}
-
-.dropdown-content a:hover {
-  background: #eef3ff;
-  font-weight: 600;
-  color: #1e1e1e;
-}
-
-/* Show dropdown on hover */
-.nav-dropdown:hover .dropdown-content {
-  display: block;
-}
 </style>
 </head>
 
@@ -456,30 +348,12 @@ textarea {
   <div class="loading-spinner"></div>
 </div>
 
-<!-- TOP NAVBAR -->
-<div class="topnav">
-  <div class="nav-left">
-    <span class="nav-brand">UXILIUM</span>
-    <span class="nav-sub">Accounting Management Service</span>
-  </div>
-
-  <div class="nav-right">
-    <a href="../index.html" class="nav-link">Home</a>
-
-    <div class="nav-dropdown">
-      <button class="nav-link dropdown-btn">Modules ▾</button>
-      <div class="dropdown-content">
-        <a href="../receiving/">Receiving PO Entry</a>
-        <a href="../production/">Production Entry</a>
-        <span class="disabled-link">Order Form</span>
-      </div>
-    </div>
-
-    <a class="nav-link disabled-link">Settings</a>
-  </div>
+<!-- Top Bar -->
+<div class="top-bar">
+  <span class="brand-main">UXILIUM</span>
+  <span class="brand-sub">Accounting Management Services</span>
 </div>
 
-<!-- PAGE -->
 <div class="page">
   <div class="card">
 
