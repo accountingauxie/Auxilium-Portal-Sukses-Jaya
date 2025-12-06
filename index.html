@@ -16,21 +16,41 @@
 
     /* ---------------- SIDEBAR ---------------- */
     .sidebar {
-      width: 220px;
+      width: 240px;
       background: #ffffff;
       border-right: 1px solid #e5e5e5;
       height: 100vh;
       position: fixed;
       left: 0;
       top: 0;
-      padding: 24px 18px;
+      padding: 22px 18px;
     }
 
-    .sidebar h2 {
-      margin: 0 0 30px 0;
-      font-size: 18px;
+    /* UXILIUM BRAND INSIDE SIDEBAR */
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-brand img {
+      height: 32px;
+      width: auto;
+    }
+
+    .sidebar-brand-text {
+      font-size: 17px;
       font-weight: 700;
-      color: #2d2d2d;
+      letter-spacing: 0.15em;
+    }
+
+    .sidebar-brand-sub {
+      font-size: 11px;
+      margin-top: -3px;
+      color: #666;
+      letter-spacing: 0.02em;
+      margin-bottom: 22px;
     }
 
     .menu-item {
@@ -57,34 +77,14 @@
       width: calc(100% - 240px);
     }
 
+    /* TOP HEADER */
     .header {
       background: #ffffff;
-      padding: 10px 30px;
+      padding: 16px 30px;
       border-bottom: 1px solid #e5e5e5;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand img {
-      max-height: 32px;
-      width: auto;
-      display: block;
-    }
-
-    .brand-text-top {
-      font-size: 16px;
+      font-size: 20px;
       font-weight: 700;
-      letter-spacing: 0.18em;
-    }
-
-    .brand-text-bottom {
-      font-size: 11px;
-      color: #6b6b6b;
-      margin-top: -2px;
+      letter-spacing: 0.03em;
     }
 
     .content {
@@ -148,28 +148,27 @@
 </head>
 
 <body>
+
   <!-- SIDEBAR -->
   <div class="sidebar">
-    <h2>CV. SUKSES JAYA</h2>
+
+    <!-- UXILIUM BRAND HERE -->
+    <div class="sidebar-brand">
+      <img src="uxilium-logo.png" alt="UXILIUM Logo" />
+      <div class="sidebar-brand-text">UXILIUM</div>
+    </div>
+    <div class="sidebar-brand-sub">ACCOUNTING MANAGEMENT SERVICE</div>
 
     <div class="menu-item menu-active" onclick="showPage('home', this)">Home</div>
     <div class="menu-item" onclick="showPage('modules', this)">Modules</div>
     <div class="menu-item" onclick="alert('Settings coming soon')">Settings</div>
   </div>
 
-  <!-- MAIN -->
+  <!-- MAIN AREA -->
   <div class="main">
-    <!-- BRAND HEADER -->
-    <div class="header">
-      <div class="brand">
-        <!-- Ganti 'uxilium-logo.png' dengan nama file logo kamu di repo -->
-        <img src="uxilium-logo.png" alt="UXILIUM Logo" />
-        <div>
-          <div class="brand-text-top">UXILIUM</div>
-          <div class="brand-text-bottom">ACCOUNTING MANAGEMENT SERVICE</div>
-        </div>
-      </div>
-    </div>
+
+    <!-- TOP HEADER: CV SUKSES JAYA -->
+    <div class="header">CV. SUKSES JAYA</div>
 
     <!-- HOME PAGE -->
     <div class="content" id="home-page">
@@ -185,30 +184,25 @@
         <!-- PRODUCTION ENTRY -->
         <div class="tile" onclick="window.location.href='production/'">
           <div class="tile-icon">
-            <!-- Gear / production icon -->
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b3b3b" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"></circle>
               <path
-                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 8 4.6c.28 0 .55-.1.78-.26A1.65 1.65 0 0 0 10 3.09V3a2 2 0 1 1 4 0v.09c0 .61.31 1.17.78 1.51.23.16.5.26.78.26a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c0 .28.1.55.26.78.36.47.51 1.07.34 1.65-.17.57-.62 1.02-1.2 1.2-.23.06-.46.1-.7.1-.28 0-.55-.1-.78-.26A1.65 1.65 0 0 0 15 12v-.09A1.65 1.65 0 0 0 14 10a1.65 1.65 0 0 0-1.51 1H12a2 2 0 1 1 0 4h.09">
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83">
               </path>
             </svg>
           </div>
           <div class="tile-title">Production Entry</div>
-          <div class="tile-desc">Input hasil produksi per mesin &amp; KPC</div>
+          <div class="tile-desc">Input hasil produksi per mesin & KPC</div>
         </div>
 
         <!-- RECEIVING ENTRY -->
         <div class="tile" onclick="window.location.href='receiving/'">
           <div class="tile-icon">
-            <!-- Box icon -->
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b3b3b" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
-              <path
-                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.73z">
-              </path>
-              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+              <path d="M21 16V8L12 3 3 8v8l9 5 9-5z"></path>
+              <line x1="12" y1="22" x2="12" y2="12"></line>
             </svg>
           </div>
           <div class="tile-title">Receiving Entry (PO Coil)</div>
@@ -218,20 +212,19 @@
         <!-- ORDER FORM -->
         <div class="tile tile-disabled">
           <div class="tile-icon">
-            <!-- Document icon -->
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
               <line x1="14" y1="2" x2="14" y2="8"></line>
-              <line x1="9" y1="13" x2="15" y2="13"></line>
-              <line x1="9" y1="17" x2="15" y2="17"></line>
             </svg>
           </div>
           <div class="tile-title">Order Form</div>
           <div class="tile-desc">Coming Soon</div>
         </div>
+
       </div>
     </div>
+
   </div>
 
   <!-- PAGE SWITCH SCRIPT -->
@@ -248,6 +241,7 @@
       element.classList.add("menu-active");
     }
   </script>
+
 </body>
 
 </html>
