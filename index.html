@@ -9,8 +9,8 @@
   <style>
     body {
       margin: 0;
-      font-family: "Segoe UI", "Inter", sans-serif;
-      background: #f8f8fb;
+      font-family: "Inter", "Segoe UI", sans-serif;
+      background: #f5f6fa;
       display: flex;
     }
 
@@ -18,56 +18,59 @@
     .sidebar {
       width: 240px;
       background: #ffffff;
-      border-right: 1px solid #e5e5e5;
+      border-right: 1px solid #e9e9e9;
       height: 100vh;
       position: fixed;
       left: 0;
       top: 0;
-      padding: 22px 18px;
+      padding: 26px 20px;
+      display: flex;
+      flex-direction: column;
     }
 
-    /* UXILIUM BRAND INSIDE SIDEBAR */
     .sidebar-brand {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 4px;
+      gap: 12px;
+      margin-bottom: 2px;
     }
 
     .sidebar-brand img {
-      height: 32px;
+      height: 30px;
       width: auto;
     }
 
     .sidebar-brand-text {
       font-size: 17px;
-      font-weight: 700;
-      letter-spacing: 0.15em;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      color: #1a1a1a;
     }
 
     .sidebar-brand-sub {
       font-size: 11px;
-      margin-top: -3px;
-      color: #666;
-      letter-spacing: 0.02em;
-      margin-bottom: 22px;
+      color: #868686;
+      letter-spacing: 0.03em;
+      margin-bottom: 28px;
     }
 
     .menu-item {
-      padding: 12px 10px;
+      padding: 12px 14px;
       margin-bottom: 6px;
       cursor: pointer;
-      border-radius: 6px;
-      font-size: 14px;
+      border-radius: 8px;
+      font-size: 15px;
       color: #444;
+      transition: 0.15s ease;
     }
 
     .menu-item:hover {
-      background: #eeeeee;
+      background: #f1f1f1;
     }
 
     .menu-active {
-      background: #e8e8e8 !important;
+      background: #e8f0ff !important;
+      color: #0a4cc5;
       font-weight: 600;
     }
 
@@ -80,69 +83,78 @@
     /* TOP HEADER */
     .header {
       background: #ffffff;
-      padding: 16px 30px;
-      border-bottom: 1px solid #e5e5e5;
+      padding: 18px 32px;
+      border-bottom: 1px solid #ececec;
       font-size: 20px;
       font-weight: 700;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.02em;
+      color: #1a1a1a;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(8px);
     }
 
     .content {
-      padding: 30px;
+      padding: 34px;
     }
 
     .content h2 {
       margin-top: 0;
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 700;
+      color: #2b2b2b;
     }
 
     /* ---------------- MODULE TILE GRID ---------------- */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 24px;
-      margin-top: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 26px;
+      margin-top: 24px;
     }
 
     .tile {
       background: white;
-      padding: 22px;
-      border-radius: 12px;
-      box-shadow: 0px 3px 12px rgba(0, 0, 0, 0.08);
+      padding: 26px;
+      border-radius: 16px;
+      box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.08);
       cursor: pointer;
-      transition: 0.2s ease;
-      min-height: 170px;
+      transition: 0.25s ease;
+      min-height: 180px;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
+      border: 1px solid #efefef;
     }
 
     .tile:hover {
-      transform: translateY(-4px);
-      box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.12);
+      transform: translateY(-5px);
+      box-shadow: 0px 10px 28px rgba(0, 0, 0, 0.12);
     }
 
     .tile-disabled {
-      background: #e8e8e8;
+      background: #f1f1f1;
       opacity: 0.6;
       cursor: not-allowed;
+      border: 1px solid #e0e0e0;
     }
 
     .tile-icon {
-      margin-bottom: 14px;
+      margin-bottom: 18px;
     }
 
     .tile-title {
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 700;
-      margin-bottom: 6px;
-      color: #222;
+      margin-bottom: 8px;
+      color: #212121;
     }
 
     .tile-desc {
       font-size: 14px;
-      color: #555;
+      color: #6f6f6f;
+      line-height: 1.4;
     }
   </style>
 </head>
@@ -151,8 +163,6 @@
 
   <!-- SIDEBAR -->
   <div class="sidebar">
-
-    <!-- UXILIUM BRAND HERE -->
     <div class="sidebar-brand">
       <img src="uxilium-logo.png" alt="UXILIUM Logo" />
       <div class="sidebar-brand-text">UXILIUM</div>
@@ -164,23 +174,23 @@
     <div class="menu-item" onclick="alert('Settings coming soon')">Settings</div>
   </div>
 
-  <!-- MAIN AREA -->
+  <!-- MAIN CONTENT -->
   <div class="main">
 
-    <!-- TOP HEADER: CV SUKSES JAYA -->
     <div class="header">CV. SUKSES JAYA</div>
 
     <!-- HOME PAGE -->
     <div class="content" id="home-page">
-      <h2>Welcome to UXILIUM Portal</h2>
-      <p>Silakan pilih menu di sebelah kiri untuk mulai menggunakan portal.</p>
+      <h2>Welcome Back 👋</h2>
+      <p style="font-size:15px; color:#666;">Silakan pilih modul di menu untuk mulai menggunakan portal.</p>
     </div>
 
     <!-- MODULES PAGE -->
-    <div class="content" id="modules-page" style="display: none;">
+    <div class="content" id="modules-page" style="display:none;">
       <h2>Modules</h2>
 
       <div class="grid">
+
         <!-- PRODUCTION ENTRY -->
         <div class="tile" onclick="window.location.href='production/'">
           <div class="tile-icon">
@@ -212,7 +222,7 @@
         <!-- ORDER FORM -->
         <div class="tile tile-disabled">
           <div class="tile-icon">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
               <line x1="14" y1="2" x2="14" y2="8"></line>
@@ -235,9 +245,7 @@
       document.getElementById("modules-page").style.display =
         page === "modules" ? "block" : "none";
 
-      document
-        .querySelectorAll(".menu-item")
-        .forEach((i) => i.classList.remove("menu-active"));
+      document.querySelectorAll(".menu-item").forEach(i => i.classList.remove("menu-active"));
       element.classList.add("menu-active");
     }
   </script>
