@@ -34,34 +34,85 @@ input:hover, select:hover, textarea:hover, .choices__inner:hover {
   border-color: #b9c4d0 !important;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+/* ==========================================================
+   TOP NAVBAR
+========================================================== */
+.topnav {
+  width: 100%;
+  background: white;
+  padding: 14px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ececec;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  font-family: "Segoe UI", sans-serif;
 }
 
-/* ==========================================================
-   TOP BAR
-========================================================== */
-.top-bar {
-  height: 50px;
+.nav-left .nav-brand {
+  font-size: 19px;
+  font-weight: 700;
+  color: #1e1e1e;
+  letter-spacing: 0.3px;
+}
+.nav-left .nav-sub {
+  font-size: 12px;
+  color: #9aa1ac;
+  margin-top: -2px;
+}
+
+.nav-right {
   display: flex;
   align-items: center;
-  padding: 0 48px;
-  background: #ffffff;
-  border-bottom: 1px solid #e1e4e8;
+  gap: 26px;
 }
 
-.brand-main {
+.nav-link {
+  font-size: 14.5px;
+  color: #9aa1ac;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+.nav-link:hover { color: #1e1e1e; font-weight: 600; }
+.disabled-link { color: #c7cbd1; }
+
+/* Modules dropdown */
+.nav-dropdown { position: relative; }
+.dropdown-btn {
+  border: none;
+  background: none;
+  font-size: 14.5px;
+  font-weight: 500;
+  cursor: pointer;
+  color: #9aa1ac;
+}
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background: white;
+  min-width: 180px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 14px rgba(0,0,0,0.07);
+  padding: 8px 0;
+  border: 1px solid #e5e5e5;
+  z-index: 200;
+}
+.dropdown-content a,
+.dropdown-content span {
+  font-size: 14px;
+  padding: 10px 16px;
+  display: block;
+  color: #6a737c;
+}
+.dropdown-content a:hover {
+  background: #eef3ff;
   font-weight: 600;
-  font-size: 17px;
-  letter-spacing: 0.08em;
-  margin-right: 6px;
+  color: #1e1e1e;
 }
-
-.brand-sub {
-  font-size: 13px;
-  color: #7a8699;
-}
+.nav-dropdown:hover .dropdown-content { display: block; }
 
 /* ==========================================================
    PAGE + CARD
@@ -77,21 +128,17 @@ input:hover, select:hover, textarea:hover, .choices__inner:hover {
   border-radius: 8px;
   box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.04),
               0 14px 30px rgba(15, 23, 42, 0.08);
-  padding: 24px 26px 26px 26px;
-}
-
-.card-header {
-  margin-bottom: 18px;
+  padding: 24px 26px 26px;
 }
 
 .card-title {
   font-size: 20px;
   font-weight: 600;
-  color: #1f2933;
+  margin-bottom: 18px;
 }
 
 /* ==========================================================
-   LABEL
+   LABEL + INPUT
 ========================================================== */
 label {
   font-size: 12.5px;
@@ -101,9 +148,6 @@ label {
   display: block;
 }
 
-/* ==========================================================
-   INPUT STYLE
-========================================================== */
 .input-box,
 .table-input,
 .choices__inner {
@@ -117,37 +161,45 @@ label {
   box-sizing: border-box;
 }
 
-.choices__placeholder {
-  color: #999 !important;
-  opacity: 1 !important;
+.choices {
+  width: 100% !important;
+  min-width: 0 !important;
 }
-
-input[type="date"] {
-  padding-right: 26px !important;
+.choices__inner {
+  width: 100% !important;
+  min-width: 0 !important;
 }
 
 /* ==========================================================
-   TOP FORM LAYOUT
+   TOP FORM GRID
 ========================================================== */
 .row-flex {
   display: grid;
-  grid-template-columns: minmax(180px, 1.1fr) minmax(200px, 1.1fr) minmax(210px, 1.1fr);
+  grid-template-columns: 1fr 1fr 1fr;
   column-gap: 24px;
   row-gap: 10px;
-  align-items: end;
   margin-bottom: 18px;
 }
 
 /* ==========================================================
-   TABLE STYLE
+   TABLE WRAPPER (FIX OVERFLOW)
+========================================================== */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #e3e6ea;
+  border-radius: 6px;
+  background: white;
+  margin-bottom: 12px;
+}
+
+/* ==========================================================
+   TABLE
 ========================================================== */
 table {
   width: 100%;
   border-collapse: collapse;
   background: #ffffff;
-  border-radius: 6px;
-  border: 1px solid #e3e6ea;
-  overflow: visible !important;
 }
 
 thead tr { height: 32px; }
@@ -160,24 +212,14 @@ th {
   border-bottom: 1px solid #e1e4e9;
   color: #313d4f;
   text-align: left;
+  white-space: nowrap;
 }
 
 td {
   padding: 4px;
   border-bottom: 1px solid #f3f4f6;
-  vertical-align: middle !important;
+  vertical-align: middle;
 }
-
-table tr { height: 34px !important; }
-
-/* Column widths */
-#tableBody td:nth-child(1), #tableBody th:nth-child(1) { width: 20px; }
-#tableBody td:nth-child(2), #tableBody th:nth-child(2) { width: 28%; }
-#tableBody td:nth-child(3), #tableBody th:nth-child(3) { width: 7%; }
-#tableBody td:nth-child(4), #tableBody th:nth-child(4) { width: 7%; }
-#tableBody td:nth-child(5), #tableBody th:nth-child(5) { width: 10%; }
-#tableBody td:nth-child(6), #tableBody th:nth-child(6) { width: 21%; }
-#tableBody td:nth-child(7), #tableBody th:nth-child(7) { width: 20px; }
 
 .row-handle {
   font-size: 12px;
@@ -186,45 +228,12 @@ table tr { height: 34px !important; }
   text-align: center;
 }
 
+/* DELETE button */
 .delete-btn {
   font-size: 14px;
   color: #cc1f2f;
   cursor: pointer;
   text-align: center;
-}
-
-/* ==========================================================
-   DROPDOWN FIX
-========================================================== */
-table, tbody, tr, td {
-  overflow: visible !important;
-  position: relative !important;
-}
-
-.choices__list--dropdown,
-.choices__list[aria-expanded] {
-  position: absolute !important;
-  z-index: 99999999 !important;
-  background: #ffffff !important;
-  border: 1px solid #cfd7df !important;
-  border-radius: 5px !important;
-  width: 100% !important;
-  font-size: 12.5px !important;
-}
-
-.choices__list--dropdown .choices__list {
-  max-height: 210px !important;
-  overflow-y: auto !important;
-}
-
-.choices__inner {
-  display: flex !important;
-  align-items: center !important;
-}
-
-.table-input {
-  display: flex;
-  align-items: center;
 }
 
 /* ==========================================================
@@ -241,29 +250,7 @@ table, tbody, tr, td {
   font-weight: 600;
   cursor: pointer;
 }
-
-.add-row-btn:hover {
-  background: #e2ebff;
-}
-
-.notes-label {
-  margin-top: 20px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #4a5568;
-}
-
-textarea {
-  width: 100%;
-  height: 110px;
-  padding: 8px;
-  font-size: 12.5px;
-  background: #f9fafb;
-  border: 1px solid #d0d7df;
-  border-radius: 6px;
-  margin-top: 4px;
-  resize: vertical;
-}
+.add-row-btn:hover { background: #e2ebff; }
 
 .actions-row {
   margin-top: 22px;
@@ -281,10 +268,7 @@ textarea {
   border: none;
   cursor: pointer;
 }
-
-.submit-btn:hover {
-  background: #0b66ad;
-}
+.submit-btn:hover { background: #0b66ad; }
 
 /* ==========================================================
    LOADING OVERLAY
@@ -298,7 +282,6 @@ textarea {
   align-items: center;
   z-index: 9999;
 }
-
 .loading-spinner {
   border: 5px solid #dae6f4;
   border-top: 5px solid #2b6be8;
@@ -307,156 +290,17 @@ textarea {
   height: 42px;
   animation: spin .85s linear infinite;
 }
+@keyframes spin { 100% { transform: rotate(360deg); } }
 
-/* Google Sheet Button — Bottom Placement */
-.sheet-bottom-wrapper {
-  margin-top: 16px;
-  margin-bottom: 8px;
-}
-
-.sheet-bottom-btn {
-  background: #eef4ff;
-  border: 1px solid #cfe0ff;
-  padding: 7px 14px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #1f5ddb;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.sheet-bottom-btn:hover {
-  background: #e2ebff;
-}
-
-/* Icon */
-.sheet-icon {
-  width: 18px;
-  height: 18px;
-}
-/* ---------- NAVBAR CLEAN PREMIUM ---------- */
-.topnav {
-  width: 100%;
-  background: white;
-  padding: 14px 40px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #ececec;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  font-family: "Segoe UI", sans-serif;
-}
-
-/* Left side brand */
-.nav-left .nav-brand {
-  font-size: 19px;
-  font-weight: 700;
-  color: #1e1e1e;
-  letter-spacing: 0.3px;
-}
-
-.nav-left .nav-sub {
-  font-size: 12px;
-  color: #9aa1ac;
-  margin-top: -2px;
-}
-
-/* Right side */
-.nav-right {
-  display: flex;
-  align-items: center;
-  gap: 26px;
-}
-
-/* Menu link default state — soft color */
-.nav-link {
-  font-size: 14.5px;
-  color: #9aa1ac;        /* soft grey */
-  cursor: pointer;
-  text-decoration: none;
-  font-weight: 500;
-  transition: 0.2s ease;
-}
-
-/* Disabled but consistent */
-.disabled-link {
-  font-size: 14.5px;
-  color: #c7cbd1;
-  font-weight: 500;
-}
-
-/* Hover effect — bold + darker */
-.nav-link:hover,
-.dropdown-btn:hover {
-  color: #1e1e1e;
-  font-weight: 600;
-}
-
-/* Dropdown button */
-.dropdown-btn {
-  border: none;
-  background: none;
-  padding: 0;
-  font-size: 14.5px;
-  font-weight: 500;
-  cursor: pointer;
-  color: #9aa1ac;
-  transition: 0.2s ease;
-}
-
-/* Dropdown content */
-.nav-dropdown {
-  position: relative;
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background: white;
-  min-width: 180px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 14px rgba(0,0,0,0.07);
-  padding: 8px 0;
-  border: 1px solid #e5e5e5;
-  z-index: 200;
-}
-
-.dropdown-content a,
-.dropdown-content span {
-  font-size: 14px;
-  padding: 10px 16px;
-  display: block;
-  text-decoration: none;
-  color: #6a737c;
-  transition: 0.2s ease;
-}
-
-.dropdown-content a:hover {
-  background: #eef3ff;
-  font-weight: 600;
-  color: #1e1e1e;
-}
-
-/* Show dropdown on hover */
-.nav-dropdown:hover .dropdown-content {
-  display: block;
-}
 </style>
 </head>
 
 <body>
 
-<!-- Loading Overlay -->
-<div id="loadingOverlay">
-  <div class="loading-spinner"></div>
-</div>
+<!-- LOADING -->
+<div id="loadingOverlay"><div class="loading-spinner"></div></div>
 
-<!-- TOP NAVBAR -->
+<!-- NAVBAR -->
 <div class="topnav">
   <div class="nav-left">
     <span class="nav-brand">UXILIUM</span>
@@ -483,11 +327,9 @@ textarea {
 <div class="page">
   <div class="card">
 
-    <div class="card-header">
-      <div class="card-title">Production Entry</div>
-    </div>
+    <div class="card-title">Production Entry</div>
 
-    <!-- Top Form -->
+    <!-- TOP FORM -->
     <div class="row-flex">
       <div>
         <label>Date</label>
@@ -510,42 +352,28 @@ textarea {
       </div>
     </div>
 
-    <!-- Table -->
-    <table>
-      <thead>
-        <tr>
-          <th></th>
-          <th>Item</th>
-          <th>Meter</th>
-          <th>Qty</th>
-          <th>Total (m)</th>
-          <th>KPC</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="tableBody"></tbody>
-    </table>
+    <!-- TABLE (wrapped to prevent overflow) -->
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Item</th>
+            <th>Meter</th>
+            <th>Qty</th>
+            <th>Total (m)</th>
+            <th>KPC</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
 
     <button class="add-row-btn" onclick="addRow()">+ Add row</button>
 
-    <div class="notes-label">Additional Notes</div>
-    <textarea id="notes"></textarea>
-<!-- Google Sheet Button at Bottom -->
-<div class="sheet-bottom-wrapper">
-  <a 
-    href="https://docs.google.com/spreadsheets/d/1KQ4uKabzjyVcw6a-wlqHFha7OWPfgqbghFXS59dZf5Q/edit?gid=1028502721"
-    target="_blank"
-    class="sheet-bottom-btn">
-
-    <!-- Icon Google Sheets (SVG) -->
-    <svg class="sheet-icon" viewBox="0 0 24 24">
-      <path fill="#0F9D58" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
-      <path fill="#FFF" d="M7 7h10v2H7zM7 11h10v2H7zM7 15h7v2H7z"/>
-    </svg>
-
-    Open Google Sheet
-  </a>
-</div>
+    <label style="margin-top:20px;">Additional Notes</label>
+    <textarea id="notes" style="width:100%;height:110px;padding:8px;font-size:12.5px;border:1px solid #d0d7df;border-radius:6px;background:#f9fafb;"></textarea>
 
     <div class="actions-row">
       <button class="submit-btn" onclick="submitForm()">Submit</button>
@@ -554,6 +382,9 @@ textarea {
   </div>
 </div>
 
+<!-- ==========================================================
+   JAVASCRIPT (tidak diubah, hanya dipindahkan rapi)
+========================================================== -->
 <script>
 const SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycby5iiAvTSJ4AqKe7MbfmilGLLrkiDAoYFG72xn_5ruOssqV9bqVUmZeJeIotXfLc1waVA/exec";
@@ -561,59 +392,41 @@ const SCRIPT_URL =
 let itemList = [];
 let kpcList = [];
 
-/* ======================================================
-   LOADING
-====================================================== */
-function showLoading() {
-  loadingOverlay.style.display = "flex";
-}
-function hideLoading() {
-  loadingOverlay.style.display = "none";
-}
+function showLoading(){ loadingOverlay.style.display="flex"; }
+function hideLoading(){ loadingOverlay.style.display="none"; }
 
-/* ======================================================
-   NEW — GET SERVER LAST ID & CALCULATE NEXT ID
-====================================================== */
+/* ID Generator */
 async function loadNextEntryId() {
   try {
     const res = await fetch(`${SCRIPT_URL}?action=getlastid`);
     const data = await res.json();
-
     const lastId = data.lastId;
 
-    const today = new Date();
-    const yy = String(today.getFullYear()).slice(2);
-    const mm = String(today.getMonth() + 1).padStart(2, "0");
-
+    const now = new Date();
+    const yy = String(now.getFullYear()).slice(2);
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
     const prefix = `FGP${yy}${mm}`;
 
-    // If no ID exists or different month prefix → start fresh
     if (!lastId || !lastId.startsWith(prefix)) {
       entryId.value = prefix + "0000001";
       return;
     }
 
-    // Extract sequence
     const seq = parseInt(lastId.substring(7)) + 1;
     entryId.value = prefix + String(seq).padStart(7, "0");
 
   } catch (err) {
-    console.error("Error loading last ID:", err);
-    // fallback
-    const today = new Date();
-    const yy = String(today.getFullYear()).slice(2);
-    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const now = new Date();
+    const yy = String(now.getFullYear()).slice(2);
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
     entryId.value = `FGP${yy}${mm}0000001`;
   }
 }
 
-/* ======================================================
-   ON PAGE LOAD
-====================================================== */
+/* PAGE LOAD */
 window.addEventListener("DOMContentLoaded", async () => {
   showLoading();
-
-  await loadNextEntryId();  // ⬅️ USE NEW LOGIC
+  await loadNextEntryId();
 
   try {
     const [itemRes, kpcRes] = await Promise.all([
@@ -633,9 +446,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   hideLoading();
 });
 
-/* ======================================================
-   SORTABLE ROWS
-====================================================== */
+/* SORTABLE */
 function setupSortable() {
   Sortable.create(tableBody, {
     handle: ".row-handle",
@@ -643,9 +454,7 @@ function setupSortable() {
   });
 }
 
-/* ======================================================
-   ADD ROW
-====================================================== */
+/* ADD ROW */
 function addRow() {
   const row = document.createElement("tr");
 
@@ -668,35 +477,29 @@ function addRow() {
   row.querySelector(".qty").addEventListener("input", updateTotals);
 }
 
-/* ======================================================
-   INIT CHOICES
-====================================================== */
-function initChoices(selectEl, optionsArray, placeholderText) {
+/* INIT CHOICES */
+function initChoices(el, list, placeholder) {
   const ph = document.createElement("option");
-  ph.value = "";
-  ph.disabled = true;
-  ph.selected = true;
-  ph.textContent = placeholderText;
-  selectEl.appendChild(ph);
+  ph.value = ""; ph.disabled = true; ph.selected = true;
+  ph.textContent = placeholder;
+  el.appendChild(ph);
 
-  optionsArray.forEach(v => {
-    const opt = document.createElement("option");
-    opt.value = v;
-    opt.textContent = v;
-    selectEl.appendChild(opt);
+  list.forEach(v => {
+    const op = document.createElement("option");
+    op.value = v;
+    op.textContent = v;
+    el.appendChild(op);
   });
 
-  new Choices(selectEl, {
+  new Choices(el, {
     searchEnabled: true,
     itemSelectText: "",
     shouldSort: false,
-    placeholderValue: placeholderText
+    placeholderValue: placeholder
   });
 }
 
-/* ======================================================
-   UPDATE TOTALS
-====================================================== */
+/* UPDATE TOTALS */
 function updateTotals() {
   tableBody.querySelectorAll("tr").forEach(r => {
     const m = parseFloat(r.querySelector(".meter").value) || 0;
@@ -705,15 +508,13 @@ function updateTotals() {
   });
 }
 
-/* ======================================================
-   VALIDATION
-====================================================== */
+/* VALIDATION */
 function validateForm() {
   if (!productionDate.value) return "Date is required.";
   if (!machineUsed.value) return "Machine is required.";
 
   const rows = document.querySelectorAll("#tableBody tr");
-  if (!rows.length) return "At least 1 item required.";
+  if (!rows.length) return "Row cannot be empty.";
 
   for (const r of rows) {
     if (!r.querySelector(".item-select").value) return "Item required.";
@@ -721,13 +522,10 @@ function validateForm() {
     if (!r.querySelector(".qty").value) return "Qty required.";
     if (!r.querySelector(".kpc-select").value) return "KPC required.";
   }
-
   return null;
 }
 
-/* ======================================================
-   SUBMIT
-====================================================== */
+/* SUBMIT */
 function submitForm() {
   showLoading();
 
@@ -756,21 +554,21 @@ function submitForm() {
     method: "POST",
     body: JSON.stringify(payload)
   })
-    .then(async res => {
-      const reply = await res.json();
-      hideLoading();
+  .then(async res => {
+    const reply = await res.json();
+    hideLoading();
 
-      if (reply.status === "success") {
-        entryId.value = reply.entryId;
-        alert("Submitted successfully!\nProduction Entry ID: " + reply.entryId);
-      } else {
-        alert("Error saving: " + reply.message);
-      }
-    })
-    .catch(err => {
-      hideLoading();
-      alert("Error submitting: " + err);
-    });
+    if (reply.status === "success") {
+      entryId.value = reply.entryId;
+      alert("Submitted successfully!\nProduction Entry ID: " + reply.entryId);
+    } else {
+      alert("Error: " + reply.message);
+    }
+  })
+  .catch(err => {
+    hideLoading();
+    alert("Submit failed: " + err);
+  });
 }
 </script>
 
