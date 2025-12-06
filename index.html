@@ -29,30 +29,12 @@
       z-index: 50;
     }
 
-    .sidebar-brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 2px;
-    }
-
-    .sidebar-brand img {
-      height: 30px;
-      width: auto;
-    }
-
-    .sidebar-brand-text {
-      font-size: 17px;
-      font-weight: 800;
-      letter-spacing: 0.16em;
-      color: #1a1a1a;
-    }
-
-    .sidebar-brand-sub {
-      font-size: 11px;
-      color: #868686;
-      letter-spacing: 0.03em;
-      margin-bottom: 28px;
+    /* Full AUXILIUM Logo */
+    .brand-full {
+      width: 170px;
+      height: auto;
+      display: block;
+      margin-bottom: 22px;
     }
 
     .menu-item {
@@ -85,7 +67,7 @@
     .header {
       background: #ffffff;
       padding: 18px 32px;
-      padding-left: 300px; /* FIXED: supaya tidak numpuk dengan sidebar */
+      padding-left: 300px; /* FIXED: header tidak tertutup sidebar */
       border-bottom: 1px solid #ececec;
       font-size: 20px;
       font-weight: 700;
@@ -100,7 +82,7 @@
     /* CONTENT AREA */
     .content {
       padding: 34px;
-      padding-left: 300px; /* FIXED: align dengan header */
+      padding-left: 300px; /* FIXED: lurus dengan header */
     }
 
     .content h2 {
@@ -167,11 +149,8 @@
 
   <!-- SIDEBAR -->
   <div class="sidebar">
-    <div class="sidebar-brand">
-      <img src="uxilium-logo.png" alt="UXILIUM Logo" />
-      <div class="sidebar-brand-text">UXILIUM</div>
-    </div>
-    <div class="sidebar-brand-sub">ACCOUNTING MANAGEMENT SERVICE</div>
+    <!-- FULL AUXILIUM LOGO -->
+    <img class="brand-full" src="assets/auxilium-logo.png" alt="UXILIUM Logo" />
 
     <div class="menu-item menu-active" onclick="showPage('home', this)">Home</div>
     <div class="menu-item" onclick="showPage('modules', this)">Modules</div>
@@ -256,4 +235,5 @@
   </script>
 
 </body>
+
 </html>
