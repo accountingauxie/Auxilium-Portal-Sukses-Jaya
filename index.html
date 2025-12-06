@@ -31,7 +31,7 @@
 
     /* Full AUXILIUM Logo */
     .brand-full {
-      width: 180px;
+      width: 170px;
       height: auto;
       display: block;
       margin-bottom: 22px;
@@ -67,7 +67,7 @@
     .header {
       background: #ffffff;
       padding: 18px 32px;
-      padding-left: 300px; /* FIXED OFFSET */
+      padding-left: 300px; /* FIXED: header tidak tertutup sidebar */
       border-bottom: 1px solid #ececec;
       font-size: 20px;
       font-weight: 700;
@@ -82,7 +82,7 @@
     /* CONTENT AREA */
     .content {
       padding: 34px;
-      padding-left: 300px;
+      padding-left: 300px; /* FIXED: lurus dengan header */
     }
 
     .content h2 {
@@ -149,11 +149,8 @@
 
   <!-- SIDEBAR -->
   <div class="sidebar">
-
-    <!-- EMBEDDED BASE64 LOGO -->
-    <img class="brand-full"
-      src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAywAAADNCAIAAADVHGNwAACVKUlEQVR4nOydd3gUVZ7HP9dz7r27u7s7u7u7u7tbd1t3W3d3tw3BdmiBIQiiAIKQoAEVEUgEVUAAoSiIqECCgIgRIkOiVCEhI2iAghYRuFgQhIjT5GpNJtNtn327t7d5cs595n/7+fJPP5z7nnNOd87+bd7bZttttt/8w4/+/sz/74uv7dZb7ne372v+YZ9X33HDzVhxzRnXnDHPOKWecc845Z5xzjjnnnHPuSewMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAv+VtsXj2O9pq3W5YtbfxufisUzv/5vU5fjxvnP0x7Tq9VaPpWm3T2Vb33Z6mWtv9n3PvO/fZ831qNp/fJ6601vt9vdZFaxPjdHIzVmu1zLd+2r9uKL+1Rf3tSe97HkZbqbp3X/epcZb2mPpNbVucY8z97Vt3s/ZSf3tGe+b6J6tXtu7P/rc4x47aa83rk1u1xOqN1dY5q1ls1vtMT5xqT72aT6Zrm7T3qx7TLXt2AbXe8e6Tb/q7x5yHff/++8zlvNprr7bb8zpdrddtttvnfU7q6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6uvpX8AXnAzPN8Vuj6QAAAABJRU5ErkJggg=="
-      alt="AUXILIUM Logo" />
+    <!-- FULL AUXILIUM LOGO -->
+    <img class="brand-full" src="assets/auxilium-logo.png" alt="UXILIUM Logo" />
 
     <div class="menu-item menu-active" onclick="showPage('home', this)">Home</div>
     <div class="menu-item" onclick="showPage('modules', this)">Modules</div>
@@ -186,4 +183,57 @@
               stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"></circle>
               <path
-                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83">
+              </path>
+            </svg>
+          </div>
+          <div class="tile-title">Production Entry</div>
+          <div class="tile-desc">Input hasil produksi per mesin & KPC</div>
+        </div>
+
+        <!-- RECEIVING ENTRY -->
+        <div class="tile" onclick="window.location.href='receiving/'">
+          <div class="tile-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b3b3b" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 16V8L12 3 3 8v8l9 5 9-5z"></path>
+              <line x1="12" y1="22" x2="12" y2="12"></line>
+            </svg>
+          </div>
+          <div class="tile-title">Receiving Entry (PO Coil)</div>
+          <div class="tile-desc">Penerimaan material berdasarkan Purchase Order</div>
+        </div>
+
+        <!-- ORDER FORM -->
+        <div class="tile tile-disabled">
+          <div class="tile-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
+              <line x1="14" y1="2" x2="14" y2="8"></line>
+            </svg>
+          </div>
+          <div class="tile-title">Order Form</div>
+          <div class="tile-desc">Coming Soon</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function showPage(page, element) {
+      document.getElementById("home-page").style.display =
+        page === "home" ? "block" : "none";
+      document.getElementById("modules-page").style.display =
+        page === "modules" ? "block" : "none";
+
+      document.querySelectorAll(".menu-item").forEach(i => i.classList.remove("menu-active"));
+      element.classList.add("menu-active");
+    }
+  </script>
+
+</body>
+
+</html>
