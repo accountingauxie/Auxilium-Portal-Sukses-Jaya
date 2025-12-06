@@ -26,6 +26,7 @@
       padding: 26px 20px;
       display: flex;
       flex-direction: column;
+      z-index: 50;
     }
 
     .sidebar-brand {
@@ -76,14 +77,15 @@
 
     /* ---------------- MAIN AREA ---------------- */
     .main {
-      margin-left: 240px;
-      width: calc(100% - 240px);
+      width: 100%;
+      margin-left: 0;
     }
 
     /* TOP HEADER */
     .header {
       background: #ffffff;
       padding: 18px 32px;
+      padding-left: 260px; /* FIXED: supaya tidak numpuk dengan sidebar */
       border-bottom: 1px solid #ececec;
       font-size: 20px;
       font-weight: 700;
@@ -95,8 +97,10 @@
       backdrop-filter: blur(8px);
     }
 
+    /* CONTENT AREA */
     .content {
       padding: 34px;
+      padding-left: 260px; /* FIXED: align dengan header */
     }
 
     .content h2 {
@@ -182,7 +186,9 @@
     <!-- HOME PAGE -->
     <div class="content" id="home-page">
       <h2>Welcome Back 👋</h2>
-      <p style="font-size:15px; color:#666;">Silakan pilih modul di menu untuk mulai menggunakan portal.</p>
+      <p style="font-size:15px; color:#666;">
+        Silakan pilih modul di menu untuk mulai menggunakan portal.
+      </p>
     </div>
 
     <!-- MODULES PAGE -->
@@ -237,7 +243,6 @@
 
   </div>
 
-  <!-- PAGE SWITCH SCRIPT -->
   <script>
     function showPage(page, element) {
       document.getElementById("home-page").style.display =
@@ -251,5 +256,4 @@
   </script>
 
 </body>
-
 </html>
