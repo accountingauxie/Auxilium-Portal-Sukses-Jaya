@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,11 +10,11 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', 'Inter', sans-serif;
-      background: #f7f7f9;
+      background: #f8f8fb;
       display: flex;
     }
 
-    /* Sidebar */
+    /* ---------------- SIDEBAR ---------------- */
     .sidebar {
       width: 220px;
       background: #ffffff;
@@ -27,7 +28,7 @@
 
     .sidebar h2 {
       margin: 0 0 30px 0;
-      font-size: 19px;
+      font-size: 20px;
       font-weight: 700;
       color: #2d2d2d;
     }
@@ -46,11 +47,11 @@
     }
 
     .menu-active {
-      background: #e8e8e8;
+      background: #e8e8e8 !important;
       font-weight: 600;
     }
 
-    /* Main Area */
+    /* ---------------- MAIN SECTION ---------------- */
     .main {
       margin-left: 240px;
       width: calc(100% - 240px);
@@ -69,47 +70,58 @@
       padding: 30px;
     }
 
-    /* Tile Cards for Modules */
+    .content h2 {
+      margin-top: 0;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    /* ---------------- MODULE TILE GRID ---------------- */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
       margin-top: 20px;
     }
 
     .tile {
       background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0px 3px 10px rgba(0,0,0,0.08);
+      padding: 22px;
+      border-radius: 12px;
+      box-shadow: 0px 3px 12px rgba(0, 0, 0, 0.08);
       cursor: pointer;
       transition: 0.2s ease;
-      min-height: 140px;
+      min-height: 170px;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
     }
 
     .tile:hover {
-      transform: translateY(-3px);
-      box-shadow: 0px 6px 16px rgba(0,0,0,0.12);
+      transform: translateY(-4px);
+      box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .tile-disabled {
+      background: #e8e8e8;
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .tile-icon {
+      margin-bottom: 14px;
     }
 
     .tile-title {
       font-size: 16px;
-      font-weight: 600;
+      font-weight: 700;
       margin-bottom: 6px;
+      color: #222;
     }
 
     .tile-desc {
       font-size: 14px;
       color: #555;
-    }
-
-    .tile-disabled {
-      background: #e5e5e5;
-      cursor: not-allowed;
-      opacity: 0.6;
     }
   </style>
 
@@ -117,43 +129,76 @@
 
 <body>
 
-  <!-- Sidebar -->
+  <!-- SIDEBAR -->
   <div class="sidebar">
     <h2>UXILIUM</h2>
 
-    <div class="menu-item menu-active" onclick="showPage('home')">Home</div>
-    <div class="menu-item" onclick="showPage('modules')">Modules</div>
+    <div class="menu-item menu-active" onclick="showPage('home', this)">Home</div>
+    <div class="menu-item" onclick="showPage('modules', this)">Modules</div>
     <div class="menu-item" onclick="alert('Settings coming soon')">Settings</div>
   </div>
 
-  <!-- Main Content -->
+  <!-- MAIN CONTENT -->
   <div class="main">
-
     <div class="header" id="page-title">UXILIUM Portal</div>
 
     <!-- HOME PAGE -->
     <div class="content" id="home-page">
       <h2>Welcome to UXILIUM Portal</h2>
-      <p>Pilih menu di sebelah kiri untuk mulai menggunakan portal.</p>
+      <p>Silakan pilih menu di sebelah kiri untuk mulai menggunakan portal.</p>
     </div>
 
     <!-- MODULES PAGE -->
-    <div class="content" id="modules-page" style="display:none;">
+    <div class="content" id="modules-page" style="display: none;">
       <h2>Modules</h2>
 
       <div class="grid">
 
+        <!-- === PRODUCTION ENTRY === -->
         <div class="tile" onclick="window.location.href='production/'">
+          <div class="tile-icon">
+            <!-- SVG GEAR PRODUCTION ICON -->
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
+              stroke="#3b3b3b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 8 4.6c.28 0 .55-.1.78-.26A1.65 1.65 0 0 0 10 3.09V3a2 2 0 1 1 4 0v.09c0 .61.31 1.17.78 1.51.23.16.5.26.78.26a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c0 .28.1.55.26.78.36.47.51 1.07.34 1.65-.17.57-.62 1.02-1.2 1.2-.23.06-.46.1-.7.1-.28 0-.55-.1-.78-.26A1.65 1.65 0 0 0 15 12v-.09A1.65 1.65 0 0 0 14 10a1.65 1.65 0 0 0-1.51 1H12a2 2 0 1 1 0 4h.09">
+              </path>
+            </svg>
+          </div>
           <div class="tile-title">Production Entry</div>
           <div class="tile-desc">Input hasil produksi per mesin & KPC</div>
         </div>
 
+        <!-- === RECEIVING ENTRY === -->
         <div class="tile" onclick="window.location.href='receiving/'">
+          <div class="tile-icon">
+            <!-- SVG BOX ICON -->
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
+              stroke="#3b3b3b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.73z">
+              </path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+          </div>
           <div class="tile-title">Receiving Entry (PO Coil)</div>
           <div class="tile-desc">Penerimaan material berdasarkan Purchase Order</div>
         </div>
 
+        <!-- === ORDER FORM === -->
         <div class="tile tile-disabled">
+          <div class="tile-icon">
+            <!-- SVG DOCUMENT ICON -->
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
+              stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
+              <line x1="14" y1="2" x2="14" y2="8"></line>
+              <line x1="9" y1="13" x2="15" y2="13"></line>
+              <line x1="9" y1="17" x2="15" y2="17"></line>
+            </svg>
+          </div>
           <div class="tile-title">Order Form</div>
           <div class="tile-desc">Coming Soon</div>
         </div>
@@ -163,20 +208,20 @@
 
   </div>
 
-  <!-- JS PAGE SWITCHER -->
+  <!-- PAGE SWITCH SCRIPT -->
   <script>
-    function showPage(page) {
+    function showPage(page, element) {
       document.getElementById('home-page').style.display = (page === 'home') ? 'block' : 'none';
       document.getElementById('modules-page').style.display = (page === 'modules') ? 'block' : 'none';
 
       document.getElementById('page-title').innerText =
         (page === 'home') ? 'UXILIUM Portal' : 'Modules';
 
-      let items = document.querySelectorAll('.menu-item');
-      items.forEach(i => i.classList.remove('menu-active'));
-      event.target.classList.add('menu-active');
+      document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('menu-active'));
+      element.classList.add('menu-active');
     }
   </script>
 
 </body>
+
 </html>
