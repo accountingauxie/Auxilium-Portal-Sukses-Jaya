@@ -2,14 +2,14 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UXILIUM Portal</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UXILIUM Portal – CV. Sukses Jaya</title>
 
   <style>
     body {
       margin: 0;
-      font-family: 'Segoe UI', 'Inter', sans-serif;
+      font-family: "Segoe UI", "Inter", sans-serif;
       background: #f8f8fb;
       display: flex;
     }
@@ -28,7 +28,7 @@
 
     .sidebar h2 {
       margin: 0 0 30px 0;
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 700;
       color: #2d2d2d;
     }
@@ -51,7 +51,7 @@
       font-weight: 600;
     }
 
-    /* ---------------- MAIN SECTION ---------------- */
+    /* ---------------- MAIN AREA ---------------- */
     .main {
       margin-left: 240px;
       width: calc(100% - 240px);
@@ -59,11 +59,32 @@
 
     .header {
       background: #ffffff;
-      color: #222;
-      padding: 18px 30px;
-      font-size: 20px;
-      font-weight: 600;
+      padding: 10px 30px;
       border-bottom: 1px solid #e5e5e5;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand img {
+      max-height: 32px;
+      width: auto;
+      display: block;
+    }
+
+    .brand-text-top {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+    }
+
+    .brand-text-bottom {
+      font-size: 11px;
+      color: #6b6b6b;
+      margin-top: -2px;
     }
 
     .content {
@@ -124,23 +145,31 @@
       color: #555;
     }
   </style>
-
 </head>
 
 <body>
-
   <!-- SIDEBAR -->
   <div class="sidebar">
-    <h2>UXILIUM</h2>
+    <h2>CV. SUKSES JAYA</h2>
 
     <div class="menu-item menu-active" onclick="showPage('home', this)">Home</div>
     <div class="menu-item" onclick="showPage('modules', this)">Modules</div>
     <div class="menu-item" onclick="alert('Settings coming soon')">Settings</div>
   </div>
 
-  <!-- MAIN CONTENT -->
+  <!-- MAIN -->
   <div class="main">
-    <div class="header" id="page-title">UXILIUM Portal</div>
+    <!-- BRAND HEADER -->
+    <div class="header">
+      <div class="brand">
+        <!-- Ganti 'uxilium-logo.png' dengan nama file logo kamu di repo -->
+        <img src="uxilium-logo.png" alt="UXILIUM Logo" />
+        <div>
+          <div class="brand-text-top">UXILIUM</div>
+          <div class="brand-text-bottom">ACCOUNTING MANAGEMENT SERVICE</div>
+        </div>
+      </div>
+    </div>
 
     <!-- HOME PAGE -->
     <div class="content" id="home-page">
@@ -153,13 +182,12 @@
       <h2>Modules</h2>
 
       <div class="grid">
-
-        <!-- === PRODUCTION ENTRY === -->
+        <!-- PRODUCTION ENTRY -->
         <div class="tile" onclick="window.location.href='production/'">
           <div class="tile-icon">
-            <!-- SVG GEAR PRODUCTION ICON -->
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
-              stroke="#3b3b3b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Gear / production icon -->
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b3b3b" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"></circle>
               <path
                 d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 8 4.6c.28 0 .55-.1.78-.26A1.65 1.65 0 0 0 10 3.09V3a2 2 0 1 1 4 0v.09c0 .61.31 1.17.78 1.51.23.16.5.26.78.26a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c0 .28.1.55.26.78.36.47.51 1.07.34 1.65-.17.57-.62 1.02-1.2 1.2-.23.06-.46.1-.7.1-.28 0-.55-.1-.78-.26A1.65 1.65 0 0 0 15 12v-.09A1.65 1.65 0 0 0 14 10a1.65 1.65 0 0 0-1.51 1H12a2 2 0 1 1 0 4h.09">
@@ -167,15 +195,15 @@
             </svg>
           </div>
           <div class="tile-title">Production Entry</div>
-          <div class="tile-desc">Input hasil produksi per mesin & KPC</div>
+          <div class="tile-desc">Input hasil produksi per mesin &amp; KPC</div>
         </div>
 
-        <!-- === RECEIVING ENTRY === -->
+        <!-- RECEIVING ENTRY -->
         <div class="tile" onclick="window.location.href='receiving/'">
           <div class="tile-icon">
-            <!-- SVG BOX ICON -->
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
-              stroke="#3b3b3b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Box icon -->
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b3b3b" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
               <path
                 d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.73z">
               </path>
@@ -187,12 +215,12 @@
           <div class="tile-desc">Penerimaan material berdasarkan Purchase Order</div>
         </div>
 
-        <!-- === ORDER FORM === -->
+        <!-- ORDER FORM -->
         <div class="tile tile-disabled">
           <div class="tile-icon">
-            <!-- SVG DOCUMENT ICON -->
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
-              stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Document icon -->
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
               <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
               <line x1="14" y1="2" x2="14" y2="8"></line>
               <line x1="9" y1="13" x2="15" y2="13"></line>
@@ -202,26 +230,24 @@
           <div class="tile-title">Order Form</div>
           <div class="tile-desc">Coming Soon</div>
         </div>
-
       </div>
     </div>
-
   </div>
 
   <!-- PAGE SWITCH SCRIPT -->
   <script>
     function showPage(page, element) {
-      document.getElementById('home-page').style.display = (page === 'home') ? 'block' : 'none';
-      document.getElementById('modules-page').style.display = (page === 'modules') ? 'block' : 'none';
+      document.getElementById("home-page").style.display =
+        page === "home" ? "block" : "none";
+      document.getElementById("modules-page").style.display =
+        page === "modules" ? "block" : "none";
 
-      document.getElementById('page-title').innerText =
-        (page === 'home') ? 'UXILIUM Portal' : 'Modules';
-
-      document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('menu-active'));
-      element.classList.add('menu-active');
+      document
+        .querySelectorAll(".menu-item")
+        .forEach((i) => i.classList.remove("menu-active"));
+      element.classList.add("menu-active");
     }
   </script>
-
 </body>
 
 </html>
