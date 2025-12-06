@@ -45,13 +45,17 @@
       background: #eeeeee;
     }
 
-    /* Main area */
+    .menu-active {
+      background: #e8e8e8;
+      font-weight: 600;
+    }
+
+    /* Main Area */
     .main {
       margin-left: 240px;
       width: calc(100% - 240px);
     }
 
-    /* Top Header */
     .header {
       background: #ffffff;
       color: #222;
@@ -65,113 +69,114 @@
       padding: 30px;
     }
 
-    .card {
-      background: #ffffff;
-      padding: 22px;
+    /* Tile Cards for Modules */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .tile {
+      background: white;
+      padding: 20px;
       border-radius: 10px;
-      box-shadow: 0px 3px 12px rgba(0,0,0,0.06);
-      margin-bottom: 22px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .card-title {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 4px;
-      color: #222;
-    }
-
-    .card-desc {
-      color: #666;
-      font-size: 14px;
-    }
-
-    .card-buttons button {
-      padding: 8px 16px;
-      margin-left: 8px;
-      border: none;
-      border-radius: 6px;
+      box-shadow: 0px 3px 10px rgba(0,0,0,0.08);
       cursor: pointer;
+      transition: 0.2s ease;
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .tile:hover {
+      transform: translateY(-3px);
+      box-shadow: 0px 6px 16px rgba(0,0,0,0.12);
+    }
+
+    .tile-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .tile-desc {
       font-size: 14px;
-      font-weight: 500;
+      color: #555;
     }
 
-    .btn-open {
-      background: #0078d4;
-      color: #fff;
-    }
-
-    .btn-open:hover {
-      background: #005fa3;
-    }
-
-    .btn-disabled {
-      background: #d6d6d6;
-      color: #666;
+    .tile-disabled {
+      background: #e5e5e5;
       cursor: not-allowed;
+      opacity: 0.6;
     }
-
   </style>
 
 </head>
+
 <body>
 
   <!-- Sidebar -->
   <div class="sidebar">
     <h2>UXILIUM</h2>
-    <div class="menu-item">Home</div>
-    <div class="menu-item">Modules</div>
-    <div class="menu-item">Settings</div>
+
+    <div class="menu-item menu-active" onclick="showPage('home')">Home</div>
+    <div class="menu-item" onclick="showPage('modules')">Modules</div>
+    <div class="menu-item" onclick="alert('Settings coming soon')">Settings</div>
   </div>
 
-  <!-- Main -->
+  <!-- Main Content -->
   <div class="main">
 
-    <!-- Top Header -->
-    <div class="header">UXILIUM Portal</div>
+    <div class="header" id="page-title">UXILIUM Portal</div>
 
-    <div class="content">
-
-      <!-- Production -->
-      <div class="card">
-        <div>
-          <div class="card-title">Production Entry</div>
-          <div class="card-desc">Input hasil produksi per mesin & KPC.</div>
-        </div>
-
-        <div class="card-buttons">
-          <button class="btn-open" onclick="window.location.href='production/'">Open</button>
-        </div>
-      </div>
-
-      <!-- Receiving -->
-      <div class="card">
-        <div>
-          <div class="card-title">Receiving Entry (PO Coil)</div>
-          <div class="card-desc">Penerimaan material berdasarkan Purchase Order.</div>
-        </div>
-
-        <div class="card-buttons">
-          <button class="btn-open" onclick="window.location.href='receiving/'">Open</button>
-        </div>
-      </div>
-
-      <!-- Order Form -->
-      <div class="card">
-        <div>
-          <div class="card-title">Order Form</div>
-          <div class="card-desc">Coming Soon</div>
-        </div>
-
-        <div class="card-buttons">
-          <button class="btn-disabled">Coming Soon</button>
-        </div>
-      </div>
-
+    <!-- HOME PAGE -->
+    <div class="content" id="home-page">
+      <h2>Welcome to UXILIUM Portal</h2>
+      <p>Pilih menu di sebelah kiri untuk mulai menggunakan portal.</p>
     </div>
+
+    <!-- MODULES PAGE -->
+    <div class="content" id="modules-page" style="display:none;">
+      <h2>Modules</h2>
+
+      <div class="grid">
+
+        <div class="tile" onclick="window.location.href='production/'">
+          <div class="tile-title">Production Entry</div>
+          <div class="tile-desc">Input hasil produksi per mesin & KPC</div>
+        </div>
+
+        <div class="tile" onclick="window.location.href='receiving/'">
+          <div class="tile-title">Receiving Entry (PO Coil)</div>
+          <div class="tile-desc">Penerimaan material berdasarkan Purchase Order</div>
+        </div>
+
+        <div class="tile tile-disabled">
+          <div class="tile-title">Order Form</div>
+          <div class="tile-desc">Coming Soon</div>
+        </div>
+
+      </div>
+    </div>
+
   </div>
+
+  <!-- JS PAGE SWITCHER -->
+  <script>
+    function showPage(page) {
+      document.getElementById('home-page').style.display = (page === 'home') ? 'block' : 'none';
+      document.getElementById('modules-page').style.display = (page === 'modules') ? 'block' : 'none';
+
+      document.getElementById('page-title').innerText =
+        (page === 'home') ? 'UXILIUM Portal' : 'Modules';
+
+      let items = document.querySelectorAll('.menu-item');
+      items.forEach(i => i.classList.remove('menu-active'));
+      event.target.classList.add('menu-active');
+    }
+  </script>
 
 </body>
 </html>
