@@ -337,6 +337,119 @@ textarea {
   width: 18px;
   height: 18px;
 }
+/* ======================================================
+   NAVBAR PREMIUM STYLE
+====================================================== */
+.topnav {
+  width: 100%;
+  background: white;
+  padding: 14px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ececec;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* Left - Branding */
+.nav-left {
+  display: flex;
+  flex-direction: column;
+  line-height: 16px;
+}
+
+.nav-brand {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e1e1e;
+  letter-spacing: 0.3px;
+}
+
+.nav-sub {
+  font-size: 12px;
+  color: #9aa1ac;
+}
+
+/* Right - Navigation Items */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+
+.nav-link {
+  font-size: 14px;
+  color: #9aa1ac;
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+.nav-link:hover,
+.dropdown-btn:hover {
+  color: #1e1e1e;
+  font-weight: 600;
+}
+
+.disabled-link {
+  font-size: 14px;
+  color: #c5c9ce;
+  cursor: default;
+  font-weight: 500;
+}
+
+/* Dropdown */
+.nav-dropdown {
+  position: relative;
+}
+
+.dropdown-btn {
+  border: none;
+  background: none;
+  font-size: 14px;
+  color: #9aa1ac;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 20px;
+  background: white;
+  min-width: 180px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 14px rgba(0,0,0,0.07);
+  padding: 8px 0;
+  border: 1px solid #e5e5e5;
+  z-index: 300;
+}
+
+.dropdown-content a,
+.dropdown-content span {
+  display: block;
+  padding: 10px 16px;
+  color: #6a737c;
+  text-decoration: none;
+  font-size: 14px;
+  transition: 0.2s ease;
+}
+
+.dropdown-content a:hover {
+  background: #eef3ff;
+  color: #1e1e1e;
+  font-weight: 600;
+}
+
+/* Show dropdown on hover */
+.nav-dropdown:hover .dropdown-content {
+  display: block;
+}
 
 </style>
 </head>
