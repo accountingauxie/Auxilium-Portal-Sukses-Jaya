@@ -6,31 +6,23 @@
   <title>Admin Panel – UXILIUM Portal</title>
 
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; font-family:Inter, sans-serif; }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:Inter,sans-serif; }
 
-    body {
-      background:#f5f6fa;
-      min-height:100vh;
-    }
+    body { background:#f5f6fa; min-height:100vh; }
 
     .topbar {
-      background:#ffffff;
+      background:white;
       padding:14px 24px;
       display:flex;
       justify-content:space-between;
       border-bottom:1px solid #e5e7eb;
     }
 
-    .topbar h1 {
-      font-size:18px;
-      font-weight:600;
-    }
-
     .btn-logout {
       background:#ef4444;
       color:white;
-      padding:7px 16px;
       border:none;
+      padding:7px 16px;
       border-radius:8px;
       cursor:pointer;
     }
@@ -44,23 +36,9 @@
       box-shadow:0 6px 22px rgba(0,0,0,0.12);
     }
 
-    table {
-      width:100%;
-      border-collapse:collapse;
-      margin-top:12px;
-    }
-
-    th, td {
-      padding:10px;
-      border-bottom:1px solid #e5e7eb;
-      font-size:14px;
-    }
-
-    th {
-      background:#f9fafb;
-      font-weight:600;
-      text-align:left;
-    }
+    table { width:100%; border-collapse:collapse; }
+    th, td { padding:10px; border-bottom:1px solid #e5e7eb; }
+    th { background:#f9fafb; font-weight:600; }
 
     .badge {
       padding:4px 10px;
@@ -73,16 +51,9 @@
     .pending { background:#fef3c7; color:#92400e; }
     .admin { background:#dbeafe; color:#1d4ed8; }
 
-    .btn {
-      padding:6px 12px;
-      border:none;
-      border-radius:8px;
-      cursor:pointer;
-      font-size:13px;
-    }
-
+    .btn { padding:6px 12px; border:none; border-radius:8px; cursor:pointer; }
     .btn-approve { background:#22c55e; color:white; }
-    .btn-pending { background:#fca5a5; color:#b91c1c; }
+    .btn-pending { background:#fca5a5; color:#991b1b; }
   </style>
 </head>
 
@@ -99,27 +70,24 @@
   <table>
     <thead>
       <tr>
-        <th>Username</th>
+        <th>Email</th>
         <th>Status</th>
         <th>Role</th>
         <th>Aksi</th>
       </tr>
     </thead>
-
     <tbody id="user-list"></tbody>
   </table>
 </div>
 
 <script>
-/* CEK LOGIN / HANYA ADMIN */
+/* Hanya admin boleh masuk */
 const current = JSON.parse(localStorage.getItem("uxilium_current_user") || "null");
-
 if (!current || current.role !== "admin") {
   alert("Hanya admin yang boleh mengakses halaman ini.");
   window.location.href = "login.html";
 }
 
-/* LOAD USERS */
 function getUsers() {
   return JSON.parse(localStorage.getItem("uxilium_users") || "[]");
 }
@@ -133,54 +101,47 @@ function renderUsers() {
   const list = document.getElementById("user-list");
   list.innerHTML = "";
 
-  users.forEach((user, index) => {
-    let tr = document.createElement("tr");
+  users.forEach((u, i) => {
+    const tr = document.createElement("tr");
 
     tr.innerHTML = `
-   <td>${user.email}</td>
-      <td><span class="badge ${user.approved ? "approved" : "pending"}">
-        ${user.approved ? "Approved" : "Pending"}
+      <td>${u.email}</td>
+      <td><span class="badge ${u.approved ? "approved" : "pending"}">
+        ${u.approved ? "Approved" : "Pending"}
       </span></td>
-      <td><span class="badge ${user.role === "admin" ? "admin" : ""}">
-        ${user.role}
+      <td><span class="badge ${u.role === "admin" ? "admin" : ""}">
+        ${u.role}
       </span></td>
       <td></td>
     `;
 
-    const actionCell = tr.querySelector("td:last-child");
+    const actions = tr.querySelector("td:last-child");
 
-    if (user.role !== "admin") {
-      if (!user.approved) {
+    if (u.role !== "admin") {
+      if (!u.approved) {
         let btn = document.createElement("button");
         btn.className = "btn btn-approve";
         btn.textContent = "Approve";
-        btn.onclick = () => approveUser(index);
-        actionCell.appendChild(btn);
+        btn.onclick = () => updateApprove(i, true);
+        actions.appendChild(btn);
       } else {
         let btn = document.createElement("button");
         btn.className = "btn btn-pending";
         btn.textContent = "Set Pending";
-        btn.onclick = () => revokeUser(index);
-        actionCell.appendChild(btn);
+        btn.onclick = () => updateApprove(i, false);
+        actions.appendChild(btn);
       }
     } else {
-      actionCell.textContent = "—";
+      actions.textContent = "—";
     }
 
     list.appendChild(tr);
   });
 }
 
-function approveUser(i) {
+function updateApprove(i, value) {
   const users = getUsers();
-  users[i].approved = true;
-  saveUsers(users);
-  renderUsers();
-}
-
-function revokeUser(i) {
-  const users = getUsers();
-  users[i].approved = false;
+  users[i].approved = value;
   saveUsers(users);
   renderUsers();
 }
