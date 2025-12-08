@@ -18,7 +18,6 @@
       position: relative;
     }
 
-    /* CANVAS BACKGROUND ANIMATION */
     #bg-canvas {
       position: fixed;
       inset: 0;
@@ -40,59 +39,27 @@
       backdrop-filter: blur(12px);
       box-shadow: 0 6px 22px rgba(0,0,0,0.12);
       z-index: 2;
-      position: relative;
     }
 
     .card img {
       width: 210px;
-      display: block;
       margin: 0 auto 10px;
-    }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 6px;
-      font-size: 22px;
-    }
-
-    p {
-      text-align: center;
-      color: #666;
-      font-size: 13px;
-      margin-bottom: 20px;
-    }
-
-    label {
-      font-size: 13px;
-      margin-bottom: 4px;
       display: block;
     }
 
+    h2 { text-align: center; margin-bottom: 6px; font-size: 22px; }
+    p { text-align: center; color: #666; font-size: 13px; margin-bottom: 20px; }
+
+    label { font-size: 13px; margin-bottom: 4px; display: block; }
     input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 14px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      outline: none;
-      font-size: 14px;
+      width: 100%; padding: 10px; margin-bottom: 14px;
+      border: 1px solid #ddd; border-radius: 8px; font-size: 14px;
     }
 
     button {
-      width: 100%;
-      padding: 11px;
-      background: #2563eb;
-      color: white;
-      border: none;
-      border-radius: 999px;
-      font-size: 14px;
+      width: 100%; padding: 11px; background: #2563eb;
+      color: white; border: none; border-radius: 999px; font-size: 14px;
       cursor: pointer;
-    }
-
-    a {
-      font-size: 13px;
-      color: #2563eb;
-      text-decoration: none;
     }
 
     .msg {
@@ -102,7 +69,6 @@
       border-radius: 8px;
       display: none;
     }
-
     .error { background: #fee2e2; color: #b91c1c; }
     .success { background: #dcfce7; color: #166534; }
   </style>
@@ -120,36 +86,42 @@
 
   <div id="msg" class="msg"></div>
 
-<label>Email</label>
-<input id="email" type="email">
-
+  <label>Email</label>
+  <input id="email" type="email">
 
   <label>Password</label>
   <input id="password" type="password">
 
   <button onclick="login()">Login</button>
 
-  <p style="margin-top:12px;">Belum punya akun? <a href="register.html">Daftar</a></p>
+  <p style="margin-top:12px;">
+    Belum punya akun? <a href="register.html">Daftar</a>
+  </p>
 </div>
 
 <script>
-/* MINI DATABASE PAKAI LOCALSTORAGE */
+/* ADMIN DEFAULT (EMAIL) */
 if (!localStorage.getItem("uxilium_users")) {
   localStorage.setItem("uxilium_users", JSON.stringify([
-    { username: "accounting@auxie.id", password: "Moscato123!", approved: true, role: "admin" }
+    { 
+      email: "accounting@auxie.id",
+      password: "Moscato123!",
+      approved: true,
+      role: "admin"
+    }
   ]));
 }
 
 function login() {
-const u = email.value.trim();
-const p = password.value.trim();
+  const u = email.value.trim();
+  const p = password.value.trim();
   const users = JSON.parse(localStorage.getItem("uxilium_users"));
-const user = users.find(x => x.email === u && x.password === p);
-
   const msg = document.getElementById("msg");
 
+  const user = users.find(x => x.email === u && x.password === p);
+
   if (!user) {
-    msg.textContent = "Username atau password salah.";
+    msg.textContent = "Email atau password salah.";
     msg.className = "msg error"; msg.style.display = "block";
     return;
   }
@@ -231,6 +203,7 @@ function animate() {
 
   requestAnimationFrame(animate);
 }
+
 animate();
 </script>
 
