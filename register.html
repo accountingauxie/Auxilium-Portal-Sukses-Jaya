@@ -45,84 +45,52 @@ button {
 .error { background:#fee2e2; color:#b91c1c; }
 .success { background:#dcfce7; color:#166534; }
 
-/* ================= FUTURISTIC AUXIE LOADING ================= */
+/* ==================== FUTURISTIC CIRCLE LOADER ==================== */
 .auxie-loader {
   position: fixed;
   inset: 0;
-  background: rgba(255,255,255,0.96);
-  backdrop-filter: blur(14px);
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(12px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 99999;
-  transition: opacity .5s ease;
+  transition: opacity .4s ease;
 }
 .auxie-loader.hide {
   opacity: 0;
   pointer-events: none;
 }
 
-/* Loading Box */
-.auxie-box {
-  background: rgba(255,255,255,0.75);
-  padding: 26px 44px;
-  border-radius: 18px;
-  display: flex;
-  gap: 12px;
-  font-size: 34px;
-  font-weight: 700;
-  letter-spacing: 6px;
-  color: #1f3cff;
-  border: 1px solid rgba(255,255,255,0.5);
-  box-shadow: 0 8px 28px rgba(0,0,0,0.15);
+/* CIRCLE SPINNER FUTURISTIC */
+.auxie-spinner {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  border: 6px solid rgba(180,200,255,0.35);
+  border-top-color: #2563eb;
+  border-right-color: #1e40af;
+  animation: spin 0.9s linear infinite, glow 1.6s ease-in-out infinite;
 }
 
-/* All Letters */
-.auxie-letter {
-  display: inline-block;
-  transition: transform .35s ease;
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-/* A moves forward */
-@keyframes moveA {
-  0%   { transform: translateX(0); }
-  20%  { transform: translateX(22px); }
-  40%  { transform: translateX(44px); }
-  60%  { transform: translateX(22px); }
-  80%  { transform: translateX(0); }
-  100% { transform: translateX(0); }
-}
-
-/* Other letters jump away when A comes near */
-@keyframes jump {
-  0%, 100% { transform: translateY(0); }
-  30% { transform: translateY(-18px); }
-  60% { transform: translateY(0); }
-}
-
-/* Apply animation loops */
-.auxie-letter.a { animation: moveA 2s infinite ease-in-out; }
-.auxie-letter.u,
-.auxie-letter.x,
-.auxie-letter.i,
-.auxie-letter.e {
-  animation: jump 2s infinite ease-in-out;
-  animation-delay: .2s;
+/* soft blue glow breathing */
+@keyframes glow {
+  0% { box-shadow: 0 0 4px rgba(37,99,235,0.3); }
+  50% { box-shadow: 0 0 18px rgba(37,99,235,0.55); }
+  100% { box-shadow: 0 0 4px rgba(37,99,235,0.3); }
 }
 </style>
 </head>
 
 <body>
 
-<!-- ========== AUXIE LOADING BOX ========== -->
+<!-- FUTURISTIC LOADING -->
 <div id="auxieLoading" class="auxie-loader">
-  <div class="auxie-box">
-    <span class="auxie-letter a">A</span>
-    <span class="auxie-letter u">U</span>
-    <span class="auxie-letter x">X</span>
-    <span class="auxie-letter i">I</span>
-    <span class="auxie-letter e">E</span>
-  </div>
+  <div class="auxie-spinner"></div>
 </div>
 
 <div class="card">
@@ -154,9 +122,9 @@ const API = "https://script.google.com/macros/s/AKfycbwfYaFzW3dQYmZIB5tgmqQjEETL
 
 const loader = document.getElementById("auxieLoading");
 
-// Auto-hide when page finished loading
+// Auto-hide loading on page complete
 window.addEventListener("load", () => {
-  setTimeout(() => loader.classList.add("hide"), 300);
+  setTimeout(() => loader.classList.add("hide"), 280);
 });
 
 function show(text, type) {
