@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>AUXILIUM Portal – CV. Sukses Jaya</title>
 
-<!-- AUTH CHECK -->
+<!-- LOGIN CHECK -->
 <script>
 (function checkAuth() {
   const raw = localStorage.getItem("uxilium_current_user");
@@ -18,6 +18,7 @@
 </script>
 
 <style>
+/* ========= BASIC ========= */
 body {
   margin: 0;
   font-family: "Inter", "Segoe UI", sans-serif;
@@ -25,199 +26,178 @@ body {
   display: flex;
 }
 
-/* ===================== ULTRA PREMIUM LOADER ===================== */
-.auxie-loader {
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(circle at center,
-    rgba(255,255,255,1) 0%,
-    rgba(245,245,255,0.95) 40%,
-    rgba(235,240,255,0.92) 100%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  backdrop-filter: blur(12px);
-  z-index: 99999;
-  transition: opacity .55s ease;
-}
-.auxie-loader.hide {
-  opacity: 0;
-  pointer-events: none;
-}
-.rings { position: relative; width: 160px; height: 160px; }
-.ring {
-  position: absolute; border-radius: 50%; border-style: solid; border-width: 6px;
-  filter:
-    drop-shadow(0 0 8px rgba(0,255,255,0.45))
-    drop-shadow(0 0 16px rgba(220,0,255,0.35))
-    drop-shadow(0 0 28px rgba(150,70,255,0.3));
-}
-.ring-lg { width: 160px; height: 160px; border-color: rgba(0,180,255,1) transparent transparent transparent; animation: spinCW 2.6s linear infinite; }
-.ring-md { width: 115px; height: 115px; top: 22px; left: 22px; border-color: rgba(210,90,255,0.95) transparent transparent transparent; animation: spinCCW 1.8s linear infinite; }
-.ring-sm { width: 70px; height: 70px; top: 45px; left: 45px; border-color: rgba(255,70,140,1) transparent transparent transparent; animation: spinCWfast 1.2s linear infinite; }
-
-@keyframes spinCW { to { transform: rotate(360deg); } }
-@keyframes spinCCW { to { transform: rotate(-360deg); } }
-@keyframes spinCWfast { to { transform: rotate(540deg); } }
-
-/* ===================== LOGOUT POPUP ===================== */
-.logout-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.35);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-
-.logout-box {
-  width: 320px;
-  background: #ffffffdd;
-  backdrop-filter: blur(12px);
-  padding: 22px;
-  border-radius: 14px;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.15);
-  animation: fadeIn 0.25s ease;
-  text-align: center;
-}
-
-.logout-box h3 { margin: 0 0 6px; font-size: 18px; color: #222; }
-.logout-box p { margin: 0 0 20px; font-size: 14px; color: #666; }
-
-.logout-actions { display: flex; gap: 12px; }
-.btn-cancel, .btn-yes {
-  flex: 1; padding: 10px; font-size: 14px; font-weight: 600;
-  border-radius: 10px; cursor: pointer; border: none;
-}
-.btn-cancel { background: #e5e7eb; }
-.btn-cancel:hover { background: #d1d5db; }
-.btn-yes { background: #ef4444; color: white; }
-.btn-yes:hover { background: #dc2626; }
-
-@keyframes fadeIn {
-  from { opacity:0; transform: scale(0.92); }
-  to { opacity:1; transform: scale(1); }
-}
-
-/* ===================== SIDEBAR ===================== */
+/* ========= SIDEBAR ========= */
 .sidebar {
-  width: 240px; background: #ffffff; border-right: 1px solid #e9e9e9;
-  height: 100vh; position: fixed; left: 0; top: 0;
-  padding: 26px 20px; padding-top: 20px; display: flex; flex-direction: column;
+  width: 240px;
+  background: #ffffff;
+  border-right: 1px solid #e9e9e9;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  padding: 26px 20px;
+  display: flex;
+  flex-direction: column;
+  z-index: 50;
 }
-.brand-full { max-width: 230px; margin-left: -8px; margin-bottom: 32px; }
+
+.brand-full {
+  max-width: 200px;
+  width: 100%;
+  margin-left: -4px;
+  margin-bottom: 30px;
+}
 
 .menu-item {
-  padding: 12px 14px; margin-bottom: 6px; border-radius: 8px;
-  font-size: 15px; cursor: pointer; transition: 0.15s ease;
+  padding: 12px 14px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  border-radius: 8px;
+  font-size: 15px;
   color: #444;
+  transition: 0.15s ease;
 }
 .menu-item:hover { background: #f1f1f1; }
-.menu-active { background: #e8f0ff !important; color: #0a4cc5; font-weight: 600; }
 
-/* ===================== HEADER (FIXED FLEX) ===================== */
+.menu-active {
+  background: #e8f0ff !important;
+  color: #0a4cc5;
+  font-weight: 600;
+}
+
+/* ========= MAIN LAYOUT ========= */
+.main {
+  margin-left: 240px; /* FOLLOW SIDEBAR WIDTH */
+  width: calc(100% - 240px);
+}
+
+/* ========= HEADER ========= */
 .header {
   background: #ffffff;
   padding: 18px 32px;
-  padding-left: 300px;
-  padding-right: 40px;
-
   border-bottom: 1px solid #ececec;
+  
   font-size: 20px;
   font-weight: 700;
   color: #1a1a1a;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 
   position: sticky;
   top: 0;
   z-index: 10;
   backdrop-filter: blur(8px);
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* LOGOUT ICON */
 .logout-btn {
   padding: 8px;
   cursor: pointer;
   border-radius: 8px;
-  transition: 0.2s ease;
+  transition: 0.2s;
 }
 .logout-btn:hover {
   background: #f0f0f0;
-  transform: scale(1.05);
 }
 
-/* ===================== CONTENT ===================== */
-.content { padding: 34px; padding-left: 300px; }
-h2 { margin-top: 0; font-size: 26px; font-weight: 700; }
+/* ========= CONTENT ========= */
+.content {
+  padding: 34px;
+}
 
+/* ========= MODULE GRID ========= */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-  gap: 26px; margin-top: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 26px;
+  margin-top: 24px;
 }
 
 .tile {
-  background: white; padding: 26px; border-radius: 16px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-  cursor: pointer; transition: 0.25s ease;
-  min-height: 180px; display: flex; flex-direction: column; justify-content: flex-end;
+  background: white;
+  padding: 26px;
+  border-radius: 16px;
+  box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: 0.25s ease;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
   border: 1px solid #efefef;
 }
+.tile:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 10px 26px rgba(0, 0, 0, 0.14);
+}
 
-.tile:hover { transform: translateY(-5px); box-shadow: 0 10px 28px rgba(0,0,0,0.12); }
-.tile-disabled { background:#f1f1f1; opacity:0.6; cursor:not-allowed; transform:none; }
+.tile-disabled {
+  background: #f1f1f1;
+  opacity: 0.5;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
 
-.tile-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
-.tile-desc { font-size: 14px; color: #6f6f6f; }
 .tile-icon { margin-bottom: 18px; }
+.tile-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+.tile-desc { font-size: 14px; color: #6f6f6f; line-height: 1.4; }
 
+/* ========= LOGOUT POPUP ========= */
+#logout-popup {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: none;
+  background: rgba(0,0,0,0.4);
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.popup-box {
+  background: white;
+  padding: 28px;
+  border-radius: 14px;
+  text-align: center;
+  width: 300px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+.popup-box button {
+  margin-top: 18px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.btn-yes { background: #dc2626; color: white; }
+.btn-cancel { background: #e5e7eb; color: #111; margin-right: 8px; }
 </style>
 </head>
 
 <body>
 
-<!-- LOADER -->
-<div id="auxieLoading" class="auxie-loader">
-  <div class="rings">
-    <div class="ring ring-lg"></div>
-    <div class="ring ring-md"></div>
-    <div class="ring ring-sm"></div>
-  </div>
-</div>
-
-<!-- LOGOUT POPUP -->
-<div id="logoutPopup" class="logout-overlay">
-  <div class="logout-box">
-    <h3>Logout?</h3>
-    <p>Apakah Anda yakin ingin keluar dari portal?</p>
-
-    <div class="logout-actions">
-      <button class="btn-cancel" onclick="closeLogoutDialog()">Cancel</button>
-      <button class="btn-yes" onclick="logout()">Logout</button>
-    </div>
-  </div>
-</div>
-
+<!-- SIDEBAR -->
 <div class="sidebar">
-  <img class="brand-full" src="assets/auxilium_logo_pure_white_bg.png" />
+  <img class="brand-full" src="assets/auxilium_logo_pure_white_bg.png" alt="AUXILIUM Logo" />
 
   <div class="menu-item menu-active" onclick="showPage('home', this)">Home</div>
   <div class="menu-item" onclick="showPage('modules', this)">Modules</div>
   <div class="menu-item" onclick="alert('Settings coming soon')">Settings</div>
 </div>
 
+<!-- MAIN CONTENT -->
 <div class="main">
+
+  <!-- HEADER -->
   <div class="header">
     <span>CV. SUKSES JAYA</span>
 
-    <!-- LOGOUT ICON -->
-    <div class="logout-btn" onclick="openLogoutDialog()">
+    <div class="logout-btn" onclick="openLogoutPopup()">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-           stroke="#444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        stroke="#444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
         <polyline points="16 17 21 12 16 7"/>
         <line x1="21" y1="12" x2="9" y2="12"/>
@@ -225,61 +205,50 @@ h2 { margin-top: 0; font-size: 26px; font-weight: 700; }
     </div>
   </div>
 
+  <!-- HOME PAGE -->
   <div class="content" id="home-page">
     <h2>Welcome Back 👋</h2>
-    <p style="font-size:15px; color:#666;">Silakan pilih modul di menu untuk mulai menggunakan portal.</p>
+    <p style="font-size:15px; color:#666;">
+      Silakan pilih modul di menu untuk mulai menggunakan portal.
+    </p>
   </div>
 
+  <!-- MODULES PAGE -->
   <div class="content" id="modules-page" style="display:none;">
     <h2>Modules</h2>
 
     <div class="grid">
 
-      <!-- RECEIVING MODULE -->
+      <!-- RECEIVING -->
       <div class="tile" id="tile-receiving" onclick="window.location.href='receiving/'">
         <div class="tile-icon">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
-               stroke="#4b4b4b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2">
             <path d="M21 16V8L12 3 3 8v8l9 5 9-5z"></path>
-            <polyline points="3 8 12 13 21 8"></polyline>
-            <line x1="12" y1="13" x2="12" y2="21"></line>
+            <line x1="12" y1="22" x2="12" y2="12"></line>
           </svg>
         </div>
         <div class="tile-title">Receiving PO Entry</div>
         <div class="tile-desc">Penerimaan material berdasarkan Purchase Order</div>
       </div>
 
-      <!-- PRODUCTION ENTRY -->
+      <!-- PRODUCTION -->
       <div class="tile" id="tile-finished-goods" onclick="window.location.href='production/'">
         <div class="tile-icon">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
-               stroke="#4b4b4b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="48" height="48" fill="none" stroke="#333" stroke-width="2">
             <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 
-            2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 
-            1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 
-            1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 
-            2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 
-            15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 
-            1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 
-            2 0 1 1 2.83-2.83">
-            </path>
-          </svg>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83"></path>
+        </svg>
         </div>
         <div class="tile-title">Production Entry</div>
         <div class="tile-desc">Input hasil produksi per mesin & KPC</div>
       </div>
 
       <!-- ORDER FORM -->
-      <div class="tile" id="tile-order-form">
+      <div class="tile tile-disabled" id="tile-order-form">
         <div class="tile-icon">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
-               stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 
-            2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
+          <svg width="48" height="48" fill="none" stroke="#999" stroke-width="2">
+            <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
             <line x1="14" y1="2" x2="14" y2="8"></line>
-            <line x1="9" y1="13" x2="15" y2="13"></line>
-            <line x1="9" y1="17" x2="15" y2="17"></line>
           </svg>
         </div>
         <div class="tile-title">Order Form</div>
@@ -290,32 +259,29 @@ h2 { margin-top: 0; font-size: 26px; font-weight: 700; }
   </div>
 </div>
 
+<!-- POPUP LOGOUT -->
+<div id="logout-popup">
+  <div class="popup-box">
+    <h3>Logout?</h3>
+    <p>Apakah Anda yakin ingin keluar?</p>
+    <button class="btn-cancel" onclick="closeLogoutPopup()">Cancel</button>
+    <button class="btn-yes" onclick="logout()">Logout</button>
+  </div>
+</div>
+
 <script>
-const loader = document.getElementById("auxieLoading");
-
-// Hide loader on load
-window.addEventListener("load", () => {
-  setTimeout(() => loader.classList.add("hide"), 350);
-});
-
+/* ----- PAGE SWITCHING ----- */
 function showPage(page, element) {
-  loader.classList.remove("hide");
+  document.getElementById("home-page").style.display =
+    page === "home" ? "block" : "none";
+  document.getElementById("modules-page").style.display =
+    page === "modules" ? "block" : "none";
 
-  setTimeout(() => {
-    document.getElementById("home-page").style.display =
-      page === "home" ? "block" : "none";
-
-    document.getElementById("modules-page").style.display =
-      page === "modules" ? "block" : "none";
-
-    document.querySelectorAll(".menu-item").forEach(i => i.classList.remove("menu-active"));
-    element.classList.add("menu-active");
-
-    setTimeout(() => loader.classList.add("hide"), 180);
-  }, 150);
+  document.querySelectorAll(".menu-item").forEach(i => i.classList.remove("menu-active"));
+  element.classList.add("menu-active");
 }
 
-/* ========== ACCESS CONTROL ========== */
+/* ----- ACCESS CONTROL ----- */
 (function applyAccess() {
   const raw = localStorage.getItem("uxilium_current_user");
   if (!raw) return;
@@ -326,8 +292,14 @@ function showPage(page, element) {
   function setTile(id, allowed) {
     const tile = document.getElementById(id);
     if (!tile) return;
-    tile.classList.toggle("tile-disabled", !allowed);
-    tile.style.pointerEvents = allowed ? "auto" : "none";
+
+    if (allowed) {
+      tile.classList.remove("tile-disabled");
+      tile.style.pointerEvents = "auto";
+    } else {
+      tile.classList.add("tile-disabled");
+      tile.style.pointerEvents = "none";
+    }
   }
 
   setTile("tile-receiving", !!user.access.receiving);
@@ -335,18 +307,17 @@ function showPage(page, element) {
   setTile("tile-order-form", !!user.access.order_form);
 })();
 
-/* ========== LOGOUT POPUP ========== */
-function openLogoutDialog() {
-  document.getElementById("logoutPopup").style.display = "flex";
+/* ----- LOGOUT POPUP ----- */
+function openLogoutPopup() {
+  document.getElementById("logout-popup").style.display = "flex";
 }
-function closeLogoutDialog() {
-  document.getElementById("logoutPopup").style.display = "none";
+function closeLogoutPopup() {
+  document.getElementById("logout-popup").style.display = "none";
 }
 function logout() {
   localStorage.removeItem("uxilium_current_user");
   window.location.href = "login.html";
 }
-
 </script>
 
 </body>
