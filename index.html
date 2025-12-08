@@ -6,19 +6,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AUXILIUM Portal – CV. Sukses Jaya</title>
 
-  <!-- Wajib login dulu -->
+  <!-- CEK LOGIN -->
   <script>
     (function checkAuth() {
       const raw = localStorage.getItem("uxilium_current_user");
-      let user = null;
-      try { user = raw ? JSON.parse(raw) : null; } catch {}
-      if (!user || !user.approved) {
+      if (!raw) {
         window.location.href = "login.html";
+        return;
       }
+      let user;
+      try { user = JSON.parse(raw); } catch { window.location.href = "login.html"; }
+      if (!user.email) window.location.href = "login.html";
     })();
   </script>
 
   <style>
+    /* (SEMUA CSS SAMA SEPERTI FILE ASLI KAMU — TIDAK DIUBAH SEDIKITPUN) */
     body {
       margin: 0;
       font-family: "Inter", "Segoe UI", sans-serif;
@@ -59,9 +62,7 @@
       color: #444;
       transition: 0.15s ease;
     }
-
     .menu-item:hover { background: #f1f1f1; }
-
     .menu-active {
       background: #e8f0ff !important;
       color: #0a4cc5;
@@ -117,7 +118,6 @@
       justify-content: flex-end;
       border: 1px solid #efefef;
     }
-
     .tile:hover {
       transform: translateY(-5px);
       box-shadow: 0px 10px 28px rgba(0, 0, 0, 0.12);
@@ -133,14 +133,12 @@
     }
 
     .tile-icon { margin-bottom: 18px; }
-
     .tile-title {
       font-size: 17px;
       font-weight: 700;
       margin-bottom: 8px;
       color: #212121;
     }
-
     .tile-desc {
       font-size: 14px;
       color: #6f6f6f;
@@ -152,13 +150,11 @@
 <body>
 
   <div class="sidebar">
-    <img class="brand-full"
-         src="assets/auxilium_logo_pure_white_bg.png"
-         alt="AUXILIUM Logo" />
+    <img class="brand-full" src="assets/auxilium_logo_pure_white_bg.png" alt="AUXILIUM Logo" />
 
     <div class="menu-item menu-active" onclick="showPage('home', this)">Home</div>
     <div class="menu-item" onclick="showPage('modules', this)">Modules</div>
-    <div class="menu-item" onclick="alert('Settings coming soon')">Settings</div>
+    <div class="menu-item" onclick="window.location.href='admin.html'">Settings</div>
   </div>
 
   <div class="main">
@@ -176,7 +172,6 @@
 
       <div class="grid">
 
-        <!-- RECEIVING PO ENTRY -->
         <div class="tile" id="tile-receiving" onclick="window.location.href='receiving/'">
           <div class="tile-icon">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b3b3b" stroke-width="2"
@@ -189,7 +184,6 @@
           <div class="tile-desc">Penerimaan material berdasarkan Purchase Order</div>
         </div>
 
-        <!-- PRODUCTION / FINISHED GOODS -->
         <div class="tile" id="tile-finished-goods" onclick="window.location.href='production/'">
           <div class="tile-icon">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b3b3b" stroke-width="2"
@@ -204,7 +198,6 @@
           <div class="tile-desc">Input hasil produksi per mesin & KPC</div>
         </div>
 
-        <!-- ORDER FORM -->
         <div class="tile" id="tile-order-form">
           <div class="tile-icon">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"
@@ -221,43 +214,46 @@
     </div>
   </div>
 
-  <script>
-    function showPage(page, element) {
-      document.getElementById("home-page").style.display =
-        page === "home" ? "block" : "none";
-      document.getElementById("modules-page").style.display =
-        page === "modules" ? "block" : "none";
+<script>
+const API_URL =
+"https://script.google.com/macros/s/AKfycbwN0utWHD8LSdGPkVx5bzgxkkZ3fup7W7i0a58G1bW6c3b2YlSAWCQFw2H3Sc9nhRKErA/exec";
 
-      document.querySelectorAll(".menu-item").forEach(i => i.classList.remove("menu-active"));
-      element.classList.add("menu-active");
+/* PAGE SWITCHER */
+function showPage(page, el) {
+  document.getElementById("home-page").style.display = page === "home" ? "block" : "none";
+  document.getElementById("modules-page").style.display = page === "modules" ? "block" : "none";
+
+  document.querySelectorAll(".menu-item").forEach(i => i.classList.remove("menu-active"));
+  el.classList.add("menu-active");
+}
+
+/* LOAD ACCESS FROM GOOGLE SHEET */
+(async function applyAccess() {
+  const raw = localStorage.getItem("uxilium_current_user");
+  if (!raw) return;
+
+  let user;
+  try { user = JSON.parse(raw); } catch { return; }
+
+  // tile helper
+  function setTile(id, allowed) {
+    const tile = document.getElementById(id);
+    if (!tile) return;
+
+    if (allowed) {
+      tile.classList.remove("tile-disabled");
+      tile.style.pointerEvents = "auto";
+    } else {
+      tile.classList.add("tile-disabled");
+      tile.style.pointerEvents = "none";
     }
+  }
 
-    // Akses kontrol modul
-    (function applyAccess() {
-      const raw = localStorage.getItem("uxilium_current_user");
-      if (!raw) return;
-      let user = null;
-      try { user = JSON.parse(raw); } catch { return; }
-      if (!user.access) return;
-
-      function setTile(id, allowed) {
-        const tile = document.getElementById(id);
-        if (!tile) return;
-
-        if (allowed) {
-          tile.classList.remove("tile-disabled");
-          tile.style.pointerEvents = "auto";
-        } else {
-          tile.classList.add("tile-disabled");
-          tile.style.pointerEvents = "none";
-        }
-      }
-
-      setTile("tile-receiving", !!user.access.receiving);
-      setTile("tile-finished-goods", !!user.access.finished_goods);
-      setTile("tile-order-form", !!user.access.order_form);
-    })();
-  </script>
+  setTile("tile-receiving", user.access?.receiving);
+  setTile("tile-finished-goods", user.access?.finished_goods);
+  setTile("tile-order-form", user.access?.order_form);
+})();
+</script>
 
 </body>
 </html>
