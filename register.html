@@ -78,8 +78,8 @@ button {
 </div>
 
 <script>
-// =============== CONFIG ==================
-const API = "https://script.google.com/macros/s/AKfycbxXaqNP-5Tygt3hlVvEFkiK8sUqaN3sEZ6Fdo3kJjTUgG1VyssA_jA8pr2WRNsnwb_t3w/exec";
+// ================= CONFIG ==================
+const API = "https://script.google.com/macros/s/AKfycbyP6OZB_39p6D1lEdZ_2JSPFBOabi24nBaWFdyNcvhprKXd2Y9XzYflnS9zQDzG2FphDA/exec";
 
 function show(text, type) {
   const msg = document.getElementById("msg");
@@ -88,7 +88,7 @@ function show(text, type) {
   msg.style.display = "block";
 }
 
-// =============== REGISTER ==================
+// ================= REGISTER ==================
 async function registerUser() {
   const u = email.value.trim();
   const p = password.value.trim();
@@ -104,16 +104,26 @@ async function registerUser() {
   }
 
   try {
+    // SAFEST WAY: FormData → NO PRE-FLIGHT, NO CORS ERROR
+    const form = new FormData();
+    form.append("email", u);
+    form.append("password", p);
+
     const res = await fetch(API, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: u,
-        password: p
-      })
+      body: form
     });
 
-    const json = await res.json();
+    const responseText = await res.text();
+    let json;
+
+    try {
+      json = JSON.parse(responseText);
+    } catch {
+      console.error("Invalid JSON:", responseText);
+      show("Server tidak mengirim format JSON yang valid.", "error");
+      return;
+    }
 
     if (!json.ok) {
       show(json.error || "Registrasi gagal.", "error");
