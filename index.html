@@ -2,256 +2,260 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AUXILIUM Portal – CV. Sukses Jaya</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AUXILIUM Portal – CV. Sukses Jaya</title>
 
-  <!-- CEK LOGIN -->
-  <script>
-    (function checkAuth() {
-      const raw = localStorage.getItem("uxilium_current_user");
-      if (!raw) {
-        window.location.href = "login.html";
-        return;
-      }
-      let user;
-      try { user = JSON.parse(raw); } catch { window.location.href = "login.html"; }
-      if (!user.email) window.location.href = "login.html";
-    })();
-  </script>
+<!-- Wajib login dulu -->
+<script>
+(function checkAuth() {
+const raw = localStorage.getItem("uxilium_current_user");
+let user = null;
+try { user = raw ? JSON.parse(raw) : null; } catch {}
+if (!user || !user.approved) {
+window.location.href = "login.html";
+}
+})();
+</script>
 
-  <style>
-    /* (SEMUA CSS SAMA SEPERTI FILE ASLI KAMU — TIDAK DIUBAH SEDIKITPUN) */
-    body {
-      margin: 0;
-      font-family: "Inter", "Segoe UI", sans-serif;
-      background: #f5f6fa;
-      display: flex;
-    }
+<style>
+body {
+margin: 0;
+font-family: "Inter", "Segoe UI", sans-serif;
+background: #f5f6fa;
+display: flex;
+}
 
-    .sidebar {
-      width: 240px;
-      background: #ffffff;
-      border-right: 1px solid #e9e9e9;
-      height: 100vh;
-      position: fixed;
-      left: 0;
-      top: 0;
-      padding: 26px 20px;
-      display: flex;
-      flex-direction: column;
-      z-index: 50;
-      padding-top: 20px;
-    }
+.sidebar {
+width: 240px;
+background: #ffffff;
+border-right: 1px solid #e9e9e9;
+height: 100vh;
+position: fixed;
+left: 0;
+top: 0;
+padding: 26px 20px;
+display: flex;
+flex-direction: column;
+z-index: 50;
+padding-top: 20px;
+}
 
-    .brand-full {
-      max-width: 230px;
-      width: 100%;
-      height: auto;
-      display: block;
-      margin-left: -8px;
-      margin-bottom: 32px;
-    }
+.brand-full {
+max-width: 230px;
+width: 100%;
+height: auto;
+display: block;
+margin-left: -8px;
+margin-bottom: 32px;
+}
 
-    .menu-item {
-      padding: 12px 14px;
-      margin-bottom: 6px;
-      cursor: pointer;
-      border-radius: 8px;
-      font-size: 15px;
-      color: #444;
-      transition: 0.15s ease;
-    }
-    .menu-item:hover { background: #f1f1f1; }
-    .menu-active {
-      background: #e8f0ff !important;
-      color: #0a4cc5;
-      font-weight: 600;
-    }
+.menu-item {
+padding: 12px 14px;
+margin-bottom: 6px;
+cursor: pointer;
+border-radius: 8px;
+font-size: 15px;
+color: #444;
+transition: 0.15s ease;
+}
 
-    .main { width: 100%; margin-left: 0; }
+.menu-item:hover { background: #f1f1f1; }
 
-    .header {
-      background: #ffffff;
-      padding: 18px 32px;
-      padding-left: 300px;
-      border-bottom: 1px solid #ececec;
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      color: #1a1a1a;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      backdrop-filter: blur(8px);
-    }
+.menu-active {
+background: #e8f0ff !important;
+color: #0a4cc5;
+font-weight: 600;
+}
 
-    .content {
-      padding: 34px;
-      padding-left: 300px;
-    }
+.main { width: 100%; margin-left: 0; }
 
-    .content h2 {
-      margin-top: 0;
-      font-size: 26px;
-      font-weight: 700;
-      color: #2b2b2b;
-    }
+.header {
+background: #ffffff;
+padding: 18px 32px;
+padding-left: 300px;
+border-bottom: 1px solid #ececec;
+font-size: 20px;
+font-weight: 700;
+letter-spacing: 0.02em;
+color: #1a1a1a;
+position: sticky;
+top: 0;
+z-index: 10;
+backdrop-filter: blur(8px);
+}
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-      gap: 26px;
-      margin-top: 24px;
-    }
+.content {
+padding: 34px;
+padding-left: 300px;
+}
 
-    .tile {
-      background: white;
-      padding: 26px;
-      border-radius: 16px;
-      box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.08);
-      cursor: pointer;
-      transition: 0.25s ease;
-      min-height: 180px;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      border: 1px solid #efefef;
-    }
-    .tile:hover {
-      transform: translateY(-5px);
-      box-shadow: 0px 10px 28px rgba(0, 0, 0, 0.12);
-    }
+.content h2 {
+margin-top: 0;
+font-size: 26px;
+font-weight: 700;
+color: #2b2b2b;
+}
 
-    .tile-disabled {
-      background: #f1f1f1;
-      opacity: 0.6;
-      cursor: not-allowed;
-      border: 1px solid #e0e0e0;
-      box-shadow: none;
-      transform: none;
-    }
+.grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+gap: 26px;
+margin-top: 24px;
+}
 
-    .tile-icon { margin-bottom: 18px; }
-    .tile-title {
-      font-size: 17px;
-      font-weight: 700;
-      margin-bottom: 8px;
-      color: #212121;
-    }
-    .tile-desc {
-      font-size: 14px;
-      color: #6f6f6f;
-      line-height: 1.4;
-    }
-  </style>
+.tile {
+background: white;
+padding: 26px;
+border-radius: 16px;
+box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.08);
+cursor: pointer;
+transition: 0.25s ease;
+min-height: 180px;
+display: flex;
+flex-direction: column;
+justify-content: flex-end;
+border: 1px solid #efefef;
+}
+
+.tile:hover {
+transform: translateY(-5px);
+box-shadow: 0px 10px 28px rgba(0, 0, 0, 0.12);
+}
+
+.tile-disabled {
+background: #f1f1f1;
+opacity: 0.6;
+cursor: not-allowed;
+border: 1px solid #e0e0e0;
+box-shadow: none;
+transform: none;
+}
+
+.tile-icon { margin-bottom: 18px; }
+
+.tile-title {
+font-size: 17px;
+font-weight: 700;
+margin-bottom: 8px;
+color: #212121;
+}
+
+.tile-desc {
+font-size: 14px;
+color: #6f6f6f;
+line-height: 1.4;
+}
+</style>
 </head>
 
 <body>
 
-  <div class="sidebar">
-    <img class="brand-full" src="assets/auxilium_logo_pure_white_bg.png" alt="AUXILIUM Logo" />
+<div class="sidebar">
+<img class="brand-full"
+src="assets/auxilium_logo_pure_white_bg.png"
+alt="AUXILIUM Logo" />
 
-    <div class="menu-item menu-active" onclick="showPage('home', this)">Home</div>
-    <div class="menu-item" onclick="showPage('modules', this)">Modules</div>
-    <div class="menu-item" onclick="window.location.href='admin.html'">Settings</div>
-  </div>
+<div class="menu-item menu-active" onclick="showPage('home', this)">Home</div>
+<div class="menu-item" onclick="showPage('modules', this)">Modules</div>
+<div class="menu-item" onclick="alert('Settings coming soon')">Settings</div>
+</div>
 
-  <div class="main">
-    <div class="header">CV. SUKSES JAYA</div>
+<div class="main">
+<div class="header">CV. SUKSES JAYA</div>
 
-    <div class="content" id="home-page">
-      <h2>Welcome Back 👋</h2>
-      <p style="font-size:15px; color:#666;">
-        Silakan pilih modul di menu untuk mulai menggunakan portal.
-      </p>
-    </div>
+<div class="content" id="home-page">
+<h2>Welcome Back 👋</h2>
+<p style="font-size:15px; color:#666;">
+Silakan pilih modul di menu untuk mulai menggunakan portal.
+</p>
+</div>
 
-    <div class="content" id="modules-page" style="display:none;">
-      <h2>Modules</h2>
+<div class="content" id="modules-page" style="display:none;">
+<h2>Modules</h2>
 
-      <div class="grid">
+<div class="grid">
 
-        <div class="tile" id="tile-receiving" onclick="window.location.href='receiving/'">
-          <div class="tile-icon">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b3b3b" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 16V8L12 3 3 8v8l9 5 9-5z"></path>
-              <line x1="12" y1="22" x2="12" y2="12"></line>
-            </svg>
-          </div>
-          <div class="tile-title">Receiving PO Entry</div>
-          <div class="tile-desc">Penerimaan material berdasarkan Purchase Order</div>
-        </div>
+<!-- RECEIVING PO ENTRY -->
+<div class="tile" id="tile-receiving" onclick="window.location.href='receiving/'">
+<div class="tile-icon">
+<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b3b3b" stroke-width="2"
+stroke-linecap="round" stroke-linejoin="round">
+<path d="M21 16V8L12 3 3 8v8l9 5 9-5z"></path>
+<line x1="12" y1="22" x2="12" y2="12"></line>
+</svg>
+</div>
+<div class="tile-title">Receiving PO Entry</div>
+<div class="tile-desc">Penerimaan material berdasarkan Purchase Order</div>
+</div>
 
-        <div class="tile" id="tile-finished-goods" onclick="window.location.href='production/'">
-          <div class="tile-icon">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b3b3b" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="3"></circle>
-              <path
-                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83">
-              </path>
-            </svg>
-          </div>
-          <div class="tile-title">Production Entry</div>
-          <div class="tile-desc">Input hasil produksi per mesin & KPC</div>
-        </div>
+<!-- PRODUCTION / FINISHED GOODS -->
+<div class="tile" id="tile-finished-goods" onclick="window.location.href='production/'">
+<div class="tile-icon">
+<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b3b3b" stroke-width="2"
+stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="3"></circle>
+<path
+d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83">
+</path>
+</svg>
+</div>
+<div class="tile-title">Production Entry</div>
+<div class="tile-desc">Input hasil produksi per mesin & KPC</div>
+</div>
 
-        <div class="tile" id="tile-order-form">
-          <div class="tile-icon">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
-              <line x1="14" y1="2" x2="14" y2="8"></line>
-            </svg>
-          </div>
-          <div class="tile-title">Order Form</div>
-          <div class="tile-desc">Coming Soon</div>
-        </div>
+<!-- ORDER FORM -->
+<div class="tile" id="tile-order-form">
+<div class="tile-icon">
+<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"
+stroke-linecap="round" stroke-linejoin="round">
+<path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
+<line x1="14" y1="2" x2="14" y2="8"></line>
+</svg>
+</div>
+<div class="tile-title">Order Form</div>
+<div class="tile-desc">Coming Soon</div>
+</div>
 
-      </div>
-    </div>
-  </div>
+</div>
+</div>
+</div>
 
 <script>
-const API_URL =
-"https://script.google.com/macros/s/AKfycbwN0utWHD8LSdGPkVx5bzgxkkZ3fup7W7i0a58G1bW6c3b2YlSAWCQFw2H3Sc9nhRKErA/exec";
+function showPage(page, element) {
+document.getElementById("home-page").style.display =
+page === "home" ? "block" : "none";
+document.getElementById("modules-page").style.display =
+page === "modules" ? "block" : "none";
 
-/* PAGE SWITCHER */
-function showPage(page, el) {
-  document.getElementById("home-page").style.display = page === "home" ? "block" : "none";
-  document.getElementById("modules-page").style.display = page === "modules" ? "block" : "none";
-
-  document.querySelectorAll(".menu-item").forEach(i => i.classList.remove("menu-active"));
-  el.classList.add("menu-active");
+document.querySelectorAll(".menu-item").forEach(i => i.classList.remove("menu-active"));
+element.classList.add("menu-active");
 }
 
-/* LOAD ACCESS FROM GOOGLE SHEET */
-(async function applyAccess() {
-  const raw = localStorage.getItem("uxilium_current_user");
-  if (!raw) return;
+// Akses kontrol modul
+(function applyAccess() {
+const raw = localStorage.getItem("uxilium_current_user");
+if (!raw) return;
+let user = null;
+try { user = JSON.parse(raw); } catch { return; }
+if (!user.access) return;
 
-  let user;
-  try { user = JSON.parse(raw); } catch { return; }
+function setTile(id, allowed) {
+const tile = document.getElementById(id);
+if (!tile) return;
 
-  // tile helper
-  function setTile(id, allowed) {
-    const tile = document.getElementById(id);
-    if (!tile) return;
+if (allowed) {
+tile.classList.remove("tile-disabled");
+tile.style.pointerEvents = "auto";
+} else {
+tile.classList.add("tile-disabled");
+tile.style.pointerEvents = "none";
+}
+}
 
-    if (allowed) {
-      tile.classList.remove("tile-disabled");
-      tile.style.pointerEvents = "auto";
-    } else {
-      tile.classList.add("tile-disabled");
-      tile.style.pointerEvents = "none";
-    }
-  }
-
-  setTile("tile-receiving", user.access?.receiving);
-  setTile("tile-finished-goods", user.access?.finished_goods);
-  setTile("tile-order-form", user.access?.order_form);
+setTile("tile-receiving", !!user.access.receiving);
+setTile("tile-finished-goods", !!user.access.finished_goods);
+setTile("tile-order-form", !!user.access.order_form);
 })();
 </script>
 
