@@ -153,6 +153,7 @@
       line-height: 1.4;
     }
 
+    /* Modal */
     .modal {
       display: none;
       position: fixed;
@@ -196,88 +197,13 @@
     .btn-cancel {
       background-color: #ddd;
     }
-
-    .auxie-loader {
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(circle at center, rgba(255, 255, 255, 1) 0%, rgba(245, 245, 255, 0.92) 40%, rgba(235, 240, 255, 0.88) 100%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      backdrop-filter: blur(14px);
-      z-index: 9999;
-      transition: opacity 0.55s ease;
-    }
-
-    .auxie-loader.hide {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .rings {
-      position: relative;
-      width: 160px;
-      height: 160px;
-    }
-
-    .ring {
-      position: absolute;
-      border-radius: 50%;
-      border-style: solid;
-      border-width: 6px;
-      filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.45)) drop-shadow(0 0 16px rgba(220, 0, 255, 0.35)) drop-shadow(0 0 28px rgba(150, 70, 255, 0.3));
-    }
-
-    .ring-lg {
-      width: 160px;
-      height: 160px;
-      border-color: rgba(0, 180, 255, 1) transparent transparent transparent;
-      animation: spinCW 2.6s linear infinite;
-    }
-
-    .ring-md {
-      width: 115px;
-      height: 115px;
-      top: 22px;
-      left: 22px;
-      border-color: rgba(210, 90, 255, 0.95) transparent transparent transparent;
-      animation: spinCCW 1.8s linear infinite;
-    }
-
-    .ring-sm {
-      width: 70px;
-      height: 70px;
-      top: 45px;
-      left: 45px;
-      border-color: rgba(255, 70, 140, 1) transparent transparent transparent;
-      animation: spinCWfast 1.2s linear infinite;
-    }
-
-    @keyframes spinCW {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    @keyframes spinCCW {
-      to {
-        transform: rotate(-360deg);
-      }
-    }
-
-    @keyframes spinCWfast {
-      to {
-        transform: rotate(540deg);
-      }
-    }
   </style>
+
   <script>
     (function checkAuth() {
       const raw = localStorage.getItem("uxilium_current_user");
       let user = null;
-      try {
-        user = raw ? JSON.parse(raw) : null;
-      } catch {}
+      try { user = raw ? JSON.parse(raw) : null; } catch { }
       if (!user || !user.approved) {
         window.location.href = "login.html";
       }
@@ -286,44 +212,130 @@
 </head>
 
 <body>
-  <!-- Loader -->
-  <div id="auxieLoading" class="auxie-loader">
-    <div class="rings">
-      <div class="ring ring-lg"></div>
-      <div class="ring ring-md"></div>
-      <div class="ring ring-sm"></div>
+  <div class="sidebar">
+    <img class="brand-full" src="assets/auxilium_logo_pure_white_bg.png" alt="AUXILIUM Logo" />
+
+    <div class="menu-item menu-active" onclick="showPage('home', this)">Home</div>
+    <div class="menu-item" onclick="showPage('modules', this)">Modules</div>
+    <div class="menu-item" onclick="alert('Settings coming soon')">Settings</div>
+  </div>
+
+  <div class="main">
+    <div class="header">
+      CV. SUKSES JAYA
+      <div class="logout-btn" onclick="showLogoutModal()">
+        <i data-feather="log-out"></i>
+      </div>
+    </div>
+
+    <div class="content" id="home-page">
+      <h2>Welcome Back 👋</h2>
+      <p style="font-size:15px; color:#666;">Silakan pilih modul di menu untuk mulai menggunakan portal.</p>
+    </div>
+
+    <div class="content" id="modules-page" style="display:none;">
+      <h2>Modules</h2>
+      <div class="grid">
+        <div class="tile" id="tile-receiving" onclick="window.location.href='receiving/'">
+          <div class="tile-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b3b3b" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 16V8L12 3 3 8v8l9 5 9-5z"></path>
+              <line x1="12" y1="22" x2="12" y2="12"></line>
+            </svg>
+          </div>
+          <div class="tile-title">Receiving PO Entry</div>
+          <div class="tile-desc">Penerimaan material berdasarkan Purchase Order</div>
+        </div>
+
+        <div class="tile" id="tile-finished-goods" onclick="window.location.href='production/'">
+          <div class="tile-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b3b3b" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83">
+              </path>
+            </svg>
+          </div>
+          <div class="tile-title">Production Entry</div>
+          <div class="tile-desc">Input hasil produksi per mesin & KPC</div>
+        </div>
+
+        <div class="tile" id="tile-order-form">
+          <div class="tile-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
+              <line x1="14" y1="2" x2="14" y2="8"></line>
+            </svg>
+          </div>
+          <div class="tile-title">Order Form</div>
+          <div class="tile-desc">Coming Soon</div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- SISIPKAN DI AKHIR BODY -->
-  <script>
-    const auxieLoader = document.getElementById("auxieLoading");
-    window.addEventListener("load", () => {
-      setTimeout(() => auxieLoader.classList.add("hide"), 500);
-    });
+  <!-- Logout Modal -->
+  <div id="logoutModal" class="modal">
+    <div class="modal-content">
+      <p>Are you sure you want to log out?</p>
+      <div class="modal-buttons">
+        <button class="btn btn-yes" onclick="logout()">Yes</button>
+        <button class="btn btn-cancel" onclick="closeLogoutModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
 
-    function withLoader(action) {
-      auxieLoader.classList.remove("hide");
-      setTimeout(() => action(), 500);
+  <script src="https://unpkg.com/feather-icons"></script>
+  <script>
+    feather.replace();
+
+    function showPage(page, element) {
+      document.getElementById("home-page").style.display = page === "home" ? "block" : "none";
+      document.getElementById("modules-page").style.display = page === "modules" ? "block" : "none";
+      document.querySelectorAll(".menu-item").forEach(i => i.classList.remove("menu-active"));
+      element.classList.add("menu-active");
     }
 
-    const originalShowPage = showPage;
-    showPage = function (page, element) {
-      withLoader(() => {
-        originalShowPage(page, element);
-        auxieLoader.classList.add("hide");
-      });
-    };
+    function showLogoutModal() {
+      document.getElementById("logoutModal").style.display = "block";
+    }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      ["tile-receiving", "tile-finished-goods"].forEach(id => {
-        const el = document.getElementById(id);
-        if (el && el.hasAttribute("onclick")) {
-          const href = el.getAttribute("onclick").match(/'(.*?)'/)[1];
-          el.onclick = () => withLoader(() => window.location.href = href);
+    function closeLogoutModal() {
+      document.getElementById("logoutModal").style.display = "none";
+    }
+
+    function logout() {
+      localStorage.removeItem("uxilium_current_user");
+      window.location.href = "login.html";
+    }
+
+    (function applyAccess() {
+      const raw = localStorage.getItem("uxilium_current_user");
+      if (!raw) return;
+      let user = null;
+      try { user = JSON.parse(raw); } catch { return; }
+      if (!user.access) return;
+
+      function setTile(id, allowed) {
+        const tile = document.getElementById(id);
+        if (!tile) return;
+
+        if (allowed) {
+          tile.classList.remove("tile-disabled");
+          tile.style.pointerEvents = "auto";
+        } else {
+          tile.classList.add("tile-disabled");
+          tile.style.pointerEvents = "none";
         }
-      });
-    });
+      }
+
+      setTile("tile-receiving", !!user.access.receiving);
+      setTile("tile-finished-goods", !!user.access.finished_goods);
+      setTile("tile-order-form", !!user.access.order_form);
+    })();
   </script>
 </body>
 </html>
