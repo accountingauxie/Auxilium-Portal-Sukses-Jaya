@@ -18,7 +18,7 @@
 </script>
 
 <style>
-/* BASICS */
+/* BASIC */
 body {
   margin: 0;
   font-family: "Inter", sans-serif;
@@ -33,14 +33,14 @@ body {
   border-right: 1px solid #e9e9e9;
   height: 100vh;
   position: fixed;
-  left: 0;
-  top: 0;
+  left: 0; top: 0;
   padding: 20px;
   display: flex;
   flex-direction: column;
-  transition: width 0.25s ease;
+  transition: width .25s ease;
   z-index: 50;
 }
+
 .sidebar.collapsed {
   width: 70px;
 }
@@ -55,13 +55,16 @@ body {
   align-items: center;
   justify-content: center;
   margin-bottom: 18px;
-  transition: 0.2s ease;
+  transition: .2s ease;
 }
-.toggle-btn:hover { background: #f1f1f1; }
+.toggle-btn:hover {
+  background: #f1f1f1;
+}
 
 /* LOGO */
 .brand-full {
   width: 160px;
+  margin-bottom: 30px;
   transition: opacity .2s ease;
 }
 .sidebar.collapsed .brand-full {
@@ -69,32 +72,36 @@ body {
   pointer-events: none;
 }
 
-/* MENU ITEMS */
+/* MENU */
 .menu-item {
   padding: 12px 14px;
   margin-bottom: 6px;
-  cursor: pointer;
   border-radius: 8px;
   font-size: 15px;
+  color: #444;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #444;
-  transition: 0.15s ease;
+  transition: .15s ease;
 }
 .menu-item:hover { background: #f1f1f1; }
-.menu-active { background: #e8f0ff !important; color: #0a4cc5; font-weight: 600; }
 
-/* ICONS */
+.menu-active {
+  background: #e8f0ff !important;
+  color: #0a4cc5;
+  font-weight: 600;
+}
+
 .menu-icon {
   width: 20px;
-  opacity: 0.8;
+  opacity: 0.85;
 }
 .sidebar.collapsed .menu-text {
   display: none;
 }
 
-/* MAIN AREA */
+/* MAIN LAYOUT */
 .main {
   margin-left: 200px;
   width: calc(100% - 200px);
@@ -107,7 +114,7 @@ body {
 
 /* HEADER */
 .header {
-  background: #ffffff;
+  background: white;
   padding: 18px 32px;
   border-bottom: 1px solid #ececec;
   font-size: 20px;
@@ -115,6 +122,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   position: sticky;
   top: 0;
   z-index: 10;
@@ -124,34 +132,41 @@ body {
   padding: 8px;
   cursor: pointer;
   border-radius: 8px;
-  transition: .2s;
 }
-.logout-btn:hover { background: #f0f0f0; }
+.logout-btn:hover {
+  background: #f0f0f0;
+}
 
 /* CONTENT */
 .content { padding: 34px; }
 
-/* GRID MODULES */
+/* MODULE GRID */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 26px;
   margin-top: 24px;
 }
+
 .tile {
   background: white;
   padding: 26px;
   border-radius: 16px;
   box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  transition: .25s ease;
   cursor: pointer;
-  transition: 0.25s ease;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
 }
-.tile:hover { transform: translateY(-5px); }
+.tile:hover {
+  transform: translateY(-5px);
+}
 
-/* POPUP LOGOUT */
+/* DISABLED TILE */
+.tile-disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+/* LOGOUT POPUP */
 #logout-popup {
   position: fixed; inset: 0;
   background: rgba(0,0,0,0.4);
@@ -159,13 +174,15 @@ body {
   justify-content: center;
   align-items: center;
 }
+
 .popup-box {
   background: white;
   padding: 28px;
-  border-radius: 14px;
   width: 300px;
+  border-radius: 14px;
   text-align: center;
 }
+
 .popup-box button {
   padding: 10px 16px;
   border-radius: 8px;
@@ -182,10 +199,7 @@ body {
 <!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
 
-  <!-- COLLAPSE BUTTON -->
-  <div class="toggle-btn" onclick="toggleSidebar()">
-    ☰
-  </div>
+  <div class="toggle-btn" onclick="toggleSidebar()">☰</div>
 
   <img class="brand-full" src="assets/auxilium_logo_pure_white_bg.png">
 
@@ -199,14 +213,14 @@ body {
     <span class="menu-text">Modules</span>
   </div>
 
-  <div class="menu-item" onclick="alert('Settings will be available soon')">
+  <div class="menu-item" onclick="alert('Settings coming soon')">
     <img class="menu-icon" src="https://img.icons8.com/material-outlined/24/settings.png">
     <span class="menu-text">Settings</span>
   </div>
 
 </div>
 
-<!-- MAIN AREA -->
+<!-- MAIN -->
 <div class="main" id="main">
 
   <!-- HEADER -->
@@ -218,13 +232,13 @@ body {
     </div>
   </div>
 
-  <!-- HOME -->
+  <!-- HOME PAGE -->
   <div class="content" id="home-page">
     <h2>Welcome Back 👋</h2>
     <p style="color:#666;">Silakan pilih modul di menu.</p>
   </div>
 
-  <!-- MODULES -->
+  <!-- MODULES PAGE -->
   <div class="content" id="modules-page" style="display:none;">
     <h2>Modules</h2>
 
@@ -240,7 +254,7 @@ body {
         <p>Input hasil produksi per mesin & KPC</p>
       </div>
 
-      <div class="tile" style="opacity:.4; cursor:not-allowed;">
+      <div class="tile tile-disabled">
         <h3>Order Form</h3>
         <p>Coming Soon</p>
       </div>
@@ -250,7 +264,7 @@ body {
 
 </div>
 
-<!-- POPUP -->
+<!-- LOGOUT POPUP -->
 <div id="logout-popup">
   <div class="popup-box">
     <h3>Logout?</h3>
@@ -261,7 +275,7 @@ body {
 </div>
 
 <script>
-/* COLLAPSE SIDEBAR */
+/* SIDEBAR COLLAPSE */
 function toggleSidebar() {
   const sidebar = document.getElementById("sidebar");
   const main = document.getElementById("main");
@@ -270,7 +284,7 @@ function toggleSidebar() {
   main.classList.toggle("collapsed");
 }
 
-/* SWITCH PAGE */
+/* PAGE SWITCHING */
 function showPage(page, el) {
   document.querySelectorAll(".content").forEach(x => x.style.display = "none");
   document.getElementById(page + "-page").style.display = "block";
@@ -279,7 +293,7 @@ function showPage(page, el) {
   el.classList.add("menu-active");
 }
 
-/* LOGOUT POPUP */
+/* LOGOUT HANDLING */
 function openLogoutPopup() {
   document.getElementById("logout-popup").style.display = "flex";
 }
