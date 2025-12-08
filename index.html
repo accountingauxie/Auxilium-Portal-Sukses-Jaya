@@ -5,6 +5,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>UXILIUM Portal – CV. Sukses Jaya</title>
+<script>
+(function checkAuth() {
+  const data = localStorage.getItem("uxilium_current_user");
+  let user = null;
+
+  try { user = data ? JSON.parse(data) : null; } catch {}
+
+  if (!user || !user.approved) {
+    window.location.href = "login.html";
+  }
+})();
+</script>
 
   <style>
     body {
