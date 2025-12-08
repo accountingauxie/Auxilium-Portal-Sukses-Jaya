@@ -5,23 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>AUXILIUM Portal – CV. Sukses Jaya</title>
 
-<!-- LOGIN CHECK -->
-<script>
-(function checkAuth() {
-  const raw = localStorage.getItem("uxilium_current_user");
-  let user = null;
-  try { user = raw ? JSON.parse(raw) : null; } catch {}
-  if (!user || !user.approved) {
-    window.location.href = "login.html";
-  }
-})();
-</script>
-
 <style>
-
-/* ================================
-   GLOBAL & RESET
-================================ */
+/* GLOBAL */
 * {
   box-sizing: border-box;
 }
@@ -31,119 +16,113 @@ body {
   font-family: "Inter", sans-serif;
   background: #f5f6fa;
   display: flex;
-  min-width: 0;  /* FIX OVERFLOW */
+  min-width: 0;
+  overflow: hidden;
 }
 
-/* ================================
-   SIDEBAR
-================================ */
+/* SIDEBAR */
 .sidebar {
-  width: 200px;
+  width: 240px;
+  min-width: 180px;
+  max-width: 400px;
   background: #ffffff;
-  border-right: 1px solid #e9e9e9;
+  border-right: 1px solid #e5e5e5;
   height: 100vh;
-  position: fixed;
-  left: 0; 
-  top: 0;
-  padding: 20px 18px;
+  padding: 18px;
+  position: relative;
   display: flex;
   flex-direction: column;
-  transition: width .25s ease;
-  z-index: 50;
+  transition: width .2s ease;
 }
 
 .sidebar.collapsed {
-  width: 70px;
+  width: 70px !important;
+  min-width: 70px !important;
+}
+
+/* DRAG BAR */
+.sidebar-resizer {
+  width: 6px;
+  background: transparent;
+  cursor: col-resize;
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+}
+
+.sidebar-resizer:hover {
+  background: rgba(0,0,0,0.08);
 }
 
 /* TOGGLE BUTTON */
 .toggle-btn {
   width: 32px;
   height: 32px;
-  border-radius: 6px;
   cursor: pointer;
+  border-radius: 6px;
   display: flex;
-  align-items: center;
   justify-content: center;
-  margin-bottom: 18px;
-  transition: .2s ease;
+  align-items: center;
+  margin-bottom: 14px;
 }
-.toggle-btn:hover {
-  background: #f1f1f1;
-}
+.toggle-btn:hover { background: #f3f3f3; }
 
 /* LOGO */
 .brand-full {
   width: 160px;
   margin-bottom: 30px;
-  transition: .2s ease;
+  transition: opacity .2s ease;
 }
 .sidebar.collapsed .brand-full {
   opacity: 0;
   pointer-events: none;
 }
 
-/* MENU BUTTONS */
+/* MENU ITEMS */
 .menu-item {
-  padding: 12px 14px;
-  margin-bottom: 6px;
+  padding: 12px;
   border-radius: 8px;
-  font-size: 15px;
-  color: #444;
-  cursor: pointer;
   display: flex;
-  align-items: center;
   gap: 12px;
-  transition: .15s ease;
+  align-items: center;
+  font-size: 15px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  color: #444;
 }
 
-.menu-item:hover { background: #f1f1f1; }
-
+.menu-item:hover { background: #f3f3f3; }
 .menu-active {
-  background: #e8f0ff !important;
+  background: #e8f1ff;
   color: #0a4cc5;
   font-weight: 600;
 }
 
-.menu-icon {
-  width: 20px;
-  opacity: 0.85;
-}
+.menu-icon { width: 20px; }
 
 .sidebar.collapsed .menu-text {
   display: none;
 }
 
-/* ================================
-   MAIN CONTENT AREA
-================================ */
+/* MAIN */
 .main {
   flex: 1;
   min-width: 0;
-  margin-left: 200px;
-  transition: margin-left .25s ease;
+  transition: .2s ease;
+  display: flex;
+  flex-direction: column;
 }
 
-.main.collapsed {
-  margin-left: 70px;
-}
-
-/* ================================
-   HEADER TOP BAR
-================================ */
+/* HEADER */
 .header {
   background: white;
   padding: 18px 32px;
-  border-bottom: 1px solid #ececec;
+  border-bottom: 1px solid #e5e5e5;
   font-size: 20px;
   font-weight: 700;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-
-  position: sticky;
-  top: 0;
-  z-index: 10;
 }
 
 .logout-btn {
@@ -151,91 +130,67 @@ body {
   cursor: pointer;
   border-radius: 8px;
 }
-.logout-btn:hover {
-  background: #f0f0f0;
+.logout-btn:hover { background: #f0f0f0; }
+
+/* CONTENT AREA */
+.content {
+  padding: 40px;
 }
 
-/* ================================
-   PAGE CONTENT
-================================ */
-.content { 
-  padding: 34px; 
-}
-
-/* ================================
-   MODULE GRID
-================================ */
+/* MODULE GRID */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 26px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 28px;
   margin-top: 24px;
 }
 
 .tile {
-  background: white;
+  background: #fff;
   padding: 26px;
   border-radius: 16px;
   box-shadow: 0 4px 14px rgba(0,0,0,0.08);
   transition: .25s ease;
   cursor: pointer;
 }
+
 .tile:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.12);
 }
 
+.tile-icon {
+  margin-bottom: 14px;
+}
+
+.tile-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.tile-desc {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* DISABLED TILE */
 .tile-disabled {
   opacity: .5;
   cursor: not-allowed;
-}
-
-/* ================================
-   LOGOUT POPUP
-================================ */
-#logout-popup {
-  position: fixed; 
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  display: none;
-  justify-content: center;
-  align-items: center;
-}
-
-.popup-box {
-  background: white;
-  padding: 28px;
-  width: 300px;
-  border-radius: 14px;
-  text-align: center;
-}
-
-.popup-box button {
-  padding: 10px 16px;
-  border-radius: 8px;
-  border: none;
-  margin-top: 10px;
-}
-.btn-cancel { 
-  background: #e5e7eb; 
-  margin-right: 8px; 
-}
-.btn-yes { 
-  background: #dc2626; 
-  color: white; 
 }
 </style>
 </head>
 
 <body>
 
-<!-- ================================
-     SIDEBAR
-================================ -->
+<!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
 
   <div class="toggle-btn" onclick="toggleSidebar()">☰</div>
 
-  <img class="brand-full" src="assets/auxilium_logo_pure_white_bg.png">
+  <img src="assets/auxilium_logo_pure_white_bg.png" class="brand-full">
 
   <div class="menu-item menu-active" onclick="showPage('home', this)">
     <img class="menu-icon" src="https://img.icons8.com/material-outlined/24/home.png">
@@ -247,23 +202,21 @@ body {
     <span class="menu-text">Modules</span>
   </div>
 
-  <div class="menu-item" onclick="alert('Settings coming soon')">
+  <div class="menu-item">
     <img class="menu-icon" src="https://img.icons8.com/material-outlined/24/settings.png">
     <span class="menu-text">Settings</span>
   </div>
 
+  <!-- DRAG HANDLE -->
+  <div class="sidebar-resizer" id="resizer"></div>
 </div>
 
-<!-- ================================
-     MAIN CONTENT
-================================ -->
-<div class="main" id="main">
+<!-- MAIN -->
+<div class="main">
 
-  <!-- HEADER -->
   <div class="header">
     <span>CV. SUKSES JAYA</span>
-
-    <div class="logout-btn" onclick="openLogoutPopup()">
+    <div class="logout-btn">
       <img src="https://img.icons8.com/material-outlined/24/logout-rounded-up.png">
     </div>
   </div>
@@ -271,79 +224,91 @@ body {
   <!-- HOME PAGE -->
   <div class="content" id="home-page">
     <h2>Welcome Back 👋</h2>
-    <p style="color:#666;">Silakan pilih modul di menu.</p>
+    <p>Silakan pilih modul di menu.</p>
   </div>
 
-  <!-- MODULE PAGE -->
+  <!-- MODULES PAGE -->
   <div class="content" id="modules-page" style="display:none;">
     <h2>Modules</h2>
 
-<div class="grid">
+    <div class="grid">
 
-  <div class="tile" onclick="window.location.href='receiving/'">
-    <img class="tile-icon" src="https://img.icons8.com/ios-glyphs/30/000000/receive.png">
-    <h3>Receiving PO Entry</h3>
-    <p>Penerimaan material berdasarkan Purchase Order</p>
+      <div class="tile" onclick="window.location.href='receiving/'">
+        <div class="tile-icon">
+          <svg width="48" height="48" fill="none" stroke="#3b3b3b" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M21 16V8L12 3 3 8v8l9 5 9-5z"/>
+            <line x1="12" y1="22" x2="12" y2="12"/>
+          </svg>
+        </div>
+        <div class="tile-title">Receiving PO Entry</div>
+        <div class="tile-desc">Penerimaan material berdasarkan Purchase Order</div>
+      </div>
+
+      <div class="tile" onclick="window.location.href='production/'">
+        <div class="tile-icon">
+          <svg width="48" height="48" fill="none" stroke="#3b3b3b" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33"/>
+          </svg>
+        </div>
+        <div class="tile-title">Production Entry</div>
+        <div class="tile-desc">Input hasil produksi per mesin & KPC</div>
+      </div>
+
+      <div class="tile tile-disabled">
+        <div class="tile-icon">
+          <svg width="48" height="48" fill="none" stroke="#999" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2"/>
+          </svg>
+        </div>
+        <div class="tile-title">Order Form</div>
+        <div class="tile-desc">Coming Soon</div>
+      </div>
+
+    </div>
   </div>
 
-  <div class="tile" onclick="window.location.href='production/'">
-    <img class="tile-icon" src="https://img.icons8.com/ios-glyphs/30/000000/maintenance.png">
-    <h3>Production Entry</h3>
-    <p>Input hasil produksi per mesin & KPC</p>
-  </div>
-
-  <div class="tile tile-disabled">
-    <img class="tile-icon" src="https://img.icons8.com/ios-glyphs/30/000000/document.png">
-    <h3>Order Form</h3>
-    <p>Coming Soon</p>
-  </div>
-
-</div>
-
-  </div>
-
-</div>
-
-<!-- LOGOUT POPUP -->
-<div id="logout-popup">
-  <div class="popup-box">
-    <h3>Logout?</h3>
-    <p>Yakin ingin keluar?</p>
-    <button class="btn-cancel" onclick="closeLogoutPopup()">Cancel</button>
-    <button class="btn-yes" onclick="logout()">Logout</button>
-  </div>
 </div>
 
 <script>
-/* SIDEBAR COLLAPSE */
-function toggleSidebar() {
-  const sidebar = document.getElementById("sidebar");
-  const main = document.getElementById("main");
-
-  sidebar.classList.toggle("collapsed");
-  main.classList.toggle("collapsed");
-}
-
 /* PAGE SWITCHING */
 function showPage(page, el) {
-  document.querySelectorAll(".content").forEach(x => x.style.display = "none");
+  document.getElementById("home-page").style.display = "none";
+  document.getElementById("modules-page").style.display = "none";
   document.getElementById(page + "-page").style.display = "block";
 
-  document.querySelectorAll(".menu-item").forEach(x => x.classList.remove("menu-active"));
+  document.querySelectorAll(".menu-item").forEach(i => i.classList.remove("menu-active"));
   el.classList.add("menu-active");
 }
 
-/* LOGOUT POPUP */
-function openLogoutPopup() {
-  document.getElementById("logout-popup").style.display = "flex";
+/* COLLAPSE SIDEBAR */
+function toggleSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  sidebar.classList.toggle("collapsed");
 }
-function closeLogoutPopup() {
-  document.getElementById("logout-popup").style.display = "none";
-}
-function logout() {
-  localStorage.removeItem("uxilium_current_user");
-  window.location.href = "login.html";
-}
+
+/* RESIZABLE SIDEBAR */
+const sidebar = document.getElementById("sidebar");
+const resizer = document.getElementById("resizer");
+let isResizing = false;
+
+resizer.addEventListener("mousedown", function(e) {
+  isResizing = true;
+  document.body.style.userSelect = "none";
+});
+
+document.addEventListener("mousemove", function(e) {
+  if (!isResizing) return;
+  const newWidth = e.clientX;
+  if (newWidth >= 180 && newWidth <= 400) {
+    sidebar.style.width = newWidth + "px";
+  }
+});
+
+document.addEventListener("mouseup", function() {
+  isResizing = false;
+  document.body.style.userSelect = "auto";
+});
 </script>
 
 </body>
