@@ -45,64 +45,83 @@ button {
 .error { background:#fee2e2; color:#b91c1c; }
 .success { background:#dcfce7; color:#166534; }
 
-/* PREMIUM LOADING */
-.auxie-loading {
+/* ================= FUTURISTIC AUXIE LOADING ================= */
+.auxie-loader {
   position: fixed;
   inset: 0;
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(14px);
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  z-index: 9999;
-  opacity: 1;
-  transition: opacity 0.55s ease;
+  z-index: 99999;
+  transition: opacity .5s ease;
 }
-.auxie-loading.hide {
+.auxie-loader.hide {
   opacity: 0;
   pointer-events: none;
 }
-.auxie-wrapper {
+
+/* Loading Box */
+.auxie-box {
+  background: rgba(255,255,255,0.75);
+  padding: 26px 44px;
+  border-radius: 18px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  animation: fadeIn 0.8s ease;
-}
-.auxie-logo {
-  font-size: 36px;
-  letter-spacing: 6px;
+  gap: 12px;
+  font-size: 34px;
   font-weight: 700;
-  color: #2563eb;
-  animation: pulseGlow 2s ease-in-out infinite;
-  text-shadow: 0 0 12px rgba(37,99,235,0.35);
-  margin-bottom: 14px;
+  letter-spacing: 6px;
+  color: #1f3cff;
+  border: 1px solid rgba(255,255,255,0.5);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.15);
 }
-.auxie-spinner {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  border: 5px solid transparent;
-  border-top-color: #3b82f6;
-  border-right-color: #1d4ed8;
-  animation: spin 1s linear infinite;
+
+/* All Letters */
+.auxie-letter {
+  display: inline-block;
+  transition: transform .35s ease;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
-@keyframes pulseGlow {
-  0%, 100% { transform: scale(1); opacity:1; text-shadow:0 0 12px rgba(37,99,235,0.3); }
-  50% { transform: scale(1.08); opacity:.9; text-shadow:0 0 20px rgba(37,99,235,0.55); }
+
+/* A moves forward */
+@keyframes moveA {
+  0%   { transform: translateX(0); }
+  20%  { transform: translateX(22px); }
+  40%  { transform: translateX(44px); }
+  60%  { transform: translateX(22px); }
+  80%  { transform: translateX(0); }
+  100% { transform: translateX(0); }
 }
-@keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+
+/* Other letters jump away when A comes near */
+@keyframes jump {
+  0%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-18px); }
+  60% { transform: translateY(0); }
+}
+
+/* Apply animation loops */
+.auxie-letter.a { animation: moveA 2s infinite ease-in-out; }
+.auxie-letter.u,
+.auxie-letter.x,
+.auxie-letter.i,
+.auxie-letter.e {
+  animation: jump 2s infinite ease-in-out;
+  animation-delay: .2s;
+}
 </style>
 </head>
 
 <body>
 
-<!-- PREMIUM LOADING -->
-<div id="auxieLoading" class="auxie-loading">
-  <div class="auxie-wrapper">
-    <div class="auxie-logo">AUXIE</div>
-    <div class="auxie-spinner"></div>
+<!-- ========== AUXIE LOADING BOX ========== -->
+<div id="auxieLoading" class="auxie-loader">
+  <div class="auxie-box">
+    <span class="auxie-letter a">A</span>
+    <span class="auxie-letter u">U</span>
+    <span class="auxie-letter x">X</span>
+    <span class="auxie-letter i">I</span>
+    <span class="auxie-letter e">E</span>
   </div>
 </div>
 
@@ -135,7 +154,7 @@ const API = "https://script.google.com/macros/s/AKfycbwfYaFzW3dQYmZIB5tgmqQjEETL
 
 const loader = document.getElementById("auxieLoading");
 
-// auto hide loader on page load
+// Auto-hide when page finished loading
 window.addEventListener("load", () => {
   setTimeout(() => loader.classList.add("hide"), 300);
 });
@@ -147,7 +166,7 @@ function show(text, type) {
   msg.style.display = "block";
 }
 
-// ================= REGISTER (FINAL FIX) ==================
+// ================= REGISTER ==================
 async function registerUser() {
   loader.classList.remove("hide");
 
@@ -189,7 +208,6 @@ async function registerUser() {
     setTimeout(() => (window.location.href = "login.html"), 1200);
 
   } catch (err) {
-    console.error(err);
     loader.classList.add("hide");
     show("Terjadi kesalahan koneksi ke server.", "error");
   }
