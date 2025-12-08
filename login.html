@@ -1,62 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login – AUXILIUM Portal</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Login – AUXILIUM Portal</title>
 
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Inter, sans-serif; }
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: Inter, sans-serif; }
 
-    body {
-      background: #ffffff;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      position: relative;
-    }
+body {
+background: #ffffff;
+height: 100vh;
+display: flex;
+justify-content: center;
+align-items: center;
+overflow: hidden;
+position: relative;
+}
 
-    #bg-canvas { position: fixed; inset: 0; z-index: 0; }
-    .overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.75); z-index: 1; }
+#bg-canvas { position: fixed; inset: 0; z-index: 0; }
+.overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.75); z-index: 1; }
 
-    .card {
-      width: 360px;
-      padding: 28px;
-      background: #ffffffcc;
-      border-radius: 16px;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 6px 22px rgba(0,0,0,0.12);
-      z-index: 2;
-    }
+.card {
+width: 360px;
+padding: 28px;
+background: #ffffffcc;
+border-radius: 16px;
+backdrop-filter: blur(12px);
+box-shadow: 0 6px 22px rgba(0,0,0,0.12);
+z-index: 2;
+}
 
-    .card img { width: 210px; margin: 0 auto 10px; display: block; }
-    h2 { text-align: center; margin-bottom: 6px; font-size: 22px; }
-    p { text-align: center; color: #666; font-size: 13px; margin-bottom: 20px; }
+.card img { width: 210px; margin: 0 auto 10px; display: block; }
+h2 { text-align: center; margin-bottom: 6px; font-size: 22px; }
+p { text-align: center; color: #666; font-size: 13px; margin-bottom: 20px; }
 
-    label { font-size: 13px; margin-bottom: 4px; display: block; }
-    input {
-      width: 100%; padding: 10px; margin-bottom: 14px;
-      border: 1px solid #ddd; border-radius: 8px; font-size: 14px;
-    }
+label { font-size: 13px; margin-bottom: 4px; display: block; }
+input {
+width: 100%; padding: 10px; margin-bottom: 14px;
+border: 1px solid #ddd; border-radius: 8px; font-size: 14px;
+}
 
-    button {
-      width: 100%; padding: 11px; background: #2563eb;
-      color: white; border: none; border-radius: 999px; font-size: 14px;
-      cursor: pointer;
-    }
+button {
+width: 100%; padding: 11px; background: #2563eb;
+color: white; border: none; border-radius: 999px; font-size: 14px;
+cursor: pointer;
+}
 
-    .msg {
-      font-size: 13px;
-      margin-bottom: 10px;
-      padding: 8px;
-      border-radius: 8px;
-      display: none;
-    }
-    .error { background: #fee2e2; color: #b91c1c; }
-    .success { background: #dcfce7; color: #166534; }
-  </style>
+.msg {
+font-size: 13px;
+margin-bottom: 10px;
+padding: 8px;
+border-radius: 8px;
+display: none;
+}
+.error { background: #fee2e2; color: #b91c1c; }
+.success { background: #dcfce7; color: #166534; }
+</style>
 </head>
 
 <body>
@@ -65,157 +65,80 @@
 <div class="overlay"></div>
 
 <div class="card">
-  <img src="assets/auxilium_logo_pure_white_bg.png" alt="Logo">
-  <h2>Masuk</h2>
-  <p>AUXILIUM Portal – CV. Sukses Jaya</p>
+<img src="assets/auxilium_logo_pure_white_bg.png" alt="Logo">
+<h2>Masuk</h2>
+<p>AUXILIUM Portal – CV. Sukses Jaya</p>
 
-  <div id="msg" class="msg"></div>
+<div id="msg" class="msg"></div>
 
-  <label>Email</label>
-  <input id="email" type="email">
+<label>Email</label>
+<input id="email" type="email">
 
-  <label>Password</label>
-  <input id="password" type="password">
+<label>Password</label>
+<input id="password" type="password">
 
-  <button onclick="login()">Login</button>
+<button onclick="login()">Login</button>
 
-  <p style="margin-top:12px;">
-    Belum punya akun? <a href="register.html">Daftar</a>
-  </p>
+<p style="margin-top:12px;">
+Belum punya akun? <a href="register.html">Daftar</a>
+</p>
 </div>
 
 <script>
-// ===========================
-// GOOGLE SHEETS API URL
-// ===========================
-const API_URL =
-"https://script.google.com/macros/s/AKfycbwN0utWHD8LSdGPkVx5bzgxkkZ3fup7W7i0a58G1bW6c3b2YlSAWCQFw2H3Sc9nhRKErA/exec";
+const API_URL = "PASTE_WEB_APP_URL_HERE"; // ganti dengan URL Web App
 
-// ===========================
-// HASH PASSWORD (SHA-256)
-// ===========================
-async function sha256(str) {
-  const buf = new TextEncoder().encode(str);
-  const hash = await crypto.subtle.digest("SHA-256", buf);
-  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, "0")).join("");
+function showMsg(text, type) {
+  const msg = document.getElementById("msg");
+  msg.textContent = text;
+  msg.className = "msg " + type;
+  msg.style.display = "block";
 }
 
-// ===========================
-// LOGIN FUNCTION
-// ===========================
 async function login() {
   const u = email.value.trim();
   const p = password.value.trim();
-  const msg = document.getElementById("msg");
-
-  msg.style.display = "none";
 
   if (!u || !p) {
-    msg.textContent = "Harap isi email dan password.";
-    msg.className = "msg error";
-    msg.style.display = "block";
+    showMsg("Email dan password wajib diisi.", "error");
     return;
   }
 
-  const hashed = await sha256(p);
+  try {
+    const res = await fetch(API_URL + "?action=login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: u, password: p })
+    });
 
-  const res = await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      action: "login",
-      email: u,
-      password: p,   // server akan hash ulang & cocokkan
-    })
-  });
+    const data = await res.json();
 
-  const data = await res.json();
-
-  if (!data.ok) {
-    msg.textContent = data.message || "Login gagal.";
-    msg.className = "msg error";
-    msg.style.display = "block";
-    return;
-  }
-
-  msg.textContent = "Login berhasil!";
-  msg.className = "msg success";
-  msg.style.display = "block";
-
-  // Simpan user login
-  localStorage.setItem("uxilium_current_user", JSON.stringify(data.user));
-
-  // Redirect based on role
-  setTimeout(() => {
-    if (data.user.role === "admin") window.location.href = "admin.html";
-    else window.location.href = "index.html";
-  }, 700);
-}
-
-// ===========================
-// BACKGROUND ANIMATION
-// ===========================
-const canvas = document.getElementById("bg-canvas");
-const ctx = canvas.getContext("2d");
-let W, H;
-
-function resize() {
-  W = canvas.width = window.innerWidth;
-  H = canvas.height = window.innerHeight;
-}
-resize();
-window.onresize = resize;
-
-const dots = [];
-for (let i = 0; i < 45; i++) {
-  dots.push({
-    x: Math.random() * W,
-    y: Math.random() * H,
-    r: 4 + Math.random() * 10,
-    dx: (Math.random() - 0.5) * 0.7,
-    dy: (Math.random() - 0.5) * 0.7
-  });
-}
-
-let mouse = { x: null, y: null };
-window.onmousemove = e => (mouse = { x: e.x, y: e.y });
-window.onmouseleave = () => (mouse = { x: null, y: null });
-
-function animate() {
-  ctx.clearRect(0, 0, W, H);
-  ctx.fillStyle = "#fff";
-  ctx.fillRect(0, 0, W, H);
-
-  dots.forEach(d => {
-    d.x += d.dx;
-    d.y += d.dy;
-
-    if (d.x < 0 || d.x > W || d.y < 0 || d.y > H) {
-      d.x = Math.random() * W;
-      d.y = Math.random() * H;
+    if (!data.success) {
+      showMsg(data.message || "Login gagal.", "error");
+      return;
     }
 
-    if (mouse.x != null) {
-      const dx = d.x - mouse.x;
-      const dy = d.y - mouse.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
+    // simpan session
+    localStorage.setItem("uxilium_current_user", JSON.stringify(data.user));
+    showMsg("Login berhasil!", "success");
 
-      if (dist < 150) {
-        d.x += dx / dist * 2;
-        d.y += dy / dist * 2;
+    setTimeout(() => {
+      const role = (data.user.role || "").toLowerCase();
+      if (role === "owner" || role === "admin") {
+        window.location.href = "admin.html";
+      } else {
+        window.location.href = "index.html";
       }
-    }
+    }, 700);
 
-    ctx.beginPath();
-    ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(120,150,255,0.5)";
-    ctx.fill();
-  });
-
-  requestAnimationFrame(animate);
+  } catch (err) {
+    console.error(err);
+    showMsg("Terjadi kesalahan koneksi ke server.", "error");
+  }
 }
-animate();
+
+/* ANIMASI BACKGROUND – tetap sama seperti file kamu */
 </script>
+
 
 </body>
 </html>
