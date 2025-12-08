@@ -120,8 +120,9 @@
 
   <div id="msg" class="msg"></div>
 
-  <label>Username</label>
-  <input id="username">
+<label>Email</label>
+<input id="email" type="email">
+
 
   <label>Password</label>
   <input id="password" type="password">
@@ -135,15 +136,15 @@
 /* MINI DATABASE PAKAI LOCALSTORAGE */
 if (!localStorage.getItem("uxilium_users")) {
   localStorage.setItem("uxilium_users", JSON.stringify([
-    { username: "accounting@auxie.id", password: "Moscaro123!", approved: true, role: "admin" }
+    { username: "accounting@auxie.id", password: "Moscato123!", approved: true, role: "admin" }
   ]));
 }
 
 function login() {
-  const u = username.value.trim();
-  const p = password.value.trim();
+const u = email.value.trim();
+const p = password.value.trim();
   const users = JSON.parse(localStorage.getItem("uxilium_users"));
-  const user = users.find(x => x.username === u && x.password === p);
+const user = users.find(x => x.email === u && x.password === p);
 
   const msg = document.getElementById("msg");
 
