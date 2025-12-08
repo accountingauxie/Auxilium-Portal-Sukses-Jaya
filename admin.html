@@ -1,217 +1,223 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Panel – AUXILIUM Portal</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin Panel – AUXILIUM Portal</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: "Inter", sans-serif;
-      background: #f5f6fa;
-    }
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:Inter,sans-serif; }
 
-    .header {
-      background: white;
-      padding: 18px 32px;
-      font-size: 22px;
-      font-weight: 700;
-      border-bottom: 1px solid #e5e5e5;
-    }
+body { background:#f5f6fa; min-height:100vh; }
 
-    .container {
-      max-width: 1000px;
-      margin: 40px auto;
-      background: white;
-      padding: 24px;
-      border-radius: 14px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    }
+.topbar {
+background:white;
+padding:14px 24px;
+display:flex;
+justify-content:space-between;
+border-bottom:1px solid #e5e7eb;
+}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 18px;
-    }
+.btn-logout {
+background:#ef4444;
+color:white;
+border:none;
+padding:7px 16px;
+border-radius:8px;
+cursor:pointer;
+}
 
-    th, td {
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #efefef;
-      font-size: 14px;
-    }
+.container {
+max-width:960px;
+margin:32px auto;
+background:white;
+padding:24px;
+border-radius:14px;
+box-shadow:0 6px 22px rgba(0,0,0,0.12);
+}
 
-    th {
-      background: #fafafa;
-      font-weight: 600;
-    }
+table { width:100%; border-collapse:collapse; }
+th, td { padding:10px; border-bottom:1px solid #e5e7eb; font-size:13px; }
+th { background:#f9fafb; font-weight:600; }
 
-    .badge {
-      padding: 4px 10px;
-      border-radius: 30px;
-      font-size: 12px;
-      font-weight: 600;
-    }
+.badge {
+padding:4px 10px;
+border-radius:999px;
+font-size:12px;
+font-weight:600;
+}
+.approved { background:#dcfce7; color:#166534; }
+.pending { background:#fef3c7; color:#92400e; }
+.admin { background:#dbeafe; color:#1d4ed8; }
 
-    .approved { background: #d1fae5; color: #065f46; }
-    .pending { background: #fde68a; color: #92400e; }
-    .admin { background: #dbeafe; color: #1e40af; }
-
-    .btn {
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      cursor: pointer;
-      border: none;
-    }
-
-    .btn-approve { background: #22c55e; color: white; }
-    .btn-pending { background: #fca5a5; color: #7f1d1d; }
-    .btn-on { background: #22c55e; color: white; }
-    .btn-off { background: #e5e7eb; color: #374151; }
-  </style>
+.btn { padding:4px 10px; border:none; border-radius:999px; cursor:pointer; font-size:11px; }
+.btn-on { background:#22c55e; color:white; }
+.btn-off { background:#e5e7eb; color:#374151; }
+.btn-approve { background:#22c55e; color:white; }
+.btn-pending { background:#fca5a5; color:#991b1b; }
+</style>
 </head>
 
 <body>
 
-  <div class="header">Admin Panel – AUXILIUM Portal</div>
+<div class="topbar">
+<h1>Admin Panel – AUXILIUM Portal</h1>
+<button class="btn-logout" onclick="logout()">Logout</button>
+</div>
 
-  <div class="container">
-    <h2>Daftar User</h2>
+<div class="container">
+<h2>Daftar User</h2>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Email</th>
-          <th>Status</th>
-          <th>Role</th>
-          <th>Receiving PO</th>
-          <th>Finished Goods</th>
-          <th>Order Form</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
-      <tbody id="user-list"></tbody>
-    </table>
-  </div>
+<table>
+<thead>
+<tr>
+<th>Email</th>
+<th>Status</th>
+<th>Role</th>
+<th>Receiving PO</th>
+<th>Finished Goods</th>
+<th>Order Form</th>
+<th>Aksi</th>
+</tr>
+</thead>
+<tbody id="user-list"></tbody>
+</table>
+</div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwN0utWHD8LSdGPkVx5bzgxkkZ3fup7W7i0a58G1bW6c3b2YlSAWCQFw2H3Sc9nhRKErA/exec";
+const API_URL = "PASTE_WEB_APP_URL_HERE";
 
-/* CEK ADMIN LOGIN */
+// Hanya Owner/Admin yang boleh masuk
 const current = JSON.parse(localStorage.getItem("uxilium_current_user") || "null");
+if (!current) {
+  alert("Silakan login terlebih dahulu.");
+  window.location.href = "login.html";
+} else {
+  const role = (current.role || "").toLowerCase();
+  if (role !== "owner" && role !== "admin") {
+    alert("Hanya admin yang boleh mengakses halaman ini.");
+    window.location.href = "login.html";
+  }
+}
 
-if (!current || current.role !== "admin") {
-  alert("Hanya admin yang boleh mengakses halaman ini.");
+function logout() {
+  localStorage.removeItem("uxilium_current_user");
   window.location.href = "login.html";
 }
 
-/* AMBIL LIST USER */
-async function fetchUsers() {
-  const res = await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "getUsers" })
-  });
-
-  const data = await res.json();
-  if (!data.ok) return [];
-  return data.users;
+async function loadUsers() {
+  try {
+    const res = await fetch(API_URL + "?action=getusers");
+    const data = await res.json();
+    if (!data.success) {
+      alert(data.message || "Gagal mengambil data user.");
+      return;
+    }
+    renderUsers(data.users || []);
+  } catch (err) {
+    console.error(err);
+    alert("Kesalahan koneksi saat load user.");
+  }
 }
 
-/* UPDATE STATUS */
-async function updateStatus(email, status) {
-  await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "updateStatus", email, status })
-  });
-  renderUsers();
-}
+function renderUsers(users) {
+  const list = document.getElementById("user-list");
+  list.innerHTML = "";
 
-/* UPDATE ACCESS RIGHTS */
-async function updateAccess(email, type, value) {
-  const payload = {
-    action: "updateAccess",
-    email
-  };
-
-  if (type === "receiving") payload.receiving = value;
-  if (type === "finished_goods") payload.finished_goods = value;
-  if (type === "order_form") payload.order_form = value;
-
-  await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
-
-  renderUsers();
-}
-
-/* RENDER TABLE */
-async function renderUsers() {
-  const users = await fetchUsers();
-  const body = document.getElementById("user-list");
-  body.innerHTML = "";
-
-  users.forEach(user => {
+  users.forEach(u => {
     const tr = document.createElement("tr");
 
     tr.innerHTML = `
-      <td>${user.email}</td>
-      <td><span class="badge ${user.status === "Approved" ? "approved" : "pending"}">${user.status}</span></td>
-      <td><span class="badge ${user.role === "admin" ? "admin" : ""}">${user.role}</span></td>
-      <td></td><td></td><td></td>
+      <td>${u.email}</td>
+      <td><span class="badge ${u.status === "Approved" ? "approved" : "pending"}">
+        ${u.status}
+      </span></td>
+      <td><span class="badge ${u.role.toLowerCase() === "admin" || u.role.toLowerCase() === "owner" ? "admin" : ""}">
+        ${u.role}
+      </span></td>
+      <td></td>
+      <td></td>
+      <td></td>
       <td></td>
     `;
 
     const cells = tr.querySelectorAll("td");
+    const cellRec = cells[3];
+    const cellFG  = cells[4];
+    const cellOF  = cells[5];
+    const cellAct = cells[6];
 
-    addToggle(cells[3], user, "receiving", "Receiving");
-    addToggle(cells[4], user, "finished_goods", "FG");
-    addToggle(cells[5], user, "order_form", "Order");
-
-    if (user.role !== "admin") {
+    function makeAccessBtn(key, label, targetCell, allowed) {
       const btn = document.createElement("button");
-      if (user.status === "Approved") {
-        btn.className = "btn btn-pending";
-        btn.textContent = "Set Pending";
-        btn.onclick = () => updateStatus(user.email, "Pending");
-      } else {
-        btn.className = "btn btn-approve";
-        btn.textContent = "Approve";
-        btn.onclick = () => updateStatus(user.email, "Approved");
-      }
-      cells[6].appendChild(btn);
-    } else {
-      cells[6].textContent = "—";
+      btn.className = "btn " + (allowed ? "btn-on" : "btn-off");
+      btn.textContent = (allowed ? "On " : "Off ") + label;
+      btn.onclick = () => toggleAccess(u.row, key);
+      targetCell.appendChild(btn);
     }
 
-    body.appendChild(tr);
+    makeAccessBtn("receiving", "Receiving", cellRec, u.access.receiving);
+    makeAccessBtn("finished_goods", "FG", cellFG, u.access.finished_goods);
+    makeAccessBtn("order_form", "Order", cellOF, u.access.order_form);
+
+    const roleLower = (u.role || "").toLowerCase();
+
+    // Owner tidak bisa diubah statusnya dari panel (opsional)
+    if (roleLower === "owner") {
+      cellAct.textContent = "—";
+    } else {
+      const isApproved = (u.status === "Approved");
+      const b = document.createElement("button");
+      b.className = "btn " + (isApproved ? "btn-pending" : "btn-approve");
+      b.textContent = isApproved ? "Set Pending" : "Approve";
+      b.onclick = () => updateApprove(u.row, !isApproved);
+      cellAct.appendChild(b);
+    }
+
+    list.appendChild(tr);
   });
 }
 
-/* BUILDER UNTUK TOGGLE AKSES */
-function addToggle(cell, user, key, label) {
-  const isOn =
-    (key === "receiving" && user.receiving === "On") ||
-    (key === "finished_goods" && user.finished_goods === "On") ||
-    (key === "order_form" && user.order_form === "On");
-
-  const btn = document.createElement("button");
-  btn.className = "btn " + (isOn ? "btn-on" : "btn-off");
-  btn.textContent = (isOn ? "On " : "Off ") + label;
-
-  btn.onclick = () => updateAccess(user.email, key, !isOn);
-
-  cell.appendChild(btn);
+async function toggleAccess(row, key) {
+  try {
+    const res = await fetch(API_URL + "?action=toggleaccess", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ row, key })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      alert(data.message || "Gagal update akses.");
+      return;
+    }
+    loadUsers();
+  } catch (err) {
+    console.error(err);
+    alert("Kesalahan koneksi saat update akses.");
+  }
 }
 
-renderUsers();
+async function updateApprove(row, approved) {
+  try {
+    const res = await fetch(API_URL + "?action=updateapprove", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ row, approved })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      alert(data.message || "Gagal update status approval.");
+      return;
+    }
+    loadUsers();
+  } catch (err) {
+    console.error(err);
+    alert("Kesalahan koneksi saat update status.");
+  }
+}
+
+loadUsers();
 </script>
+
 
 </body>
 </html>
