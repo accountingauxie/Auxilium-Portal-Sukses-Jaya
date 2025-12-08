@@ -104,11 +104,19 @@ async function registerUser() {
   }
 
   try {
-    const res = await fetch(API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: u, password: p })
-    });
+const res = await fetch(API, {
+  method: "POST",
+  mode: "cors",
+  headers: {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  body: JSON.stringify({
+    email: u,
+    password: p
+  })
+});
+
     const json = await res.json();
 
     if (!json.ok) {
