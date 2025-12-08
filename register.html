@@ -104,15 +104,14 @@ async function registerUser() {
   }
 
   try {
-const form = new FormData();
-form.append("email", u);
-form.append("password", p);
-
-const res = await fetch(API, {
-  method: "POST",
-  body: form
-});
-
+    const res = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: u,
+        password: p
+      })
+    });
 
     const json = await res.json();
 
@@ -123,6 +122,7 @@ const res = await fetch(API, {
 
     show("Registrasi berhasil! Menunggu persetujuan admin.", "success");
     setTimeout(() => (window.location.href = "login.html"), 1300);
+
   } catch (err) {
     console.error(err);
     show("Terjadi kesalahan koneksi ke server.", "error");
