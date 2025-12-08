@@ -1,118 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Register – AUXILIUM Portal</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Register – AUXILIUM Portal</title>
 
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Inter, sans-serif; }
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:Inter, sans-serif; }
 
-    body {
-      background: #ffffff;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      position: relative;
-    }
+body {
+background:#f5f6fa;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:20px;
+}
 
-    #bg-canvas { position: fixed; inset: 0; z-index: 0; }
-    .overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.75); z-index: 1; }
+.card {
+width:360px;
+background:white;
+padding:28px;
+border-radius:16px;
+box-shadow:0 6px 22px rgba(0,0,0,0.12);
+}
 
-    .card {
-      width: 360px;
-      padding: 28px;
-      background: #ffffffcc;
-      border-radius: 16px;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 6px 22px rgba(0,0,0,0.12);
-      z-index: 2;
-    }
+img { width:210px; display:block; margin:0 auto 10px; }
 
-    .card img { width: 210px; margin: 0 auto 10px; display: block; }
-    h2 { text-align: center; margin-bottom: 6px; font-size: 22px; }
-    p { text-align: center; color: #666; font-size: 13px; margin-bottom: 20px; }
+h2 { text-align:center; margin-bottom:6px; font-size:22px; }
+p { text-align:center; color:#666; font-size:13px; margin-bottom:20px; }
 
-    label { font-size: 13px; margin-bottom: 4px; display: block; }
-    input {
-      width: 100%; padding: 10px; margin-bottom: 14px;
-      border: 1px solid #ddd; border-radius: 8px; font-size: 14px;
-    }
+label { font-size:13px; margin-bottom:4px; display:block; }
+input {
+width:100%; padding:10px; margin-bottom:14px;
+border:1px solid #ddd; border-radius:8px; font-size:14px;
+}
 
-    button {
-      width: 100%; padding: 11px; background: #2563eb;
-      color: white; border: none; border-radius: 999px; font-size: 14px;
-      cursor: pointer;
-    }
+button {
+width:100%; padding:11px; background:#2563eb;
+color:white; border:none; border-radius:999px;
+font-size:14px; cursor:pointer;
+}
 
-    .msg {
-      font-size: 13px;
-      margin-bottom: 10px;
-      padding: 8px;
-      border-radius: 8px;
-      display: none;
-    }
-    .error { background: #fee2e2; color: #b91c1c; }
-    .success { background: #dcfce7; color: #166534; }
-  </style>
+.msg {
+font-size:13px; margin-bottom:10px;
+padding:8px; border-radius:8px; display:none;
+}
+.error { background:#fee2e2; color:#b91c1c; }
+.success { background:#dcfce7; color:#166534; }
+</style>
 </head>
 
 <body>
 
-<canvas id="bg-canvas"></canvas>
-<div class="overlay"></div>
-
 <div class="card">
-  <img src="assets/auxilium_logo_pure_white_bg.png" alt="Logo">
-  <h2>Daftar</h2>
-  <p>AUXILIUM Portal – CV. Sukses Jaya</p>
+<img src="assets/auxilium_logo_pure_white_bg.png">
 
-  <div id="msg" class="msg"></div>
+<h2>Daftar Akun Baru</h2>
+<p>Akun akan menunggu persetujuan admin.</p>
 
-  <label>Email</label>
-  <input id="email" type="email">
+<div id="msg" class="msg"></div>
 
-  <label>Password</label>
-  <input id="password" type="password">
+<label>Email</label>
+<input id="email" type="email">
 
-  <label>Konfirmasi Password</label>
-  <input id="password2" type="password">
+<label>Password</label>
+<input id="password" type="password">
 
-  <button onclick="registerUser()">Daftar</button>
+<label>Ulangi Password</label>
+<input id="password2" type="password">
 
-  <p style="margin-top:12px;">
-    Sudah punya akun? <a href="login.html">Masuk</a>
-  </p>
+<button onclick="registerUser()">Daftar</button>
+
+<p style="margin-top:12px;">
+Sudah punya akun? <a href="login.html">Masuk</a>
+</p>
 </div>
 
 <script>
-// ============================
-// GOOGLE SHEETS API URL
-// ============================
-const API_URL =
-"https://script.google.com/macros/s/AKfycbwN0utWHD8LSdGPkVx5bzgxkkZ3fup7W7i0a58G1bW6c3b2YlSAWCQFw2H3Sc9nhRKErA/exec";
+const API_URL = "PASTE_WEB_APP_URL_HERE"; // sama dengan login
 
-// ==========================
-// SHA-256 HASH
-// ==========================
-async function sha256(str) {
-  const buf = new TextEncoder().encode(str);
-  const hash = await crypto.subtle.digest("SHA-256", buf);
-  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,"0")).join("");
+function show(text, type) {
+  const msg = document.getElementById("msg");
+  msg.textContent = text;
+  msg.className = "msg " + type;
+  msg.style.display = "block";
 }
 
-// ==========================
-// REGISTER FUNCTION
-// ==========================
 async function registerUser() {
   const u = email.value.trim();
   const p = password.value.trim();
   const p2 = password2.value.trim();
-  const msg = document.getElementById("msg");
-
-  msg.style.display = "none";
 
   if (!u || !p || !p2) {
     show("Semua field wajib diisi.", "error");
@@ -123,218 +101,30 @@ async function registerUser() {
     return;
   }
 
-  const hashed = await sha256(p);
-
-  const res = await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      action: "register",
-      email: u,
-      password: p   // server hash ulang & simpan di kolom PasswordHash
-    })
-  });
-
-  const data = await res.json();
-
-  if (!data.ok) {
-    show(data.message || "Registrasi gagal.", "error");
-    return;
-  }
-
-  show(data.message, "success");
-
-  setTimeout(() => {
-    window.location.href = "login.html";
-  }, 1200);
-}
-
-function show(text, type) {
-  msg.textContent = text;
-  msg.className = "msg " + type;
-  msg.style.display = "block";
-}
-
-// ==========================
-// BACKGROUND ANIMATION
-// ==========================
-const canvas = document.getElementById("bg-canvas");
-const ctx = canvas.getContext("2d");
-let W, H;
-
-function resize() {
-  W = canvas.width = window.innerWidth;
-  H = canvas.height = window.innerHeight;
-}
-resize();
-window.onresize = resize;
-
-const dots = [];
-for (let i = 0; i < 45; i++) {
-  dots.push({
-    x: Math.random() * W,
-    y: Math.random() * H,
-    r: 4 + Math.random() * 10,
-    dx: (Math.random() - 0.5) * 0.7,
-    dy: (Math.random() - 0.5) * 0.7
-  });
-}
-
-let mouse = { x: null, y: null };
-window.onmousemove = e => (mouse = { x: e.x, y: e.y });
-window.onmouseleave = () => (mouse = { x: null, y: null });
-
-function animate() {
-  ctx.clearRect(0, 0, W, H);
-  ctx.fillStyle = "#fff";
-  ctx.fillRect(0, 0, W, H);
-
-  dots.forEach(d => {
-    d.x += d.dx;
-    d.y += d.dy;
-
-    if (d.x < 0 || d.x > W || d.y < 0 || d.y > H) {
-      d.x = Math.random() * W;
-      d.y = Math.random() * H;
-    }
-
-    if (mouse.x != null) {
-      const dx = d.x - mouse.x;
-      const dy = d.y - mouse.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-
-      if (dist < 150) {
-        d.x += dx / dist * 2;
-        d.y += dy / dist * 2;
-      }
-    }
-
-    ctx.beginPath();
-    ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(120,150,255,0.5)";
-    ctx.fill();
-  });
-
-  requestAnimationFrame(animate);
-}
-animate();
-</script>
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwN0utWHD8LSdGPkVx5bzgxkkZ3fup7W7i0a58G1bW6c3b2YlSAWCQFw2H3Sc9nhRKErA/exec";
-
-async function registerUser() {
-  const msg = document.getElementById("msg");
-  msg.style.display = "none";
-
-  const email = document.getElementById("email").value.trim();
-  const pass1 = document.getElementById("password").value.trim();
-  const pass2 = document.getElementById("password2").value.trim();
-
-  if (!email || !pass1 || !pass2) {
-    showMsg("Semua field wajib diisi.", true);
-    return;
-  }
-  if (pass1 !== pass2) {
-    showMsg("Password tidak sama.", true);
-    return;
-  }
-
   try {
-    const res = await fetch(API_URL, {
+    const res = await fetch(API_URL + "?action=register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "register",
-        email: email,
-        password: pass1
-      })
+      body: JSON.stringify({ email: u, password: p })
     });
 
     const data = await res.json();
 
-    if (!data.ok) {
-      showMsg(data.message || "Pendaftaran gagal.", true);
+    if (!data.success) {
+      show(data.message || "Registrasi gagal.", "error");
       return;
     }
 
-    showMsg("Pendaftaran berhasil! Menunggu persetujuan admin.", false);
-
-    setTimeout(() => (window.location.href = "login.html"), 1500);
+    show(data.message || "Registrasi berhasil.", "success");
+    setTimeout(() => (window.location.href = "login.html"), 1300);
 
   } catch (err) {
-    showMsg("Gagal terhubung ke server.", true);
+    console.error(err);
+    show("Terjadi kesalahan koneksi ke server.", "error");
   }
 }
-
-function showMsg(text, isError) {
-  const msg = document.getElementById("msg");
-  msg.textContent = text;
-  msg.className = "msg " + (isError ? "error" : "success");
-  msg.style.display = "block";
-}
-
-/* ANIMASI BACKGROUND */
-const canvas = document.getElementById("bg-canvas");
-const ctx = canvas.getContext("2d");
-let W, H;
-
-function resize() {
-  W = canvas.width = window.innerWidth;
-  H = canvas.height = window.innerHeight;
-}
-resize();
-window.onresize = resize;
-
-const dots = [];
-for (let i = 0; i < 45; i++) {
-  dots.push({
-    x: Math.random() * W,
-    y: Math.random() * H,
-    r: 4 + Math.random() * 10,
-    dx: (Math.random() - 0.5) * 0.7,
-    dy: (Math.random() - 0.5) * 0.7
-  });
-}
-
-let mouse = { x: null, y: null };
-window.onmousemove = e => (mouse = { x: e.x, y: e.y });
-window.onmouseleave = () => (mouse = { x: null, y: null });
-
-function animate() {
-  ctx.clearRect(0, 0, W, H);
-  ctx.fillStyle = "#fff";
-  ctx.fillRect(0, 0, W, H);
-
-  dots.forEach(d => {
-    d.x += d.dx;
-    d.y += d.dy;
-
-    if (d.x < 0 || d.x > W || d.y < 0 || d.y > H) {
-      d.x = Math.random() * W;
-      d.y = Math.random() * H;
-    }
-
-    if (mouse.x != null) {
-      const dx = d.x - mouse.x;
-      const dy = d.y - mouse.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-
-      if (dist < 150) {
-        d.x += dx / dist * 2;
-        d.y += dy / dist * 2;
-      }
-    }
-
-    ctx.beginPath();
-    ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(120,150,255,0.5)";
-    ctx.fill();
-  });
-
-  requestAnimationFrame(animate);
-}
-animate();
 </script>
+
 
 </body>
 </html>
