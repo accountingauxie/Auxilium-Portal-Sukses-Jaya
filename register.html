@@ -219,6 +219,122 @@ function animate() {
 }
 animate();
 </script>
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbwN0utWHD8LSdGPkVx5bzgxkkZ3fup7W7i0a58G1bW6c3b2YlSAWCQFw2H3Sc9nhRKErA/exec";
+
+async function registerUser() {
+  const msg = document.getElementById("msg");
+  msg.style.display = "none";
+
+  const email = document.getElementById("email").value.trim();
+  const pass1 = document.getElementById("password").value.trim();
+  const pass2 = document.getElementById("password2").value.trim();
+
+  if (!email || !pass1 || !pass2) {
+    showMsg("Semua field wajib diisi.", true);
+    return;
+  }
+  if (pass1 !== pass2) {
+    showMsg("Password tidak sama.", true);
+    return;
+  }
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "register",
+        email: email,
+        password: pass1
+      })
+    });
+
+    const data = await res.json();
+
+    if (!data.ok) {
+      showMsg(data.message || "Pendaftaran gagal.", true);
+      return;
+    }
+
+    showMsg("Pendaftaran berhasil! Menunggu persetujuan admin.", false);
+
+    setTimeout(() => (window.location.href = "login.html"), 1500);
+
+  } catch (err) {
+    showMsg("Gagal terhubung ke server.", true);
+  }
+}
+
+function showMsg(text, isError) {
+  const msg = document.getElementById("msg");
+  msg.textContent = text;
+  msg.className = "msg " + (isError ? "error" : "success");
+  msg.style.display = "block";
+}
+
+/* ANIMASI BACKGROUND */
+const canvas = document.getElementById("bg-canvas");
+const ctx = canvas.getContext("2d");
+let W, H;
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.onresize = resize;
+
+const dots = [];
+for (let i = 0; i < 45; i++) {
+  dots.push({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: 4 + Math.random() * 10,
+    dx: (Math.random() - 0.5) * 0.7,
+    dy: (Math.random() - 0.5) * 0.7
+  });
+}
+
+let mouse = { x: null, y: null };
+window.onmousemove = e => (mouse = { x: e.x, y: e.y });
+window.onmouseleave = () => (mouse = { x: null, y: null });
+
+function animate() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, W, H);
+
+  dots.forEach(d => {
+    d.x += d.dx;
+    d.y += d.dy;
+
+    if (d.x < 0 || d.x > W || d.y < 0 || d.y > H) {
+      d.x = Math.random() * W;
+      d.y = Math.random() * H;
+    }
+
+    if (mouse.x != null) {
+      const dx = d.x - mouse.x;
+      const dy = d.y - mouse.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (dist < 150) {
+        d.x += dx / dist * 2;
+        d.y += dy / dist * 2;
+      }
+    }
+
+    ctx.beginPath();
+    ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(120,150,255,0.5)";
+    ctx.fill();
+  });
+
+  requestAnimationFrame(animate);
+}
+animate();
+</script>
 
 </body>
 </html>
