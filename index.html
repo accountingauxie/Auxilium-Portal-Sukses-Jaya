@@ -24,20 +24,23 @@
       left: 0;
       top: 0;
       padding: 26px 20px;
-      display: none; /* HIDE sebelum login */
+      display: flex;
       flex-direction: column;
       z-index: 50;
       padding-top: 20px;
     }
 
-    .brand-full {
-      max-width: 230px;
-      width: 100%;
-      height: auto;
-      display: block;
-      margin-left: -8px;
-      margin-bottom: 32px;
-    }
+    /* Full AUXILIUM Logo */
+.brand-full {
+  max-width: 230px;   /* BESARKAN sampai batas aman */
+  width: 100%;
+  height: auto;
+  display: block;
+  margin-left: -8px;  /* geser sedikit ke kiri agar benar-benar pojok kiri */
+  margin-bottom: 32px;
+}
+
+
 
     .menu-item {
       padding: 12px 14px;
@@ -69,7 +72,7 @@
     .header {
       background: #ffffff;
       padding: 18px 32px;
-      padding-left: 300px;
+      padding-left: 300px; /* FIXED: header tidak tertutup sidebar */
       border-bottom: 1px solid #ececec;
       font-size: 20px;
       font-weight: 700;
@@ -79,56 +82,19 @@
       top: 0;
       z-index: 10;
       backdrop-filter: blur(8px);
-      display: none; /* HIDE sebelum login */
     }
 
     /* CONTENT AREA */
     .content {
       padding: 34px;
-      padding-left: 300px;
+      padding-left: 300px; /* FIXED: lurus dengan header */
     }
 
-    /* --------- LOGIN BOX ---------- */
-    .login-box {
-      max-width: 360px;
-      margin: 120px auto;
-      padding: 32px;
-      background: white;
-      border-radius: 14px;
-      box-shadow: 0 6px 22px rgba(0, 0, 0, 0.08);
-    }
-
-    .login-box h2 {
-      margin: 0 0 12px;
-      font-size: 22px;
+    .content h2 {
+      margin-top: 0;
+      font-size: 26px;
       font-weight: 700;
       color: #2b2b2b;
-    }
-
-    .login-box p {
-      margin: 0 0 24px;
-      color: #666;
-      font-size: 14px;
-    }
-
-    .login-box input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 16px;
-      border-radius: 8px;
-      border: 1px solid #d6dce1;
-      font-size: 14px;
-    }
-
-    .login-box button {
-      width: 100%;
-      padding: 12px;
-      background: #0a4cc5;
-      border: none;
-      color: white;
-      border-radius: 8px;
-      font-size: 15px;
-      cursor: pointer;
     }
 
     /* ---------------- MODULE TILE GRID ---------------- */
@@ -164,92 +130,106 @@
       cursor: not-allowed;
       border: 1px solid #e0e0e0;
     }
+
+    .tile-icon {
+      margin-bottom: 18px;
+    }
+
+    .tile-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #212121;
+    }
+
+    .tile-desc {
+      font-size: 14px;
+      color: #6f6f6f;
+      line-height: 1.4;
+    }
   </style>
 </head>
 
 <body>
 
   <!-- SIDEBAR -->
-  <div class="sidebar" id="sidebar">
-    <img class="brand-full" src="assets/auxilium_logo_pure_white_bg.png" alt="UXILIUM Logo" />
+  <div class="sidebar">
+    <!-- FULL AUXILIUM LOGO -->
+<img class="brand-full"
+     src="assets/auxilium_logo_pure_white_bg.png"
+     alt="UXILIUM Logo" />
+
 
     <div class="menu-item menu-active" onclick="showPage('home', this)">Home</div>
     <div class="menu-item" onclick="showPage('modules', this)">Modules</div>
     <div class="menu-item" onclick="alert('Settings coming soon')">Settings</div>
   </div>
 
-  <!-- MAIN AREA -->
+  <!-- MAIN CONTENT -->
   <div class="main">
 
-    <!-- HEADER -->
-    <div class="header" id="header">CV. SUKSES JAYA</div>
+    <div class="header">CV. SUKSES JAYA</div>
 
-    <!-- ================= LOGIN PAGE ================= -->
-    <div id="login-page" style="width:100%;">
-      <div class="login-box">
-        <h2>Welcome</h2>
-        <p>Masukkan email & password untuk masuk ke portal</p>
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="password" placeholder="Password">
-
-        <button onclick="login()">Masuk</button>
-      </div>
-    </div>
-
-    <!-- ================= HOME PAGE ================= -->
-    <div class="content" id="home-page" style="display:none;">
+    <!-- HOME PAGE -->
+    <div class="content" id="home-page">
       <h2>Welcome Back 👋</h2>
       <p style="font-size:15px; color:#666;">
         Silakan pilih modul di menu untuk mulai menggunakan portal.
       </p>
     </div>
 
-    <!-- ================= MODULE PAGE ================= -->
+    <!-- MODULES PAGE -->
     <div class="content" id="modules-page" style="display:none;">
       <h2>Modules</h2>
-      <div class="grid">
 
-        <!-- RECEIVING -->
-        <div class="tile" onclick="window.location.href='receiving/'">
-          <div class="tile-title">Receiving PO Entry</div>
-          <div class="tile-desc">Penerimaan material berdasarkan Purchase Order</div>
-        </div>
+<div class="grid">
 
-        <!-- PRODUCTION -->
-        <div class="tile" onclick="window.location.href='production/'">
-          <div class="tile-title">Production Entry</div>
-          <div class="tile-desc">Input hasil produksi per mesin</div>
-        </div>
+<!-- RECEIVING PO ENTRY -->
+<div class="tile" onclick="window.location.href='receiving/'">
+  <div class="tile-icon">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b3b3b" stroke-width="2"
+      stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 16V8L12 3 3 8v8l9 5 9-5z"></path>
+      <line x1="12" y1="22" x2="12" y2="12"></line>
+    </svg>
+  </div>
+  <div class="tile-title">Receiving PO Entry</div>
+  <div class="tile-desc">Penerimaan material berdasarkan Purchase Order</div>
+</div>
 
-        <!-- COMING SOON -->
-        <div class="tile tile-disabled">
-          <div class="tile-title">Order Form</div>
-          <div class="tile-desc">Coming Soon</div>
-        </div>
 
-      </div>
+  <!-- PRODUCTION ENTRY -->
+  <div class="tile" onclick="window.location.href='production/'">
+    <div class="tile-icon">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b3b3b" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path
+          d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83">
+        </path>
+      </svg>
     </div>
-
+    <div class="tile-title">Production Entry</div>
+    <div class="tile-desc">Input hasil produksi per mesin & KPC</div>
   </div>
 
+  <!-- ORDER FORM -->
+  <div class="tile tile-disabled">
+    <div class="tile-icon">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
+        <line x1="14" y1="2" x2="14" y2="8"></line>
+      </svg>
+    </div>
+    <div class="tile-title">Order Form</div>
+    <div class="tile-desc">Coming Soon</div>
+  </div>
+
+</div>
+
+
   <script>
-    function login() {
-      // ambil input
-      let email = document.getElementById("email").value.trim();
-      let pass = document.getElementById("password").value.trim();
-
-      if (email === "" || pass === "") {
-        alert("Email dan password wajib diisi");
-        return;
-      }
-
-      // sukses login
-      document.getElementById("login-page").style.display = "none";
-      document.getElementById("sidebar").style.display = "flex";
-      document.getElementById("header").style.display = "block";
-      document.getElementById("home-page").style.display = "block";
-    }
-
     function showPage(page, element) {
       document.getElementById("home-page").style.display =
         page === "home" ? "block" : "none";
@@ -262,4 +242,5 @@
   </script>
 
 </body>
+
 </html>
