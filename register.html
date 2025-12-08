@@ -100,8 +100,9 @@
 
   <div id="msg" class="msg"></div>
 
-  <label>Username</label>
-  <input id="username">
+<label>Email</label>
+<input id="email" type="email">
+
 
   <label>Password</label>
   <input id="password" type="password">
@@ -127,7 +128,7 @@ function saveUsers(arr) {
 }
 
 function register() {
-  const u = username.value.trim();
+const u = email.value.trim();
   const p = password.value.trim();
   const p2 = password2.value.trim();
   const msg = document.getElementById("msg");
@@ -141,16 +142,17 @@ function register() {
 
   const users = getUsers();
 
-  if (users.some(x => x.username === u)) {
+if (users.some(x => x.email === u)) {
     show("Username sudah dipakai.", "error"); return;
   }
 
-  users.push({
-    username: u,
-    password: p,
-    approved: false,
-    role: "user"
-  });
+users.push({
+  email: u,
+  password: p,
+  approved: false,
+  role: "user"
+});
+
 
   saveUsers(users);
 
