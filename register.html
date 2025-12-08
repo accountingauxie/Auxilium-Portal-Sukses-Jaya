@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register – UXILIUM Portal</title>
+
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:Inter, sans-serif; }
+
+    body {
+      background:#f5f6fa;
+      height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:20px;
+    }
+
+    .card {
+      width:360px;
+      background:white;
+      padding:28px;
+      border-radius:16px;
+      box-shadow:0 6px 22px rgba(0,0,0,0.12);
+    }
+
+    img {
+      width:210px;
+      display:block;
+      margin:0 auto 10px;
+    }
+
+    h2 {
+      text-align:center;
+      margin-bottom:6px;
+      font-size:22px;
+    }
+
+    p {
+      text-align:center;
+      color:#666;
+      font-size:13px;
+      margin-bottom:20px;
+    }
+
+    label {
+      font-size:13px;
+      margin-bottom:4px;
+      display:block;
+    }
+
+    input {
+      width:100%;
+      padding:10px;
+      margin-bottom:14px;
+      border:1px solid #ddd;
+      border-radius:8px;
+      outline:none;
+      font-size:14px;
+    }
+
+    button {
+      width:100%;
+      padding:11px;
+      background:#2563eb;
+      color:white;
+      border:none;
+      border-radius:999px;
+      font-size:14px;
+      cursor:pointer;
+    }
+
+    a {
+      color:#2563eb;
+      text-decoration:none;
+      font-size:13px;
+    }
+
+    .msg {
+      padding:8px;
+      font-size:13px;
+      border-radius:8px;
+      margin-bottom:10px;
+      display:none;
+    }
+
+    .error { background:#fee2e2; color:#b91c1c; }
+    .success { background:#dcfce7; color:#166534; }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+  <img src="assets/auxilium_logo_pure_white_bg.png">
+
+  <h2>Daftar Akun Baru</h2>
+  <p>Akun kamu harus disetujui admin dulu sebelum bisa login.</p>
+
+  <div id="msg" class="msg"></div>
+
+  <label>Username</label>
+  <input id="username">
+
+  <label>Password</label>
+  <input id="password" type="password">
+
+  <label>Konfirmasi Password</label>
+  <input id="password2" type="password">
+
+  <button onclick="register()">Daftar</button>
+
+  <p style="margin-top:12px;">
+    Sudah punya akun? <a href="login.html">Masuk</a>
+  </p>
+</div>
+
+<script>
+function getUsers() {
+  const data = localStorage.getItem("uxilium_users");
+  return data ? JSON.parse(data) : [];
+}
+
+function saveUsers(arr) {
+  localStorage.setItem("uxilium_users", JSON.stringify(arr));
+}
+
+function register() {
+  const u = username.value.trim();
+  const p = password.value.trim();
+  const p2 = password2.value.trim();
+  const msg = document.getElementById("msg");
+
+  if (!u || !p) {
+    show("Semua field wajib diisi.", "error"); return;
+  }
+  if (p !== p2) {
+    show("Password tidak sama.", "error"); return;
+  }
+
+  const users = getUsers();
+
+  if (users.some(x => x.username === u)) {
+    show("Username sudah dipakai.", "error"); return;
+  }
+
+  users.push({
+    username: u,
+    password: p,
+    approved: false,
+    role: "user"
+  });
+
+  saveUsers(users);
+
+  show("Registrasi berhasil! Menunggu persetujuan admin.", "success");
+
+  setTimeout(() => {
+    window.location.href = "login.html";
+  }, 1400);
+}
+
+function show(text, type) {
+  msg.textContent = text;
+  msg.className = "msg " + type;
+  msg.style.display = "block";
+}
+</script>
+
+</body>
+</html>
