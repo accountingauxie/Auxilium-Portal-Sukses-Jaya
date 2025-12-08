@@ -46,6 +46,7 @@
       font-size:12px;
       font-weight:600;
     }
+
     .approved { background:#dcfce7; color:#166534; }
     .pending { background:#fef3c7; color:#92400e; }
     .admin { background:#dbeafe; color:#1d4ed8; }
@@ -85,12 +86,14 @@
 </div>
 
 <script>
+/* CEK ADMIN */
 const current = JSON.parse(localStorage.getItem("uxilium_current_user") || "null");
 if (!current || current.role !== "admin") {
   alert("Hanya admin yang boleh mengakses halaman ini.");
   window.location.href = "login.html";
 }
 
+/* NORMALISASI AKSES */
 function ensureAccess(user) {
   if (!user.access) {
     user.access = {
@@ -112,22 +115,19 @@ function saveUsers(arr) {
   localStorage.setItem("uxilium_users", JSON.stringify(arr));
 }
 
+/* RENDER USER TABLE */
 function renderUsers() {
   const users = getUsers();
   const list = document.getElementById("user-list");
   list.innerHTML = "";
 
-  users.forEach((u, i) => {
+  users.forEach((u, index) => {
     const tr = document.createElement("tr");
 
     tr.innerHTML = `
       <td>${u.email}</td>
-      <td><span class="badge ${u.approved ? "approved" : "pending"}">
-        ${u.approved ? "Approved" : "Pending"}
-      </span></td>
-      <td><span class="badge ${u.role === "admin" ? "admin" : ""}">
-        ${u.role}
-      </span></td>
+      <td><span class="badge ${u.approved ? "approved" : "pending"}">${u.approved ? "Approved" : "Pending"}</span></td>
+      <td><span class="badge ${u.role === "admin" ? "admin" : ""}">${u.role}</span></td>
       <td></td>
       <td></td>
       <td></td>
@@ -135,60 +135,61 @@ function renderUsers() {
     `;
 
     const cells = tr.querySelectorAll("td");
-    const cellRec = cells[3];
-    const cellFG  = cells[4];
-    const cellOF  = cells[5];
-    const cellAct = cells[6];
 
-    function makeAccessBtn(key, label, targetCell) {
-      const btn = document.createElement("button");
-      const on = !!u.access[key];
-      btn.className = "btn " + (on ? "btn-on" : "btn-off");
-      btn.textContent = (on ? "On " : "Off ") + label;
-      btn.onclick = () => toggleAccess(i, key);
-      targetCell.appendChild(btn);
-    }
-
-    makeAccessBtn("receiving", "Receiving", cellRec);
-    makeAccessBtn("finished_goods", "FG", cellFG);
-    makeAccessBtn("order_form", "Order", cellOF);
+    makeAccessToggle(cells[3], index, "receiving", "Receiving");
+    makeAccessToggle(cells[4], index, "finished_goods", "FG");
+    makeAccessToggle(cells[5], index, "order_form", "Order");
 
     if (u.role !== "admin") {
+      const btn = document.createElement("button");
       if (!u.approved) {
-        const b = document.createElement("button");
-        b.className = "btn btn-approve";
-        b.textContent = "Approve";
-        b.onclick = () => setApprove(i, true);
-        cellAct.appendChild(b);
+        btn.className = "btn btn-approve";
+        btn.textContent = "Approve";
+        btn.onclick = () => setApprove(index, true);
       } else {
-        const b = document.createElement("button");
-        b.className = "btn btn-pending";
-        b.textContent = "Set Pending";
-        b.onclick = () => setApprove(i, false);
-        cellAct.appendChild(b);
+        btn.className = "btn btn-pending";
+        btn.textContent = "Set Pending";
+        btn.onclick = () => setApprove(index, false);
       }
+      cells[6].appendChild(btn);
     } else {
-      cellAct.textContent = "—";
+      cells[6].textContent = "—";
     }
 
     list.appendChild(tr);
   });
 }
 
-function toggleAccess(index, key) {
+/* TOGGLE AKSES */
+function makeAccessToggle(cell, index, key, label) {
   const users = getUsers();
-  users[index].access[key] = !users[index].access[key];
+  const user = users[index];
+
+  const btn = document.createElement("button");
+  const state = user.access[key];
+
+  btn.className = "btn " + (state ? "btn-on" : "btn-off");
+  btn.textContent = (state ? "On " : "Off ") + label;
+
+  btn.onclick = () => {
+    const users2 = getUsers();
+    users2[index].access[key] = !users2[index].access[key];
+    saveUsers(users2);
+    renderUsers();
+  };
+
+  cell.appendChild(btn);
+}
+
+/* APPROVE / PENDING */
+function setApprove(index, status) {
+  const users = getUsers();
+  users[index].approved = status;
   saveUsers(users);
   renderUsers();
 }
 
-function setApprove(index, val) {
-  const users = getUsers();
-  users[index].approved = val;
-  saveUsers(users);
-  renderUsers();
-}
-
+/* LOGOUT */
 function logout() {
   localStorage.removeItem("uxilium_current_user");
   window.location.href = "login.html";
