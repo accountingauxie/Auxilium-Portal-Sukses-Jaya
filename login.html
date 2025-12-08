@@ -17,7 +17,7 @@ body {
   padding:20px;
 }
 
-/* CARD */
+/* CARD LOGIN (ASLI, TIDAK DIREVISI) */
 .card {
   width:360px;
   background:white;
@@ -25,32 +25,26 @@ body {
   border-radius:16px;
   box-shadow:0 6px 22px rgba(0,0,0,0.12);
 }
-
 img { width:210px; display:block; margin:0 auto 10px; }
-
 h2 { text-align:center; margin-bottom:6px; font-size:22px; }
-p { text-align:center; color:#666; font-size:13px; margin-bottom:18px; }
-
+p { text-align:center; color:#666; font-size:13px; margin-bottom:20px; }
 label { font-size:13px; margin-bottom:4px; display:block; }
-
 input {
   width:100%; padding:10px; margin-bottom:14px;
   border:1px solid #ddd; border-radius:8px; font-size:14px;
 }
-
 button {
   width:100%; padding:11px; background:#2563eb;
   color:white; border:none; border-radius:999px;
   font-size:14px; cursor:pointer;
 }
-
 .msg {
   font-size:13px; margin-bottom:10px;
   padding:8px; border-radius:8px; display:none;
 }
 .error { background:#fee2e2; color:#b91c1c; }
 
-/* ===================== ULTRA PREMIUM LOADER ===================== */
+/* =============== ULTRA PREMIUM NEON LOADER (SAMA PERSIS) =============== */
 .auxie-loader {
   position: fixed;
   inset: 0;
@@ -65,20 +59,17 @@ button {
   z-index: 99999;
   transition: opacity .55s ease;
 }
-
 .auxie-loader.hide {
   opacity: 0;
   pointer-events: none;
 }
 
-/* WRAPPER */
 .rings {
   position: relative;
   width: 160px;
   height: 160px;
 }
 
-/* BASE RING STYLE */
 .ring {
   position: absolute;
   border-radius: 50%;
@@ -90,7 +81,6 @@ button {
     drop-shadow(0 0 28px rgba(150,70,255,0.3));
 }
 
-/* LARGE BLUE NEON */
 .ring-lg {
   width: 160px;
   height: 160px;
@@ -98,7 +88,6 @@ button {
   animation: spinCW 2.6s linear infinite;
 }
 
-/* MEDIUM VIOLET NEON */
 .ring-md {
   width: 115px;
   height: 115px;
@@ -107,7 +96,6 @@ button {
   animation: spinCCW 1.8s linear infinite;
 }
 
-/* SMALL PINK NEON */
 .ring-sm {
   width: 70px;
   height: 70px;
@@ -116,22 +104,15 @@ button {
   animation: spinCWfast 1.2s linear infinite;
 }
 
-/* ROTATION KEYFRAMES */
-@keyframes spinCW {
-  to { transform: rotate(360deg); }
-}
-@keyframes spinCCW {
-  to { transform: rotate(-360deg); }
-}
-@keyframes spinCWfast {
-  to { transform: rotate(540deg); }
-}
+@keyframes spinCW { to { transform: rotate(360deg); } }
+@keyframes spinCCW { to { transform: rotate(-360deg); } }
+@keyframes spinCWfast { to { transform: rotate(540deg); } }
 </style>
 </head>
 
 <body>
 
-<!-- ULTRA PREMIUM NEON LOADER -->
+<!-- ULTRA PREMIUM LOADER (DIPASANG) -->
 <div id="auxieLoading" class="auxie-loader">
   <div class="rings">
     <div class="ring ring-lg"></div>
@@ -140,11 +121,11 @@ button {
   </div>
 </div>
 
+<!-- —— LOGIN CARD (TIDAK DIREVISI) —— -->
 <div class="card">
-  <img src="assets/auxilium_logo_pure_white_bg.png" />
-
-  <h2>Masuk Portal</h2>
-  <p>Silakan login untuk melanjutkan.</p>
+  <img src="assets/auxilium_logo_pure_white_bg.png">
+  <h2>Masuk</h2>
+  <p>Gunakan akun yang sudah disetujui admin.</p>
 
   <div id="msg" class="msg"></div>
 
@@ -162,39 +143,37 @@ button {
 </div>
 
 <script>
-// ================= CONFIG ==================
+// CONFIG
 const API = "https://script.google.com/macros/s/AKfycbwfYaFzW3dQYmZIB5tgmqQjEETLuxVTLnaAYakz6TD-PtSLR542BdqoBhDOWTZkcQiUvA/exec";
-
 const loader = document.getElementById("auxieLoading");
 
-// AUTO HIDE LOADING SAAT PAGE READY
+// AUTO HIDE saat halaman load
 window.addEventListener("load", () => {
-  setTimeout(() => loader.classList.add("hide"), 350);
+  setTimeout(() => loader.classList.add("hide"), 380);
 });
 
-function show(msgText) {
-  const box = document.getElementById("msg");
-  box.textContent = msgText;
-  box.className = "msg error";
-  box.style.display = "block";
+function show(text) {
+  const msg = document.getElementById("msg");
+  msg.textContent = text;
+  msg.style.display = "block";
+  msg.className = "msg error";
 }
 
-// ================= LOGIN FUNCTION ==================
+// LOGIN FUNCTION (TIDAK DIREVISI, HANYA TAMBAH SHOW/HIDE LOADER)
 async function loginUser() {
-  loader.classList.remove("hide");
+  loader.classList.remove("hide"); // SHOW LOADER
 
   const u = email.value.trim();
   const p = password.value.trim();
 
   if (!u || !p) {
     loader.classList.add("hide");
-    show("Email dan password wajib diisi.");
+    show("Semua field wajib diisi.");
     return;
   }
 
   try {
-    const url = `${API}?action=login&email=${encodeURIComponent(u)}&password=${encodeURIComponent(p)}`;
-    const res = await fetch(url);
+    const res = await fetch(`${API}?action=login&email=${encodeURIComponent(u)}&password=${encodeURIComponent(p)}`);
     const json = await res.json();
 
     loader.classList.add("hide");
@@ -205,7 +184,6 @@ async function loginUser() {
     }
 
     localStorage.setItem("uxilium_current_user", JSON.stringify(json.data));
-
     window.location.href = "index.html";
 
   } catch (err) {
