@@ -85,60 +85,132 @@ Belum punya akun? <a href="register.html">Daftar</a>
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbz9f2k0J61tNTMBc_j2sqcxoNaFvIpXCT3MCFcbBEfY_a3pYbP3qAVeDj9tSpZxpsn6ug/exec"; // ganti dengan URL Web App
-
-function showMsg(text, type) {
-  const msg = document.getElementById("msg");
-  msg.textContent = text;
-  msg.className = "msg " + type;
-  msg.style.display = "block";
+function ensureAccess(user) {
+if (!user.access) {
+user.access = {
+receiving: user.role === "admin",
+finished_goods: user.role === "admin",
+order_form: user.role === "admin"
+};
+}
+return user;
 }
 
-async function login() {
-  const u = email.value.trim();
-  const p = password.value.trim();
-
-  if (!u || !p) {
-    showMsg("Email dan password wajib diisi.", "error");
-    return;
-  }
-
-  try {
-    const res = await fetch(API_URL + "?action=login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: u, password: p })
-    });
-
-    const data = await res.json();
-
-    if (!data.success) {
-      showMsg(data.message || "Login gagal.", "error");
-      return;
-    }
-
-    // simpan session
-    localStorage.setItem("uxilium_current_user", JSON.stringify(data.user));
-    showMsg("Login berhasil!", "success");
-
-    setTimeout(() => {
-      const role = (data.user.role || "").toLowerCase();
-      if (role === "owner" || role === "admin") {
-        window.location.href = "admin.html";
-      } else {
-        window.location.href = "index.html";
-      }
-    }, 700);
-
-  } catch (err) {
-    console.error(err);
-    showMsg("Terjadi kesalahan koneksi ke server.", "error");
-  }
+/* ADMIN DEFAULT */
+if (!localStorage.getItem("uxilium_users")) {
+const admin = ensureAccess({
+email: "accounting@auxie.id",
+password: "Moscato123!",
+approved: true,
+role: "admin"
+});
+localStorage.setItem("uxilium_users", JSON.stringify([admin]));
 }
 
-/* ANIMASI BACKGROUND – tetap sama seperti file kamu */
+function getUsers() {
+const raw = localStorage.getItem("uxilium_users");
+const arr = raw ? JSON.parse(raw) : [];
+return arr.map(ensureAccess);
+}
+
+function saveUsers(arr) {
+localStorage.setItem("uxilium_users", JSON.stringify(arr));
+}
+
+function login() {
+const u = email.value.trim();
+const p = password.value.trim();
+const msg = document.getElementById("msg");
+
+const users = getUsers();
+const user = users.find(x => x.email === u && x.password === p);
+
+if (!user) {
+msg.textContent = "Email atau password salah.";
+msg.className = "msg error"; msg.style.display = "block";
+return;
+}
+
+if (!user.approved && user.role !== "admin") {
+msg.textContent = "Akun belum disetujui admin.";
+msg.className = "msg error"; msg.style.display = "block";
+return;
+}
+
+localStorage.setItem("uxilium_current_user", JSON.stringify(user));
+saveUsers(users); // pastikan versi normalize tersimpan
+
+msg.textContent = "Login berhasil!";
+msg.className = "msg success"; msg.style.display = "block";
+
+setTimeout(() => {
+if (user.role === "admin") window.location.href = "admin.html";
+else window.location.href = "index.html";
+}, 700);
+}
+
+/* ANIMASI BACKGROUND */
+const canvas = document.getElementById("bg-canvas");
+const ctx = canvas.getContext("2d");
+let W, H;
+
+function resize() {
+W = canvas.width = window.innerWidth;
+H = canvas.height = window.innerHeight;
+}
+resize();
+window.onresize = resize;
+
+const dots = [];
+for (let i = 0; i < 45; i++) {
+dots.push({
+x: Math.random() * W,
+y: Math.random() * H,
+r: 4 + Math.random() * 10,
+dx: (Math.random() - 0.5) * 0.7,
+dy: (Math.random() - 0.5) * 0.7
+});
+}
+
+let mouse = { x: null, y: null };
+window.onmousemove = e => (mouse = { x: e.x, y: e.y });
+window.onmouseleave = () => (mouse = { x: null, y: null });
+
+function animate() {
+ctx.clearRect(0, 0, W, H);
+ctx.fillStyle = "#fff";
+ctx.fillRect(0, 0, W, H);
+
+dots.forEach(d => {
+d.x += d.dx;
+d.y += d.dy;
+
+if (d.x < 0 || d.x > W || d.y < 0 || d.y > H) {
+d.x = Math.random() * W;
+d.y = Math.random() * H;
+}
+
+if (mouse.x != null) {
+const dx = d.x - mouse.x;
+const dy = d.y - mouse.y;
+const dist = Math.sqrt(dx * dx + dy * dy);
+
+if (dist < 150) {
+d.x += dx / dist * 2;
+d.y += dy / dist * 2;
+}
+}
+
+ctx.beginPath();
+ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+ctx.fillStyle = "rgba(120,150,255,0.5)";
+ctx.fill();
+});
+
+requestAnimationFrame(animate);
+}
+animate();
 </script>
-
 
 </body>
 </html>
