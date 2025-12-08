@@ -97,7 +97,6 @@ function ensureAccess(user) {
 }
 
 /* ADMIN DEFAULT */
-  localStorage.clear();
 if (!localStorage.getItem("uxilium_users")) {
   const admin = ensureAccess({
     email: "accounting@auxie.id",
