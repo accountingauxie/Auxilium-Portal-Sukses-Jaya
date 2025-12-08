@@ -78,53 +78,58 @@ Sudah punya akun? <a href="login.html">Masuk</a>
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbz9f2k0J61tNTMBc_j2sqcxoNaFvIpXCT3MCFcbBEfY_a3pYbP3qAVeDj9tSpZxpsn6ug/exec"; // sama dengan login
+function ensureAccess(user) {
+if (!user.access) {
+user.access = {
+receiving: false,
+finished_goods: false,
+order_form: false
+};
+}
+return user;
+}
+
+function getUsers() {
+const raw = localStorage.getItem("uxilium_users");
+const arr = raw ? JSON.parse(raw) : [];
+return arr.map(ensureAccess);
+}
+
+function saveUsers(arr) {
+localStorage.setItem("uxilium_users", JSON.stringify(arr));
+}
+
+function registerUser() {
+const u = email.value.trim();
+const p = password.value.trim();
+const p2 = password2.value.trim();
+const msg = document.getElementById("msg");
+
+if (!u || !p) return show("Semua field wajib diisi.", "error");
+if (p !== p2) return show("Password tidak cocok.", "error");
+
+const users = getUsers();
+if (users.some(x => x.email === u)) return show("Email sudah digunakan.", "error");
+
+users.push(ensureAccess({
+email: u,
+password: p,
+approved: false,
+role: "user"
+}));
+
+saveUsers(users);
+show("Registrasi berhasil! Menunggu persetujuan admin.", "success");
+
+setTimeout(() => (window.location.href = "login.html"), 1300);
+}
 
 function show(text, type) {
-  const msg = document.getElementById("msg");
-  msg.textContent = text;
-  msg.className = "msg " + type;
-  msg.style.display = "block";
-}
-
-async function registerUser() {
-  const u = email.value.trim();
-  const p = password.value.trim();
-  const p2 = password2.value.trim();
-
-  if (!u || !p || !p2) {
-    show("Semua field wajib diisi.", "error");
-    return;
-  }
-  if (p !== p2) {
-    show("Password tidak cocok.", "error");
-    return;
-  }
-
-  try {
-    const res = await fetch(API_URL + "?action=register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: u, password: p })
-    });
-
-    const data = await res.json();
-
-    if (!data.success) {
-      show(data.message || "Registrasi gagal.", "error");
-      return;
-    }
-
-    show(data.message || "Registrasi berhasil.", "success");
-    setTimeout(() => (window.location.href = "login.html"), 1300);
-
-  } catch (err) {
-    console.error(err);
-    show("Terjadi kesalahan koneksi ke server.", "error");
-  }
+msg.textContent = text;
+msg.className = "msg " + type;
+msg.style.display = "block";
 }
 </script>
-
 
 </body>
 </html>
