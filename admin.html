@@ -7,7 +7,6 @@
 
 <style>
 * { margin:0; padding:0; box-sizing:border-box; font-family:Inter,sans-serif; }
-
 body { background:#f5f6fa; min-height:100vh; }
 
 .topbar {
@@ -119,7 +118,6 @@ th { background:#f9fafb; font-weight:600; }
 @keyframes spinCW { to { transform: rotate(360deg); } }
 @keyframes spinCCW { to { transform: rotate(-360deg); } }
 @keyframes spinCWfast { to { transform: rotate(540deg); } }
-
 </style>
 </head>
 
@@ -140,7 +138,16 @@ th { background:#f9fafb; font-weight:600; }
 </div>
 
 <div class="container">
-  <h2>Daftar User</h2>
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <h2>Daftar User</h2>
+    <a href="https://docs.google.com/spreadsheets/d/1BvVWgRivCOx_PZzzj5cLhS8zHG6cUvCjdFqm6vLvHpM/edit?gid=0#gid=0" 
+       target="_blank" 
+       title="Open Google Spreadsheet"
+       style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+      <img src="https://www.gstatic.com/images/branding/product/1x/sheets_48dp.png" 
+           alt="Open Spreadsheet" width="22" height="22" />
+    </a>
+  </div>
 
   <table>
     <thead>
@@ -166,26 +173,22 @@ window.addEventListener("load", () => {
   setTimeout(() => loader.classList.add("hide"), 300);
 });
 
-// ================= CONFIG & AUTH =================
 const API = "https://script.google.com/macros/s/AKfycbwfYaFzW3dQYmZIB5tgmqQjEETLuxVTLnaAYakz6TD-PtSLR542BdqoBhDOWTZkcQiUvA/exec";
-
 const current = JSON.parse(localStorage.getItem("uxilium_current_user") || "null");
+
 if (!current || current.role !== "admin") {
   alert("Hanya admin yang boleh mengakses halaman ini.");
   window.location.href = "login.html";
 }
 
-// ================= LOAD USER LIST =================
 async function loadUsers() {
   loader.classList.remove("hide");
-
   const list = document.getElementById("user-list");
   list.innerHTML = "<tr><td colspan='7'>Loading...</td></tr>";
 
   try {
     const res = await fetch(`${API}?action=list`);
     const json = await res.json();
-
     loader.classList.add("hide");
 
     if (!json.ok) {
@@ -200,7 +203,6 @@ async function loadUsers() {
   }
 }
 
-// ================= RENDER USER LIST =================
 function renderUsers(users) {
   const list = document.getElementById("user-list");
   list.innerHTML = "";
@@ -256,7 +258,6 @@ function renderUsers(users) {
   });
 }
 
-// ================= ACTIONS =================
 async function setApprove(email, val) {
   loader.classList.remove("hide");
 
@@ -268,7 +269,6 @@ async function setApprove(email, val) {
     loader.classList.add("hide");
 
     if (!json.ok) return alert("Gagal update status.");
-
     loadUsers();
   } catch {
     loader.classList.add("hide");
@@ -287,7 +287,6 @@ async function toggleAccess(email, key) {
     loader.classList.add("hide");
 
     if (!json.ok) return alert("Gagal update akses.");
-
     loadUsers();
   } catch {
     loader.classList.add("hide");
@@ -295,7 +294,6 @@ async function toggleAccess(email, key) {
   }
 }
 
-// ================= LOGOUT =================
 function logout() {
   localStorage.removeItem("uxilium_current_user");
   window.location.href = "login.html";
