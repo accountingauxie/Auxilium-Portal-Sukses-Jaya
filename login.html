@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Login – AUXILIUM Portal</title>
+<title>Register – AUXILIUM Portal</title>
 
 <style>
 * { margin:0; padding:0; box-sizing:border-box; font-family:Inter, sans-serif; }
@@ -17,7 +17,7 @@ body {
   padding:20px;
 }
 
-/* CARD LOGIN (ASLI, TIDAK DIREVISI) */
+/* CARD */
 .card {
   width:360px;
   background:white;
@@ -43,8 +43,9 @@ button {
   padding:8px; border-radius:8px; display:none;
 }
 .error { background:#fee2e2; color:#b91c1c; }
+.success { background:#dcfce7; color:#166534; }
 
-/* =============== ULTRA PREMIUM NEON LOADER (SAMA PERSIS) =============== */
+/* ===================== ULTRA PREMIUM LOADER ===================== */
 .auxie-loader {
   position: fixed;
   inset: 0;
@@ -64,12 +65,14 @@ button {
   pointer-events: none;
 }
 
+/* WRAPPER */
 .rings {
   position: relative;
   width: 160px;
   height: 160px;
 }
 
+/* BASE RING STYLE */
 .ring {
   position: absolute;
   border-radius: 50%;
@@ -81,6 +84,7 @@ button {
     drop-shadow(0 0 28px rgba(150,70,255,0.3));
 }
 
+/* LARGE BLUE NEON */
 .ring-lg {
   width: 160px;
   height: 160px;
@@ -88,6 +92,7 @@ button {
   animation: spinCW 2.6s linear infinite;
 }
 
+/* MEDIUM VIOLET NEON */
 .ring-md {
   width: 115px;
   height: 115px;
@@ -96,6 +101,7 @@ button {
   animation: spinCCW 1.8s linear infinite;
 }
 
+/* SMALL PINK NEON */
 .ring-sm {
   width: 70px;
   height: 70px;
@@ -104,15 +110,22 @@ button {
   animation: spinCWfast 1.2s linear infinite;
 }
 
-@keyframes spinCW { to { transform: rotate(360deg); } }
-@keyframes spinCCW { to { transform: rotate(-360deg); } }
-@keyframes spinCWfast { to { transform: rotate(540deg); } }
+/* ROTATION KEYFRAMES */
+@keyframes spinCW {
+  to { transform: rotate(360deg); }
+}
+@keyframes spinCCW {
+  to { transform: rotate(-360deg); }
+}
+@keyframes spinCWfast {
+  to { transform: rotate(540deg); }
+}
 </style>
 </head>
 
 <body>
 
-<!-- ULTRA PREMIUM LOADER (DIPASANG) -->
+<!-- ULTRA PREMIUM NEON LOADER -->
 <div id="auxieLoading" class="auxie-loader">
   <div class="rings">
     <div class="ring ring-lg"></div>
@@ -121,11 +134,10 @@ button {
   </div>
 </div>
 
-<!-- —— LOGIN CARD (TIDAK DIREVISI) —— -->
 <div class="card">
   <img src="assets/auxilium_logo_pure_white_bg.png">
-  <h2>Masuk</h2>
-  <p>Gunakan akun yang sudah disetujui admin.</p>
+  <h2>Daftar Akun Baru</h2>
+  <p>Akun akan menunggu persetujuan admin.</p>
 
   <div id="msg" class="msg"></div>
 
@@ -135,60 +147,78 @@ button {
   <label>Password</label>
   <input id="password" type="password">
 
-  <button onclick="loginUser()">Masuk</button>
+  <label>Ulangi Password</label>
+  <input id="password2" type="password">
+
+  <button onclick="registerUser()">Daftar</button>
 
   <p style="margin-top:12px;">
-    Belum punya akun? <a href="register.html">Daftar</a>
+    Sudah punya akun? <a href="login.html">Masuk</a>
   </p>
 </div>
 
 <script>
-// CONFIG
+// ================= CONFIG ==================
 const API = "https://script.google.com/macros/s/AKfycbwfYaFzW3dQYmZIB5tgmqQjEETLuxVTLnaAYakz6TD-PtSLR542BdqoBhDOWTZkcQiUvA/exec";
+
 const loader = document.getElementById("auxieLoading");
 
-// AUTO HIDE saat halaman load
+// AUTO HIDE when page ready
 window.addEventListener("load", () => {
   setTimeout(() => loader.classList.add("hide"), 380);
 });
 
-function show(text) {
+function show(text, type) {
   const msg = document.getElementById("msg");
   msg.textContent = text;
+  msg.className = "msg " + type;
   msg.style.display = "block";
-  msg.className = "msg error";
 }
 
-// LOGIN FUNCTION (TIDAK DIREVISI, HANYA TAMBAH SHOW/HIDE LOADER)
-async function loginUser() {
-  loader.classList.remove("hide"); // SHOW LOADER
+// ================= REGISTER ==================
+async function registerUser() {
+  loader.classList.remove("hide");
 
   const u = email.value.trim();
   const p = password.value.trim();
+  const p2 = password2.value.trim();
 
-  if (!u || !p) {
+  if (!u || !p || !p2) {
     loader.classList.add("hide");
-    show("Semua field wajib diisi.");
+    show("Semua field wajib diisi.", "error");
+    return;
+  }
+  if (p !== p2) {
+    loader.classList.add("hide");
+    show("Password tidak cocok.", "error");
     return;
   }
 
   try {
-    const res = await fetch(`${API}?action=login&email=${encodeURIComponent(u)}&password=${encodeURIComponent(p)}`);
-    const json = await res.json();
+    const params = new URLSearchParams();
+    params.append("email", u);
+    params.append("password", p);
 
+    const res = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params.toString()
+    });
+
+    const json = await res.json();
     loader.classList.add("hide");
 
     if (!json.ok) {
-      show(json.error || "Login gagal.");
+      show(json.error || "Registrasi gagal.", "error");
       return;
     }
 
-    localStorage.setItem("uxilium_current_user", JSON.stringify(json.data));
-    window.location.href = "index.html";
+    show("Registrasi berhasil! Menunggu persetujuan admin.", "success");
+    setTimeout(() => (window.location.href = "login.html"), 1200);
 
   } catch (err) {
     loader.classList.add("hide");
-    show("Terjadi kesalahan koneksi ke server.");
+    show("Terjadi kesalahan koneksi ke server.", "error");
   }
 }
 </script>
