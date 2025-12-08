@@ -85,71 +85,76 @@
 </div>
 
 <script>
-function ensureAccess(user) {
-  if (!user.access) {
-    user.access = {
-      receiving: user.role === "admin",
-      finished_goods: user.role === "admin",
-      order_form: user.role === "admin"
-    };
-  }
-  return user;
+// ===========================
+// GOOGLE SHEETS API URL
+// ===========================
+const API_URL =
+"https://script.google.com/macros/s/AKfycbwN0utWHD8LSdGPkVx5bzgxkkZ3fup7W7i0a58G1bW6c3b2YlSAWCQFw2H3Sc9nhRKErA/exec";
+
+// ===========================
+// HASH PASSWORD (SHA-256)
+// ===========================
+async function sha256(str) {
+  const buf = new TextEncoder().encode(str);
+  const hash = await crypto.subtle.digest("SHA-256", buf);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
-/* ADMIN DEFAULT */
-if (!localStorage.getItem("uxilium_users")) {
-  const admin = ensureAccess({
-    email: "accounting@auxie.id",
-    password: "Moscato123!",
-    approved: true,
-    role: "admin"
-  });
-  localStorage.setItem("uxilium_users", JSON.stringify([admin]));
-}
-
-function getUsers() {
-  const raw = localStorage.getItem("uxilium_users");
-  const arr = raw ? JSON.parse(raw) : [];
-  return arr.map(ensureAccess);
-}
-
-function saveUsers(arr) {
-  localStorage.setItem("uxilium_users", JSON.stringify(arr));
-}
-
-function login() {
+// ===========================
+// LOGIN FUNCTION
+// ===========================
+async function login() {
   const u = email.value.trim();
   const p = password.value.trim();
   const msg = document.getElementById("msg");
 
-  const users = getUsers();
-  const user = users.find(x => x.email === u && x.password === p);
+  msg.style.display = "none";
 
-  if (!user) {
-    msg.textContent = "Email atau password salah.";
-    msg.className = "msg error"; msg.style.display = "block";
+  if (!u || !p) {
+    msg.textContent = "Harap isi email dan password.";
+    msg.className = "msg error";
+    msg.style.display = "block";
     return;
   }
 
-  if (!user.approved && user.role !== "admin") {
-    msg.textContent = "Akun belum disetujui admin.";
-    msg.className = "msg error"; msg.style.display = "block";
+  const hashed = await sha256(p);
+
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action: "login",
+      email: u,
+      password: p,   // server akan hash ulang & cocokkan
+    })
+  });
+
+  const data = await res.json();
+
+  if (!data.ok) {
+    msg.textContent = data.message || "Login gagal.";
+    msg.className = "msg error";
+    msg.style.display = "block";
     return;
   }
-
-  localStorage.setItem("uxilium_current_user", JSON.stringify(user));
-  saveUsers(users); // pastikan versi normalize tersimpan
 
   msg.textContent = "Login berhasil!";
-  msg.className = "msg success"; msg.style.display = "block";
+  msg.className = "msg success";
+  msg.style.display = "block";
 
+  // Simpan user login
+  localStorage.setItem("uxilium_current_user", JSON.stringify(data.user));
+
+  // Redirect based on role
   setTimeout(() => {
-    if (user.role === "admin") window.location.href = "admin.html";
+    if (data.user.role === "admin") window.location.href = "admin.html";
     else window.location.href = "index.html";
   }, 700);
 }
 
-/* ANIMASI BACKGROUND */
+// ===========================
+// BACKGROUND ANIMATION
+// ===========================
 const canvas = document.getElementById("bg-canvas");
 const ctx = canvas.getContext("2d");
 let W, H;
