@@ -116,19 +116,30 @@ body {
 .menu-item:hover { background: #f1f1f1; }
 .menu-active { background: #e8f0ff !important; color: #0a4cc5; font-weight: 600; }
 
-/* ===================== HEADER ===================== */
+/* ===================== HEADER (FIXED FLEX) ===================== */
 .header {
-  background: #ffffff; padding: 18px 32px; padding-left: 300px;
-  border-bottom: 1px solid #ececec; font-size: 20px; font-weight: 700;
-  color: #1a1a1a; position: sticky; top: 0; z-index: 10;
+  background: #ffffff;
+  padding: 18px 32px;
+  padding-left: 300px;
+  padding-right: 40px;
+
+  border-bottom: 1px solid #ececec;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  position: sticky;
+  top: 0;
+  z-index: 10;
   backdrop-filter: blur(8px);
 }
 
 /* LOGOUT ICON */
 .logout-btn {
-  position: absolute;
-  right: 34px;
-  top: 18px;
   padding: 8px;
   cursor: pointer;
   border-radius: 8px;
@@ -160,7 +171,6 @@ h2 { margin-top: 0; font-size: 26px; font-weight: 700; }
 .tile:hover { transform: translateY(-5px); box-shadow: 0 10px 28px rgba(0,0,0,0.12); }
 .tile-disabled { background:#f1f1f1; opacity:0.6; cursor:not-allowed; transform:none; }
 
-/* TEXT */
 .tile-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
 .tile-desc { font-size: 14px; color: #6f6f6f; }
 .tile-icon { margin-bottom: 18px; }
@@ -202,7 +212,7 @@ h2 { margin-top: 0; font-size: 26px; font-weight: 700; }
 
 <div class="main">
   <div class="header">
-    CV. SUKSES JAYA
+    <span>CV. SUKSES JAYA</span>
 
     <!-- LOGOUT ICON -->
     <div class="logout-btn" onclick="openLogoutDialog()">
@@ -225,7 +235,7 @@ h2 { margin-top: 0; font-size: 26px; font-weight: 700; }
 
     <div class="grid">
 
-      <!-- RECEIVING -->
+      <!-- RECEIVING MODULE -->
       <div class="tile" id="tile-receiving" onclick="window.location.href='receiving/'">
         <div class="tile-icon">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
@@ -239,7 +249,7 @@ h2 { margin-top: 0; font-size: 26px; font-weight: 700; }
         <div class="tile-desc">Penerimaan material berdasarkan Purchase Order</div>
       </div>
 
-      <!-- PRODUCTION -->
+      <!-- PRODUCTION ENTRY -->
       <div class="tile" id="tile-finished-goods" onclick="window.location.href='production/'">
         <div class="tile-icon">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
@@ -261,7 +271,7 @@ h2 { margin-top: 0; font-size: 26px; font-weight: 700; }
       </div>
 
       <!-- ORDER FORM -->
-      <div class="tile tile-disabled" id="tile-order-form">
+      <div class="tile" id="tile-order-form">
         <div class="tile-icon">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
                stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
