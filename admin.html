@@ -55,10 +55,84 @@ th { background:#f9fafb; font-weight:600; }
 .btn-off { background:#e5e7eb; color:#374151; }
 .btn-approve { background:#22c55e; color:white; }
 .btn-pending { background:#fca5a5; color:#991b1b; }
+
+/* ===================== ULTRA PREMIUM LOADER ===================== */
+.auxie-loader {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center,
+    rgba(255,255,255,1) 0%,
+    rgba(245,245,255,0.95) 40%,
+    rgba(235,240,255,0.92) 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(12px);
+  z-index: 99999;
+  transition: opacity .55s ease;
+}
+.auxie-loader.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rings {
+  position: relative;
+  width: 160px;
+  height: 160px;
+}
+
+.ring {
+  position: absolute;
+  border-radius: 50%;
+  border-style: solid;
+  border-width: 6px;
+  filter:
+    drop-shadow(0 0 8px rgba(0,255,255,0.45))
+    drop-shadow(0 0 16px rgba(220,0,255,0.35))
+    drop-shadow(0 0 28px rgba(150,70,255,0.3));
+}
+
+.ring-lg {
+  width: 160px;
+  height: 160px;
+  border-color: rgba(0,180,255,1) transparent transparent transparent;
+  animation: spinCW 2.6s linear infinite;
+}
+
+.ring-md {
+  width: 115px;
+  height: 115px;
+  top: 22px; left: 22px;
+  border-color: rgba(210,90,255,0.95) transparent transparent transparent;
+  animation: spinCCW 1.8s linear infinite;
+}
+
+.ring-sm {
+  width: 70px;
+  height: 70px;
+  top: 45px; left: 45px;
+  border-color: rgba(255,70,140,1) transparent transparent transparent;
+  animation: spinCWfast 1.2s linear infinite;
+}
+
+@keyframes spinCW { to { transform: rotate(360deg); } }
+@keyframes spinCCW { to { transform: rotate(-360deg); } }
+@keyframes spinCWfast { to { transform: rotate(540deg); } }
+
 </style>
 </head>
 
 <body>
+
+<!-- PREMIUM LOADER -->
+<div id="auxieLoading" class="auxie-loader">
+  <div class="rings">
+    <div class="ring ring-lg"></div>
+    <div class="ring ring-md"></div>
+    <div class="ring ring-sm"></div>
+  </div>
+</div>
 
 <div class="topbar">
   <h1>Admin Panel – AUXILIUM Portal</h1>
@@ -85,6 +159,13 @@ th { background:#f9fafb; font-weight:600; }
 </div>
 
 <script>
+const loader = document.getElementById("auxieLoading");
+
+// Hide loader after load
+window.addEventListener("load", () => {
+  setTimeout(() => loader.classList.add("hide"), 300);
+});
+
 // ================= CONFIG & AUTH =================
 const API = "https://script.google.com/macros/s/AKfycbyoaUOABCo4H2LVn4ufnvHWznko2rNrkHPKQaIZiPg0o8ipuxxtGLysxZdRJGVhHQAOmw/exec";
 
@@ -94,8 +175,10 @@ if (!current || current.role !== "admin") {
   window.location.href = "login.html";
 }
 
-// ================= RENDER USER LIST =================
+// ================= LOAD USER LIST =================
 async function loadUsers() {
+  loader.classList.remove("hide");
+
   const list = document.getElementById("user-list");
   list.innerHTML = "<tr><td colspan='7'>Loading...</td></tr>";
 
@@ -103,19 +186,21 @@ async function loadUsers() {
     const res = await fetch(`${API}?action=list`);
     const json = await res.json();
 
+    loader.classList.add("hide");
+
     if (!json.ok) {
       list.innerHTML = "<tr><td colspan='7'>Gagal memuat data user.</td></tr>";
-      console.error(json.error);
       return;
     }
 
     renderUsers(json.data);
   } catch (err) {
-    console.error(err);
+    loader.classList.add("hide");
     list.innerHTML = "<tr><td colspan='7'>Error koneksi ke server.</td></tr>";
   }
 }
 
+// ================= RENDER USER LIST =================
 function renderUsers(users) {
   const list = document.getElementById("user-list");
   list.innerHTML = "";
@@ -128,13 +213,8 @@ function renderUsers(users) {
       <td><span class="badge ${u.approved ? "approved" : "pending"}">
         ${u.approved ? "Approved" : "Pending"}
       </span></td>
-      <td><span class="badge ${u.role === "admin" ? "admin" : ""}">
-        ${u.role}
-      </span></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
+      <td><span class="badge ${u.role === "admin" ? "admin" : ""}">${u.role}</span></td>
+      <td></td><td></td><td></td><td></td>
     `;
 
     const cells = tr.querySelectorAll("td");
@@ -143,18 +223,18 @@ function renderUsers(users) {
     const cellOF  = cells[5];
     const cellAct = cells[6];
 
-    function makeAccessBtn(key, label, targetCell) {
+    function makeBtn(key, label, target) {
       const btn = document.createElement("button");
       const on = !!(u.access && u.access[key]);
       btn.className = "btn " + (on ? "btn-on" : "btn-off");
       btn.textContent = (on ? "On " : "Off ") + label;
       btn.onclick = () => toggleAccess(u.email, key);
-      targetCell.appendChild(btn);
+      target.appendChild(btn);
     }
 
-    makeAccessBtn("receiving", "Receiving", cellRec);
-    makeAccessBtn("finished_goods", "FG", cellFG);
-    makeAccessBtn("order_form", "Order", cellOF);
+    makeBtn("receiving", "Receiving", cellRec);
+    makeBtn("finished_goods", "FG", cellFG);
+    makeBtn("order_form", "Order", cellOF);
 
     if (u.role !== "admin") {
       const b = document.createElement("button");
@@ -176,39 +256,41 @@ function renderUsers(users) {
   });
 }
 
-// ================= ACTIONS (APPROVE & ACCESS) =================
+// ================= ACTIONS =================
 async function setApprove(email, val) {
+  loader.classList.remove("hide");
+
   try {
     const url = `${API}?action=approve&email=${encodeURIComponent(email)}&val=${val}`;
     const res = await fetch(url);
     const json = await res.json();
 
-    if (!json.ok) {
-      alert("Gagal update status: " + (json.error || ""));
-      return;
-    }
+    loader.classList.add("hide");
+
+    if (!json.ok) return alert("Gagal update status.");
 
     loadUsers();
-  } catch (err) {
-    console.error(err);
+  } catch {
+    loader.classList.add("hide");
     alert("Error koneksi saat update status.");
   }
 }
 
 async function toggleAccess(email, key) {
+  loader.classList.remove("hide");
+
   try {
     const url = `${API}?action=toggleAccess&email=${encodeURIComponent(email)}&key=${encodeURIComponent(key)}`;
     const res = await fetch(url);
     const json = await res.json();
 
-    if (!json.ok) {
-      alert("Gagal update akses: " + (json.error || ""));
-      return;
-    }
+    loader.classList.add("hide");
+
+    if (!json.ok) return alert("Gagal update akses.");
 
     loadUsers();
-  } catch (err) {
-    console.error(err);
+  } catch {
+    loader.classList.add("hide");
     alert("Error koneksi saat update akses.");
   }
 }
@@ -219,7 +301,6 @@ function logout() {
   window.location.href = "login.html";
 }
 
-// Load pertama kali
 loadUsers();
 </script>
 
