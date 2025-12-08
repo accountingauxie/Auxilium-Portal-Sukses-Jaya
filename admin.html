@@ -85,139 +85,117 @@ font-weight:600;
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbz9f2k0J61tNTMBc_j2sqcxoNaFvIpXCT3MCFcbBEfY_a3pYbP3qAVeDj9tSpZxpsn6ug/exec";
-
-// Hanya Owner/Admin yang boleh masuk
 const current = JSON.parse(localStorage.getItem("uxilium_current_user") || "null");
-if (!current) {
-  alert("Silakan login terlebih dahulu.");
-  window.location.href = "login.html";
+if (!current || current.role !== "admin") {
+alert("Hanya admin yang boleh mengakses halaman ini.");
+window.location.href = "login.html";
+}
+
+function ensureAccess(user) {
+if (!user.access) {
+user.access = {
+receiving: user.role === "admin",
+finished_goods: user.role === "admin",
+order_form: user.role === "admin"
+};
+}
+return user;
+}
+
+function getUsers() {
+const raw = localStorage.getItem("uxilium_users");
+const arr = raw ? JSON.parse(raw) : [];
+return arr.map(ensureAccess);
+}
+
+function saveUsers(arr) {
+localStorage.setItem("uxilium_users", JSON.stringify(arr));
+}
+
+function renderUsers() {
+const users = getUsers();
+const list = document.getElementById("user-list");
+list.innerHTML = "";
+
+users.forEach((u, i) => {
+const tr = document.createElement("tr");
+
+tr.innerHTML = `
+<td>${u.email}</td>
+<td><span class="badge ${u.approved ? "approved" : "pending"}">
+${u.approved ? "Approved" : "Pending"}
+</span></td>
+<td><span class="badge ${u.role === "admin" ? "admin" : ""}">
+${u.role}
+</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+`;
+
+const cells = tr.querySelectorAll("td");
+const cellRec = cells[3];
+const cellFG  = cells[4];
+const cellOF  = cells[5];
+const cellAct = cells[6];
+
+function makeAccessBtn(key, label, targetCell) {
+const btn = document.createElement("button");
+const on = !!u.access[key];
+btn.className = "btn " + (on ? "btn-on" : "btn-off");
+btn.textContent = (on ? "On " : "Off ") + label;
+btn.onclick = () => toggleAccess(i, key);
+targetCell.appendChild(btn);
+}
+
+makeAccessBtn("receiving", "Receiving", cellRec);
+makeAccessBtn("finished_goods", "FG", cellFG);
+makeAccessBtn("order_form", "Order", cellOF);
+
+if (u.role !== "admin") {
+if (!u.approved) {
+const b = document.createElement("button");
+b.className = "btn btn-approve";
+b.textContent = "Approve";
+b.onclick = () => setApprove(i, true);
+cellAct.appendChild(b);
 } else {
-  const role = (current.role || "").toLowerCase();
-  if (role !== "owner" && role !== "admin") {
-    alert("Hanya admin yang boleh mengakses halaman ini.");
-    window.location.href = "login.html";
-  }
+const b = document.createElement("button");
+b.className = "btn btn-pending";
+b.textContent = "Set Pending";
+b.onclick = () => setApprove(i, false);
+cellAct.appendChild(b);
+}
+} else {
+cellAct.textContent = "—";
+}
+
+list.appendChild(tr);
+});
+}
+
+function toggleAccess(index, key) {
+const users = getUsers();
+users[index].access[key] = !users[index].access[key];
+saveUsers(users);
+renderUsers();
+}
+
+function setApprove(index, val) {
+const users = getUsers();
+users[index].approved = val;
+saveUsers(users);
+renderUsers();
 }
 
 function logout() {
-  localStorage.removeItem("uxilium_current_user");
-  window.location.href = "login.html";
+localStorage.removeItem("uxilium_current_user");
+window.location.href = "login.html";
 }
 
-async function loadUsers() {
-  try {
-    const res = await fetch(API_URL + "?action=getusers");
-    const data = await res.json();
-    if (!data.success) {
-      alert(data.message || "Gagal mengambil data user.");
-      return;
-    }
-    renderUsers(data.users || []);
-  } catch (err) {
-    console.error(err);
-    alert("Kesalahan koneksi saat load user.");
-  }
-}
-
-function renderUsers(users) {
-  const list = document.getElementById("user-list");
-  list.innerHTML = "";
-
-  users.forEach(u => {
-    const tr = document.createElement("tr");
-
-    tr.innerHTML = `
-      <td>${u.email}</td>
-      <td><span class="badge ${u.status === "Approved" ? "approved" : "pending"}">
-        ${u.status}
-      </span></td>
-      <td><span class="badge ${u.role.toLowerCase() === "admin" || u.role.toLowerCase() === "owner" ? "admin" : ""}">
-        ${u.role}
-      </span></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    `;
-
-    const cells = tr.querySelectorAll("td");
-    const cellRec = cells[3];
-    const cellFG  = cells[4];
-    const cellOF  = cells[5];
-    const cellAct = cells[6];
-
-    function makeAccessBtn(key, label, targetCell, allowed) {
-      const btn = document.createElement("button");
-      btn.className = "btn " + (allowed ? "btn-on" : "btn-off");
-      btn.textContent = (allowed ? "On " : "Off ") + label;
-      btn.onclick = () => toggleAccess(u.row, key);
-      targetCell.appendChild(btn);
-    }
-
-    makeAccessBtn("receiving", "Receiving", cellRec, u.access.receiving);
-    makeAccessBtn("finished_goods", "FG", cellFG, u.access.finished_goods);
-    makeAccessBtn("order_form", "Order", cellOF, u.access.order_form);
-
-    const roleLower = (u.role || "").toLowerCase();
-
-    // Owner tidak bisa diubah statusnya dari panel (opsional)
-    if (roleLower === "owner") {
-      cellAct.textContent = "—";
-    } else {
-      const isApproved = (u.status === "Approved");
-      const b = document.createElement("button");
-      b.className = "btn " + (isApproved ? "btn-pending" : "btn-approve");
-      b.textContent = isApproved ? "Set Pending" : "Approve";
-      b.onclick = () => updateApprove(u.row, !isApproved);
-      cellAct.appendChild(b);
-    }
-
-    list.appendChild(tr);
-  });
-}
-
-async function toggleAccess(row, key) {
-  try {
-    const res = await fetch(API_URL + "?action=toggleaccess", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ row, key })
-    });
-    const data = await res.json();
-    if (!data.success) {
-      alert(data.message || "Gagal update akses.");
-      return;
-    }
-    loadUsers();
-  } catch (err) {
-    console.error(err);
-    alert("Kesalahan koneksi saat update akses.");
-  }
-}
-
-async function updateApprove(row, approved) {
-  try {
-    const res = await fetch(API_URL + "?action=updateapprove", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ row, approved })
-    });
-    const data = await res.json();
-    if (!data.success) {
-      alert(data.message || "Gagal update status approval.");
-      return;
-    }
-    loadUsers();
-  } catch (err) {
-    console.error(err);
-    alert("Kesalahan koneksi saat update status.");
-  }
-}
-
-loadUsers();
+renderUsers();
 </script>
-
 
 </body>
 </html>
