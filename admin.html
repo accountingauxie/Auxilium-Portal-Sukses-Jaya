@@ -11,29 +11,29 @@
 body { background:#f5f6fa; min-height:100vh; }
 
 .topbar {
-background:white;
-padding:14px 24px;
-display:flex;
-justify-content:space-between;
-border-bottom:1px solid #e5e7eb;
+  background:white;
+  padding:14px 24px;
+  display:flex;
+  justify-content:space-between;
+  border-bottom:1px solid #e5e7eb;
 }
 
 .btn-logout {
-background:#ef4444;
-color:white;
-border:none;
-padding:7px 16px;
-border-radius:8px;
-cursor:pointer;
+  background:#ef4444;
+  color:white;
+  border:none;
+  padding:7px 16px;
+  border-radius:8px;
+  cursor:pointer;
 }
 
 .container {
-max-width:960px;
-margin:32px auto;
-background:white;
-padding:24px;
-border-radius:14px;
-box-shadow:0 6px 22px rgba(0,0,0,0.12);
+  max-width:960px;
+  margin:32px auto;
+  background:white;
+  padding:24px;
+  border-radius:14px;
+  box-shadow:0 6px 22px rgba(0,0,0,0.12);
 }
 
 table { width:100%; border-collapse:collapse; }
@@ -41,10 +41,10 @@ th, td { padding:10px; border-bottom:1px solid #e5e7eb; font-size:13px; }
 th { background:#f9fafb; font-weight:600; }
 
 .badge {
-padding:4px 10px;
-border-radius:999px;
-font-size:12px;
-font-weight:600;
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:600;
 }
 .approved { background:#dcfce7; color:#166534; }
 .pending { background:#fef3c7; color:#92400e; }
@@ -61,140 +61,166 @@ font-weight:600;
 <body>
 
 <div class="topbar">
-<h1>Admin Panel – AUXILIUM Portal</h1>
-<button class="btn-logout" onclick="logout()">Logout</button>
+  <h1>Admin Panel – AUXILIUM Portal</h1>
+  <button class="btn-logout" onclick="logout()">Logout</button>
 </div>
 
 <div class="container">
-<h2>Daftar User</h2>
+  <h2>Daftar User</h2>
 
-<table>
-<thead>
-<tr>
-<th>Email</th>
-<th>Status</th>
-<th>Role</th>
-<th>Receiving PO</th>
-<th>Finished Goods</th>
-<th>Order Form</th>
-<th>Aksi</th>
-</tr>
-</thead>
-<tbody id="user-list"></tbody>
-</table>
+  <table>
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Status</th>
+        <th>Role</th>
+        <th>Receiving PO</th>
+        <th>Finished Goods</th>
+        <th>Order Form</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody id="user-list"></tbody>
+  </table>
 </div>
 
 <script>
+// ================= CONFIG & AUTH =================
+const API = "https://script.google.com/macros/s/AKfycbyoaUOABCo4H2LVn4ufnvHWznko2rNrkHPKQaIZiPg0o8ipuxxtGLysxZdRJGVhHQAOmw/exec";
+
 const current = JSON.parse(localStorage.getItem("uxilium_current_user") || "null");
 if (!current || current.role !== "admin") {
-alert("Hanya admin yang boleh mengakses halaman ini.");
-window.location.href = "login.html";
+  alert("Hanya admin yang boleh mengakses halaman ini.");
+  window.location.href = "login.html";
 }
 
-function ensureAccess(user) {
-if (!user.access) {
-user.access = {
-receiving: user.role === "admin",
-finished_goods: user.role === "admin",
-order_form: user.role === "admin"
-};
-}
-return user;
-}
+// ================= RENDER USER LIST =================
+async function loadUsers() {
+  const list = document.getElementById("user-list");
+  list.innerHTML = "<tr><td colspan='7'>Loading...</td></tr>";
 
-function getUsers() {
-const raw = localStorage.getItem("uxilium_users");
-const arr = raw ? JSON.parse(raw) : [];
-return arr.map(ensureAccess);
-}
+  try {
+    const res = await fetch(`${API}?action=list`);
+    const json = await res.json();
 
-function saveUsers(arr) {
-localStorage.setItem("uxilium_users", JSON.stringify(arr));
-}
+    if (!json.ok) {
+      list.innerHTML = "<tr><td colspan='7'>Gagal memuat data user.</td></tr>";
+      console.error(json.error);
+      return;
+    }
 
-function renderUsers() {
-const users = getUsers();
-const list = document.getElementById("user-list");
-list.innerHTML = "";
-
-users.forEach((u, i) => {
-const tr = document.createElement("tr");
-
-tr.innerHTML = `
-<td>${u.email}</td>
-<td><span class="badge ${u.approved ? "approved" : "pending"}">
-${u.approved ? "Approved" : "Pending"}
-</span></td>
-<td><span class="badge ${u.role === "admin" ? "admin" : ""}">
-${u.role}
-</span></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-`;
-
-const cells = tr.querySelectorAll("td");
-const cellRec = cells[3];
-const cellFG  = cells[4];
-const cellOF  = cells[5];
-const cellAct = cells[6];
-
-function makeAccessBtn(key, label, targetCell) {
-const btn = document.createElement("button");
-const on = !!u.access[key];
-btn.className = "btn " + (on ? "btn-on" : "btn-off");
-btn.textContent = (on ? "On " : "Off ") + label;
-btn.onclick = () => toggleAccess(i, key);
-targetCell.appendChild(btn);
+    renderUsers(json.data);
+  } catch (err) {
+    console.error(err);
+    list.innerHTML = "<tr><td colspan='7'>Error koneksi ke server.</td></tr>";
+  }
 }
 
-makeAccessBtn("receiving", "Receiving", cellRec);
-makeAccessBtn("finished_goods", "FG", cellFG);
-makeAccessBtn("order_form", "Order", cellOF);
+function renderUsers(users) {
+  const list = document.getElementById("user-list");
+  list.innerHTML = "";
 
-if (u.role !== "admin") {
-if (!u.approved) {
-const b = document.createElement("button");
-b.className = "btn btn-approve";
-b.textContent = "Approve";
-b.onclick = () => setApprove(i, true);
-cellAct.appendChild(b);
-} else {
-const b = document.createElement("button");
-b.className = "btn btn-pending";
-b.textContent = "Set Pending";
-b.onclick = () => setApprove(i, false);
-cellAct.appendChild(b);
-}
-} else {
-cellAct.textContent = "—";
+  users.forEach((u) => {
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${u.email}</td>
+      <td><span class="badge ${u.approved ? "approved" : "pending"}">
+        ${u.approved ? "Approved" : "Pending"}
+      </span></td>
+      <td><span class="badge ${u.role === "admin" ? "admin" : ""}">
+        ${u.role}
+      </span></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    `;
+
+    const cells = tr.querySelectorAll("td");
+    const cellRec = cells[3];
+    const cellFG  = cells[4];
+    const cellOF  = cells[5];
+    const cellAct = cells[6];
+
+    function makeAccessBtn(key, label, targetCell) {
+      const btn = document.createElement("button");
+      const on = !!(u.access && u.access[key]);
+      btn.className = "btn " + (on ? "btn-on" : "btn-off");
+      btn.textContent = (on ? "On " : "Off ") + label;
+      btn.onclick = () => toggleAccess(u.email, key);
+      targetCell.appendChild(btn);
+    }
+
+    makeAccessBtn("receiving", "Receiving", cellRec);
+    makeAccessBtn("finished_goods", "FG", cellFG);
+    makeAccessBtn("order_form", "Order", cellOF);
+
+    if (u.role !== "admin") {
+      const b = document.createElement("button");
+      if (!u.approved) {
+        b.className = "btn btn-approve";
+        b.textContent = "Approve";
+        b.onclick = () => setApprove(u.email, true);
+      } else {
+        b.className = "btn btn-pending";
+        b.textContent = "Set Pending";
+        b.onclick = () => setApprove(u.email, false);
+      }
+      cellAct.appendChild(b);
+    } else {
+      cellAct.textContent = "—";
+    }
+
+    list.appendChild(tr);
+  });
 }
 
-list.appendChild(tr);
-});
+// ================= ACTIONS (APPROVE & ACCESS) =================
+async function setApprove(email, val) {
+  try {
+    const url = `${API}?action=approve&email=${encodeURIComponent(email)}&val=${val}`;
+    const res = await fetch(url);
+    const json = await res.json();
+
+    if (!json.ok) {
+      alert("Gagal update status: " + (json.error || ""));
+      return;
+    }
+
+    loadUsers();
+  } catch (err) {
+    console.error(err);
+    alert("Error koneksi saat update status.");
+  }
 }
 
-function toggleAccess(index, key) {
-const users = getUsers();
-users[index].access[key] = !users[index].access[key];
-saveUsers(users);
-renderUsers();
+async function toggleAccess(email, key) {
+  try {
+    const url = `${API}?action=toggleAccess&email=${encodeURIComponent(email)}&key=${encodeURIComponent(key)}`;
+    const res = await fetch(url);
+    const json = await res.json();
+
+    if (!json.ok) {
+      alert("Gagal update akses: " + (json.error || ""));
+      return;
+    }
+
+    loadUsers();
+  } catch (err) {
+    console.error(err);
+    alert("Error koneksi saat update akses.");
+  }
 }
 
-function setApprove(index, val) {
-const users = getUsers();
-users[index].approved = val;
-saveUsers(users);
-renderUsers();
-}
-
+// ================= LOGOUT =================
 function logout() {
-localStorage.removeItem("uxilium_current_user");
-window.location.href = "login.html";
+  localStorage.removeItem("uxilium_current_user");
+  window.location.href = "login.html";
 }
 
-renderUsers();
+// Load pertama kali
+loadUsers();
 </script>
 
 </body>
