@@ -18,23 +18,34 @@
 </script>
 
 <style>
-/* BASIC */
+
+/* ================================
+   GLOBAL & RESET
+================================ */
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: "Inter", sans-serif;
   background: #f5f6fa;
   display: flex;
+  min-width: 0;  /* FIX OVERFLOW */
 }
 
-/* SIDEBAR */
+/* ================================
+   SIDEBAR
+================================ */
 .sidebar {
   width: 200px;
   background: #ffffff;
   border-right: 1px solid #e9e9e9;
   height: 100vh;
   position: fixed;
-  left: 0; top: 0;
-  padding: 20px;
+  left: 0; 
+  top: 0;
+  padding: 20px 18px;
   display: flex;
   flex-direction: column;
   transition: width .25s ease;
@@ -47,8 +58,8 @@ body {
 
 /* TOGGLE BUTTON */
 .toggle-btn {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 6px;
   cursor: pointer;
   display: flex;
@@ -65,14 +76,14 @@ body {
 .brand-full {
   width: 160px;
   margin-bottom: 30px;
-  transition: opacity .2s ease;
+  transition: .2s ease;
 }
 .sidebar.collapsed .brand-full {
   opacity: 0;
   pointer-events: none;
 }
 
-/* MENU */
+/* MENU BUTTONS */
 .menu-item {
   padding: 12px 14px;
   margin-bottom: 6px;
@@ -85,6 +96,7 @@ body {
   gap: 12px;
   transition: .15s ease;
 }
+
 .menu-item:hover { background: #f1f1f1; }
 
 .menu-active {
@@ -97,22 +109,28 @@ body {
   width: 20px;
   opacity: 0.85;
 }
+
 .sidebar.collapsed .menu-text {
   display: none;
 }
 
-/* MAIN LAYOUT */
+/* ================================
+   MAIN CONTENT AREA
+================================ */
 .main {
+  flex: 1;
+  min-width: 0;
   margin-left: 200px;
-  width: calc(100% - 200px);
-  transition: margin-left .25s ease, width .25s ease;
-}
-.main.collapsed {
-  margin-left: 70px;
-  width: calc(100% - 70px);
+  transition: margin-left .25s ease;
 }
 
-/* HEADER */
+.main.collapsed {
+  margin-left: 70px;
+}
+
+/* ================================
+   HEADER TOP BAR
+================================ */
 .header {
   background: white;
   padding: 18px 32px;
@@ -137,13 +155,19 @@ body {
   background: #f0f0f0;
 }
 
-/* CONTENT */
-.content { padding: 34px; }
+/* ================================
+   PAGE CONTENT
+================================ */
+.content { 
+  padding: 34px; 
+}
 
-/* MODULE GRID */
+/* ================================
+   MODULE GRID
+================================ */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 26px;
   margin-top: 24px;
 }
@@ -160,15 +184,17 @@ body {
   transform: translateY(-5px);
 }
 
-/* DISABLED TILE */
 .tile-disabled {
   opacity: .5;
   cursor: not-allowed;
 }
 
-/* LOGOUT POPUP */
+/* ================================
+   LOGOUT POPUP
+================================ */
 #logout-popup {
-  position: fixed; inset: 0;
+  position: fixed; 
+  inset: 0;
   background: rgba(0,0,0,0.4);
   display: none;
   justify-content: center;
@@ -189,14 +215,22 @@ body {
   border: none;
   margin-top: 10px;
 }
-.btn-cancel { background: #e5e7eb; margin-right: 8px; }
-.btn-yes { background: #dc2626; color: white; }
+.btn-cancel { 
+  background: #e5e7eb; 
+  margin-right: 8px; 
+}
+.btn-yes { 
+  background: #dc2626; 
+  color: white; 
+}
 </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
+<!-- ================================
+     SIDEBAR
+================================ -->
 <div class="sidebar" id="sidebar">
 
   <div class="toggle-btn" onclick="toggleSidebar()">☰</div>
@@ -220,7 +254,9 @@ body {
 
 </div>
 
-<!-- MAIN -->
+<!-- ================================
+     MAIN CONTENT
+================================ -->
 <div class="main" id="main">
 
   <!-- HEADER -->
@@ -238,7 +274,7 @@ body {
     <p style="color:#666;">Silakan pilih modul di menu.</p>
   </div>
 
-  <!-- MODULES PAGE -->
+  <!-- MODULE PAGE -->
   <div class="content" id="modules-page" style="display:none;">
     <h2>Modules</h2>
 
@@ -293,7 +329,7 @@ function showPage(page, el) {
   el.classList.add("menu-active");
 }
 
-/* LOGOUT HANDLING */
+/* LOGOUT POPUP */
 function openLogoutPopup() {
   document.getElementById("logout-popup").style.display = "flex";
 }
