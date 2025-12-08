@@ -322,32 +322,50 @@
     <div class="content" id="modules-page" style="display:none;">
       <h2>Modules</h2>
       <div class="grid">
-        <div class="tile" id="tile-receiving" onclick="window.location.href='receiving/'">
-          <div class="tile-icon">
-            <!-- SVG ICON -->
-          </div>
-          <div class="tile-title">Receiving PO Entry</div>
-          <div class="tile-desc">Penerimaan material berdasarkan Purchase Order</div>
-        </div>
 
-        <div class="tile" id="tile-finished-goods" onclick="window.location.href='production/'">
-          <div class="tile-icon">
-            <!-- SVG ICON -->
-          </div>
-          <div class="tile-title">Production Entry</div>
-          <div class="tile-desc">Input hasil produksi per mesin & KPC</div>
-        </div>
-
-        <div class="tile" id="tile-order-form" onclick="window.location.href='orderform/orderform.html'">
-          <div class="tile-icon">
-            <!-- SVG ICON -->
-          </div>
-          <div class="tile-title">Order Form</div>
-          <div class="tile-desc">Coming Soon</div>
-        </div>
-      </div>
+  <!-- RECEIVING PO ENTRY -->
+  <div class="tile" id="tile-receiving" onclick="window.location.href='receiving/'">
+    <div class="tile-icon">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b3b3b" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 16V8L12 3 3 8v8l9 5 9-5z"></path>
+        <line x1="12" y1="22" x2="12" y2="12"></line>
+      </svg>
     </div>
+    <div class="tile-title">Receiving PO Entry</div>
+    <div class="tile-desc">Penerimaan material berdasarkan Purchase Order</div>
   </div>
+
+  <!-- PRODUCTION / FINISHED GOODS -->
+  <div class="tile" id="tile-finished-goods" onclick="window.location.href='production/'">
+    <div class="tile-icon">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b3b3b" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path
+          d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83">
+        </path>
+      </svg>
+    </div>
+    <div class="tile-title">Production Entry</div>
+    <div class="tile-desc">Input hasil produksi per mesin & KPC</div>
+  </div>
+
+  <!-- ORDER FORM -->
+<div class="tile" id="tile-order-form" onclick="window.location.href='orderform/'">
+    <div class="tile-icon">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
+        <line x1="14" y1="2" x2="14" y2="8"></line>
+      </svg>
+    </div>
+    <div class="tile-title">Order Form</div>
+    <div class="tile-desc">Coming Soon</div>
+  </div>
+
+</div>
+
 
   <!-- Logout Modal -->
   <div id="logoutModal" class="modal">
