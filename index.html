@@ -23,17 +23,9 @@ body {
   font-family: "Inter", "Segoe UI", sans-serif;
   background: #f5f6fa;
   display: flex;
-  overflow-x: hidden;
 }
 
-/* ===================== BACKGROUND CANVAS ===================== */
-#bg-canvas {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-}
-
-/* ===================== LOADER ===================== */
+/* ===================== ULTRA PREMIUM LOADER ===================== */
 .auxie-loader {
   position: fixed;
   inset: 0;
@@ -132,6 +124,7 @@ body {
   backdrop-filter: blur(8px);
 }
 
+/* LOGOUT ICON */
 .logout-btn {
   position: absolute;
   right: 34px;
@@ -167,6 +160,7 @@ h2 { margin-top: 0; font-size: 26px; font-weight: 700; }
 .tile:hover { transform: translateY(-5px); box-shadow: 0 10px 28px rgba(0,0,0,0.12); }
 .tile-disabled { background:#f1f1f1; opacity:0.6; cursor:not-allowed; transform:none; }
 
+/* TEXT */
 .tile-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
 .tile-desc { font-size: 14px; color: #6f6f6f; }
 .tile-icon { margin-bottom: 18px; }
@@ -175,9 +169,6 @@ h2 { margin-top: 0; font-size: 26px; font-weight: 700; }
 </head>
 
 <body>
-
-<!-- BACKGROUND -->
-<canvas id="bg-canvas"></canvas>
 
 <!-- LOADER -->
 <div id="auxieLoading" class="auxie-loader">
@@ -201,7 +192,6 @@ h2 { margin-top: 0; font-size: 26px; font-weight: 700; }
   </div>
 </div>
 
-<!-- SIDEBAR -->
 <div class="sidebar">
   <img class="brand-full" src="assets/auxilium_logo_pure_white_bg.png" />
 
@@ -210,12 +200,11 @@ h2 { margin-top: 0; font-size: 26px; font-weight: 700; }
   <div class="menu-item" onclick="alert('Settings coming soon')">Settings</div>
 </div>
 
-<!-- MAIN -->
 <div class="main">
-
   <div class="header">
     CV. SUKSES JAYA
 
+    <!-- LOGOUT ICON -->
     <div class="logout-btn" onclick="openLogoutDialog()">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
            stroke="#444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -292,13 +281,13 @@ h2 { margin-top: 0; font-size: 26px; font-weight: 700; }
 </div>
 
 <script>
-/* ================= LOADER ================= */
 const loader = document.getElementById("auxieLoading");
+
+// Hide loader on load
 window.addEventListener("load", () => {
   setTimeout(() => loader.classList.add("hide"), 350);
 });
 
-/* ================= PAGE SWITCH ================= */
 function showPage(page, element) {
   loader.classList.remove("hide");
 
@@ -316,7 +305,7 @@ function showPage(page, element) {
   }, 150);
 }
 
-/* ================= ACCESS CONTROL ================= */
+/* ========== ACCESS CONTROL ========== */
 (function applyAccess() {
   const raw = localStorage.getItem("uxilium_current_user");
   if (!raw) return;
@@ -336,7 +325,7 @@ function showPage(page, element) {
   setTile("tile-order-form", !!user.access.order_form);
 })();
 
-/* ================= LOGOUT POPUP ================= */
+/* ========== LOGOUT POPUP ========== */
 function openLogoutDialog() {
   document.getElementById("logoutPopup").style.display = "flex";
 }
@@ -348,65 +337,6 @@ function logout() {
   window.location.href = "login.html";
 }
 
-/* ================= BACKGROUND ANIMATION ================= */
-const canvas = document.getElementById("bg-canvas");
-const ctx = canvas.getContext("2d");
-let W, H;
-
-function resizeBg() {
-  W = canvas.width = window.innerWidth;
-  H = canvas.height = window.innerHeight;
-}
-resizeBg();
-window.onresize = resizeBg;
-
-const dots = [];
-for (let i = 0; i < 55; i++) {
-  dots.push({
-    x: Math.random() * W,
-    y: Math.random() * H,
-    r: 3 + Math.random() * 8,
-    dx: (Math.random() - 0.5) * 0.6,
-    dy: (Math.random() - 0.5) * 0.6
-  });
-}
-
-let mouse = { x: null, y: null };
-window.onmousemove = e => (mouse = { x: e.x, y: e.y });
-window.onmouseleave = () => (mouse = { x: null, y: null });
-
-function animateBg() {
-  ctx.clearRect(0, 0, W, H);
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, 0, W, H);
-
-  dots.forEach(d => {
-    d.x += d.dx;
-    d.y += d.dy;
-
-    if (d.x < 0 || d.x > W || d.y < 0 || d.y > H) {
-      d.x = Math.random() * W;
-      d.y = Math.random() * H;
-    }
-
-    if (mouse.x != null) {
-      const dist = Math.hypot(d.x - mouse.x, d.y - mouse.y);
-      if (dist < 150) {
-        d.x += (d.x - mouse.x) / dist * 2;
-        d.y += (d.y - mouse.y) / dist * 2;
-      }
-    }
-
-    ctx.beginPath();
-    ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(120,150,255,0.35)";
-    ctx.fill();
-  });
-
-  requestAnimationFrame(animateBg);
-}
-
-animateBg();
 </script>
 
 </body>
