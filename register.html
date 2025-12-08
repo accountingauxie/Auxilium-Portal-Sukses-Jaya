@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Register – UXILIUM Portal</title>
+  <title>Register – AUXILIUM Portal</title>
 
   <style>
     * { margin:0; padding:0; box-sizing:border-box; font-family:Inter, sans-serif; }
@@ -70,7 +70,7 @@
   <label>Ulangi Password</label>
   <input id="password2" type="password">
 
-  <button onclick="register()">Daftar</button>
+  <button onclick="registerUser()">Daftar</button>
 
   <p style="margin-top:12px;">
     Sudah punya akun? <a href="login.html">Masuk</a>
@@ -78,15 +78,28 @@
 </div>
 
 <script>
+function ensureAccess(user) {
+  if (!user.access) {
+    user.access = {
+      receiving: false,
+      finished_goods: false,
+      order_form: false
+    };
+  }
+  return user;
+}
+
 function getUsers() {
-  return JSON.parse(localStorage.getItem("uxilium_users") || "[]");
+  const raw = localStorage.getItem("uxilium_users");
+  const arr = raw ? JSON.parse(raw) : [];
+  return arr.map(ensureAccess);
 }
 
 function saveUsers(arr) {
   localStorage.setItem("uxilium_users", JSON.stringify(arr));
 }
 
-function register() {
+function registerUser() {
   const u = email.value.trim();
   const p = password.value.trim();
   const p2 = password2.value.trim();
@@ -98,12 +111,12 @@ function register() {
   const users = getUsers();
   if (users.some(x => x.email === u)) return show("Email sudah digunakan.", "error");
 
-  users.push({
+  users.push(ensureAccess({
     email: u,
     password: p,
     approved: false,
     role: "user"
-  });
+  }));
 
   saveUsers(users);
   show("Registrasi berhasil! Menunggu persetujuan admin.", "success");
