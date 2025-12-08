@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel – UXILIUM Portal</title>
+
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:Inter, sans-serif; }
+
+    body {
+      background:#f5f6fa;
+      min-height:100vh;
+    }
+
+    .topbar {
+      background:#ffffff;
+      padding:14px 24px;
+      display:flex;
+      justify-content:space-between;
+      border-bottom:1px solid #e5e7eb;
+    }
+
+    .topbar h1 {
+      font-size:18px;
+      font-weight:600;
+    }
+
+    .btn-logout {
+      background:#ef4444;
+      color:white;
+      padding:7px 16px;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+    }
+
+    .container {
+      max-width:900px;
+      margin:32px auto;
+      background:white;
+      padding:24px;
+      border-radius:14px;
+      box-shadow:0 6px 22px rgba(0,0,0,0.12);
+    }
+
+    table {
+      width:100%;
+      border-collapse:collapse;
+      margin-top:12px;
+    }
+
+    th, td {
+      padding:10px;
+      border-bottom:1px solid #e5e7eb;
+      font-size:14px;
+    }
+
+    th {
+      background:#f9fafb;
+      font-weight:600;
+      text-align:left;
+    }
+
+    .badge {
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:600;
+    }
+
+    .approved { background:#dcfce7; color:#166534; }
+    .pending { background:#fef3c7; color:#92400e; }
+    .admin { background:#dbeafe; color:#1d4ed8; }
+
+    .btn {
+      padding:6px 12px;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      font-size:13px;
+    }
+
+    .btn-approve { background:#22c55e; color:white; }
+    .btn-pending { background:#fca5a5; color:#b91c1c; }
+  </style>
+</head>
+
+<body>
+
+<div class="topbar">
+  <h1>Admin Panel – UXILIUM Portal</h1>
+  <button class="btn-logout" onclick="logout()">Logout</button>
+</div>
+
+<div class="container">
+  <h2>Daftar User</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Status</th>
+        <th>Role</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+
+    <tbody id="user-list"></tbody>
+  </table>
+</div>
+
+<script>
+/* CEK LOGIN / HANYA ADMIN */
+const current = JSON.parse(localStorage.getItem("uxilium_current_user") || "null");
+
+if (!current || current.role !== "admin") {
+  alert("Hanya admin yang boleh mengakses halaman ini.");
+  window.location.href = "login.html";
+}
+
+/* LOAD USERS */
+function getUsers() {
+  return JSON.parse(localStorage.getItem("uxilium_users") || "[]");
+}
+
+function saveUsers(arr) {
+  localStorage.setItem("uxilium_users", JSON.stringify(arr));
+}
+
+function renderUsers() {
+  const users = getUsers();
+  const list = document.getElementById("user-list");
+  list.innerHTML = "";
+
+  users.forEach((user, index) => {
+    let tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${user.username}</td>
+      <td><span class="badge ${user.approved ? "approved" : "pending"}">
+        ${user.approved ? "Approved" : "Pending"}
+      </span></td>
+      <td><span class="badge ${user.role === "admin" ? "admin" : ""}">
+        ${user.role}
+      </span></td>
+      <td></td>
+    `;
+
+    const actionCell = tr.querySelector("td:last-child");
+
+    if (user.role !== "admin") {
+      if (!user.approved) {
+        let btn = document.createElement("button");
+        btn.className = "btn btn-approve";
+        btn.textContent = "Approve";
+        btn.onclick = () => approveUser(index);
+        actionCell.appendChild(btn);
+      } else {
+        let btn = document.createElement("button");
+        btn.className = "btn btn-pending";
+        btn.textContent = "Set Pending";
+        btn.onclick = () => revokeUser(index);
+        actionCell.appendChild(btn);
+      }
+    } else {
+      actionCell.textContent = "—";
+    }
+
+    list.appendChild(tr);
+  });
+}
+
+function approveUser(i) {
+  const users = getUsers();
+  users[i].approved = true;
+  saveUsers(users);
+  renderUsers();
+}
+
+function revokeUser(i) {
+  const users = getUsers();
+  users[i].approved = false;
+  saveUsers(users);
+  renderUsers();
+}
+
+function logout() {
+  localStorage.removeItem("uxilium_current_user");
+  window.location.href = "login.html";
+}
+
+renderUsers();
+</script>
+
+</body>
+</html>
