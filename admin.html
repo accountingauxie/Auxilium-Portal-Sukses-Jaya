@@ -137,7 +137,7 @@ function renderUsers() {
     let tr = document.createElement("tr");
 
     tr.innerHTML = `
-      <td>${user.username}</td>
+   <td>${user.email}</td>
       <td><span class="badge ${user.approved ? "approved" : "pending"}">
         ${user.approved ? "Approved" : "Pending"}
       </span></td>
