@@ -2,48 +2,50 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Menu Utama ReviewInvoice</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Review Invoice Module</title>
   <style>
+    /* Global Styles */
     body {
       font-family: Arial, sans-serif;
-      padding: 30px;
       background-color: #f4f6f9;
-      color: #333;
+      margin: 0;
+      padding: 30px;
     }
 
     h1 {
       text-align: center;
       color: #4CAF50;
-      font-size: 32px;
-      margin-bottom: 20px;
+      font-size: 36px;
+      margin-bottom: 30px;
     }
 
     .menu-container {
       display: flex;
-      justify-content: space-around;
+      justify-content: center;
+      gap: 20px;
       flex-wrap: wrap;
+      margin-bottom: 30px;
     }
 
     .menu-item {
       background-color: #ffffff;
-      padding: 20px;
-      margin: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      text-align: center;
+      padding: 30px;
+      margin: 10px;
+      border-radius: 10px;
       width: 250px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
       cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .menu-item:hover {
       transform: scale(1.05);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
     }
 
     .menu-item h3 {
-      margin: 0;
       font-size: 24px;
       color: #333;
     }
@@ -51,61 +53,71 @@
     .menu-item p {
       font-size: 16px;
       color: #777;
+      margin: 10px 0;
     }
 
     .menu-item button {
       background-color: #4CAF50;
       color: white;
       border: none;
-      padding: 10px 20px;
+      padding: 12px 20px;
       font-size: 16px;
       border-radius: 4px;
       cursor: pointer;
-      margin-top: 15px;
-      transition: background-color 0.3s ease;
+      transition: background-color 0.3s;
     }
 
     .menu-item button:hover {
       background-color: #45a049;
     }
 
+    /* Footer Styles */
     .footer {
-      margin-top: 50px;
       text-align: center;
       font-size: 14px;
       color: #888;
+      margin-top: 40px;
+    }
+
+    .footer a {
+      text-decoration: none;
+      color: #4CAF50;
     }
   </style>
 </head>
+
 <body>
 
   <h1>Review Invoice Module</h1>
-  
+
+  <!-- Menu Items -->
   <div class="menu-container">
-    <!-- Review Invoice Menu -->
-    <div class="menu-item" onclick="window.location.href='reviewInvoice.html'">
+    <!-- Review Invoice -->
+    <div class="menu-item" onclick="window.location.href='reviewinvoice/reviewInvoice.html'">
       <h3>Review Invoice</h3>
       <p>Review, approve, or cancel invoices.</p>
       <button>Go to Review</button>
     </div>
 
-    <!-- Work Effort (WE) Menu -->
-    <div class="menu-item" onclick="window.location.href='workEffort.html'">
+    <!-- Work Effort (WE) -->
+    <div class="menu-item" onclick="window.location.href='reviewinvoice/workEffort.html'">
       <h3>Work Effort (WE)</h3>
       <p>Record work efforts for approved invoices.</p>
       <button>Go to Work Effort</button>
     </div>
 
-    <!-- Import to Xero Menu -->
-    <div class="menu-item" onclick="window.location.href='importToXero.html'">
+    <!-- Import to Xero -->
+    <div class="menu-item" onclick="window.location.href='reviewinvoice/importToXero.html'">
       <h3>Import to Xero</h3>
       <p>Import data into Xero and lock PO Sales.</p>
       <button>Go to Xero Import</button>
     </div>
   </div>
 
+  <!-- Footer -->
   <div class="footer">
     <p>&copy; 2025 Review Invoice Module | All rights reserved</p>
+    <p>Developed by <a href="#">Your Name</a></p>
   </div>
 
 </body>
