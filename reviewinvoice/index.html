@@ -106,11 +106,13 @@
 
     .status-actions {
       margin-top: 15px;
+      display: flex;
+      justify-content: flex-start;
+      gap: 10px;
     }
 
     .status-actions button {
       padding: 8px 16px;
-      margin-right: 10px;
       cursor: pointer;
       background-color: #007bff;
       color: white;
@@ -237,40 +239,44 @@ function displayInvoices(invoices) {
       <div class="status ${getStatusClass(invoice.status)}">${invoice.status || "Pending"}</div>
     `;
 
+    // Displaying customer info, PO number, date, and total on the invoice card
+    const invoiceDetails = document.createElement("div");
+    invoiceDetails.className = "invoice-details";
+    invoiceDetails.innerHTML = `
+      Date: ${invoice.invoiceDate}<br>
+      PO Number: ${invoice.orderNumber}<br>
+      Total: ${invoice.grandTotal}<br>
+    `;
+
+    // Buttons (Approve, Cancel) visible on the card
     const statusActions = document.createElement("div");
     statusActions.className = "status-actions";
-    
-    // Approve and Cancel buttons will be hidden initially
+
     const approveButton = document.createElement("button");
-    approveButton.className = "button";
     approveButton.innerText = "Approve";
     approveButton.onclick = () => updateStatus(invoice, "Approved");
 
     const cancelButton = document.createElement("button");
-    cancelButton.className = "button";
     cancelButton.innerText = "Cancel";
     cancelButton.onclick = () => updateStatus(invoice, "Canceled");
 
     statusActions.appendChild(approveButton);
     statusActions.appendChild(cancelButton);
 
-    const invoiceDetails = document.createElement("div");
-    invoiceDetails.className = "invoice-details";
-    invoiceDetails.innerHTML = `Date: ${invoice.invoiceDate}<br>Status: <span id="status_${invoice.invoiceNumber}" class="status-pending">${invoice.status || "Pending"}</span>`;
-
+    // "Expand Items" button to view detailed items of the invoice
     const expandButton = document.createElement("button");
     expandButton.className = "expand-button";
     expandButton.innerText = "Expand Items";
     expandButton.onclick = () => {
-      showInvoiceItems(invoice);
-      // Show Approve/Cancel buttons after expanding
-      statusActions.style.display = "block"; 
+      showInvoiceItems(invoice);  // Function to display detailed items
     };
 
+    // Append the invoice card elements
     invoiceDiv.appendChild(invoiceHeader);
-    invoiceDiv.appendChild(statusActions);
     invoiceDiv.appendChild(invoiceDetails);
+    invoiceDiv.appendChild(statusActions);
     invoiceDiv.appendChild(expandButton);
+
     container.appendChild(invoiceDiv);
   });
 }
