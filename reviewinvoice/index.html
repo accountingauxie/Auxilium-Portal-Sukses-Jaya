@@ -167,6 +167,10 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
+    .readonly {
+      background-color: #f3f3f3;
+    }
   </style>
 </head>
 
@@ -262,21 +266,28 @@ function displayInvoices(invoices) {
 }
 
 function showInvoiceItems(invoice, invoiceDiv) {
+  // Filter the invoice items based on the PO number
+  const filteredItems = invoice.items.filter(item => item.orderNumber === invoice.orderNumber);
+
   // This will create and show the detailed items of the invoice
   const itemsDiv = document.createElement("div");
   itemsDiv.className = "invoice-items-details";
+  
+  // Create a table with the invoice items
   itemsDiv.innerHTML = `
     <table class="invoice-table">
       <thead>
-        <tr><th>Item</th><th>Quantity</th><th>Price</th><th>Total</th></tr>
+        <tr><th>Item</th><th>Quantity</th><th>Price</th><th>Total</th><th>Machine</th><th>KPC Number</th></tr>
       </thead>
       <tbody>
-        ${invoice.items.map(item => `
+        ${filteredItems.map(item => `
           <tr>
-            <td>${item.name}</td>
-            <td>${item.quantity}</td>
-            <td>${item.price}</td>
+            <td>${item.product}</td>
+            <td>${item.qty}</td>
+            <td>${item.unitPrice}</td>
             <td>${item.total}</td>
+            <td><input type="text" value="${item.type === 'Spandek' ? item.machine : ''}" ${item.type === 'Non Spandek' ? 'readonly' : ''}></td>
+            <td><input type="text" value="${item.type === 'Spandek' ? item.kpcNumber : ''}" ${item.type === 'Non Spandek' ? 'readonly' : ''}></td>
           </tr>
         `).join('')}
       </tbody>
