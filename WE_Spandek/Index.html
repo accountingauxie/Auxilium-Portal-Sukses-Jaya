@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Invoice Approval Test</title>
+</head>
+
+<body>
+
+<h2>Invoice Approval — Test Mode</h2>
+
+<button onclick="loadInvoices()">Load Invoices</button>
+<hr>
+
+<div id="invoiceBox"></div>
+
+<script>
+const API = "https://script.google.com/macros/s/AKfycbxSBRBLIOx74b88ESfthZJJnSYxRzmKnc34cJolVQlS70T9wcVLs5cFwFXlOjuuc1Gu/exec";
+
+// Load invoices
+function loadInvoices() {
+  fetch(API + "?action=listInvoices")
+    .then(r => r.json())
+    .then(res => {
+      if (!res.ok) {
+        alert("Gagal load data");
+        return;
+      }
+
+      const div = document.getElementById("invoiceBox");
+      div.innerHTML = "";
+
+      res.data.forEach(inv => {
+        const box = document.createElement("div");
+        box.style.border = "1px solid #ccc";
+        box.style.padding = "10px";
+        box.style.margin = "10px 0";
+
+        box.innerHTML = `
+          <b>Invoice: ${inv.invoiceNumber}</b><br>
+          Customer: ${inv.customer}<br>
+          Status: <span id="st_${inv.invoiceNumber}">${inv.status || "-"}</span><br><br>
+
+          <button onclick="setStatus('${inv.invoiceNumber}','Approved')">Approve</button>
+          <button onclick="setStatus('${inv.invoiceNumber}','Canceled')">Cancel</button>
+        `;
+
+        div.appendChild(box);
+      });
+    });
+}
+
+// Update status
+function setStatus(inv, status) {
+  fetch(API, {
+    method: "POST",
+    body: new URLSearchParams({
+      action: "updateStatus",
+      invoiceNumber: inv,
+      status: status
+    })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.ok) {
+      document.getElementById("st_" + inv).textContent = status;
+      alert("Status updated: " + status);
+    } else {
+      alert("ERROR: " + res.error);
+    }
+  });
+}
+</script>
+
+</body>
+</html>
