@@ -1,6 +1,6 @@
 /* CONFIG */
 const baseURL =
-  "https://script.google.com/macros/s/AKfycbx75viZxSQSQbMvg9kot7CPGu-BDLDbkPOdzdz3blK_G85l8KA0gWr05sNuheNCTZ2Qug/exec";
+  "https://script.google.com/macros/s/AKfycbxzY3p101ahIm5f7mjhJpbdRsPp61c_HFDel--A3O5bVUZguip0A-QAuh19EH5FpMQVfg/exec";
 
 let listSpandek = [];
 let listNonSpandek = [];
@@ -32,7 +32,7 @@ function parseMoney(str) {
 
 /* ================= ON LOAD ================= */
 
-window.onload = function () {
+window.onload = async function () {
   choiceCustomer = new Choices("#customerSelect", {
     searchEnabled: true,
     itemSelectText: "",
@@ -42,7 +42,9 @@ window.onload = function () {
   document.getElementById("issueDate").value =
     new Date().toISOString().split("T")[0];
 
-  loadDropdowns();
+  // FIX TERPENTING → tunggu data selesai sebelum buat row
+  await loadDropdowns();
+
   setOrderNumber();
 
   for (let i = 0; i < 3; i++) addRow();
@@ -143,23 +145,20 @@ function addRow() {
     shouldSort: false,
   });
 
-  /* ============= FIX DROPDOWN ============= */
+  /* ============= LOAD ITEM BERDASARKAN TYPE ============= */
   function loadItemsForType() {
     let list = [];
 
     if (typeSel.value === "Spandek") list = listSpandek;
     if (typeSel.value === "Non Spandek") list = listNonSpandek;
 
-    choiceItem._clearChoices();
-
-    list.forEach((name) => {
-      choiceItem._addChoice({
-        value: name,
-        label: name,
-      });
-    });
-
-    choiceItem._render();
+    choiceItem.clearChoices();
+    choiceItem.setChoices(
+      list.map((name) => ({ value: name, label: name })),
+      "value",
+      "label",
+      true
+    );
   }
 
   /* ========= TYPE CHANGE ========== */
