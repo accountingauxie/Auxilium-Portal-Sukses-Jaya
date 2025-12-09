@@ -3,68 +3,348 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Invoice Review</title>
+  <title>Invoice Approval and Work Effort</title>
   <style>
     body {
-      font-family: 'Arial', sans-serif;
-      background-color: #f4f7fa;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f5f7fa;
       margin: 0;
       padding: 20px;
     }
 
-    .invoice-card {
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      padding: 15px;
+    h1 {
+      font-size: 28px;
+      color: #333;
       margin-bottom: 20px;
+    }
+
+    .filter-buttons {
+      margin-bottom: 20px;
+    }
+
+    .filter-buttons button {
+      padding: 10px 20px;
+      margin-right: 10px;
+      font-size: 14px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .filter-buttons button.active {
+      background-color: #0056b3;
+    }
+
+    .search-bar {
+      margin-bottom: 20px;
+      padding: 10px;
+      font-size: 14px;
+      width: 300px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .invoice-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .invoice-card {
+      background-color: white;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      border: 1px solid #ddd;
+    }
+
+    .invoice-header {
       display: flex;
       justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    .invoice-header .status {
+      padding: 5px 10px;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+    }
+
+    .status-pending {
+      background-color: #ffc107;
+    }
+
+    .status-approved {
+      background-color: #28a745;
+    }
+
+    .status-canceled {
+      background-color: #dc3545;
+    }
+
+    .invoice-details {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .expand-button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .expand-button:hover {
+      background-color: #218838;
+    }
+
+    .status-actions {
+      margin-top: 15px;
+      display: flex;
+      justify-content: flex-start;
+      gap: 10px;
+    }
+
+    .status-actions button {
+      padding: 8px 16px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    .status-actions button:hover {
+      background-color: #0056b3;
+    }
+
+    .invoice-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .invoice-table th, .invoice-table td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+
+    .invoice-table th {
+      background-color: #f4f4f4;
+    }
+
+    /* Loading Spinner Styles */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
       align-items: center;
+      z-index: 9999;
     }
 
-    .invoice-card h3 {
-      margin: 0;
-      font-size: 1.2em;
+    .spinner {
+      border: 8px solid #f3f3f3;
+      border-top: 8px solid #3498db;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
     }
 
-    .invoice-card .info {
-      font-size: 1em;
-      color: #555;
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
-    .invoice-card .total {
-      font-size: 1.2em;
-      color: #0077e4;
+    .readonly {
+      background-color: #f3f3f3;
     }
   </style>
 </head>
+
 <body>
-  <h1>Invoice Review</h1>
-  <div id="invoice-list"></div>
 
-  <script>
-    async function fetchInvoices() {
-      const response = await fetch('https://script.google.com/macros/s/AKfycbxYBpCnb6t_HZVPHDyOx6PsgVZKr-zQJYvWjs2Hbzdf5WhksUVZBdNirhaeD4UbKejN1w/exec');
-      const data = await response.json();
-      const invoiceList = document.getElementById('invoice-list');
-      data.invoices.forEach(invoice => {
-        const invoiceCard = document.createElement('div');
-        invoiceCard.className = 'invoice-card';
-        invoiceCard.innerHTML = `
-          <div>
-            <h3>Order #${invoice.orderNumber}</h3>
-            <p class="info">Customer: ${invoice.customer}</p>
-            <p class="info">Product: ${invoice.product}</p>
-            <p class="info">Qty: ${invoice.qty}</p>
-          </div>
-          <div class="total">$${invoice.total}</div>
-        `;
-        invoiceList.appendChild(invoiceCard);
-      });
+<h1>Invoice Approval and Work Effort</h1>
+
+<!-- Filter Buttons -->
+<div class="filter-buttons">
+  <button onclick="filterByStatus('All')" class="active">All</button>
+  <button onclick="filterByStatus('Pending')">Awaiting Approval</button>
+  <button onclick="filterByStatus('Approved')">Approved</button>
+  <button onclick="filterByStatus('Canceled')">Deleted</button>
+</div>
+
+<!-- Search Bar -->
+<input type="text" id="searchInput" class="search-bar" placeholder="Search Invoice, Customer or Product" onkeyup="searchInvoices()">
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+</div>
+
+<div class="invoice-list" id="invoiceList"></div>
+
+<script>
+const API = "https://script.google.com/macros/s/AKfycbxSBRBLIOx74b88ESfthZJJnSYxRzmKnc34cJolVQlS70T9wcVLs5cFwFXlOjuuc1Gu/exec";
+let invoiceData = [];
+
+function showLoading() {
+  document.getElementById('loadingOverlay').style.display = 'flex'; // Show the loading spinner
+}
+
+function hideLoading() {
+  document.getElementById('loadingOverlay').style.display = 'none'; // Hide the loading spinner
+}
+
+function loadInvoices() {
+  showLoading(); // Show loading spinner when fetching invoices
+  fetch(API + "?action=listInvoices")
+    .then(r => r.json())
+    .then(res => {
+      hideLoading(); // Hide loading spinner once data is loaded
+      if (!res.ok) {
+        alert("Error loading invoices.");
+        return;
+      }
+
+      invoiceData = res.data;
+      displayInvoices(invoiceData);
+    });
+}
+
+function displayInvoices(invoices) {
+  const container = document.getElementById("invoiceList");
+  container.innerHTML = "";
+
+  invoices.forEach(invoice => {
+    const invoiceDiv = document.createElement("div");
+    invoiceDiv.className = "invoice-card";
+
+    const invoiceHeader = document.createElement("div");
+    invoiceHeader.className = "invoice-header";
+    invoiceHeader.innerHTML = `
+      <div><b>Invoice: ${invoice.invoiceNumber}</b> - ${invoice.customer}</div>
+      <div class="status ${getStatusClass(invoice.status)}">${invoice.status || "Pending"}</div>
+    `;
+
+    // Displaying customer info, PO number, date, and total on the invoice card
+    const invoiceDetails = document.createElement("div");
+    invoiceDetails.className = "invoice-details";
+    invoiceDetails.innerHTML = `
+      Date: ${invoice.invoiceDate}<br>
+      PO Number: ${invoice.orderNumber}<br>
+      Total: ${invoice.grandTotal}<br>
+    `;
+
+    // Append the invoice card elements
+    invoiceDiv.appendChild(invoiceHeader);
+    invoiceDiv.appendChild(invoiceDetails);
+
+    // "Expand Items" button to view detailed items of the invoice
+    const expandButton = document.createElement("button");
+    expandButton.className = "expand-button";
+    expandButton.innerText = "Expand Items";
+    expandButton.onclick = () => {
+      showInvoiceItems(invoice, invoiceDiv);  // Pass the invoice and invoiceDiv to display details and buttons
+    };
+
+    invoiceDiv.appendChild(expandButton);
+    container.appendChild(invoiceDiv);
+  });
+}
+
+function showInvoiceItems(invoice, invoiceDiv) {
+  // Filter the invoice items based on the PO number
+  const filteredItems = invoice.items.filter(item => item.orderNumber === invoice.orderNumber);
+
+  // This will create and show the detailed items of the invoice
+  const itemsDiv = document.createElement("div");
+  itemsDiv.className = "invoice-items-details";
+  
+  itemsDiv.innerHTML = `
+    <table class="invoice-table">
+      <thead>
+        <tr><th>Item</th><th>Quantity</th><th>Price</th><th>Total</th><th>Machine</th><th>KPC Number</th></tr>
+      </thead>
+      <tbody>
+        ${filteredItems.map(item => `
+          <tr>
+            <td>${item.product}</td>
+            <td>${item.qty}</td>
+            <td>${item.unitPrice}</td>
+            <td>${item.total}</td>
+            <td><input type="text" value="${item.type === 'Spandek' ? item.machine : ''}" ${item.type === 'Non Spandek' ? 'readonly' : ''}></td>
+            <td><input type="text" value="${item.type === 'Spandek' ? item.kpcNumber : ''}" ${item.type === 'Non Spandek' ? 'readonly' : ''}></td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+  
+  // Create the "Approve" and "Cancel" buttons to appear after expanding items
+  const statusActions = document.createElement("div");
+  statusActions.className = "status-actions";
+
+  const approveButton = document.createElement("button");
+  approveButton.innerText = "Approve";
+  approveButton.onclick = () => updateStatus(invoice, "Approved");
+
+  const cancelButton = document.createElement("button");
+  cancelButton.innerText = "Cancel";
+  cancelButton.onclick = () => updateStatus(invoice, "Canceled");
+
+  statusActions.appendChild(approveButton);
+  statusActions.appendChild(cancelButton);
+
+  // Append the items and buttons to the invoice card
+  invoiceDiv.appendChild(itemsDiv);
+  invoiceDiv.appendChild(statusActions);
+}
+
+function updateStatus(invoice, newStatus) {
+  showLoading(); // Show loading spinner when updating status
+  fetch(API, {
+    method: "POST",
+    body: new URLSearchParams({
+      action: "updateStatus",
+      invoiceNumber: invoice.invoiceNumber,
+      status: newStatus
+    })
+  })
+  .then(r => r.json())
+  .then(res => {
+    hideLoading(); // Hide loading spinner after updating
+    if (res.ok) {
+      const statusElement = document.getElementById(`status_${invoice.invoiceNumber}`);
+      statusElement.className = `status ${getStatusClass(newStatus)}`;
+      statusElement.textContent = newStatus;
+    } else {
+      alert("Error updating invoice status.");
     }
+  });
+}
 
-    window.onload = fetchInvoices;
-  </script>
+function getStatusClass(status) {
+  if (status === "Pending") return "status-pending";
+  if (status === "Approved") return "status-approved";
+  if (status === "Canceled") return "status-canceled";
+  return "status-pending";
+}
+
+window.onload = loadInvoices; // Automatically load invoices on page load
+</script>
+
 </body>
 </html>
