@@ -3,17 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PO Review System</title>
+    <title>Invoice Details</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             background-color: #f7f7f7;
             padding: 20px;
+        }
+        .invoice-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .invoice-header h3 {
+            margin: 0;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .pending {
+            background-color: #ffc107;
+            color: #fff;
+        }
+        .approved {
+            background-color: #28a745;
+            color: #fff;
+        }
+        .cancelled {
+            background-color: #dc3545;
+            color: #fff;
+        }
+        .expand-btn {
+            padding: 8px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .invoice-details {
+            display: none;
+            margin-top: 20px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
         table, th, td {
             border: 1px solid #ddd;
@@ -22,123 +67,137 @@
             padding: 10px;
             text-align: left;
         }
-        button {
-            padding: 8px 16px;
-            margin: 0 5px;
+        .action-buttons {
+            margin-top: 10px;
+        }
+        .action-buttons button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
         }
         .approve {
             background-color: #28a745;
             color: white;
         }
-        .reject {
+        .cancel {
             background-color: #dc3545;
-            color: white;
-        }
-        .pending {
-            background-color: #ffc107;
             color: white;
         }
     </style>
 </head>
 <body>
-    <h1>PO Review System</h1>
-    <table id="poTable">
-        <thead>
-            <tr>
-                <th>PO Number</th>
-                <th>Customer</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- PO entries will go here -->
-        </tbody>
-    </table>
+
+    <div class="invoice-card">
+        <div class="invoice-header">
+            <div>
+                <h3>Invoice: 1000076 - Vonny</h3>
+                <p>Date: 2025-12-08</p>
+                <p>PO Number: <span id="poNumber1">undefined</span></p>
+            </div>
+            <div class="status pending">
+                Pending
+            </div>
+        </div>
+        <button class="expand-btn" onclick="toggleDetails('invoice1')">Expand Items</button>
+        <div id="invoice1" class="invoice-details">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                        <th>Machine</th>
+                        <th>KPC Number</th>
+                    </tr>
+                </thead>
+                <tbody id="invoice1-details">
+                    <!-- Dynamic content goes here -->
+                </tbody>
+            </table>
+        </div>
+        <div class="action-buttons">
+            <button class="approve">Approve</button>
+            <button class="cancel">Cancel</button>
+        </div>
+    </div>
+
+    <div class="invoice-card">
+        <div class="invoice-header">
+            <div>
+                <h3>Invoice: 1000077 - Veve</h3>
+                <p>Date: 2025-12-08</p>
+                <p>PO Number: <span id="poNumber2">undefined</span></p>
+            </div>
+            <div class="status pending">
+                Pending
+            </div>
+        </div>
+        <button class="expand-btn" onclick="toggleDetails('invoice2')">Expand Items</button>
+        <div id="invoice2" class="invoice-details">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                        <th>Machine</th>
+                        <th>KPC Number</th>
+                    </tr>
+                </thead>
+                <tbody id="invoice2-details">
+                    <!-- Dynamic content goes here -->
+                </tbody>
+            </table>
+        </div>
+        <div class="action-buttons">
+            <button class="approve">Approve</button>
+            <button class="cancel">Cancel</button>
+        </div>
+    </div>
 
     <script>
-        // URL of the deployed Apps Script Web App
-        const apiUrl = 'https://script.google.com/macros/s/AKfycbyBe04nP-UUaaNIn2g8uNJRtZvfahozG-P7tEh2NYWF21EkbJsVB1BaEbfKfNlUfU1Msw/exec';
-        
-        // Function to fetch PO data from Apps Script
-        function fetchPOData() {
-            fetch(apiUrl)
-                .then(response => response.json())
-                .then(data => {
-                    const poData = data.poData;
-                    renderTable(poData);
-                })
-                .catch(error => console.error('Error fetching PO data:', error));
-        }
+        // Function to fetch detailed invoice data based on PO number
+        function fetchInvoiceDetails(poNumber, invoiceId) {
+            const details = [
+                { item: 'Gobi Puma', quantity: 5, price: 197800, total: 989000, machine: 'Machine A', kpc: 'KPC-001' },
+                { item: 'Sakura Puma', quantity: 2, price: 137800, total: 275200, machine: 'Machine B', kpc: 'KPC-002' }
+            ]; // Example Data
 
-        // Render PO data in the table
-        function renderTable(poData) {
-            const tableBody = document.querySelector('#poTable tbody');
-            tableBody.innerHTML = ''; // Clear any existing rows
+            const invoiceDetailsTable = document.getElementById(invoiceId + '-details');
+            invoiceDetailsTable.innerHTML = '';
 
-            poData.forEach(po => {
+            details.forEach(detail => {
                 const row = document.createElement('tr');
-
-                // PO Number
-                const poCell = document.createElement('td');
-                poCell.textContent = po.poNumber;
-                row.appendChild(poCell);
-
-                // Customer
-                const customerCell = document.createElement('td');
-                customerCell.textContent = po.customer;
-                row.appendChild(customerCell);
-
-                // Date
-                const dateCell = document.createElement('td');
-                dateCell.textContent = po.date;
-                row.appendChild(dateCell);
-
-                // Status
-                const statusCell = document.createElement('td');
-                statusCell.textContent = po.status;
-                row.appendChild(statusCell);
-
-                // Action Buttons
-                const actionCell = document.createElement('td');
-                const approveButton = document.createElement('button');
-                approveButton.textContent = 'Approve';
-                approveButton.className = 'approve';
-                approveButton.onclick = () => updatePOStatus(po.poNumber, 'Approved');
-                const rejectButton = document.createElement('button');
-                rejectButton.textContent = 'Reject';
-                rejectButton.className = 'reject';
-                rejectButton.onclick = () => updatePOStatus(po.poNumber, 'Rejected');
-                actionCell.appendChild(approveButton);
-                actionCell.appendChild(rejectButton);
-
-                row.appendChild(actionCell);
-                tableBody.appendChild(row);
+                row.innerHTML = `
+                    <td>${detail.item}</td>
+                    <td>${detail.quantity}</td>
+                    <td>${detail.price}</td>
+                    <td>${detail.total}</td>
+                    <td>${detail.machine}</td>
+                    <td>${detail.kpc}</td>
+                `;
+                invoiceDetailsTable.appendChild(row);
             });
         }
 
-        // Function to update PO status
-        function updatePOStatus(poNumber, newStatus) {
-            fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ poNumber, status: newStatus })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    fetchPOData(); // Refresh the table after updating the status
-                }
-            })
-            .catch(error => console.error('Error updating PO status:', error));
-        }
+        // Toggle the visibility of invoice details
+        function toggleDetails(invoiceId) {
+            const details = document.getElementById(invoiceId);
+            const expandBtn = details.previousElementSibling;
 
-        // Initial load of PO data
-        fetchPOData();
+            if (details.style.display === 'none' || !details.style.display) {
+                details.style.display = 'block';
+                expandBtn.textContent = 'Collapse Items';
+                fetchInvoiceDetails(invoiceId, invoiceId);
+            } else {
+                details.style.display = 'none';
+                expandBtn.textContent = 'Expand Items';
+            }
+        }
     </script>
 </body>
 </html>
