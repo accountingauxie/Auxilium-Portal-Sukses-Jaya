@@ -57,6 +57,7 @@ body {
   border-radius: 10px;
   padding: 32px;
   margin: 0 auto;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
 }
 
 h2 {
@@ -209,8 +210,13 @@ textarea { height: 170px; }
   align-self: flex-end;
 }
 
-/* ========================== MODAL ========================== */
+.totals-box {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
 
+/* ========================== MODAL ========================== */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0;
@@ -228,7 +234,6 @@ textarea { height: 170px; }
   width: 380px;
   border-radius: 10px;
   box-shadow: 0 8px 26px rgba(0,0,0,0.2);
-  animation: fadeIn 0.2s ease-out;
 }
 
 .modal-box h3 {
@@ -259,6 +264,9 @@ textarea { height: 170px; }
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .btn-cancel {
@@ -270,23 +278,60 @@ textarea { height: 170px; }
   cursor: pointer;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to   { opacity: 1; transform: scale(1); }
+/* LOADING SPINNER DALAM MODAL */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  border: 2px solid #e5e7eb;
+  border-top-color: #ffffff;
+  animation: spin 0.7s linear infinite;
+  display: none;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 12px 18px;
+  border-radius: 8px;
+  background: #333;
+  color: #fff;
+  font-size: 13px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: 0.25s ease;
+  z-index: 99999;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
 }
 </style>
 </head>
 
 <body>
 
-<!-- ========== MODAL ADD CUSTOMER ========== -->
+<!-- TOAST -->
+<div id="toast" class="toast"></div>
+
+<!-- ===================== MODAL ADD CUSTOMER ===================== -->
 <div id="modalAddCustomer" class="modal-overlay">
   <div class="modal-box">
     <h3>Tambah Customer Baru</h3>
     <input id="newCustomerName" type="text" placeholder="Masukkan nama customer" />
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeCustomerModal()">Cancel</button>
-      <button class="btn-ok" onclick="submitNewCustomer()">OK</button>
+      <button class="btn-ok" onclick="submitNewCustomer()">
+        <span id="btnOkText">OK</span>
+        <span id="modalSpinner" class="spinner"></span>
+      </button>
     </div>
   </div>
 </div>
@@ -367,7 +412,7 @@ textarea { height: 170px; }
 <script>
 /* CONFIG */
 const baseURL =
-  "YOUR_EXEC_URL_HERE";   // ⚠ Ganti dengan URL Apps Script kamu
+  "https://script.google.com/macros/s/AKfycbwN8nvV2SIID2tb-Tm9N07Mmuc0Ye3W3bMGf02jK8d-2nuGb0Mai08wlj4uRkRb_VjPvQ/exec";
 
 let listSpandek = [];
 let listNonSpandek = [];
@@ -377,8 +422,21 @@ let nonSpandekPrice = [];
 let customerList = [];
 let choiceCustomer;
 
-/* ========== FORMAT RP ========== */
+/* ================= TOAST ================= */
+function showToast(msg, type = "info") {
+  const toast = document.getElementById("toast");
+  toast.textContent = msg;
 
+  toast.style.background =
+    type === "success" ? "#16a34a" :
+    type === "error" ? "#dc2626" :
+    type === "warning" ? "#f97316" : "#333";
+
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 2300);
+}
+
+/* ================= FORMAT RP ================= */
 function formatMoney(num) {
   const n = Number(num) || 0;
   return "Rp " + n.toLocaleString("en-US", {
@@ -390,12 +448,14 @@ function formatMoney(num) {
 function parseMoney(str) {
   if (!str) return 0;
   return parseFloat(
-    str.replace(/Rp/gi, "").replace(/\s/g, "").replace(/,/g, "")
+    str
+      .replace(/Rp/gi, "")
+      .replace(/\s/g, "")
+      .replace(/,/g, "")
   ) || 0;
 }
 
-/* ========== ON LOAD ========== */
-
+/* ==================== ON LOAD ======================== */
 window.onload = async function () {
   choiceCustomer = new Choices("#customerSelect", {
     searchEnabled: true,
@@ -417,8 +477,7 @@ window.onload = async function () {
   });
 };
 
-/* ========== ORDER NUMBER ========== */
-
+/* ================= ORDER NUMBER ================= */
 function setOrderNumber() {
   const key = "ORDERFORM_LAST_ORDER";
   let last = localStorage.getItem(key);
@@ -430,8 +489,7 @@ function setOrderNumber() {
   document.getElementById("orderNumber").value = next;
 }
 
-/* ========== LOAD DATA FROM BACKEND ========== */
-
+/* ================= LOAD DATA ================= */
 async function loadDropdowns() {
   try {
     const res = await fetch(baseURL + "?action=getdata");
@@ -449,16 +507,17 @@ async function loadDropdowns() {
         { value: "add_new", label: "➕ Add New Customer" },
         ...customerList.map((c) => ({ value: c, label: c })),
       ],
-      "value","label",
+      "value",
+      "label",
       true
     );
   } catch (err) {
     console.error("loadDropdowns error:", err);
+    showToast("Gagal load data", "error");
   }
 }
 
-/* ========== ADD ROW ========== */
-
+/* ================= ADD ROW ================= */
 function addRow() {
   const body = document.getElementById("itemsBody");
   const tr = document.createElement("tr");
@@ -514,7 +573,8 @@ function addRow() {
     itemSel.innerHTML = "";
     choiceItem.setChoices(
       list.map((name) => ({ value: name, label: name })),
-      "value","label",
+      "value",
+      "label",
       true
     );
   }
@@ -556,7 +616,7 @@ function addRow() {
     recalcTotals();
   });
 
-  /* DISCOUNT UX */
+  /* ========== DISCOUNT INPUT UX ========== */
   discInput.addEventListener("focus", () => {
     const num = parseMoney(discInput.value);
     discInput.value = num ? String(num) : "";
@@ -567,7 +627,7 @@ function addRow() {
     let num = parseInt(raw, 10) || 0;
 
     const unit = parseMoney(tr.querySelector(".unit-price-input").value);
-    if (num > unit) num = unit;
+    if (num > unit) num = unit; // diskon tidak boleh > unit price
 
     discInput.value = raw === "" ? "" : String(num);
 
@@ -582,6 +642,7 @@ function addRow() {
 
   tr.querySelectorAll("input").forEach((inp) => {
     if (inp.classList.contains("discount-input")) return;
+
     inp.addEventListener("input", () => {
       recalcRow(tr);
       recalcTotals();
@@ -589,15 +650,13 @@ function addRow() {
   });
 }
 
-/* ========== DELETE ROW ========== */
-
+/* ================= DELETE ROW ================= */
 function deleteRow(el) {
   el.closest("tr").remove();
   recalcTotals();
 }
 
-/* ========== CALCULATE EACH ROW ========== */
-
+/* ================= PER BARIS ================= */
 function recalcRow(row) {
   const type = row.querySelector(".type-select").value;
   const meterInput = row.querySelector(".meter-input");
@@ -629,8 +688,7 @@ function recalcRow(row) {
   row.querySelector(".line-total-input").value = formatMoney(total);
 }
 
-/* ========== CALCULATE TOTALS ========== */
-
+/* ================= TOTAL ================= */
 function recalcTotals() {
   let grand = 0;
 
@@ -646,8 +704,7 @@ function recalcTotals() {
   document.getElementById("grandTotalDisplay").textContent = formatMoney(grand);
 }
 
-/* ========== MODAL HANDLERS ========== */
-
+/* ================= MODAL HANDLERS ================= */
 function openCustomerModal() {
   document.getElementById("modalAddCustomer").style.display = "flex";
   document.getElementById("newCustomerName").value = "";
@@ -658,52 +715,74 @@ function closeCustomerModal() {
   document.getElementById("modalAddCustomer").style.display = "none";
 }
 
+/* ================= SUBMIT NEW CUSTOMER ================= */
 async function submitNewCustomer() {
   const name = document.getElementById("newCustomerName").value.trim();
-  if (!name) return;
+  const spinner = document.getElementById("modalSpinner");
+  const btnText = document.getElementById("btnOkText");
 
-  /* FRONT-END DUPLICATE VALIDATION */
-  if (customerList.map(c => c.toLowerCase()).includes(name.toLowerCase())) {
-    alert("❌ Customer sudah ada dan tidak dapat ditambahkan.");
+  if (!name) {
+    showToast("Nama customer tidak boleh kosong", "warning");
     return;
   }
+
+  // Frontend duplicate check
+  const lowerList = customerList.map(c => c.toLowerCase());
+  if (lowerList.includes(name.toLowerCase())) {
+    showToast("Customer already exists", "warning");
+    return;
+  }
+
+  spinner.style.display = "inline-block";
+  btnText.textContent = "Saving...";
 
   try {
     const res = await fetch(baseURL + "?action=addcustomer&name=" + encodeURIComponent(name));
     const txt = await res.text();
 
     if (txt === "DUPLICATE") {
-      alert("❌ Customer sudah ada di database!");
+      showToast("Customer already exists", "warning");
+      spinner.style.display = "none";
+      btnText.textContent = "OK";
       return;
     }
 
     if (txt !== "OK") {
-      alert("Gagal menambahkan customer.");
+      showToast("Gagal menambahkan customer: " + txt, "error");
+      spinner.style.display = "none";
+      btnText.textContent = "OK";
       return;
     }
 
-    // Update list di front-end
-    customerList.push(name);
+    // Berhasil
+    showToast("Customer berhasil ditambahkan", "success");
 
+    // Tambah ke list & dropdown
+    customerList.push(name);
     choiceCustomer.setChoices(
       [{ value: name, label: name }],
       "value",
       "label",
       false
     );
-
     choiceCustomer.setChoiceByValue(name);
 
     closeCustomerModal();
+
   } catch (err) {
-    console.error(err);
-    alert("Terjadi error.");
+    console.error("Add customer error:", err);
+    showToast("Terjadi error koneksi", "error");
   }
+
+  spinner.style.display = "none";
+  btnText.textContent = "OK";
 }
 
-/* TRIGGER MODAL */
+/* EVENT — OPEN MODAL WHEN SELECT ADD NEW CUSTOMER */
 document.getElementById("customerSelect").addEventListener("change", function () {
-  if (this.value === "add_new") openCustomerModal();
+  if (this.value === "add_new") {
+    openCustomerModal();
+  }
 });
 </script>
 
