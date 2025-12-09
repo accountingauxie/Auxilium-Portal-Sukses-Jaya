@@ -126,7 +126,6 @@
     }
   </style>
 </head>
-
 <body>
 
 <!-- Filter Buttons -->
@@ -143,7 +142,6 @@
 <!-- Main container -->
 <div class="container">
   <h1>Invoice Approval and Work Effort</h1>
-  <button onclick="loadInvoices()" class="button">Load Invoices</button>
   <div id="invoiceList"></div>
 </div>
 
@@ -312,6 +310,8 @@ function searchInvoices() {
 
   displayInvoices(filteredInvoices);
 }
+
+window.onload = loadInvoices; // Automatically load invoices on page load
 </script>
 
 </body>
