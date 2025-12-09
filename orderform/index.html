@@ -322,19 +322,22 @@ function formatMoney(num) {
   const n = Number(num) || 0;
   return (
     "Rp " +
-    n
-      .toFixed(2)
-      .replace(".", ",")
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+    n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
   );
 }
 
+
 function parseMoney(str) {
   if (!str) return 0;
+
   return parseFloat(
-    str.replace(/Rp\s*/gi, "").replace(/\./g, "").replace(",", ".")
-  );
+    str
+      .replace(/Rp/gi, "")
+      .replace(/\s/g, "")
+      .replace(/,/g, "") // remove thousand separators
+  ) || 0;
 }
+
 
 /* ==================== ON LOAD ======================== */
 
@@ -505,19 +508,24 @@ function addRow() {
     recalcTotals();
   });
 
-  discInput.addEventListener("input", () => {
-    let raw = discInput.value.replace(/Rp|\s|\./g, "").replace(",", ".");
-    let num = parseFloat(raw);
+ discInput.addEventListener("input", () => {
+  let raw = discInput.value.replace(/[^0-9.,]/g, ""); // allow numbers , .
+  
+  // Remove thousand separators
+  raw = raw.replace(/,/g, "");
 
-    if (isNaN(num) || num < 0) num = 0;
+  let num = parseFloat(raw);
+  if (isNaN(num) || num < 0) num = 0;
 
-    const unit = parseMoney(tr.querySelector(".unit-price-input").value);
-    if (num > unit) num = unit;
+  const unit = parseMoney(tr.querySelector(".unit-price-input").value);
+  if (num > unit) num = unit;
 
-    discInput.value = formatMoney(num);
-    recalcRow(tr);
-    recalcTotals();
-  });
+  discInput.value = formatMoney(num);
+
+  recalcRow(tr);
+  recalcTotals();
+});
+
 
   tr.querySelectorAll("input").forEach((inp) => {
     if (inp.classList.contains("discount-input")) return;
