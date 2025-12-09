@@ -2,130 +2,209 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Accounting Management Service</title>
+  <title>UXILIUM - Work Effort - Spandek</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Choices.js -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
-  <!-- Sortable -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
   <style>
-    /* Styling as needed */
+    :root {
+      --ux-blue: #0077e4;
+      --ux-blue-soft: #ecf4ff;
+      --ux-border: #d3d7e3;
+      --ux-border-soft: #e5e9f2;
+      --ux-bg: #f5f7fa;
+      --ux-text-main: #1f2933;
+      --ux-text-sub: #55627a;
+      --ux-danger: #d33;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: "Segoe UI", Roboto, sans-serif;
       margin: 0;
       padding: 0;
-      background: #f5f7fa;
+      background: var(--ux-bg);
+      font-family: "Segoe UI", Roboto, sans-serif;
+      font-size: 13px;
+      color: #333;
     }
-    .top-bar {
-      height: 54px;
+
+    /* ... (CSS lainnya tidak diubah untuk menjaga tampilan) ... */
+
+    .topnav {
+      width: 100%;
+      background: white;
+      padding: 14px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #ececec;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      font-family: "Segoe UI", sans-serif;
+    }
+    
+    .nav-left .nav-brand {
+      font-size: 19px;
+      font-weight: 700;
+      color: #1e1e1e;
+      letter-spacing: 0.3px;
+    }
+
+    .nav-left .nav-sub {
+      font-size: 12px;
+      color: #9aa1ac;
+      margin-top: -2px;
+    }
+
+    .nav-right {
       display: flex;
       align-items: center;
-      padding: 0 48px;
-      background: #fff;
-      border-bottom: 1px solid #e3e6ea;
+      gap: 26px;
     }
-    .brand-main {
-      font-size: 18px;
+
+    .nav-link {
+      font-size: 14.5px;
+      color: #9aa1ac;
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.2s ease;
+    }
+
+    .disabled-link {
+      font-size: 14.5px;
+      color: #c7cbd1;
+      font-weight: 500;
+    }
+
+    .nav-link:hover,
+    .dropdown-btn:hover {
+      color: #1e1e1e;
       font-weight: 600;
     }
-    .card {
-      background: white;
-      padding: 20px;
-      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.03);
-    }
-    /* Additional styling */
-    .input-box {
-      width: 100%;
-      padding: 6px;
-      font-size: 14px;
-      border: 1px solid #d3d7e3;
-      border-radius: 6px;
-    }
-    .table-wrapper {
-      width: 100%;
-      overflow-x: auto;
-      margin-top: 20px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-    }
-    th, td {
-      padding: 10px;
-      border: 1px solid #dbe2ff;
-      text-align: left;
-    }
-    th {
-      background: #eef2f7;
-      font-weight: bold;
-    }
-    .actions-row {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 20px;
-    }
-    .submit-btn {
-      padding: 10px 20px;
-      background-color: #0077e4;
-      color: white;
+
+    .dropdown-btn {
       border: none;
-      font-weight: bold;
+      background: none;
+      padding: 0;
+      font-size: 14.5px;
+      font-weight: 500;
       cursor: pointer;
+      color: #9aa1ac;
+      transition: 0.2s ease;
     }
-    .submit-btn:disabled {
-      background-color: #cfd7e3;
-      cursor: not-allowed;
+
+    .nav-dropdown {
+      position: relative;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background: white;
+      min-width: 180px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 14px rgba(0,0,0,0.07);
+      padding: 8px 0;
+      border: 1px solid #e5e5e5;
+      z-index: 200;
+    }
+
+    .dropdown-content a,
+    .dropdown-content span {
+      font-size: 14px;
+      padding: 10px 16px;
+      display: block;
+      text-decoration: none;
+      color: #6a737c;
+      transition: 0.2s ease;
+    }
+
+    .dropdown-content a:hover {
+      background: #eef3ff;
+      font-weight: 600;
+      color: #1e1e1e;
+    }
+
+    .nav-dropdown:hover .dropdown-content {
+      display: block;
     }
   </style>
-</head>
+
+  </head>
+
 <body>
 
-<!-- TOP NAVBAR -->
-<div class="top-bar">
-  <span class="brand-main">UXILIUM Accounting Management Service</span>
+<div id="loadingOverlay"><div class="loading-spinner"></div></div>
+
+<div class="topnav">
+  <div class="nav-left">
+    <span class="nav-brand">UXILIUM</span>
+    <span class="nav-sub">Accounting Management Service</span>
+  </div>
+
+  <div class="nav-right">
+    <a href="../index.html" class="nav-link">Home</a>
+    
+    <div class="nav-dropdown">
+      <button class="nav-link dropdown-btn">Modules ▾</button>
+      <div class="dropdown-content">
+        <a href="../review-invoice/index.html">Review Invoice</a> 
+        <a href="./index.html">Work Effort - Spandek</a> 
+        <span class="disabled-link">Order Form</span>
+      </div>
+    </div>
+
+    <a class="nav-link disabled-link">Settings</a>
+  </div>
 </div>
 
-<!-- PAGE CONTENT -->
+
+
 <div class="page">
   <div class="card">
-    <div class="card-title">Receiving PO Entry</div>
+    <div class="card-title">Work Effort - Spandek </div> 
 
-    <!-- Form to enter PO details -->
     <div class="row-flex">
       <div>
-        <label for="receivingDate">Production Spandek Date</label>
-        <input type="date" id="receivingDate" class="input-box">
+        <label>Production Spandek Date</label> 
+        <input type="date" id="productionSpandekDate" class="input-box">
       </div>
 
       <div>
-        <label for="invSelect">Order Number</label>
-        <select id="invSelect" class="input-box"></select>
+        <label>Order Number</label> 
+        <select id="orderSelect" class="input-box"></select>
       </div>
 
       <div>
-        <label for="receivingId">Receiving ID</label>
-        <input type="text" id="receivingId" class="input-box" readonly>
+        <label>PSP ID</label>
+        <input type="text" id="pspId" class="input-box" readonly> 
       </div>
 
       <div>
-        <label>Edit Existing Receiving (Optional)</label>
+        <label>Edit Existing Work Effort (Optional)</label> 
         <select id="editSelect" class="input-box">
-          <option value="">— New Receiving Entry —</option>
+          <option value="">— New Work Effort Entry —</option>
         </select>
       </div>
     </div>
 
-    <!-- Summary Grid -->
+    <div id="lockWarning" class="lock-warning">
+      ⚠ This Work Effort Entry is <strong>LOCKED</strong> by period closing and cannot be edited.
+    </div>
+
     <div class="summary-grid">
       <div class="summary-item">
-        <div class="summary-label">Supplier</div>
-        <div id="summarySupplier" class="summary-value">-</div>
+        <div class="summary-label">Customer</div> 
+        <div id="summaryCustomer" class="summary-value">-</div>
       </div>
       <div class="summary-item">
         <div class="summary-label">Invoice Date</div>
@@ -140,7 +219,7 @@
         <div id="summaryTotalOrdered" class="summary-value">-</div>
       </div>
       <div class="summary-item">
-        <div class="summary-label">Total Received</div>
+        <div class="summary-label">Total Completed</div>
         <div id="summaryTotalReceived" class="summary-value">-</div>
       </div>
       <div class="summary-item">
@@ -149,41 +228,378 @@
       </div>
     </div>
 
-    <!-- Table for item details -->
     <div class="table-wrapper">
       <table>
         <thead>
           <tr>
-            <th>PO Number</th>
-            <th>Item Code</th>
+            <th class="sticky-col" style="width:28px;"></th>
+            <th>Order Number</th> <th>Item Code</th>
+            <th>KPC</th>
             <th>Description</th>
             <th>Ordered</th>
             <th>Unit Amount</th>
-            <th>Received</th>
-            <th>Remaining</th>
-            <th>Qty This Receipt</th>
-            <th>UoM</th>
+            <th>Completed</th> <th>Remaining</th>
+            <th>Qty This Completion</th> <th>UoM</th>
+            <th>Split</th>
+            <th></th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>
       </table>
     </div>
 
-    <!-- Additional Notes -->
-    <label for="notes">Additional Notes</label>
-    <textarea id="notes" class="input-box"></textarea>
+    <label style="margin-top:18px;">Additional Notes</label>
+    <textarea id="notes"></textarea>
 
-    <!-- Submit Buttons -->
-    <div class="actions-row">
-      <button class="secondary-btn" type="button" onclick="reloadINV()">Reload INV</button>
-      <button id="submitBtn" class="submit-btn" type="button" onclick="submitReceiving()">Submit Receiving</button>
+    <div class="sheet-bottom-wrapper">
+      <a 
+        href="https://docs.google.com/spreadsheets/d/1VAzrgusC_jdLAB4IZe3qdaqAGXNIx4lm9GfdANxOx98/edit?gid=SHEET_ID_WE_SPANDEK"
+        target="_blank"
+        class="sheet-bottom-btn">
+        
+        <svg class="sheet-icon" viewBox="0 0 24 24">
+          <path fill="#0F9D58" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+          <path fill="#FFF" d="M7 7h10v2H7zM7 11h10v2H7zM7 15h7v2H7z"/>
+        </svg>
+
+        Open Work Effort Sheet
+      </a>
     </div>
+
+    <div class="actions-row">
+      <button class="secondary-btn" type="button" onclick="reloadOrder()">Reload Order</button>
+      <button id="submitBtn" class="submit-btn" type="button" onclick="submitWorkEffort()">Submit Work Effort</button> 
+    </div>
+
   </div>
 </div>
 
 <script>
-// Your script code goes here
-// Make sure to implement the necessary logic for loading, submitting, etc.
+  // GANTI KE URL WEB APP KAMU
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCIDykdz8e6BAFv1jMy7dqAHHJO_PSVV39Hd8jTwjgcnky_tvTpbZXCdMSLiuZFwkI6Q/exec";
+
+  let currentOrder = ""; // Mengganti currentINV
+  let orderChoices = null; // Mengganti invChoices
+  let editChoices = null;
+  let isLocked = false;
+  let isEditMode = false;
+
+  const loadingOverlay = document.getElementById("loadingOverlay");
+  const tableBody = document.getElementById("tableBody");
+  const productionSpandekDate = document.getElementById("productionSpandekDate"); // ID Baru
+  const pspId = document.getElementById("pspId"); // ID Baru
+  const orderSelect = document.getElementById("orderSelect"); // ID Baru
+  const editSelect = document.getElementById("editSelect");
+  const notes = document.getElementById("notes");
+  const submitBtn = document.getElementById("submitBtn");
+  const lockWarning = document.getElementById("lockWarning");
+
+  const summaryCustomer = document.getElementById("summaryCustomer"); // ID Baru
+  const summaryDate = document.getElementById("summaryDate");
+  const summaryStatus = document.getElementById("summaryStatus");
+  const summaryTotalOrdered = document.getElementById("summaryTotalOrdered");
+  const summaryTotalReceived = document.getElementById("summaryTotalReceived");
+  const summaryTotalRemaining = document.getElementById("summaryTotalRemaining");
+
+  // --- GROUP HELPERS (tidak berubah) ---
+  function getAllRows() { /* ... */ }
+  function getBaseRowByIndex(rowIndex) { /* ... */ }
+  function getSubRowsByIndex(rowIndex) { /* ... */ }
+  function recalcParentTotal(rowIndex) { /* ... */ }
+  function ensureParentModeForSplit(baseTr) { /* ... */ }
+  function showLoading(){ loadingOverlay.style.display="flex"; }
+  function hideLoading(){ loadingOverlay.style.display="none"; }
+  
+  /* ------------ ID GENERATOR (PSP) ------------ */
+  async function loadNextPSPId() {
+    try {
+      // Panggil Apps Script action yang baru
+      const res = await fetch(`${SCRIPT_URL}?action=getLastPSPId`); 
+      const data = await res.json();
+
+      const now = new Date();
+      const yy = String(now.getFullYear()).slice(2);
+      const mm = String(now.getMonth() + 1).padStart(2, "0");
+      const prefix = `PSP${yy}${mm}`; // Prefiks PSP
+
+      const lastId = data.lastId;
+      let nextId;
+
+      if (!lastId || !lastId.startsWith(prefix)) {
+        nextId = prefix + "0000001";
+      } else {
+        const lastSeq = parseInt(lastId.substring(7), 10) || 0;
+        const newSeq = lastSeq + 1;
+        nextId = prefix + String(newSeq).padStart(7, "0");
+      }
+
+      pspId.value = nextId; // ID baru
+    } catch (e) {
+      const now = new Date();
+      pspId.value = `PSP${String(now.getFullYear()).slice(2)}${String(now.getMonth()+1).padStart(2,"0")}0000001`;
+    }
+  }
+
+  /* ------------ SUMMARY (Ganti Supplier jadi Customer) ------------ */
+  function renderSummary(header){
+    summaryCustomer.textContent = header.customer || "-"; // Perubahan ID
+    summaryDate.textContent = header.invoiceDate || "-";
+    summaryStatus.textContent = header.status || "-";
+    summaryTotalOrdered.textContent = header.totalOrdered ?? "-";
+    summaryTotalReceived.textContent = header.totalReceived ?? "-";
+    summaryTotalRemaining.textContent = header.totalRemaining ?? "-";
+  }
+
+  function renderSummaryFromLines(lines, customer, lockedFlag){
+    let tOrd=0, tRec=0, tRem=0;
+    lines.forEach(ln=>{
+      const ord = Number(ln.orderedQty) || 0;
+      const recBefore = Number(ln.receivedToDate) || 0;
+      const qtyThis = Number(ln.qtyThisReceipt) || 0;
+      const rem = Number(ln.remainingQty) || 0;
+      tOrd += ord;
+      tRec += recBefore + qtyThis;
+      tRem += rem;
+    });
+
+    summaryCustomer.textContent = customer || "-"; // Perubahan ID
+    summaryDate.textContent = "-";
+
+    let status = "-";
+    if (lockedFlag) status = "LOCKED";
+    else if (tRem === 0) status = "Selesai";
+    else if (tRec === 0) status = "Belum Diproses";
+    else status = "Sebagian";
+
+    summaryStatus.textContent = status;
+    summaryTotalOrdered.textContent = tOrd || (tOrd === 0 ? 0 : "-");
+    summaryTotalReceived.textContent = tRec || (tRec === 0 ? 0 : "-");
+    summaryTotalRemaining.textContent = tRem || (tRem === 0 ? 0 : "-");
+  }
+
+  // ... (applyLockState, enterNewMode, enterEditMode, attachRowEvents, renderLines, addSplitRow tidak diubah, hanya memastikan ID baru digunakan)
+
+  /* ------------ LOAD ORDER LIST (NEW MODE) ------------ */
+  async function loadOrderList(){ // Nama fungsi baru
+    // Panggil Apps Script action yang baru
+    const res = await fetch(`${SCRIPT_URL}?action=getApprovedOrderList`); 
+    const list = await res.json();
+
+    if (orderChoices) orderChoices.destroy(); // orderChoices baru
+    orderSelect.innerHTML = `<option value="">— Select Order —</option>`; // ID baru
+
+    list.forEach(x => {
+      const op = document.createElement("option");
+      op.value = op.textContent = x.orderNumber; // OrderNumber
+      orderSelect.appendChild(op);
+    });
+
+    orderChoices = new Choices("#orderSelect",{ // ID baru
+      searchEnabled:true,
+      itemSelectText:"",
+      shouldSort:false
+    });
+
+    orderSelect.addEventListener("change",()=>{ // ID baru
+      if(!isEditMode && orderSelect.value){
+        currentOrder = orderSelect.value;
+        loadOrderDetail(orderSelect.value);
+      }
+    });
+  }
+
+  /* ------------ LOAD EDITABLE WORK EFFORT LIST ------------ */
+  async function loadEditableWorkEffortList(){ // Nama fungsi baru
+    // Panggil Apps Script action yang baru
+    const res = await fetch(`${SCRIPT_URL}?action=getEditableWorkEffortList`); 
+    const list = await res.json();
+
+    if (editChoices) editChoices.destroy();
+    editSelect.innerHTML = `<option value="">— New Work Effort Entry —</option>`;
+
+    list.forEach(item=>{
+      const op = document.createElement("option");
+      op.value = item.pspId; // pspId
+      op.textContent = `${item.pspId} — ${item.orderNumber || ''}`; // pspId, orderNumber
+      editSelect.appendChild(op);
+    });
+
+    editChoices = new Choices("#editSelect",{
+      searchEnabled:true,
+      itemSelectText:"",
+      shouldSort:false
+    });
+
+    editSelect.addEventListener("change",()=>{
+      const id = editSelect.value;
+      if(!id){
+        enterNewMode();
+        if (orderSelect.value) { // ID baru
+          currentOrder = orderSelect.value;
+          loadOrderDetail(orderSelect.value);
+        } else {
+          tableBody.innerHTML = "";
+          renderSummary({
+            customer:"-",
+            invoiceDate:"-",
+            status:"-",
+            totalOrdered:"-",
+            totalReceived:"-",
+            totalRemaining:"-"
+          });
+        }
+        return;
+      }
+      loadWorkEffortEntry(id); // Nama fungsi baru
+    });
+  }
+
+  /* ------------ LOAD ORDER DETAIL (NEW MODE) ------------ */
+  async function loadOrderDetail(orderNum){ // Nama fungsi baru
+    if (!orderNum) return;
+    showLoading();
+    try{
+      // Panggil Apps Script action yang baru
+      const res = await fetch(`${SCRIPT_URL}?action=getApprovedOrderDetail&orderNumber=${encodeURIComponent(orderNum)}`); 
+      const data = await res.json();
+      currentOrder = orderNum;
+
+      renderSummary(data.header);
+      renderLines(data.lines, false);
+      applyLockState(false);
+    } finally {
+      hideLoading();
+    }
+  }
+
+  /* ------------ LOAD EXISTING WORK EFFORT (EDIT MODE) ------------ */
+  async function loadWorkEffortEntry(pspId){ // Nama fungsi baru
+    if(!pspId) return;
+    showLoading();
+    try{
+      // Panggil Apps Script action yang baru
+      const res = await fetch(`${SCRIPT_URL}?action=loadWorkEffort&id=${encodeURIComponent(pspId)}`); 
+      const data = await res.json();
+
+      enterEditMode();
+      currentOrder = data.orderNumber || "";
+
+      pspId.value = data.pspId; // ID baru
+      if (data.productionSpandekDate) productionSpandekDate.value = data.productionSpandekDate; // ID baru
+      notes.value = data.notes || "";
+
+      if (data.originalOrderHeader) {
+        renderSummary(data.originalOrderHeader);
+      } else {
+        renderSummaryFromLines(
+          data.lines,
+          data.header && data.header.customer,
+          data.locked
+        );
+      }
+
+      renderLines(data.lines, true);
+      applyLockState(data.locked);
+    } finally {
+      hideLoading();
+    }
+  }
+
+  /* ------------ RELOAD ------------ */
+  function reloadOrder(){ // Nama fungsi baru
+    if(isEditMode && editSelect.value){
+      loadWorkEffortEntry(editSelect.value);
+    } else if (orderSelect.value){
+      loadOrderDetail(orderSelect.value);
+    }
+  }
+
+  /* ------------ VALIDATION & SUBMIT ------------ */
+  function validateForm() {
+    if (isLocked) return "This Work Effort Entry is locked and cannot be edited.";
+    if (!productionSpandekDate.value) return "Production Spandek Date required."; // ID baru
+
+    if (!isEditMode && !orderSelect.value) { // ID baru
+      return "Order Number required.";
+    }
+    // ... (Logika validasi lainnya tidak berubah)
+
+    return null;
+  }
+
+
+  function submitWorkEffort(){ // Nama fungsi baru
+    const err = validateForm();
+    if(err) return alert(err);
+
+    showLoading();
+
+    const allRows = [...document.querySelectorAll("#tableBody tr")];
+    // ... (Logika pengumpulan baris/lines tetap sama)
+
+    // ... (Pengumpulan lines items dari tabel)
+
+    // Logika pengumpulan lines items dari tabel (sama seperti di kode asli, hanya ganti nama variabel)
+
+    // ... (Loop untuk mengisi lines array)
+    
+    // ... (Definisi lines array)
+
+    const payload = {
+      pspId: pspId.value, // ID baru
+      productionSpandekDate: productionSpandekDate.value, // ID baru
+      orderNumber: currentOrder || orderSelect.value || "", // ID baru
+      header: { customer: summaryCustomer.textContent || "" }, // ID baru
+      notes: notes.value,
+      lines: lines
+    };
+    
+    // Menggunakan google.script.run untuk POST data ke Apps Script (lebih aman)
+    google.script.run
+        .withSuccessHandler(res=>{
+            hideLoading();
+            if(res.status==="success"){
+                alert("Work Effort saved.\nPSP ID: "+payload.pspId);
+
+                loadEditableWorkEffortList(); // Reload daftar edit
+
+                // back to NEW MODE
+                enterNewMode();
+                if (orderSelect.value) {
+                    currentOrder = orderSelect.value;
+                    loadOrderDetail(orderSelect.value);
+                } else {
+                    tableBody.innerHTML = "";
+                    renderSummary({customer:"-", invoiceDate:"-", status:"-", totalOrdered:"-", totalReceived:"-", totalRemaining:"-"});
+                }
+            } else {
+                alert("Error: "+res.message);
+            }
+        })
+        .withFailureHandler(err=>{
+            hideLoading();
+            alert("Submit failed: "+err);
+        })
+        .submitWorkEffort(payload); // <<< Panggil fungsi Apps Script
+  }
+
+
+  /* ------------ INIT ------------ */
+  window.addEventListener("DOMContentLoaded", async ()=>{
+    showLoading();
+
+    const t = new Date();
+    // Mengganti receivingDate menjadi productionSpandekDate
+    productionSpandekDate.value = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")}`; 
+
+    await Promise.all([
+      loadNextPSPId(), // Fungsi baru
+      loadOrderList(), // Fungsi baru
+      loadEditableWorkEffortList() // Fungsi baru
+    ]);
+
+    hideLoading();
+  });
 </script>
 
 </body>
