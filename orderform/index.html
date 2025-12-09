@@ -279,7 +279,7 @@ textarea { height: 170px; }
 
 <body>
 
-<!-- ===================== MODAL ADD CUSTOMER ===================== -->
+<!-- ========== MODAL ADD CUSTOMER ========== -->
 <div id="modalAddCustomer" class="modal-overlay">
   <div class="modal-box">
     <h3>Tambah Customer Baru</h3>
@@ -367,7 +367,7 @@ textarea { height: 170px; }
 <script>
 /* CONFIG */
 const baseURL =
-  "https://script.google.com/macros/s/AKfycbwN8nvV2SIID2tb-Tm9N07Mmuc0Ye3W3bMGf02jK8d-2nuGb0Mai08wlj4uRkRb_VjPvQ/exec";
+  "YOUR_EXEC_URL_HERE";   // ⚠ Ganti dengan URL Apps Script kamu
 
 let listSpandek = [];
 let listNonSpandek = [];
@@ -377,7 +377,7 @@ let nonSpandekPrice = [];
 let customerList = [];
 let choiceCustomer;
 
-/* ================= FORMAT RP ================= */
+/* ========== FORMAT RP ========== */
 
 function formatMoney(num) {
   const n = Number(num) || 0;
@@ -390,14 +390,11 @@ function formatMoney(num) {
 function parseMoney(str) {
   if (!str) return 0;
   return parseFloat(
-    str
-      .replace(/Rp/gi, "")
-      .replace(/\s/g, "")
-      .replace(/,/g, "")
+    str.replace(/Rp/gi, "").replace(/\s/g, "").replace(/,/g, "")
   ) || 0;
 }
 
-/* ==================== ON LOAD ======================== */
+/* ========== ON LOAD ========== */
 
 window.onload = async function () {
   choiceCustomer = new Choices("#customerSelect", {
@@ -420,7 +417,7 @@ window.onload = async function () {
   });
 };
 
-/* ================= ORDER NUMBER ================= */
+/* ========== ORDER NUMBER ========== */
 
 function setOrderNumber() {
   const key = "ORDERFORM_LAST_ORDER";
@@ -433,7 +430,7 @@ function setOrderNumber() {
   document.getElementById("orderNumber").value = next;
 }
 
-/* ================= LOAD DATA ================= */
+/* ========== LOAD DATA FROM BACKEND ========== */
 
 async function loadDropdowns() {
   try {
@@ -452,8 +449,7 @@ async function loadDropdowns() {
         { value: "add_new", label: "➕ Add New Customer" },
         ...customerList.map((c) => ({ value: c, label: c })),
       ],
-      "value",
-      "label",
+      "value","label",
       true
     );
   } catch (err) {
@@ -461,7 +457,7 @@ async function loadDropdowns() {
   }
 }
 
-/* ================= ADD ROW ================= */
+/* ========== ADD ROW ========== */
 
 function addRow() {
   const body = document.getElementById("itemsBody");
@@ -518,8 +514,7 @@ function addRow() {
     itemSel.innerHTML = "";
     choiceItem.setChoices(
       list.map((name) => ({ value: name, label: name })),
-      "value",
-      "label",
+      "value","label",
       true
     );
   }
@@ -548,7 +543,7 @@ function addRow() {
 
     if (typeSel.value === "Spandek") {
       const idx = listSpandek.indexOf(item);
-      if (idx >= 0) price = Number(spandandekPrice[idx]) || 0;
+      if (idx >= 0) price = Number(spandekPrice[idx]) || 0;
     }
 
     if (typeSel.value === "Non Spandek") {
@@ -587,7 +582,6 @@ function addRow() {
 
   tr.querySelectorAll("input").forEach((inp) => {
     if (inp.classList.contains("discount-input")) return;
-
     inp.addEventListener("input", () => {
       recalcRow(tr);
       recalcTotals();
@@ -595,14 +589,14 @@ function addRow() {
   });
 }
 
-/* ================= DELETE ROW ================= */
+/* ========== DELETE ROW ========== */
 
 function deleteRow(el) {
   el.closest("tr").remove();
   recalcTotals();
 }
 
-/* ================= PER BARIS ================= */
+/* ========== CALCULATE EACH ROW ========== */
 
 function recalcRow(row) {
   const type = row.querySelector(".type-select").value;
@@ -635,7 +629,7 @@ function recalcRow(row) {
   row.querySelector(".line-total-input").value = formatMoney(total);
 }
 
-/* ================= TOTAL ================= */
+/* ========== CALCULATE TOTALS ========== */
 
 function recalcTotals() {
   let grand = 0;
@@ -652,7 +646,7 @@ function recalcTotals() {
   document.getElementById("grandTotalDisplay").textContent = formatMoney(grand);
 }
 
-/* ================= MODAL HANDLERS ================= */
+/* ========== MODAL HANDLERS ========== */
 
 function openCustomerModal() {
   document.getElementById("modalAddCustomer").style.display = "flex";
@@ -668,14 +662,28 @@ async function submitNewCustomer() {
   const name = document.getElementById("newCustomerName").value.trim();
   if (!name) return;
 
+  /* FRONT-END DUPLICATE VALIDATION */
+  if (customerList.map(c => c.toLowerCase()).includes(name.toLowerCase())) {
+    alert("❌ Customer sudah ada dan tidak dapat ditambahkan.");
+    return;
+  }
+
   try {
     const res = await fetch(baseURL + "?action=addcustomer&name=" + encodeURIComponent(name));
     const txt = await res.text();
+
+    if (txt === "DUPLICATE") {
+      alert("❌ Customer sudah ada di database!");
+      return;
+    }
 
     if (txt !== "OK") {
       alert("Gagal menambahkan customer.");
       return;
     }
+
+    // Update list di front-end
+    customerList.push(name);
 
     choiceCustomer.setChoices(
       [{ value: name, label: name }],
@@ -693,7 +701,7 @@ async function submitNewCustomer() {
   }
 }
 
-/* EVENT — OPEN MODAL WHEN SELECT ADD NEW CUSTOMER */
+/* TRIGGER MODAL */
 document.getElementById("customerSelect").addEventListener("change", function () {
   if (this.value === "add_new") openCustomerModal();
 });
