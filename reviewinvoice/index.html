@@ -2,71 +2,175 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Invoice Approval Test</title>
+  <title>Invoice Approval and Work Effort</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f9fafb; }
+    h1 { color: #333; }
+    .invoice { border: 1px solid #ccc; padding: 10px; margin-bottom: 15px; }
+    .invoice-title { font-weight: bold; margin-bottom: 5px; }
+    .invoice-details { font-size: 14px; color: #555; }
+    .item-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    .item-table th, .item-table td { padding: 8px; text-align: left; border: 1px solid #ddd; }
+    .item-table th { background: #f4f4f4; }
+    .readonly { background-color: #f3f3f3; }
+    .button { padding: 6px 12px; background-color: #007bff; color: white; border: none; cursor: pointer; border-radius: 4px; }
+    .button:disabled { background-color: #ddd; cursor: not-allowed; }
+    .status { margin-top: 10px; }
+    .status span { padding: 5px 10px; background-color: #e0e0e0; color: #333; border-radius: 3px; }
+    .status-approved { background-color: #28a745; color: white; }
+    .status-canceled { background-color: #dc3545; color: white; }
+    .status-pending { background-color: #ffc107; color: white; }
+  </style>
 </head>
 
 <body>
 
-<h2>Invoice Approval — Test Mode</h2>
+<h1>Invoice Approval and Work Effort</h1>
 
 <button onclick="loadInvoices()">Load Invoices</button>
-<hr>
 
-<div id="invoiceBox"></div>
+<div id="invoiceList"></div>
 
 <script>
 const API = "https://script.google.com/macros/s/AKfycbxSBRBLIOx74b88ESfthZJJnSYxRzmKnc34cJolVQlS70T9wcVLs5cFwFXlOjuuc1Gu/exec";
 
-// Load invoices
 function loadInvoices() {
   fetch(API + "?action=listInvoices")
     .then(r => r.json())
     .then(res => {
       if (!res.ok) {
-        alert("Gagal load data");
+        alert("Error loading invoices.");
         return;
       }
 
-      const div = document.getElementById("invoiceBox");
-      div.innerHTML = "";
+      const container = document.getElementById("invoiceList");
+      container.innerHTML = ""; // clear previous content
 
-      res.data.forEach(inv => {
-        const box = document.createElement("div");
-        box.style.border = "1px solid #ccc";
-        box.style.padding = "10px";
-        box.style.margin = "10px 0";
+      res.data.forEach(invoice => {
+        const invoiceDiv = document.createElement("div");
+        invoiceDiv.className = "invoice";
 
-        box.innerHTML = `
-          <b>Invoice: ${inv.invoiceNumber}</b><br>
-          Customer: ${inv.customer}<br>
-          Status: <span id="st_${inv.invoiceNumber}">${inv.status || "-"}</span><br><br>
+        // Invoice details
+        const invoiceTitle = document.createElement("div");
+        invoiceTitle.className = "invoice-title";
+        invoiceTitle.innerHTML = `<b>Invoice: ${invoice.invoiceNumber}</b> - ${invoice.customer}`;
 
-          <button onclick="setStatus('${inv.invoiceNumber}','Approved')">Approve</button>
-          <button onclick="setStatus('${inv.invoiceNumber}','Canceled')">Cancel</button>
-        `;
+        const invoiceDetails = document.createElement("div");
+        invoiceDetails.className = "invoice-details";
+        invoiceDetails.innerHTML = `Date: ${invoice.invoiceDate}<br>Status: <span id="status_${invoice.invoiceNumber}" class="status-pending">${invoice.status || "Pending"}</span>`;
 
-        div.appendChild(box);
+        // Expand button for items
+        const expandButton = document.createElement("button");
+        expandButton.className = "button";
+        expandButton.innerText = "Expand Items";
+        expandButton.onclick = () => showInvoiceItems(invoice);
+
+        invoiceDiv.appendChild(invoiceTitle);
+        invoiceDiv.appendChild(invoiceDetails);
+        invoiceDiv.appendChild(expandButton);
+        container.appendChild(invoiceDiv);
       });
     });
 }
 
-// Update status
-function setStatus(inv, status) {
+function showInvoiceItems(invoice) {
+  const container = document.getElementById("invoiceList");
+  container.innerHTML = "";
+
+  const invoiceDiv = document.createElement("div");
+  invoiceDiv.className = "invoice";
+
+  const invoiceTitle = document.createElement("div");
+  invoiceTitle.className = "invoice-title";
+  invoiceTitle.innerHTML = `<b>Invoice: ${invoice.invoiceNumber}</b> - ${invoice.customer}`;
+
+  const table = document.createElement("table");
+  table.className = "item-table";
+
+  const headerRow = document.createElement("tr");
+  headerRow.innerHTML = `
+    <th>Product</th>
+    <th>Meter</th>
+    <th>Qty</th>
+    <th>Unit Price</th>
+    <th>Total</th>
+    <th>Machine</th>
+    <th>KPC</th>
+  `;
+  table.appendChild(headerRow);
+
+  invoice.items.forEach(item => {
+    const row = document.createElement("tr");
+    row.className = item.isSpandek ? "" : "readonly"; // Non-Spandek items are readonly
+
+    row.innerHTML = `
+      <td>${item.product}</td>
+      <td>${item.meter}</td>
+      <td>${item.qty}</td>
+      <td>${item.unitPrice}</td>
+      <td>${item.total}</td>
+      <td>
+        ${item.isSpandek ? `<input type="text" id="machine_${item.rowIndex}" placeholder="Machine" />` : ""}
+      </td>
+      <td>
+        ${item.isSpandek ? `<input type="text" id="kpc_${item.rowIndex}" placeholder="KPC" />` : ""}
+      </td>
+    `;
+
+    table.appendChild(row);
+  });
+
+  // Save Work Effort Button
+  const saveButton = document.createElement("button");
+  saveButton.className = "button";
+  saveButton.innerText = "Save Work Effort";
+  saveButton.onclick = () => saveWorkEffort(invoice);
+
+  invoiceDiv.appendChild(invoiceTitle);
+  invoiceDiv.appendChild(table);
+  invoiceDiv.appendChild(saveButton);
+
+  container.appendChild(invoiceDiv);
+}
+
+function saveWorkEffort(invoice) {
+  const lines = invoice.items.map(item => {
+    return {
+      rowIndex: item.rowIndex,
+      product: item.product,
+      meter: item.meter,
+      qty: item.qty,
+      unitPrice: item.unitPrice,
+      total: item.total,
+      machine: document.getElementById(`machine_${item.rowIndex}`)?.value || "",
+      kpc: document.getElementById(`kpc_${item.rowIndex}`)?.value || ""
+    };
+  });
+
+  // Filter out rows with missing machine or kpc for Spandek items
+  const filteredLines = lines.filter(line => line.machine && line.kpc);
+
+  if (filteredLines.length === 0) {
+    alert("Please fill out the Machine and KPC fields for Spandek items.");
+    return;
+  }
+
   fetch(API, {
     method: "POST",
     body: new URLSearchParams({
-      action: "updateStatus",
-      invoiceNumber: inv,
-      status: status
+      action: "saveWorkEffort",
+      invoiceNumber: invoice.invoiceNumber,
+      lines: JSON.stringify(filteredLines)
     })
   })
   .then(r => r.json())
   .then(res => {
     if (res.ok) {
-      document.getElementById("st_" + inv).textContent = status;
-      alert("Status updated: " + status);
+      alert("Work Effort saved successfully.");
+      document.getElementById(`status_${invoice.invoiceNumber}`).classList.replace("status-pending", "status-approved");
+      document.getElementById(`status_${invoice.invoiceNumber}`).textContent = "Approved";
     } else {
-      alert("ERROR: " + res.error);
+      alert("Error saving Work Effort.");
     }
   });
 }
