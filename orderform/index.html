@@ -548,22 +548,32 @@ function recalcRow(row) {
     meter = 1;
   } else {
     const raw = meterInput.value.replace(",", ".");
-    if (raw === "" || raw.endsWith(".")) return;
     meter = parseFloat(raw);
     if (isNaN(meter) || meter < 0) meter = 0;
   }
 
-  const qty = parseFloat(row.querySelector(".qty-input").value) || 0;
+  // === QTY VALIDATION (NO NEGATIVE) ===
+  let qty = parseFloat(row.querySelector(".qty-input").value);
+  if (isNaN(qty) || qty < 0) qty = 0;
+  row.querySelector(".qty-input").value = qty; // fix UI
+
   const unit = parseMoney(row.querySelector(".unit-price-input").value);
   const disc = parseMoney(row.querySelector(".discount-input").value);
 
-  const netUnit = unit - disc;
+  // === NET UNIT PRICE (unit - discount) ===
+  let netUnit = unit - disc;
+  if (netUnit < 0) netUnit = 0; // prevent negative
+
+  // === PRICE PER METER ===
   const priceQty = netUnit * meter;
+
+  // === TOTAL ===
   const total = priceQty * qty;
 
   row.querySelector(".priceqty-input").value = formatMoney(priceQty);
   row.querySelector(".line-total-input").value = formatMoney(total);
 }
+
 
 /* ================= TOTAL ================= */
 
