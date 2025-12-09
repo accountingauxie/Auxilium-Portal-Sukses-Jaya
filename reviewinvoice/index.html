@@ -2,125 +2,357 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <title>Sales Order Work Flow</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Review Invoice Module</title>
+
+  <!-- Choices.js -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+  <!-- Sortable -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+
   <style>
-    /* Global Styles */
+    :root {
+      --ux-blue: #0077e4;
+      --ux-blue-soft: #ecf4ff;
+      --ux-border: #d3d7e3;
+      --ux-border-soft: #e5e9f2;
+      --ux-bg: #f5f7fa;
+      --ux-text-main: #1f2933;
+      --ux-text-sub: #55627a;
+      --ux-danger: #d33;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #ffffff;
       margin: 0;
-      padding: 30px;
+      padding: 0;
+      background: var(--ux-bg);
+      font-family: "Segoe UI", Roboto, sans-serif;
+      font-size: 13px;
       color: #333;
     }
 
-    h1 {
-      text-align: center;
-      color: #0077e4; /* Auxie Blue */
-      font-size: 36px;
-      margin-bottom: 30px;
-    }
-
-    .menu-container {
+    /* Navbar */
+    .topnav {
+      width: 100%;
+      background: white;
+      padding: 14px 40px;
       display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-bottom: 30px;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #ececec;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
-    .menu-item {
-      background-color: #ffffff;
-      padding: 30px;
-      margin: 10px;
-      border-radius: 10px;
-      width: 250px;
-      text-align: center;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s, box-shadow 0.3s;
+    .nav-left .nav-brand {
+      font-size: 19px;
+      font-weight: 700;
+      color: #1e1e1e;
+      letter-spacing: 0.3px;
+    }
+
+    .nav-left .nav-sub {
+      font-size: 12px;
+      color: #9aa1ac;
+      margin-top: -2px;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+    }
+
+    .nav-link {
+      font-size: 14.5px;
+      color: #9aa1ac;
       cursor: pointer;
-      border: 1px solid #d3d7e3; /* Soft Border */
-    }
-
-    .menu-item:hover {
-      transform: scale(1.05);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-    }
-
-    .menu-item h3 {
-      font-size: 24px;
-      color: #0077e4; /* Auxie Blue */
-    }
-
-    .menu-item p {
-      font-size: 16px;
-      color: #777;
-      margin: 10px 0;
-    }
-
-    .menu-item button {
-      background-color: #0077e4; /* Auxie Blue */
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      font-size: 16px;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    .menu-item button:hover {
-      background-color: #0056b3; /* Darker Blue */
-    }
-
-    /* Footer Styles */
-    .footer {
-      text-align: center;
-      font-size: 14px;
-      color: #888;
-      margin-top: 40px;
-    }
-
-    .footer a {
       text-decoration: none;
-      color: #0077e4; /* Auxie Blue */
+      font-weight: 500;
+      transition: 0.2s ease;
     }
+
+    .nav-link:hover {
+      color: #1e1e1e;
+      font-weight: 600;
+    }
+
+    .nav-dropdown {
+      position: relative;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background: white;
+      min-width: 180px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 14px rgba(0,0,0,0.07);
+      padding: 8px 0;
+      border: 1px solid #e5e5e5;
+      z-index: 200;
+    }
+
+    .dropdown-content a {
+      font-size: 14px;
+      padding: 10px 16px;
+      text-decoration: none;
+      color: #6a737c;
+      transition: 0.2s ease;
+    }
+
+    .dropdown-content a:hover {
+      background: #eef3ff;
+      font-weight: 600;
+      color: #1e1e1e;
+    }
+
+    .nav-dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    /* Main page content */
+    .page {
+      max-width: 1180px;
+      margin: 32px auto;
+      padding: 0 20px 40px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 28px 32px 30px;
+      box-shadow:
+        0 0 0 1px rgba(15, 23, 42, 0.03),
+        0 18px 40px rgba(15, 23, 42, 0.08);
+    }
+
+    .card-title {
+      font-size: 21px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--ux-text-main);
+    }
+
+    .row-flex {
+      display: grid;
+      grid-template-columns: 1.1fr 1.5fr 1.3fr 1.7fr;
+      gap: 20px;
+      align-items: end;
+      margin-bottom: 12px;
+    }
+
+    label {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: block;
+      color: #445;
+    }
+
+    .input-box {
+      height: 34px !important;
+      padding: 6px 10px !important;
+      font-size: 13px !important;
+      border: 1px solid var(--ux-border) !important;
+      border-radius: 6px !important;
+      background: white !important;
+      width: 100%;
+    }
+
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 8px;
+      border: 1px solid var(--ux-border-soft);
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      table-layout: auto;
+    }
+
+    thead {
+      background: #eef2f7;
+    }
+
+    th {
+      padding: 8px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #465166;
+      text-align: left;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--ux-border-soft);
+    }
+
+    td {
+      padding: 6px 7px;
+      border-bottom: 1px solid #f1f3f6;
+      vertical-align: middle;
+      font-size: 12.5px;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #fafbff;
+    }
+
+    tbody tr:hover {
+      background: #f2f6ff;
+    }
+
+    .row-handle {
+      cursor: grab;
+      color: #b4bac7;
+      text-align: center;
+      font-size: 16px;
+      user-select: none;
+      width: 26px;
+    }
+
+    /* Sub-line indent style */
+    .subline-row td {
+      background: #f7faff;
+      border-top: 1px dashed #d6e3ff;
+    }
+
+    .subline-row td:first-child {
+      padding-left: 22px !important;
+    }
+
+    /* Action buttons */
+    .actions-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .secondary-btn {
+      padding: 8px 14px;
+      background: #ecf1f8;
+      border: 1px solid #cfd7e3;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .submit-btn {
+      padding: 9px 22px;
+      background: var(--ux-blue);
+      border-radius: 6px;
+      border: none;
+      color: white;
+      font-weight: 600;
+      font-size: 13.5px;
+      cursor: pointer;
+    }
+
+    .submit-btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    /* Loading spinner */
+    #loadingOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,.7);
+      backdrop-filter: blur(2px);
+      z-index: 9999;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 4px solid #d0d7e2;
+      border-top-color: #1a73e8;
+      animation: spin .85s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 
 <body>
 
-  <h1>Review Invoice Module</h1>
-
-  <!-- Menu Items -->
-  <div class="menu-container">
-    <!-- Review Invoice -->
-    <div class="menu-item" onclick="window.location.href='reviewinvoice/reviewInvoice.html'">
-      <h3>Review Invoice</h3>
-      <p>Review, approve, or cancel invoices.</p>
-      <button>Go to Review</button>
-    </div>
-
-    <!-- Work Effort (WE) -->
-    <div class="menu-item" onclick="window.location.href='reviewinvoice/workEffort.html'">
-      <h3>Work Effort (WE)</h3>
-      <p>Record work efforts for approved invoices.</p>
-      <button>Go to Work Effort</button>
-    </div>
-
-    <!-- Import to Xero -->
-    <div class="menu-item" onclick="window.location.href='reviewinvoice/importToXero.html'">
-      <h3>Import to Xero</h3>
-      <p>Import data into Xero and lock PO Sales.</p>
-      <button>Go to Xero Import</button>
-    </div>
+<!-- TOP NAVBAR -->
+<div class="topnav">
+  <div class="nav-left">
+    <span class="nav-brand">UXILIUM</span>
+    <span class="nav-sub">Accounting Management Service</span>
   </div>
 
-  <!-- Footer -->
-  <div class="footer">
-    <p>&copy; 2025 Review Invoice Module | All rights reserved</p>
-    <p>Developed by <a href="#">Your Name</a></p>
+  <div class="nav-right">
+    <a href="../index.html" class="nav-link">Home</a>
+    <div class="nav-dropdown">
+      <button class="nav-link dropdown-btn">Modules ▾</button>
+      <div class="dropdown-content">
+        <a href="../receiving/">Receiving PO Entry</a>
+        <a href="../production/">Production Entry</a>
+        <span class="disabled-link">Order Form</span>
+      </div>
+    </div>
+    <a class="nav-link disabled-link">Settings</a>
   </div>
+</div>
+
+<!-- PAGE CONTENT -->
+<div class="page">
+  <div class="card">
+    <div class="card-title">Sales Order Work Flow</div>
+
+    <div class="row-flex">
+      <div>
+        <label>Receiving Date</label>
+        <input type="date" id="receivingDate" class="input-box">
+      </div>
+      <div>
+        <label>Inv Number</label>
+        <select id="invSelect" class="input-box"></select>
+      </div>
+      <div>
+        <label>Receiving ID</label>
+        <input type="text" id="receivingId" class="input-box" readonly>
+      </div>
+      <div>
+        <label>Edit Existing Receiving (Optional)</label>
+        <select id="editSelect" class="input-box">
+          <option value="">— New Receiving Entry —</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="lockWarning" class="lock-warning">
+      ⚠ This Receiving Entry is <strong>LOCKED</strong> by period closing and cannot be edited.
+    </div>
+
+    <!-- Table and Data Here -->
+
+    <div class="actions-row">
+      <button class="secondary-btn" type="button" onclick="reloadINV()">Reload INV</button>
+      <button id="submitBtn" class="submit-btn" type="button" onclick="submitReceiving()">Submit Receiving</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Script goes here
+</script>
 
 </body>
 </html>
