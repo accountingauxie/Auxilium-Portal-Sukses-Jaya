@@ -167,6 +167,15 @@
 <div class="container">
   <h1>Invoice Approval and Work Effort</h1>
 
+  <!-- Filter dropdown -->
+  <label for="statusFilter">Filter by Status: </label>
+  <select id="statusFilter" onchange="filterInvoices()">
+    <option value="">All</option>
+    <option value="Pending">Pending</option>
+    <option value="Approved">Approved</option>
+    <option value="Canceled">Canceled</option>
+  </select>
+  
   <button onclick="loadInvoices()" class="button">Load Invoices</button>
 
   <div id="invoiceList"></div>
@@ -174,6 +183,7 @@
 
 <script>
 const API = "https://script.google.com/macros/s/AKfycbxSBRBLIOx74b88ESfthZJJnSYxRzmKnc34cJolVQlS70T9wcVLs5cFwFXlOjuuc1Gu/exec";
+let invoiceData = [];
 
 function loadInvoices() {
   fetch(API + "?action=listInvoices")
@@ -184,34 +194,48 @@ function loadInvoices() {
         return;
       }
 
-      const container = document.getElementById("invoiceList");
-      container.innerHTML = ""; // clear previous content
-
-      res.data.forEach(invoice => {
-        const invoiceDiv = document.createElement("div");
-        invoiceDiv.className = "invoice";
-
-        // Invoice details
-        const invoiceTitle = document.createElement("div");
-        invoiceTitle.className = "invoice-title";
-        invoiceTitle.innerHTML = `<b>Invoice: ${invoice.invoiceNumber}</b> - ${invoice.customer}`;
-
-        const invoiceDetails = document.createElement("div");
-        invoiceDetails.className = "invoice-details";
-        invoiceDetails.innerHTML = `Date: ${invoice.invoiceDate}<br>Status: <span id="status_${invoice.invoiceNumber}" class="status-pending">${invoice.status || "Pending"}</span>`;
-
-        // Expand button for items
-        const expandButton = document.createElement("button");
-        expandButton.className = "button";
-        expandButton.innerText = "Expand Items";
-        expandButton.onclick = () => showInvoiceItems(invoice);
-
-        invoiceDiv.appendChild(invoiceTitle);
-        invoiceDiv.appendChild(invoiceDetails);
-        invoiceDiv.appendChild(expandButton);
-        container.appendChild(invoiceDiv);
-      });
+      invoiceData = res.data;
+      displayInvoices(invoiceData);
     });
+}
+
+function filterInvoices() {
+  const statusFilter = document.getElementById("statusFilter").value;
+
+  const filteredInvoices = invoiceData.filter(invoice => {
+    if (!statusFilter) return true; // Show all invoices if no filter
+    return invoice.status === statusFilter;
+  });
+
+  displayInvoices(filteredInvoices);
+}
+
+function displayInvoices(invoices) {
+  const container = document.getElementById("invoiceList");
+  container.innerHTML = ""; // clear previous content
+
+  invoices.forEach(invoice => {
+    const invoiceDiv = document.createElement("div");
+    invoiceDiv.className = "invoice";
+
+    const invoiceTitle = document.createElement("div");
+    invoiceTitle.className = "invoice-title";
+    invoiceTitle.innerHTML = `<b>Invoice: ${invoice.invoiceNumber}</b> - ${invoice.customer}`;
+
+    const invoiceDetails = document.createElement("div");
+    invoiceDetails.className = "invoice-details";
+    invoiceDetails.innerHTML = `Date: ${invoice.invoiceDate}<br>Status: <span id="status_${invoice.invoiceNumber}" class="status-pending">${invoice.status || "Pending"}</span>`;
+
+    const expandButton = document.createElement("button");
+    expandButton.className = "button";
+    expandButton.innerText = "Expand Items";
+    expandButton.onclick = () => showInvoiceItems(invoice);
+
+    invoiceDiv.appendChild(invoiceTitle);
+    invoiceDiv.appendChild(invoiceDetails);
+    invoiceDiv.appendChild(expandButton);
+    container.appendChild(invoiceDiv);
+  });
 }
 
 function showInvoiceItems(invoice) {
@@ -242,7 +266,7 @@ function showInvoiceItems(invoice) {
 
   invoice.items.forEach(item => {
     const row = document.createElement("tr");
-    row.className = item.isSpandek ? "" : "readonly"; // Non-Spandek items are readonly
+    row.className = item.isSpandek ? "" : "readonly";
 
     row.innerHTML = `
       <td>${item.product}</td>
@@ -261,7 +285,6 @@ function showInvoiceItems(invoice) {
     table.appendChild(row);
   });
 
-  // Save Work Effort Button
   const saveButton = document.createElement("button");
   saveButton.className = "button";
   saveButton.innerText = "Save Work Effort";
@@ -288,7 +311,6 @@ function saveWorkEffort(invoice) {
     };
   });
 
-  // Filter out rows with missing machine or kpc for Spandek items
   const filteredLines = lines.filter(line => line.machine && line.kpc);
 
   if (filteredLines.length === 0) {
