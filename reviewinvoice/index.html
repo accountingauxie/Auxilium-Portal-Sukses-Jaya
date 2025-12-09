@@ -279,7 +279,7 @@ function showInvoiceItems(invoice, invoiceDiv) {
         <tr><th>Item</th><th>Quantity</th><th>Price</th><th>Total</th><th>Machine</th><th>KPC Number</th></tr>
       </thead>
       <tbody>
-        ${filteredItems.map(item => `
+        ${filteredItems.map(item => ` 
           <tr>
             <td>${item.product}</td>
             <td>${item.qty}</td>
