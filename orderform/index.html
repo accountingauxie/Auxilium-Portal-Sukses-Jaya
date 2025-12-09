@@ -412,7 +412,7 @@ textarea { height: 170px; }
 <script>
 /* CONFIG */
 const baseURL =
-  "https://script.google.com/macros/s/AKfycbyTHSO4hG6bfM7yJK_kwOYV_6PQkQFiEYz0e6-lK2TryKCboOzCi410N68FWW_kU4tr6Q/exec";
+  "https://script.google.com/macros/s/AKfycbxMBIHwU3yRnAtlqWP3w_LSGDBZTdP9g0g7-sPqEsCgD0jzc_-kO1X4Ri0pf5C0gEHLSg/exec";
 
 let listSpandek = [];
 let listNonSpandek = [];
@@ -789,13 +789,12 @@ document.getElementById("customerSelect").addEventListener("change", function ()
 document.querySelector(".approve-btn").addEventListener("click", submitOrder);
 
 async function submitOrder() {
-  // Ambil tombol
   const btn = document.querySelector(".approve-btn");
   btn.disabled = true;
   btn.textContent = "Processing...";
 
   try {
-    /* ====== 1. Ambil Header Data ====== */
+    // 1. Header
     const customer = document.getElementById("customerSelect").value;
     const issueDate = document.getElementById("issueDate").value;
     const orderNumber = document.getElementById("orderNumber").value;
@@ -808,7 +807,7 @@ async function submitOrder() {
       return;
     }
 
-    /* ====== 2. Ambil Items ====== */
+    // 2. Items
     const rows = document.querySelectorAll("#itemsBody tr");
     const items = [];
 
@@ -843,36 +842,30 @@ async function submitOrder() {
       return;
     }
 
-    /* ====== 3. Buat Payload Kirim ====== */
-    const payload = {
-      action: "submitorder",
+    // 3. Payload (akan di-JSON + urlencode)
+    const payloadObj = {
       customer,
       issueDate,
       orderNumber,
       notes,
-      items: JSON.stringify(items),
+      items,
       dpp: document.getElementById("dppDisplay").textContent,
       ppn: document.getElementById("ppnDisplay").textContent,
       grandTotal: document.getElementById("grandTotalDisplay").textContent,
     };
 
-    /* ====== 4. Kirim ke Apps Script ====== */
-    const res = await fetch(baseURL, {
-      method: "POST",
-      body: JSON.stringify(payload),
-      headers: { "Content-Type": "application/json" },
-    });
+    const payloadStr = encodeURIComponent(JSON.stringify(payloadObj));
 
+    // 4. Kirim via GET (tidak pakai POST lagi)
+    const url = `${baseURL}?action=submitorder&payload=${payloadStr}`;
+
+    const res = await fetch(url, { method: "GET" });
     const result = await res.text();
     console.log("Submit result:", result);
 
     if (result.includes("OK")) {
       showToast("Order berhasil dikirim!", "success");
-
-      // Optional: reset form
-      setTimeout(() => {
-        location.reload();
-      }, 1200);
+      setTimeout(() => location.reload(), 1200);
     } else {
       showToast("Gagal submit: " + result, "error");
     }
@@ -884,7 +877,6 @@ async function submitOrder() {
   btn.disabled = false;
   btn.textContent = "Approve";
 }
-  
 </script>
 
 </body>
