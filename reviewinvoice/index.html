@@ -162,7 +162,7 @@
 <div class="invoice-list" id="invoiceList"></div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbzFL2GzbajkbtU8lahzrPHCPUr59mhMe9HE8sSYXRsQq3R_rtPSxS4mRXwsUp2NJx_G-Q/exec";
+const API = "https://script.google.com/macros/s/AKfycbxSBRBLIOx74b88ESfthZJJnSYxRzmKnc34cJolVQlS70T9wcVLs5cFwFXlOjuuc1Gu/exec";
 let invoiceData = [];
 
 function loadInvoices() {
@@ -197,7 +197,7 @@ function displayInvoices(invoices) {
     const statusActions = document.createElement("div");
     statusActions.className = "status-actions";
     
-    // Add Approve and Cancel buttons
+    // Approve and Cancel buttons will be hidden initially
     const approveButton = document.createElement("button");
     approveButton.className = "button";
     approveButton.innerText = "Approve";
@@ -218,7 +218,11 @@ function displayInvoices(invoices) {
     const expandButton = document.createElement("button");
     expandButton.className = "expand-button";
     expandButton.innerText = "Expand Items";
-    expandButton.onclick = () => showInvoiceItems(invoice);
+    expandButton.onclick = () => {
+      showInvoiceItems(invoice);
+      // Show Approve/Cancel buttons after expanding
+      statusActions.style.display = "block"; 
+    };
 
     invoiceDiv.appendChild(invoiceHeader);
     invoiceDiv.appendChild(statusActions);
