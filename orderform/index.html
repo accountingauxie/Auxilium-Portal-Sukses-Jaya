@@ -221,11 +221,88 @@ textarea { height: 170px; }
   flex-direction: column;
   text-align: right;
 }
+
+/* MODAL */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-box {
+  background: #ffffff;
+  padding: 24px;
+  width: 380px;
+  border-radius: 10px;
+  box-shadow: 0 8px 26px rgba(0,0,0,0.2);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-box h3 {
+  margin: 0 0 14px;
+  font-size: 18px;
+}
+
+.modal-box input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #d6dce1;
+  margin-bottom: 18px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-ok {
+  background: var(--blue);
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-cancel {
+  background: #dddddd;
+  color: #333;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+  
 </style>
 </head>
 
 <body>
 
+<!-- ADD CUSTOMER MODAL -->
+<div id="modalAddCustomer" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <h3>Tambah Customer Baru</h3>
+    <input id="newCustomerName" type="text" placeholder="Masukkan nama customer" />
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeCustomerModal()">Cancel</button>
+      <button class="btn-ok" onclick="submitNewCustomer()">OK</button>
+    </div>
+  </div>
+</div>
+  
 <div class="top-bar">
   AUXILIUM <span style="font-weight:300;color:#909090">Accounting Management Services</span>
 </div>
@@ -594,43 +671,46 @@ function recalcTotals() {
   document.getElementById("grandTotalDisplay").textContent = formatMoney(grand);
 }
 
-/* ========== ADD NEW CUSTOMER ========== */
-document.getElementById("customerSelect").addEventListener("change", async function () {
-  const val = this.value;
+/* ========== ADD CUSTOMER MODAL FUNCTIONS ========== */
 
-  if (val === "add_new") {
-    const newName = prompt("Masukkan nama customer baru:");
+function openCustomerModal() {
+  document.getElementById("modalAddCustomer").style.display = "flex";
+  document.getElementById("newCustomerName").value = "";
+  document.getElementById("newCustomerName").focus();
+}
 
-    if (!newName || newName.trim() === "") {
-      choiceCustomer.setChoiceByValue(""); 
+function closeCustomerModal() {
+  document.getElementById("modalAddCustomer").style.display = "none";
+}
+
+async function submitNewCustomer() {
+  const name = document.getElementById("newCustomerName").value.trim();
+  if (!name) return;
+
+  try {
+    const res = await fetch(baseURL + "?action=addcustomer&name=" + encodeURIComponent(name));
+    const txt = await res.text();
+
+    if (txt !== "OK") {
+      alert("Gagal menambahkan customer.");
       return;
     }
 
-    try {
-      const res = await fetch(baseURL + "?action=addcustomer&name=" + encodeURIComponent(newName.trim()));
-      const txt = await res.text();
+    choiceCustomer.setChoices(
+      [{ value: name, label: name }],
+      "value",
+      "label",
+      false
+    );
 
-      if (txt !== "OK") {
-        alert("Gagal menambahkan customer: " + txt);
-        return;
-      }
+    choiceCustomer.setChoiceByValue(name);
 
-      // Tambahkan customer baru ke dropdown
-      choiceCustomer.setChoices(
-        [{ value: newName, label: newName }],
-        "value",
-        "label",
-        false
-      );
-
-      choiceCustomer.setChoiceByValue(newName); // langsung pilih customer baru
-
-      alert("Customer berhasil ditambahkan!");
-    } catch (err) {
-      console.error("Add customer error:", err);
-      alert("Terjadi error menambahkan customer.");
-    }
+    closeCustomerModal();
+  } catch (err) {
+    console.error(err);
+    alert("Terjadi error.");
   }
+}
 });
 
 </script>
