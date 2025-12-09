@@ -273,7 +273,6 @@ function showInvoiceItems(invoice, invoiceDiv) {
   const itemsDiv = document.createElement("div");
   itemsDiv.className = "invoice-items-details";
   
-  // Create a table with the invoice items
   itemsDiv.innerHTML = `
     <table class="invoice-table">
       <thead>
@@ -293,7 +292,7 @@ function showInvoiceItems(invoice, invoiceDiv) {
       </tbody>
     </table>
   `;
-
+  
   // Create the "Approve" and "Cancel" buttons to appear after expanding items
   const statusActions = document.createElement("div");
   statusActions.className = "status-actions";
