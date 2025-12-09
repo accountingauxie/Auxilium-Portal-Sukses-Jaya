@@ -132,23 +132,27 @@
             fetch(`${scriptUrl}?action=getinvdetail&poNumber=${poNumber}`)
                 .then(response => response.json())
                 .then(data => {
-                    const invoiceDetails = data.poData; // Assuming response contains poData
+                    if (data.poData && data.poData.length > 0) {
+                        const invoiceDetails = data.poData; // Assuming response contains poData
 
-                    const invoiceDetailsTable = document.getElementById(invoiceId + '-details');
-                    invoiceDetailsTable.innerHTML = '';
+                        const invoiceDetailsTable = document.getElementById(invoiceId + '-details');
+                        invoiceDetailsTable.innerHTML = ''; // Clear previous content
 
-                    invoiceDetails.forEach(detail => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${detail.item}</td>
-                            <td>${detail.quantity}</td>
-                            <td>${detail.price}</td>
-                            <td>${detail.total}</td>
-                            <td>${detail.machine}</td>
-                            <td>${detail.kpc}</td>
-                        `;
-                        invoiceDetailsTable.appendChild(row);
-                    });
+                        invoiceDetails.forEach(detail => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${detail.item}</td>
+                                <td>${detail.quantity}</td>
+                                <td>${detail.price}</td>
+                                <td>${detail.total}</td>
+                                <td>${detail.machine}</td>
+                                <td>${detail.kpc}</td>
+                            `;
+                            invoiceDetailsTable.appendChild(row);
+                        });
+                    } else {
+                        console.log('No invoice details found for PO:', poNumber);
+                    }
                 })
                 .catch(error => console.error('Error fetching invoice details:', error));
         }
