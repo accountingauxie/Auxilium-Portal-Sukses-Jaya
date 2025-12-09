@@ -593,6 +593,46 @@ function recalcTotals() {
   document.getElementById("ppnDisplay").textContent = formatMoney(ppn);
   document.getElementById("grandTotalDisplay").textContent = formatMoney(grand);
 }
+
+/* ========== ADD NEW CUSTOMER ========== */
+document.getElementById("customerSelect").addEventListener("change", async function () {
+  const val = this.value;
+
+  if (val === "add_new") {
+    const newName = prompt("Masukkan nama customer baru:");
+
+    if (!newName || newName.trim() === "") {
+      choiceCustomer.setChoiceByValue(""); 
+      return;
+    }
+
+    try {
+      const res = await fetch(baseURL + "?action=addcustomer&name=" + encodeURIComponent(newName.trim()));
+      const txt = await res.text();
+
+      if (txt !== "OK") {
+        alert("Gagal menambahkan customer: " + txt);
+        return;
+      }
+
+      // Tambahkan customer baru ke dropdown
+      choiceCustomer.setChoices(
+        [{ value: newName, label: newName }],
+        "value",
+        "label",
+        false
+      );
+
+      choiceCustomer.setChoiceByValue(newName); // langsung pilih customer baru
+
+      alert("Customer berhasil ditambahkan!");
+    } catch (err) {
+      console.error("Add customer error:", err);
+      alert("Terjadi error menambahkan customer.");
+    }
+  }
+});
+
 </script>
 
 </body>
