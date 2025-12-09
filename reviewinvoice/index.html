@@ -36,12 +36,6 @@
       margin-bottom: 10px;
     }
 
-    .invoice-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
     .button {
       padding: 8px 16px;
       background-color: #007bff;
@@ -102,82 +96,54 @@
       color: white;
     }
 
-    .side-nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 200px;
-      height: 100%;
-      background-color: #343a40;
-      color: white;
-      padding-top: 20px;
-      padding-left: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
+    .filter-buttons {
+      margin-bottom: 20px;
     }
 
-    .side-nav a {
+    .filter-buttons button {
+      padding: 8px 16px;
+      margin-right: 10px;
+      cursor: pointer;
+      background-color: #28a745;
       color: white;
-      text-decoration: none;
-      font-size: 16px;
-      padding: 10px;
+      border: none;
       border-radius: 5px;
-      transition: background-color 0.3s ease;
     }
 
-    .side-nav a:hover {
-      background-color: #495057;
+    .filter-buttons button:hover {
+      background-color: #218838;
+    }
+
+    .search-bar {
+      margin-bottom: 20px;
+      padding: 8px;
+      font-size: 14px;
+      width: 250px;
     }
 
     .container {
-      margin-left: 220px;
       padding: 20px;
-    }
-
-    /* Responsive design for mobile */
-    @media (max-width: 768px) {
-      .side-nav {
-        width: 100%;
-        height: auto;
-        position: static;
-      }
-
-      .container {
-        margin-left: 0;
-      }
-
-      .invoice {
-        padding: 10px;
-      }
     }
   </style>
 </head>
+
 <body>
 
-<!-- Sidebar -->
-<div class="side-nav">
-  <a href="#">Dashboard</a>
-  <a href="#">Invoices</a>
-  <a href="#">Work Effort</a>
-  <a href="#">Settings</a>
+<!-- Filter Buttons -->
+<div class="filter-buttons">
+  <button onclick="filterByStatus('All')">All</button>
+  <button onclick="filterByStatus('Pending')">Awaiting Approval</button>
+  <button onclick="filterByStatus('Approved')">Approved</button>
+  <button onclick="filterByStatus('Canceled')">Deleted</button>
 </div>
+
+<!-- Search Bar -->
+<input type="text" id="searchInput" class="search-bar" placeholder="Search Invoice, Customer or Product" onkeyup="searchInvoices()">
 
 <!-- Main container -->
 <div class="container">
   <h1>Invoice Approval and Work Effort</h1>
-
-  <!-- Filter dropdown -->
-  <label for="statusFilter">Filter by Status: </label>
-  <select id="statusFilter" onchange="filterInvoices()">
-    <option value="">All</option>
-    <option value="Pending">Pending</option>
-    <option value="Approved">Approved</option>
-    <option value="Canceled">Canceled</option>
-  </select>
-  
   <button onclick="loadInvoices()" class="button">Load Invoices</button>
-
   <div id="invoiceList"></div>
 </div>
 
@@ -197,17 +163,6 @@ function loadInvoices() {
       invoiceData = res.data;
       displayInvoices(invoiceData);
     });
-}
-
-function filterInvoices() {
-  const statusFilter = document.getElementById("statusFilter").value;
-
-  const filteredInvoices = invoiceData.filter(invoice => {
-    if (!statusFilter) return true; // Show all invoices if no filter
-    return invoice.status === statusFilter;
-  });
-
-  displayInvoices(filteredInvoices);
 }
 
 function displayInvoices(invoices) {
@@ -266,7 +221,7 @@ function showInvoiceItems(invoice) {
 
   invoice.items.forEach(item => {
     const row = document.createElement("tr");
-    row.className = item.isSpandek ? "" : "readonly";
+    row.className = item.isSpandek ? "" : "readonly"; // Non-Spandek items are readonly
 
     row.innerHTML = `
       <td>${item.product}</td>
@@ -336,6 +291,26 @@ function saveWorkEffort(invoice) {
       alert("Error saving Work Effort.");
     }
   });
+}
+
+function filterByStatus(status) {
+  const filteredInvoices = invoiceData.filter(invoice => {
+    if (status === 'All') return true;
+    return invoice.status === status;
+  });
+  displayInvoices(filteredInvoices);
+}
+
+function searchInvoices() {
+  const searchQuery = document.getElementById("searchInput").value.toLowerCase();
+
+  const filteredInvoices = invoiceData.filter(invoice => {
+    return invoice.invoiceNumber.toString().includes(searchQuery) ||
+           invoice.customer.toLowerCase().includes(searchQuery) ||
+           invoice.items.some(item => item.product.toLowerCase().includes(searchQuery));
+  });
+
+  displayInvoices(filteredInvoices);
 }
 </script>
 
