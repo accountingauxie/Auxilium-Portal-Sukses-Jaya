@@ -171,6 +171,7 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
   </style>
 </head>
 
@@ -305,8 +306,29 @@ function updateStatus(invoice, newStatus) {
       const statusElement = document.getElementById(`status_${invoice.invoiceNumber}`);
       statusElement.className = `status ${getStatusClass(newStatus)}`;
       statusElement.textContent = newStatus;
+
+      // If approved, display Machine and KPC fields for KPC products
+      if (newStatus === "Approved") {
+        displayMachineKPCFields(invoice);
+      }
     } else {
       alert("Error updating invoice status.");
+    }
+  });
+}
+
+// Function to display the Machine and KPC fields
+function displayMachineKPCFields(invoice) {
+  const itemsTable = document.querySelector(`#invoice_${invoice.invoiceNumber} .invoice-table`);
+
+  invoice.items.forEach(item => {
+    if (item.product.includes('KPC')) { // Check if the product is related to KPC
+      const row = itemsTable.querySelector(`tr[data-row-index="${item.rowIndex}"]`);
+      const machineCell = row.querySelector(".machine-cell");
+      const kpcCell = row.querySelector(".kpc-cell");
+
+      machineCell.innerHTML = `<input type="text" placeholder="Machine" />`;
+      kpcCell.innerHTML = `<input type="text" placeholder="KPC" />`;
     }
   });
 }
