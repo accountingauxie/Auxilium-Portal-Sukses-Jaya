@@ -123,12 +123,28 @@
     .readonly {
       background-color: #f3f3f3;
     }
+
+    .status-actions {
+      margin-top: 15px;
+    }
+
+    .status-actions button {
+      padding: 8px 16px;
+      margin-right: 10px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    .status-actions button:hover {
+      background-color: #0056b3;
+    }
   </style>
 </head>
 
 <body>
-
-<h1>Invoice Approval and Work Effort</h1>
 
 <!-- Filter Buttons -->
 <div class="filter-buttons">
@@ -176,6 +192,23 @@ function displayInvoices(invoices) {
       <div class="status ${getStatusClass(invoice.status)}">${invoice.status || "Pending"}</div>
     `;
 
+    const statusActions = document.createElement("div");
+    statusActions.className = "status-actions";
+    
+    // Add Approve and Cancel buttons
+    const approveButton = document.createElement("button");
+    approveButton.className = "button";
+    approveButton.innerText = "Approve";
+    approveButton.onclick = () => updateStatus(invoice, "Approved");
+
+    const cancelButton = document.createElement("button");
+    cancelButton.className = "button";
+    cancelButton.innerText = "Cancel";
+    cancelButton.onclick = () => updateStatus(invoice, "Canceled");
+
+    statusActions.appendChild(approveButton);
+    statusActions.appendChild(cancelButton);
+
     const invoiceDetails = document.createElement("div");
     invoiceDetails.className = "invoice-details";
     invoiceDetails.innerHTML = `Date: ${invoice.invoiceDate}<br>Status: <span id="status_${invoice.invoiceNumber}" class="status-pending">${invoice.status || "Pending"}</span>`;
@@ -186,6 +219,7 @@ function displayInvoices(invoices) {
     expandButton.onclick = () => showInvoiceItems(invoice);
 
     invoiceDiv.appendChild(invoiceHeader);
+    invoiceDiv.appendChild(statusActions);
     invoiceDiv.appendChild(invoiceDetails);
     invoiceDiv.appendChild(expandButton);
     container.appendChild(invoiceDiv);
@@ -230,7 +264,7 @@ function showInvoiceItems(invoice) {
 
   invoice.items.forEach(item => {
     const row = document.createElement("tr");
-    row.className = item.isSpandek ? "" : "readonly";
+    row.className = item.isSpandek ? "" : "readonly"; // Non-Spandek items are readonly
 
     row.innerHTML = `
       <td>${item.product}</td>
@@ -298,6 +332,29 @@ function saveWorkEffort(invoice) {
       document.getElementById(`status_${invoice.invoiceNumber}`).textContent = "Approved";
     } else {
       alert("Error saving Work Effort.");
+    }
+  });
+}
+
+function updateStatus(invoice, newStatus) {
+  // Update status in the backend
+  fetch(API, {
+    method: "POST",
+    body: new URLSearchParams({
+      action: "updateStatus",
+      invoiceNumber: invoice.invoiceNumber,
+      status: newStatus
+    })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.ok) {
+      // Update status on UI
+      const statusElement = document.getElementById(`status_${invoice.invoiceNumber}`);
+      statusElement.className = `status ${getStatusClass(newStatus)}`;
+      statusElement.textContent = newStatus;
+    } else {
+      alert("Error updating invoice status.");
     }
   });
 }
