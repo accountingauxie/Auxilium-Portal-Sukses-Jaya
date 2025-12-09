@@ -1,204 +1,397 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice Details</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f7f7f7;
-            padding: 20px;
-        }
-        .invoice-card {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            padding: 20px;
-            transition: all 0.3s ease;
-        }
-        .invoice-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .invoice-header h3 {
-            margin: 0;
-        }
-        .status {
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        .pending {
-            background-color: #ffc107;
-            color: #fff;
-        }
-        .approved {
-            background-color: #28a745;
-            color: #fff;
-        }
-        .cancelled {
-            background-color: #dc3545;
-            color: #fff;
-        }
-        .expand-btn {
-            padding: 8px 15px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .invoice-details {
-            display: none;
-            margin-top: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 10px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        .action-buttons {
-            margin-top: 10px;
-        }
-        .action-buttons button {
-            padding: 10px 20px;
-            margin: 5px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .approve {
-            background-color: #28a745;
-            color: white;
-        }
-        .cancel {
-            background-color: #dc3545;
-            color: white;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Accounting Management Service</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+  
+  <style>
+    /* General styling and layout */
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+
+    .top-bar {
+      height: 54px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 48px;
+      background: #fff;
+      border-bottom: 1px solid #e3e6ea;
+    }
+
+    .brand-main {
+      font-size: 18px;
+      font-weight: 600;
+      margin-right: 6px;
+    }
+
+    .page {
+      max-width: 1180px;
+      margin: 32px auto;
+      padding: 0 20px 40px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 28px 32px 30px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+    }
+
+    .card-title {
+      font-size: 21px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #1f2933;
+    }
+
+    .input-box {
+      width: 100%;
+      padding: 10px;
+      font-size: 13px;
+      border: 1px solid #d3d7e3;
+      border-radius: 6px;
+      background: white;
+    }
+
+    .actions-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .submit-btn {
+      padding: 9px 22px;
+      background: #0077e4;
+      border-radius: 6px;
+      color: white;
+      font-size: 13.5px;
+      cursor: pointer;
+    }
+
+    /* Table layout */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #e3e6ea;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      font-size: 13px;
+      border-bottom: 1px solid #f1f3f6;
+    }
+
+    th {
+      background: #f7f8ff;
+      font-weight: 600;
+      color: #465166;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #fafbff;
+    }
+
+    tbody tr:hover {
+      background: #f2f6ff;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      max-height: 400px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .split-btn, .delete-btn {
+      padding: 6px 12px;
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+    }
+
+    .split-btn {
+      background: #0077e4;
+      color: white;
+    }
+
+    .delete-btn {
+      background: #dc3545;
+      color: white;
+    }
+
+    /* Loading Overlay */
+    #loadingOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #d0d7e2;
+      border-top: 4px solid #1a73e8;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
 
-    <div class="invoice-card">
-        <div class="invoice-header">
-            <div>
-                <h3>Invoice: 1000076 - Vonny</h3>
-                <p>Date: 2025-12-08</p>
-                <p>PO Number: <span id="poNumber1">undefined</span></p>
-            </div>
-            <div class="status pending">
-                Pending
-            </div>
-        </div>
-        <button class="expand-btn" onclick="toggleDetails('invoice1')">Expand Items</button>
-        <div id="invoice1" class="invoice-details">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Item</th>
-                        <th>Quantity</th>
-                        <th>Price</th>
-                        <th>Total</th>
-                        <th>Machine</th>
-                        <th>KPC Number</th>
-                    </tr>
-                </thead>
-                <tbody id="invoice1-details">
-                    <!-- Dynamic content goes here -->
-                </tbody>
-            </table>
-        </div>
-        <div class="action-buttons">
-            <button class="approve">Approve</button>
-            <button class="cancel">Cancel</button>
-        </div>
+<!-- Loading Overlay -->
+<div id="loadingOverlay"><div class="loading-spinner"></div></div>
+
+<!-- Top Bar -->
+<div class="top-bar">
+  <span class="brand-main">UXILIUM</span>
+  <span>Accounting Management Service</span>
+</div>
+
+<!-- Page Content -->
+<div class="page">
+  <div class="card">
+    <div class="card-title">Receiving PO Entry</div>
+    
+    <div class="row-flex">
+      <div>
+        <label>Receiving Date</label>
+        <input type="date" id="receivingDate" class="input-box">
+      </div>
+
+      <div>
+        <label>Inv Number</label>
+        <select id="invSelect" class="input-box"></select>
+      </div>
+
+      <div>
+        <label>Receiving ID</label>
+        <input type="text" id="receivingId" class="input-box" readonly>
+      </div>
+
+      <div>
+        <label>Edit Existing Receiving (Optional)</label>
+        <select id="editSelect" class="input-box">
+          <option value="">— New Receiving Entry —</option>
+        </select>
+      </div>
     </div>
 
-    <div class="invoice-card">
-        <div class="invoice-header">
-            <div>
-                <h3>Invoice: 1000077 - Veve</h3>
-                <p>Date: 2025-12-08</p>
-                <p>PO Number: <span id="poNumber2">undefined</span></p>
-            </div>
-            <div class="status pending">
-                Pending
-            </div>
-        </div>
-        <button class="expand-btn" onclick="toggleDetails('invoice2')">Expand Items</button>
-        <div id="invoice2" class="invoice-details">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Item</th>
-                        <th>Quantity</th>
-                        <th>Price</th>
-                        <th>Total</th>
-                        <th>Machine</th>
-                        <th>KPC Number</th>
-                    </tr>
-                </thead>
-                <tbody id="invoice2-details">
-                    <!-- Dynamic content goes here -->
-                </tbody>
-            </table>
-        </div>
-        <div class="action-buttons">
-            <button class="approve">Approve</button>
-            <button class="cancel">Cancel</button>
-        </div>
+    <div id="lockWarning" class="lock-warning">
+      ⚠ This Receiving Entry is <strong>LOCKED</strong> and cannot be edited.
     </div>
 
-    <script>
-        // Function to fetch detailed invoice data based on PO number
-        function fetchInvoiceDetails(poNumber, invoiceId) {
-            const details = [
-                { item: 'Gobi Puma', quantity: 5, price: 197800, total: 989000, machine: 'Machine A', kpc: 'KPC-001' },
-                { item: 'Sakura Puma', quantity: 2, price: 137800, total: 275200, machine: 'Machine B', kpc: 'KPC-002' }
-            ]; // Example Data
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>PO Number</th>
+            <th>Item Code</th>
+            <th>KPC</th>
+            <th>Description</th>
+            <th>Ordered</th>
+            <th>Unit Amount</th>
+            <th>Received</th>
+            <th>Remaining</th>
+            <th>Qty This Receipt</th>
+            <th>UoM</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <!-- Data rows will be populated here dynamically -->
+        </tbody>
+      </table>
+    </div>
 
-            const invoiceDetailsTable = document.getElementById(invoiceId + '-details');
-            invoiceDetailsTable.innerHTML = '';
+    <label style="margin-top:18px;">Additional Notes</label>
+    <textarea id="notes"></textarea>
 
-            details.forEach(detail => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${detail.item}</td>
-                    <td>${detail.quantity}</td>
-                    <td>${detail.price}</td>
-                    <td>${detail.total}</td>
-                    <td>${detail.machine}</td>
-                    <td>${detail.kpc}</td>
-                `;
-                invoiceDetailsTable.appendChild(row);
-            });
-        }
+    <div class="actions-row">
+      <button class="submit-btn" id="submitBtn" type="button">Submit Receiving</button>
+    </div>
+  </div>
+</div>
 
-        // Toggle the visibility of invoice details
-        function toggleDetails(invoiceId) {
-            const details = document.getElementById(invoiceId);
-            const expandBtn = details.previousElementSibling;
+<script>
+  // URL of your Google Apps Script Web App for fetching and submitting data
+  const SCRIPT_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_URL_HERE/exec";
+  
+  let currentINV = "";
+  let invChoices = null;
+  let editChoices = null;
+  const loadingOverlay = document.getElementById("loadingOverlay");
+  const tableBody = document.getElementById("tableBody");
+  const receivingDate = document.getElementById("receivingDate");
+  const receivingId = document.getElementById("receivingId");
+  const invSelect = document.getElementById("invSelect");
+  const editSelect = document.getElementById("editSelect");
+  const notes = document.getElementById("notes");
+  const submitBtn = document.getElementById("submitBtn");
 
-            if (details.style.display === 'none' || !details.style.display) {
-                details.style.display = 'block';
-                expandBtn.textContent = 'Collapse Items';
-                fetchInvoiceDetails(invoiceId, invoiceId);
-            } else {
-                details.style.display = 'none';
-                expandBtn.textContent = 'Expand Items';
-            }
-        }
-    </script>
+  // Show/Hide Loading Overlay
+  function showLoading() {
+    loadingOverlay.style.display = "flex";
+  }
+
+  function hideLoading() {
+    loadingOverlay.style.display = "none";
+  }
+
+  // Fetch PO Data and populate the dropdown
+  async function loadInvList() {
+    const res = await fetch(`${SCRIPT_URL}?action=getinvlist`);
+    const list = await res.json();
+
+    invSelect.innerHTML = `<option value="">— Select INV —</option>`;
+    list.forEach(x => {
+      const op = document.createElement("option");
+      op.value = x.invNumber;
+      op.textContent = x.invNumber;
+      invSelect.appendChild(op);
+    });
+
+    invChoices = new Choices("#invSelect", {
+      searchEnabled: true,
+      itemSelectText: "",
+      shouldSort: false
+    });
+
+    invSelect.addEventListener("change", () => {
+      currentINV = invSelect.value;
+      loadInvDetail(currentINV);
+    });
+  }
+
+  // Load Invoice details when an INV is selected
+  async function loadInvDetail(inv) {
+    if (!inv) return;
+    showLoading();
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getinvdetail&invNumber=${encodeURIComponent(inv)}`);
+      const data = await res.json();
+
+      currentINV = inv;
+
+      // Populate the table with invoice data
+      renderInvoiceData(data);
+    } finally {
+      hideLoading();
+    }
+  }
+
+  // Render invoice data in the table
+  function renderInvoiceData(data) {
+    tableBody.innerHTML = "";
+    data.items.forEach(item => {
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>${item.poNumber}</td>
+        <td>${item.itemCode}</td>
+        <td>${item.kpc}</td>
+        <td>${item.description}</td>
+        <td>${item.ordered}</td>
+        <td>${item.unitAmount}</td>
+        <td>${item.received}</td>
+        <td>${item.remaining}</td>
+        <td><input type="number" class="table-input" value="${item.qtyThisReceipt || ""}" /></td>
+        <td>${item.uom}</td>
+        <td>
+          <button class="split-btn" onclick="addSplitRow()">Split</button>
+          <button class="delete-btn" onclick="deleteRow(this)">Delete</button>
+        </td>
+      `;
+
+      tableBody.appendChild(tr);
+    });
+  }
+
+  // Handle the submission of the receiving data
+  function submitReceiving() {
+    // Validate form
+    if (!receivingDate.value || !invSelect.value) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    const rows = [...document.querySelectorAll("#tableBody tr")];
+    const lines = rows.map(row => {
+      return {
+        poNumber: row.cells[0].textContent,
+        itemCode: row.cells[1].textContent,
+        kpc: row.cells[2].textContent,
+        description: row.cells[3].textContent,
+        orderedQty: row.cells[4].textContent,
+        unitAmount: row.cells[5].textContent,
+        receivedToDate: row.cells[6].textContent,
+        remainingQty: row.cells[7].textContent,
+        qtyThisReceipt: row.querySelector("input").value,
+        uom: row.cells[8].textContent,
+      };
+    });
+
+    const payload = {
+      receivingId: receivingId.value,
+      receivingDate: receivingDate.value,
+      invNumber: currentINV,
+      notes: notes.value,
+      lines: lines
+    };
+
+    // Send data to the backend
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert("Receiving submitted successfully!");
+        // Reset the form or show success message
+      } else {
+        alert("Error: " + data.message);
+      }
+    })
+    .catch(error => {
+      alert("Error: " + error);
+    });
+  }
+
+  // Initial loading of INV List
+  loadInvList();
+
+  // Attach event listener to the submit button
+  submitBtn.addEventListener("click", submitReceiving);
+</script>
+
 </body>
 </html>
