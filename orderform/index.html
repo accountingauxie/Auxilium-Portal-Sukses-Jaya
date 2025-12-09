@@ -784,6 +784,107 @@ document.getElementById("customerSelect").addEventListener("change", function ()
     openCustomerModal();
   }
 });
+
+/* ================= SUBMIT ORDER ================= */
+document.querySelector(".approve-btn").addEventListener("click", submitOrder);
+
+async function submitOrder() {
+  // Ambil tombol
+  const btn = document.querySelector(".approve-btn");
+  btn.disabled = true;
+  btn.textContent = "Processing...";
+
+  try {
+    /* ====== 1. Ambil Header Data ====== */
+    const customer = document.getElementById("customerSelect").value;
+    const issueDate = document.getElementById("issueDate").value;
+    const orderNumber = document.getElementById("orderNumber").value;
+    const notes = document.getElementById("notes").value;
+
+    if (!customer || customer === "add_new") {
+      showToast("Pilih customer terlebih dahulu", "warning");
+      btn.disabled = false;
+      btn.textContent = "Approve";
+      return;
+    }
+
+    /* ====== 2. Ambil Items ====== */
+    const rows = document.querySelectorAll("#itemsBody tr");
+    const items = [];
+
+    rows.forEach((tr) => {
+      const type = tr.querySelector(".type-select").value;
+      const item = tr.querySelector(".item-select").value;
+      const meter = tr.querySelector(".meter-input").value;
+      const qty = tr.querySelector(".qty-input").value;
+      const unitPrice = parseMoney(tr.querySelector(".unit-price-input").value);
+      const discount = parseMoney(tr.querySelector(".discount-input").value);
+      const priceQty = parseMoney(tr.querySelector(".priceqty-input").value);
+      const total = parseMoney(tr.querySelector(".line-total-input").value);
+
+      if (item) {
+        items.push({
+          type,
+          item,
+          meter,
+          qty,
+          unitPrice,
+          discount,
+          priceQty,
+          total,
+        });
+      }
+    });
+
+    if (items.length === 0) {
+      showToast("Minimal isi 1 baris item", "warning");
+      btn.disabled = false;
+      btn.textContent = "Approve";
+      return;
+    }
+
+    /* ====== 3. Buat Payload Kirim ====== */
+    const payload = {
+      action: "submitorder",
+      customer,
+      issueDate,
+      orderNumber,
+      notes,
+      items: JSON.stringify(items),
+      dpp: document.getElementById("dppDisplay").textContent,
+      ppn: document.getElementById("ppnDisplay").textContent,
+      grandTotal: document.getElementById("grandTotalDisplay").textContent,
+    };
+
+    /* ====== 4. Kirim ke Apps Script ====== */
+    const res = await fetch(baseURL, {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const result = await res.text();
+    console.log("Submit result:", result);
+
+    if (result.includes("OK")) {
+      showToast("Order berhasil dikirim!", "success");
+
+      // Optional: reset form
+      setTimeout(() => {
+        location.reload();
+      }, 1200);
+    } else {
+      showToast("Gagal submit: " + result, "error");
+    }
+  } catch (err) {
+    console.error(err);
+    showToast("Error submit order", "error");
+  }
+
+  btn.disabled = false;
+  btn.textContent = "Approve";
+}
+  
 </script>
 
 </body>
