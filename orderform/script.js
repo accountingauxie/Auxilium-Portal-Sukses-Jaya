@@ -1,6 +1,6 @@
 /* CONFIG */
 const baseURL =
-  "https://script.google.com/macros/s/AKfycbxzY3p101ahIm5f7mjhJpbdRsPp61c_HFDel--A3O5bVUZguip0A-QAuh19EH5FpMQVfg/exec";
+  "https://script.google.com/macros/s/AKfycbx75viZxSQSQbMvg9kot7CPGu-BDLDbkPOdzdz3blK_G85l8KA0gWr05sNuheNCTZ2Qug/exec";
 
 let listSpandek = [];
 let listNonSpandek = [];
