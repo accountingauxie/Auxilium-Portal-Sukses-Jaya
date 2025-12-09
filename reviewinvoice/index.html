@@ -45,7 +45,7 @@
 
   <script>
     async function fetchInvoices() {
-      const response = await fetch('<YOUR_GOOGLE_SCRIPT_URL>');
+      const response = await fetch('https://script.google.com/macros/s/AKfycbxYBpCnb6t_HZVPHDyOx6PsgVZKr-zQJYvWjs2Hbzdf5WhksUVZBdNirhaeD4UbKejN1w/exec');
       const data = await response.json();
       const invoiceList = document.getElementById('invoice-list');
       data.invoices.forEach(invoice => {
