@@ -458,17 +458,35 @@
     });
   }
 
+// GANTI FUNCTION INI:
   function setModalLoading(isLoading) {
-    const btn = document.getElementById('btnApproveModal');
-    if(isLoading) {
-      btn.textContent = "Processing...";
-      btn.classList.add('btn-disabled');
-      btn.disabled = true;
-    } else {
-      btn.textContent = "Approve Invoice";
-      btn.classList.remove('btn-disabled');
-      btn.disabled = false;
-    }
+    // 1. Ambil container tempat tombol berada
+    const actionDiv = document.getElementById('modalActions');
+    
+    // 2. Ambil semua tombol yang ada di dalamnya
+    const buttons = actionDiv.querySelectorAll('button');
+
+    buttons.forEach(btn => {
+      // Matikan/Hidupkan tombol
+      btn.disabled = isLoading;
+      
+      if (isLoading) {
+        // Simpan teks asli tombol ke dalam memori sementara (dataset)
+        // supaya saat selesai loading, teksnya kembali benar (tidak berubah jadi "Approve Invoice" semua)
+        if (!btn.dataset.originalText) {
+           btn.dataset.originalText = btn.innerText; 
+        }
+        
+        btn.innerText = "Processing...";
+        btn.classList.add('btn-disabled');
+      } else {
+        // Kembalikan teks asli tombol
+        if (btn.dataset.originalText) {
+           btn.innerText = btn.dataset.originalText;
+        }
+        btn.classList.remove('btn-disabled');
+      }
+    });
   }
 
   function updateLocalStatus(id, status) {
