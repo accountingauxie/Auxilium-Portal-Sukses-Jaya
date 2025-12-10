@@ -711,27 +711,46 @@
 
   // --- PARTIAL DELIVERY LOGIC ---
 
-  function openPartialModal() {
+ function openPartialModal() {
     const inv = invoiceMap[currentOpenInvoiceId];
     if (!inv) return;
 
-    tempPartialData = JSON.parse(JSON.stringify(inv)); 
+    // --- PERBAIKAN: MANUAL COPY UNTUK MENGHINDARI CIRCULAR REFERENCE ERROR ---
+    // Jangan gunakan JSON.stringify(inv) karena ada inv.parent yang bikin crash
+    tempPartialData = {
+        invoiceNumber: inv.invoiceNumber,
+        customer: inv.customer,
+        keySalesOrder: inv.keySalesOrder,
+        catatan: inv.catatan,
+        // Copy items array secara aman
+        items: inv.items.map(item => ({...item})), 
+        dpp: inv.dpp,
+        ppn: inv.ppn,
+        grandTotal: inv.grandTotal
+    };
+    // --------------------------------------------------------------------------
+
     const itemsWithRemaining = [];
 
     tempPartialData.items.forEach(item => {
         let shipped = 0;
+        // Hitung yang sudah dikirim dari data Children yang asli
         if (inv.children) {
             inv.children.forEach(child => {
+                // Hitung child yang statusnya tidak Canceled
                 if (child.status !== 'Canceled') {
                    const match = child.items.find(c => c.product === item.product);
                    if (match) shipped += match.qty;
                 }
             });
         }
+        
         const remaining = item.qty - shipped;
+        
+        // Hanya masukkan item yang masih punya sisa
         if (remaining > 0) {
             item.maxQty = remaining; 
-            item.qty = remaining; 
+            item.qty = remaining; // Default qty yang ditampilkan adalah sisa (untuk complete delivery)
             itemsWithRemaining.push(item);
         }
     });
@@ -739,7 +758,7 @@
     tempPartialData.items = itemsWithRemaining; 
 
     if (tempPartialData.items.length === 0) {
-        alert("All items have been delivered for this order.");
+        alert("Semua item untuk order ini sudah dikirim (Fully Delivered).");
         return;
     }
 
@@ -767,7 +786,6 @@
     recalcPartialGrandTotal(); 
     document.getElementById('partialModal').style.display = 'flex'; 
   }
-
   function recalcPartialRow(input, index) {
     let max = parseFloat(input.getAttribute('max'));
     let newQty = parseFloat(input.value);
