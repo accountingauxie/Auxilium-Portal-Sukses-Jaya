@@ -277,24 +277,62 @@
 <div id="loadingOverlay"><div class="loading-spinner"></div></div>
 
 <script>
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycby1b0ogVzuLIuskNK-GZhNXnuUEu8AqeUE31mg06VSxpixQGOk4uD0wjV7ibK88s1UjRA/exec';
+
   function approveInvoice(invoiceId) {
-    // Handle approval logic
-    alert('Invoice ' + invoiceId + ' has been approved!');
-    // Add your logic to update the status of the invoice here
+    showLoading();
+
+    fetch(scriptUrl, {
+      method: 'POST',
+      body: new URLSearchParams({
+        'action': 'approve',
+        'invoiceId': invoiceId
+      }),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+    .then(response => response.text())
+    .then(result => {
+      hideLoading();
+      alert(result); // Menampilkan status hasil approve
+    })
+    .catch(error => {
+      hideLoading();
+      alert('Error: ' + error);
+    });
   }
 
   function cancelInvoice(invoiceId) {
-    // Handle cancellation logic
-    alert('Invoice ' + invoiceId + ' has been canceled!');
-    // Add your logic to update the status of the invoice here
+    showLoading();
+
+    fetch(scriptUrl, {
+      method: 'POST',
+      body: new URLSearchParams({
+        'action': 'cancel',
+        'invoiceId': invoiceId
+      }),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+    .then(response => response.text())
+    .then(result => {
+      hideLoading();
+      alert(result); // Menampilkan status hasil cancel
+    })
+    .catch(error => {
+      hideLoading();
+      alert('Error: ' + error);
+    });
   }
 
-  // Function to show loading spinner
+  // Fungsi untuk menampilkan loading spinner
   function showLoading() {
     document.getElementById("loadingOverlay").style.display = "flex";
   }
 
-  // Function to hide loading spinner
+  // Fungsi untuk menyembunyikan loading spinner
   function hideLoading() {
     document.getElementById("loadingOverlay").style.display = "none";
   }
@@ -302,4 +340,3 @@
 
 </body>
 </html>
-
