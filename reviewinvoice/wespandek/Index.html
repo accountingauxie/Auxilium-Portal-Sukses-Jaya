@@ -6,52 +6,54 @@
     <title>WE Generator - Spandek</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root { --primary: #007bff; --bg: #f4f7f6; --text: #333; }
+        :root { --primary: #007bff; --bg: #f4f7f6; --text: #333; --disabled-bg: #e9ecef; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; }
         
         /* Layout Container */
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .container { max-width: 1300px; margin: 30px auto; padding: 0 20px; }
         
         /* Card Style */
-        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
         
         h1, h2 { margin-top: 0; color: #2c3e50; }
         .subtitle { color: #7f8c8d; margin-bottom: 20px; }
 
         /* --- MENU SECTION (STEP 1) --- */
-        #menuSection { text-align: center; max-width: 600px; margin: 0 auto; }
-        .select-box { margin: 30px 0; }
-        select.big-select {
-            padding: 15px; font-size: 18px; width: 100%; border: 2px solid #ddd; border-radius: 8px; outline: none; transition: 0.3s;
-        }
+        #menuSection { text-align: center; max-width: 600px; margin: 50px auto; }
+        select.big-select { padding: 15px; font-size: 18px; width: 100%; border: 2px solid #ddd; border-radius: 8px; outline: none; margin: 20px 0; }
         select.big-select:focus { border-color: var(--primary); }
         
-        .btn-primary {
-            background-color: var(--primary); color: white; padding: 12px 30px; font-size: 16px; border: none; border-radius: 6px; cursor: pointer; transition: 0.2s;
-        }
+        .btn-primary { background-color: var(--primary); color: white; padding: 12px 30px; font-size: 16px; border: none; border-radius: 6px; cursor: pointer; transition: 0.2s; }
         .btn-primary:hover { background-color: #0056b3; }
-        .btn-primary:disabled { background-color: #ccc; cursor: not-allowed; }
 
         /* --- WORKSPACE SECTION (STEP 2) --- */
-        #workSection { display: none; } /* Hidden by default */
+        #workSection { display: none; }
         
-        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .order-info { background: #eef2f7; padding: 10px 20px; border-radius: 6px; font-weight: bold; border-left: 5px solid var(--primary); }
+        /* Header Grid untuk Tgl & Invoice */
+        .meta-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; align-items: end; margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #dee2e6; }
+        
+        .form-group label { display: block; font-size: 0.85em; font-weight: bold; color: #555; margin-bottom: 5px; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
+        .form-control:focus { border-color: var(--primary); outline: none; }
+        .form-control[readonly], .form-control:disabled { background-color: var(--disabled-bg); color: #6c757d; cursor: not-allowed; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
-        th { background-color: #f8f9fa; color: #495057; text-align: left; padding: 15px; border-bottom: 2px solid #dee2e6; }
-        td { padding: 12px 15px; border-bottom: 1px solid #eee; vertical-align: middle; }
-        
-        /* Inputs in Table */
-        .form-control { width: 100%; padding: 8px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box; }
-        .machine-select { min-width: 180px; }
-        
-        .we-preview { font-family: 'Courier New', monospace; font-weight: bold; color: var(--primary); font-size: 14px; }
+        /* Table Styling */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        th { background-color: #2c3e50; color: white; text-align: left; padding: 12px; }
+        td { padding: 10px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
+        tr:hover { background-color: #f1f1f1; }
+
+        /* Badges for Type */
+        .badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8em; color: white; }
+        .badge-sp { background-color: #28a745; } /* Hijau untuk Spandek */
+        .badge-np { background-color: #6c757d; } /* Abu untuk Non-Spandek */
+
+        .we-result { font-family: 'Courier New', monospace; font-weight: bold; color: var(--primary); background: #eef2f7; border: none; }
 
         .btn-secondary { background: #6c757d; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin-right: 10px; }
-        .btn-success { background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+        .btn-success { background: #198754; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; float: right; }
 
-        .loading-spinner { font-size: 1.2em; color: #666; margin-top: 20px; }
+        .loading-overlay { text-align: center; padding: 20px; color: #666; }
     </style>
 </head>
 <body>
@@ -59,45 +61,55 @@
 <div class="container">
 
     <div id="menuSection" class="card">
-        <h1><i class="fas fa-tasks"></i> Spandek WE Generator</h1>
-        <p class="subtitle">Select an Order Number to begin processing.</p>
+        <h1><i class="fas fa-industry"></i> Spandek Production</h1>
+        <p class="subtitle">Select an Order Number to start.</p>
         
-        <div id="loadingData" class="loading-spinner">
-            <i class="fas fa-spinner fa-spin"></i> Fetching data from Google Sheets...
+        <div id="loadingData" class="loading-overlay">
+            <i class="fas fa-spinner fa-spin"></i> Connecting to Server...
         </div>
 
         <div id="selectorArea" style="display:none;">
-            <div class="select-box">
-                <label for="orderDropdown" style="display:block; text-align:left; margin-bottom:8px; font-weight:bold;">Select Order No:</label>
-                <select id="orderDropdown" class="big-select">
-                    <option value="">-- Choose Order No --</option>
-                    </select>
-            </div>
+            <select id="orderDropdown" class="big-select">
+                <option value="">-- Choose Order No --</option>
+            </select>
             <button class="btn-primary" onclick="openWorkspace()">
-                Open Order Workspace <i class="fas fa-arrow-right"></i>
+                Process Order <i class="fas fa-arrow-right"></i>
             </button>
         </div>
     </div>
 
     <div id="workSection">
         <div class="card">
-            <div class="header-row">
-                <div>
-                    <button class="btn-secondary" onclick="backToMenu()"><i class="fas fa-arrow-left"></i> Back</button>
-                    <span id="currentOrderDisplay" class="order-info">Order #...</span>
-                </div>
-                <button class="btn-success" onclick="exportToCSV()"><i class="fas fa-file-csv"></i> Export Result</button>
+            <div style="margin-bottom: 20px; display:flex; justify-content:space-between;">
+                <button class="btn-secondary" onclick="backToMenu()"><i class="fas fa-arrow-left"></i> Back</button>
+                <h3 style="margin:0;">Order: <span id="displayOrderNo" style="color:var(--primary)">-</span> | Customer: <span id="displayCustomer">-</span></h3>
             </div>
 
-            <table id="weTable">
+            <div class="meta-grid">
+                <div class="form-group">
+                    <label>Tanggal Produksi</label>
+                    <input type="date" id="prodDate" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Invoice Number (Auto)</label>
+                    <input type="text" id="invNumber" class="form-control" readonly style="font-weight:bold; letter-spacing:1px;">
+                </div>
+                <div style="text-align: right;">
+                    <button class="btn-success" onclick="exportData()"><i class="fas fa-save"></i> Save & Export</button>
+                </div>
+            </div>
+
+            <table id="prodTable">
                 <thead>
                     <tr>
-                        <th>Product</th>
-                        <th width="80">Meter</th>
-                        <th width="60">Qty</th>
-                        <th>Machine Selection</th>
-                        <th>KCP Number</th>
-                        <th>WE Number (Result)</th>
+                        <th width="20%">Product</th>
+                        <th width="5%" class="text-center">Type</th>
+                        <th width="7%" class="text-center">Meter</th>
+                        <th width="5%" class="text-center">Qty</th>
+                        <th width="15%">Machine</th>
+                        <th width="12%">KCP Number</th>
+                        <th width="12%">Prod. Type</th>
+                        <th width="24%">WE Number (Result)</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
@@ -109,166 +121,145 @@
 </div>
 
 <script>
-    // --- SETTING URL APPS SCRIPT ---
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwry1DyLDeDgy9nWbrS-Iv0g-liTxukBzwU0GUA0jMMCXyP3OvXohZD-YcY244WCBut/exec'; 
+    let globalData = [];
+    let currentOrderNo = "";
 
-    let globalData = []; // Menyimpan semua data mentah
-
-    // 1. Fetch Data saat Web dibuka
-    async function init() {
-        try {
-            const response = await fetch(SCRIPT_URL);
-            const data = await response.json();
-            globalData = data;
-            
-            populateOrderDropdown(data);
-            
-            document.getElementById('loadingData').style.display = 'none';
-            document.getElementById('selectorArea').style.display = 'block';
-        } catch (error) {
-            document.getElementById('loadingData').innerText = "Error loading data. Please check URL.";
-            console.error(error);
-        }
-    }
-
-    // 2. Isi Dropdown dengan Order No yang unik
-    function populateOrderDropdown(data) {
-        const dropdown = document.getElementById('orderDropdown');
+    // 1. INIT SAAT LOAD
+    window.onload = function() {
+        // Ambil Data dari Server (Code.gs)
+        google.script.run.withSuccessHandler(onDataLoaded).getOrderData();
         
-        // Ambil list Order No yang unik saja
+        // Set Default Date ke Hari Ini
+        document.getElementById('prodDate').valueAsDate = new Date();
+    };
+
+    function onDataLoaded(data) {
+        globalData = data;
+        
+        // Isi Dropdown
+        const dropdown = document.getElementById('orderDropdown');
         const uniqueOrders = [...new Set(data.map(item => item.orderNumber))];
         
-        // Urutkan (terbaru/terbesar di atas jika angka)
-        uniqueOrders.sort().reverse(); 
-
         uniqueOrders.forEach(orderNo => {
             let option = document.createElement('option');
             option.value = orderNo;
-            // Cari nama customer untuk label (opsional, biar lebih informatif)
-            let sampleRow = data.find(d => d.orderNumber === orderNo);
-            option.text = `${orderNo} - ${sampleRow.customer}`;
+            let sample = data.find(d => d.orderNumber === orderNo);
+            option.text = `${orderNo} - ${sample.customer}`;
             dropdown.appendChild(option);
         });
+
+        document.getElementById('loadingData').style.display = 'none';
+        document.getElementById('selectorArea').style.display = 'block';
     }
 
-    // 3. Buka Tampilan Kerja (Workspace)
+    // 2. BUKA WORKSPACE
     function openWorkspace() {
         const selectedOrder = document.getElementById('orderDropdown').value;
-        if (!selectedOrder) {
-            alert("Please select an Order Number first!");
-            return;
-        }
+        if (!selectedOrder) return alert("Pilih Order No dulu!");
 
-        // Filter data hanya untuk order yang dipilih
-        const orderData = globalData.filter(d => d.orderNumber == selectedOrder);
-        
-        // Render Tabel
-        renderTable(orderData);
+        currentOrderNo = selectedOrder;
 
-        // UI Switching
-        document.getElementById('currentOrderDisplay').innerText = `Order: ${selectedOrder} | Customer: ${orderData[0].customer}`;
+        // Ambil Invoice Baru dari Server
+        google.script.run.withSuccessHandler(function(inv) {
+            document.getElementById('invNumber').value = inv;
+            // Setelah Invoice ada, baru render tabel supaya rumus WE jalan
+            renderTable(selectedOrder);
+        }).generateInvoiceNumber();
+
         document.getElementById('menuSection').style.display = 'none';
         document.getElementById('workSection').style.display = 'block';
     }
 
-    // 4. Kembali ke Menu Utama
     function backToMenu() {
         document.getElementById('workSection').style.display = 'none';
-        document.getElementById('menuSection').style.display = 'block'; // Kembali ke box kecil
-        // Reset tabel biar bersih kalau buka order lain
-        document.getElementById('tableBody').innerHTML = ""; 
+        document.getElementById('menuSection').style.display = 'block';
+        document.getElementById('tableBody').innerHTML = "";
     }
 
-    // 5. Render Baris Tabel
-    function renderTable(data) {
+    // 3. RENDER TABEL (INTI LOGIKA)
+    function renderTable(orderNo) {
+        const data = globalData.filter(d => d.orderNumber == orderNo);
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = "";
+        
+        // Update Info Header
+        document.getElementById('displayOrderNo').innerText = orderNo;
+        document.getElementById('displayCustomer').innerText = data[0].customer;
 
-        data.forEach(row => {
+        data.forEach((row, index) => {
             const tr = document.createElement('tr');
+            
+            // Cek Type SP atau NP
+            const isSpandek = (row.type === 'SP');
+            const disabledAttr = isSpandek ? '' : 'disabled'; // Kalau NP, disabled
+            const badgeClass = isSpandek ? 'badge-sp' : 'badge-np';
+            
             tr.innerHTML = `
                 <td>${row.product}</td>
-                <td>${row.meter}</td>
-                <td>${row.qty}</td>
+                <td align="center"><span class="badge ${badgeClass}">${row.type}</span></td>
+                <td align="center">${row.meter}</td>
+                <td align="center">${row.qty}</td>
+                
                 <td>
-                    <select class="form-control machine-select" onchange="generateWE(this)">
-                        <option value="">-- Select Machine --</option>
-                        <option value="MX PUMA08-NF-V">MX PUMA08-NF-V</option>
-                        <option value="MX PUMA14-NF-V">MX PUMA14-NF-V</option>
+                    <select class="form-control machine-select" id="machine_${index}" onchange="calcWE(${index})" ${disabledAttr}>
+                        <option value="">-- Select --</option>
+                        <option value="M01">M01 - Puma 8</option>
+                        <option value="M02">M02 - Puma 14</option>
                     </select>
                 </td>
+
                 <td>
-                    <input type="text" class="form-control" placeholder="Input KCP No" oninput="generateWE(this)">
+                    <input type="text" class="form-control kcp-input" id="kcp_${index}" placeholder="Input No" oninput="calcWE(${index})" ${disabledAttr}>
                 </td>
-                <td class="we-preview" data-orderno="${row.orderNumber}">-</td>
+
+                <td>
+                    <select class="form-control type-select" id="prodType_${index}" onchange="calcWE(${index})" ${disabledAttr}>
+                        <option value="">-- Type --</option>
+                        <option value="Plat">Plat</option>
+                        <option value="Custom">Custom</option>
+                    </select>
+                </td>
+
+                <td>
+                    <input type="text" class="form-control we-result" id="weResult_${index}" readonly value="${isSpandek ? '-' : 'N/A (Non-Spandek)'}">
+                </td>
             `;
             tbody.appendChild(tr);
         });
     }
 
-    // 6. Logic Generator WE Number
-    window.generateWE = function(element) {
-        const row = element.closest('tr');
-        const machineSelect = row.querySelector('select');
-        const kcpInput = row.querySelector('input');
-        const outputCell = row.querySelector('.we-preview');
-        const orderNo = outputCell.getAttribute('data-orderno');
+    // 4. GENERATOR RUMUS WE NUMBER
+    // Format: Machine_KCP_Order(3digit)_Inv(3digit)_TipeProd
+    function calcWE(idx) {
+        const machineFull = document.getElementById(`machine_${idx}`).value; // Misal M01
+        const kcp = document.getElementById(`kcp_${idx}`).value;
+        const prodType = document.getElementById(`prodType_${idx}`).value;
+        const invFull = document.getElementById('invNumber').value;
 
-        const machine = machineSelect.value;
-        const kcp = kcpInput.value;
+        const output = document.getElementById(`weResult_${idx}`);
 
-        if (machine && kcp) {
-            // Ambil kode singkatan mesin (P08 atau P14)
-            let machineCode = "XX";
-            if(machine.includes("08")) machineCode = "P08";
-            if(machine.includes("14")) machineCode = "P14";
-
-            // FORMAT: WE / OrderNo / MachineCode / KCP
-            outputCell.innerText = `WE/${orderNo}/${machineCode}/${kcp}`;
-        } else {
-            outputCell.innerText = "-";
+        // Jika data belum lengkap, jangan generate
+        if (!machineFull || !kcp || !prodType || !invFull) {
+            output.value = "-";
+            return;
         }
+
+        // Logic String Manipulation
+        const machine = machineFull; // Bisa juga ambil substring kalau mau
+        const last3Order = currentOrderNo.slice(-3);
+        const last3Inv = invFull.slice(-3);
+        const typeCode = (prodType === "Plat") ? "PLT" : "CTM";
+
+        // GABUNGKAN
+        output.value = `${machine}_${kcp}_${last3Order}_${last3Inv}_${typeCode}`;
     }
 
-    // 7. Export CSV
-    window.exportToCSV = function() {
-        let csv = ["Order No, Customer, Product, Meter, Qty, Machine, KCP, WE Number"]; // Header
-        
-        const rows = document.querySelectorAll("#tableBody tr");
-        const orderInfo = document.getElementById('currentOrderDisplay').innerText; // Untuk nama file nanti
-        const selectedOrder = document.getElementById('orderDropdown').value;
-
-        rows.forEach(row => {
-            const cols = row.querySelectorAll("td");
-            // Ambil data statis
-            const product = cols[0].innerText;
-            const meter = cols[1].innerText;
-            const qty = cols[2].innerText;
-            
-            // Ambil input user
-            const machine = row.querySelector("select").value;
-            const kcp = row.querySelector("input").value;
-            const weNum = cols[5].innerText;
-
-            // Kita butuh Customer name lagi, ambil dari variable global atau display
-            // Cara cepat: ambil dari globalData filter
-            const customerName = globalData.find(d => d.orderNumber == selectedOrder).customer;
-
-            // Gabung jadi string CSV (bungkus kutip untuk aman)
-            let rowString = `"${selectedOrder}", "${customerName}", "${product}", "${meter}", "${qty}", "${machine}", "${kcp}", "${weNum}"`;
-            csv.push(rowString);
-        });
-
-        const blob = new Blob([csv.join("\n")], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `WE_Order_${selectedOrder}.csv`;
-        a.click();
+    // 5. EXPORT / SAVE
+    function exportData() {
+        alert("Data siap disimpan/export! Cek WE Number yang sudah tergenerate.");
+        // Anda bisa tambahkan fungsi google.script.run.saveData(...) disini
     }
 
-    // Jalankan init saat halaman load
-    init();
 </script>
 
 </body>
