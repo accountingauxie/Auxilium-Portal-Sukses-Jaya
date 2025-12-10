@@ -14,14 +14,13 @@
       --bg-body: #f8fafc; --bg-card: #ffffff;
       --text-main: #1e293b; --text-sub: #64748b;
       --border-color: #e2e8f0;
-      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
       
       /* Status Colors */
       --we-bg: #FFF3CD; --we-text: #856404; --we-border: #ffeeba;
       --xero-bg: #E3F2FD; --xero-text: #0c5460; --xero-border: #b8daff;
       --approved-bg: #d1e7dd; --approved-text: #0f5132;
       --pending-bg: #fff3cd; --pending-text: #856404;
+      --partial-bg: #fff3cd; --partial-text: #856404; /* Kuning agak gelap */
       --canceled-bg: #fef2f2; --canceled-text: #991b1b;
     }
     body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); margin: 0; color: var(--text-main); }
@@ -37,14 +36,14 @@
     h1 { font-weight: 700; color: var(--text-main); margin-bottom: 1.5rem; }
 
     /* Controls */
-    .controls { display: flex; gap: 12px; margin-bottom: 2rem; flex-wrap: wrap; align-items: center; background: var(--bg-card); padding: 1rem; border-radius: 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); }
+    .controls { display: flex; gap: 12px; margin-bottom: 2rem; flex-wrap: wrap; align-items: center; background: var(--bg-card); padding: 1rem; border-radius: 16px; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); border: 1px solid var(--border-color); }
     .filter-btn-group { display: flex; background: #f1f5f9; padding: 4px; border-radius: 12px; gap: 4px; }
     .filter-btn { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; background: transparent; color: var(--text-sub); font-weight: 600; font-size: 0.9rem; transition: 0.2s; }
     .filter-btn:hover { color: var(--text-main); background: rgba(255,255,255,0.5); }
-    .filter-btn.active { background-color: var(--bg-card); color: var(--primary); box-shadow: var(--shadow-sm); }
+    .filter-btn.active { background-color: var(--bg-card); color: var(--primary); box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }
     
     .dropdown { position: relative; display: inline-block; }
-    .dropdown-content { display: none; position: absolute; top: 110%; left: 0; background-color: white; min-width: 180px; box-shadow: var(--shadow-lg); border-radius: 12px; z-index: 10; border: 1px solid var(--border-color); overflow: hidden; animation: fadeIn 0.2s ease-out; }
+    .dropdown-content { display: none; position: absolute; top: 110%; left: 0; background-color: white; min-width: 180px; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); border-radius: 12px; z-index: 10; border: 1px solid var(--border-color); overflow: hidden; animation: fadeIn 0.2s ease-out; }
     .dropdown:hover .dropdown-content { display: block; }
     .dropdown-item { padding: 10px 16px; text-decoration: none; display: block; color: var(--text-main); font-size: 0.85rem; cursor: pointer; transition: 0.1s; }
     .dropdown-item:hover { background-color: #f8fafc; color: var(--primary); }
@@ -55,12 +54,13 @@
     .search-bar { flex-grow: 1; min-width: 250px; }
 
     /* Invoice Card */
-    .invoice-card { background: var(--bg-card); padding: 1.5rem; margin-bottom: 1rem; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; display: flex; flex-direction: column; }
-    .invoice-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: #cbd5e1; }
+    .invoice-card { background: var(--bg-card); padding: 1.5rem; margin-bottom: 1rem; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; display: flex; flex-direction: column; }
+    .invoice-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); border-color: #cbd5e1; }
     .invoice-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; }
     .border-pending::before { background-color: #fbbf24; }
     .border-approved::before { background-color: #10b981; }
     .border-canceled::before { background-color: #ef4444; }
+    .border-partial::before { background-color: #d97706; } /* Orange Partial */
 
     .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; padding-left: 12px; }
     .card-title { font-size: 1.1rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
@@ -73,6 +73,7 @@
     .badge-approved { background-color: var(--approved-bg); color: var(--approved-text); }
     .badge-pending { background-color: var(--pending-bg); color: var(--pending-text); }
     .badge-canceled { background-color: var(--canceled-bg); color: var(--canceled-text); }
+    .badge-partial { background-color: #fef3c7; color: #b45309; border: 1px solid #fcd34d; }
 
     .price-tag { font-size: 1.25rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; padding-left: 12px; }
     .btn-details { margin-top: 1rem; width: 100%; padding: 12px; background: #f8fafc; color: var(--primary); border: 1px solid transparent; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
@@ -94,7 +95,13 @@
     .btn-action { padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; display: flex; align-items: center; gap: 8px; }
     .btn-approve { background: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3); }
     .btn-reject { background: #ef4444; color: white; box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3); }
+    .btn-partial { background: #d97706; color: white; box-shadow: 0 4px 6px -1px rgba(217, 119, 6, 0.3); }
+    .btn-partial:hover { background: #b45309; }
     .btn-revert { background: #64748b; color: white; }
+
+    /* Partial Input Styling */
+    .input-qty { width: 60px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: right; font-weight: bold; background: #fffbe6; }
+    .input-qty:focus { outline: 2px solid #d97706; }
 
     .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(2px); }
     .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 0.8s linear infinite; }
@@ -120,6 +127,7 @@
       <div class="filter-btn-group">
         <button class="filter-btn active" onclick="setFilter('All')" id="btn-All">All</button>
         <button class="filter-btn" onclick="setFilter('Pending')" id="btn-Pending">Pending</button>
+        
         <div class="dropdown">
             <button class="filter-btn" id="btn-Approved">
                 Approved <i class="fa-solid fa-chevron-down" style="font-size: 10px; margin-left: 4px;"></i>
@@ -134,6 +142,8 @@
                 </a>
             </div>
         </div>
+        
+        <button class="filter-btn" onclick="setFilter('Partially Delivered')" id="btn-Partial">Partial</button>
         <button class="filter-btn" onclick="setFilter('Canceled')" id="btn-Canceled">Canceled</button>
       </div>
       
@@ -202,17 +212,53 @@
     </div>
   </div>
 
+  <div id="partialModal" class="modal-overlay">
+    <div class="invoice-paper" style="max-width:800px; border-top: 5px solid #d97706;">
+        <h2 style="color:#b45309; margin-bottom: 20px;">Create Partial Invoice</h2>
+        <p style="color:#666; margin-bottom: 20px;">Please edit the Qty to be delivered now. The invoice number will be generated automatically (e.g. -P1, -P2).</p>
+        
+        <table class="paper-table" style="width:100%; border-collapse:collapse;">
+            <thead>
+                <tr>
+                    <th style="text-align:left;">Product</th>
+                    <th style="text-align:right;">Price/Qty</th>
+                    <th style="text-align:right;">Original Qty</th>
+                    <th style="text-align:right; width:100px;">Send Qty</th>
+                    <th style="text-align:right;">New Total</th>
+                </tr>
+            </thead>
+            <tbody id="partialTableBody"></tbody>
+        </table>
+
+        <div class="invoice-footer">
+            <div style="width:100%; max-width:300px;">
+                <div class="total-row"><span>Subtotal (DPP)</span><span id="pDPP">0</span></div>
+                <div class="total-row"><span>PPN</span><span id="pPPN">0</span></div>
+                <div class="total-row grand-total"><span>GRAND TOTAL</span><span id="pGrand">0</span></div>
+            </div>
+        </div>
+
+        <div style="margin-top:30px; display:flex; gap:10px; justify-content:flex-end;">
+            <button class="btn-action btn-revert" onclick="document.getElementById('partialModal').style.display='none'">Cancel</button>
+            <button class="btn-action btn-partial" onclick="submitPartialDelivery()">
+                <i class="fa-solid fa-paper-plane"></i> Create Invoice
+            </button>
+        </div>
+    </div>
+  </div>
+
   <div id="loading" class="loading-overlay"><div class="spinner"></div></div>
 
 <script>
   // ================= CONFIGURATION =================
-  const API_URL = "https://script.google.com/macros/s/AKfycbzFQRY6BK0eyxbCIwkz3Fe3OvDFoAltyqZmZqESukT42S_66W5MRBQtCynfTlI26tR47A/exec"; 
+  const API_URL = "https://script.google.com/macros/s/AKfycbyEKhoBzbE7vsWKAXskdiYaaE6NYqrrt5nvefD8hLBn2hMa9UZ2W3MxrO89zutXYF5lqg/exec"; 
   // =================================================
 
   let allInvoices = [];
   let currentFilter = 'All'; 
   let currentApprovedSubFilter = 'All'; 
   let currentOpenInvoiceId = null; 
+  let tempPartialData = null; // Store data for partial calculation
 
   window.onload = fetchInvoices;
 
@@ -237,12 +283,18 @@
   function setFilter(status) {
     currentFilter = status;
     document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById(`btn-${status}`).classList.add('active');
+    
+    // Mapping ID button
+    let btnId = `btn-${status}`;
+    if(status === 'Partially Delivered') btnId = 'btn-Partial';
+    
+    const btn = document.getElementById(btnId);
+    if(btn) btn.classList.add('active');
+
     if(status !== 'Approved') currentApprovedSubFilter = 'All';
     renderInvoices();
   }
 
-  // Handle Approved Dropdown
   function setApprovedFilter(subType) {
       currentFilter = 'Approved';
       currentApprovedSubFilter = subType; 
@@ -273,7 +325,9 @@
              else if (currentApprovedSubFilter === 'WE' && inv.progressStatus && inv.progressStatus.includes('WE')) matchStatus = true;
              else if (currentApprovedSubFilter === 'Xero' && inv.progressStatus && inv.progressStatus.includes('Xero')) matchStatus = true;
           }
-      } else matchStatus = invStatus === currentFilter;
+      } else {
+          matchStatus = invStatus === currentFilter;
+      }
 
       const matchSearch = inv.customer.toLowerCase().includes(searchVal) || inv.invoiceNumber.toString().toLowerCase().includes(searchVal);
       
@@ -313,13 +367,19 @@
 
     filtered.forEach(inv => {
       const status = inv.status || 'Pending';
-      const borderClass = status === 'Approved' ? 'border-approved' : (status === 'Canceled' ? 'border-canceled' : 'border-pending');
+      let borderClass = 'border-pending';
+      let badgeClass = 'badge-pending';
+
+      if (status === 'Approved') { borderClass = 'border-approved'; badgeClass = 'badge-approved'; }
+      else if (status === 'Canceled') { borderClass = 'border-canceled'; badgeClass = 'badge-canceled'; }
+      else if (status === 'Partially Delivered') { borderClass = 'border-partial'; badgeClass = 'badge-partial'; }
+
       const grandTotal = inv.grandTotal || 0;
 
       let noteHtml = '';
-      if (status === 'Canceled' && inv.noteCanceled) {
+      if (inv.noteCanceled) {
         noteHtml = `
-            <div style="font-size:0.8rem; color:var(--canceled-text); background:var(--canceled-bg); padding:4px 10px; border-radius:8px; margin-top:5px; display:inline-flex; align-items:center; gap:6px; font-weight:500;">
+            <div style="font-size:0.8rem; color:var(--text-sub); background:#f1f5f9; padding:4px 10px; border-radius:8px; margin-top:5px; display:inline-flex; align-items:center; gap:6px; font-weight:500;">
                 <i class="fa-regular fa-comment-dots"></i>
                 <span>${inv.noteCanceled}</span>
             </div>
@@ -330,12 +390,12 @@
       if (inv.progressStatus) {
         const badges = inv.progressStatus.split(', ');
         badges.forEach(b => {
-           let badgeClass = "badge-pill"; 
+           let bClass = "badge-pill"; 
            let tooltipText = "";
-           if(b.includes("WE")) { badgeClass += " badge-we"; tooltipText = "Created internally within this system"; } 
-           else if(b.includes("Xero")) { badgeClass += " badge-xero"; tooltipText = "Synced from Xero accounting"; } 
-           else { badgeClass += " badge-pending"; }
-           progressBadgeHtml += `<span class="${badgeClass}" title="${tooltipText}">${b}</span>`;
+           if(b.includes("WE")) { bClass += " badge-we"; tooltipText = "Created internally"; } 
+           else if(b.includes("Xero")) { bClass += " badge-xero"; tooltipText = "Synced Xero"; } 
+           else { bClass += " badge-pending"; }
+           progressBadgeHtml += `<span class="${bClass}" title="${tooltipText}">${b}</span>`;
         });
       }
 
@@ -349,7 +409,7 @@
             <div class="card-sub" style="font-size:0.8rem;"><i class="fa-regular fa-calendar"></i> ${inv.date ? new Date(inv.date).toLocaleDateString('id-ID') : '-'}</div>
           </div>
           <div class="status-area">
-              <span class="badge-pill ${status === 'Approved' ? 'badge-approved' : (status === 'Canceled' ? 'badge-canceled' : 'badge-pending')}">${status}</span>
+              <span class="badge-pill ${badgeClass}">${status}</span>
               ${progressBadgeHtml}
               ${noteHtml}
           </div>
@@ -397,15 +457,22 @@
     }
     document.getElementById('modalDate').textContent = displayDate;
 
+    // Badge
     const statusEl = document.getElementById('modalStatus');
-    statusEl.className = `badge-pill ${inv.status === 'Approved' ? 'badge-approved' : (inv.status === 'Canceled' ? 'badge-canceled' : 'badge-pending')}`;
+    let badgeClass = 'badge-pending';
+    if(inv.status === 'Approved') badgeClass = 'badge-approved';
+    else if(inv.status === 'Canceled') badgeClass = 'badge-canceled';
+    else if(inv.status === 'Partially Delivered') badgeClass = 'badge-partial';
+    
+    statusEl.className = `badge-pill ${badgeClass}`;
     statusEl.textContent = inv.status || 'Pending';
 
+    // Buttons
     const actionDiv = document.getElementById('modalActions');
     actionDiv.innerHTML = ''; 
 
     if (inv.status === 'Approved') {
-       // Done
+       // View Only
     } 
     else if (inv.status === 'Canceled') {
        actionDiv.innerHTML = `
@@ -418,17 +485,29 @@
        `;
     } 
     else {
-       actionDiv.innerHTML = `
+       // Jika Pending atau Partially Delivered, boleh ada tombol action
+       let buttonsHtml = `
          <button class="btn-action btn-reject" onclick="handleActionFromModal('Canceled')">
             <i class="fa-solid fa-xmark"></i> Reject
          </button>
+       `;
+       
+       // Tombol Partial (Hanya muncul jika belum Approved/Canceled)
+       buttonsHtml += `
+         <button class="btn-action btn-partial" onclick="openPartialModal()">
+            <i class="fa-solid fa-boxes-packing"></i> Partially Delivered
+         </button>
+       `;
+
+       buttonsHtml += `
          <button class="btn-action btn-approve" onclick="handleApproveFromModal()">
             <i class="fa-solid fa-check"></i> Approve Invoice
          </button>
        `;
+       actionDiv.innerHTML = buttonsHtml;
     }
 
-    // Render Table Items
+    // Render Table
     const tbody = document.getElementById('modalTableBody');
     tbody.innerHTML = '';
     
@@ -436,12 +515,10 @@
       let typeCode = "-";
       const rawType = (item.type || "").toString().toUpperCase();
       const prodName = (item.product || "").toUpperCase();
-      
       if (rawType.includes("NON") || prodName.includes("NON SPANDEK") || prodName.includes("ROOF")) typeCode = "NP";
       else if (rawType.includes("SPANDEK") || prodName.includes("SPANDEK")) typeCode = "SP";
 
       const tr = document.createElement('tr');
-      // REVISI KOLOM: TYPE | PRODUCT | METER | QTY | PRICE | DISC | PRICE/QTY | TOTAL
       tr.innerHTML = `
         <td style="text-align:center;"><span style="background:#f1f5f9; padding:2px 6px; border-radius:4px; font-size:0.8em; font-weight:bold;">${typeCode}</span></td>
         <td>${item.product}</td>
@@ -470,7 +547,126 @@
     }
   }
 
-  // --- API ACTIONS ---
+  // --- PARTIAL DELIVERY LOGIC ---
+
+  function openPartialModal() {
+    // 1. Get Data
+    const inv = allInvoices.find(i => i.invoiceNumber == currentOpenInvoiceId);
+    if (!inv) return;
+
+    // 2. Clone data to temp variable
+    tempPartialData = JSON.parse(JSON.stringify(inv)); // Deep copy
+
+    // 3. Render Table Inputs
+    const tbody = document.getElementById('partialTableBody');
+    tbody.innerHTML = '';
+
+    tempPartialData.items.forEach((item, index) => {
+        const tr = document.createElement('tr');
+        // Initial Calculation
+        const initialTotal = item.qty * item.priceQty;
+        
+        tr.innerHTML = `
+            <td>${item.product}</td>
+            <td style="text-align:right;">${formatMoney(item.priceQty)}</td>
+            <td style="text-align:right; color:#888;">${item.qty}</td>
+            <td style="text-align:right;">
+                <input type="number" class="input-qty" value="${item.qty}" min="0" max="${item.qty}" 
+                 onchange="recalcPartialRow(this, ${index})">
+            </td>
+            <td style="text-align:right; font-weight:bold;" id="pTotal-${index}">${formatMoney(initialTotal)}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    recalcPartialGrandTotal(); // Calc initial totals
+    document.getElementById('partialModal').style.display = 'flex'; // Show modal
+  }
+
+  function recalcPartialRow(input, index) {
+    let newQty = parseFloat(input.value) || 0;
+    if (newQty < 0) newQty = 0;
+    
+    // Update temp data
+    tempPartialData.items[index].qty = newQty;
+    
+    // Update Item Total (Qty * Price/Qty)
+    const newTotal = newQty * tempPartialData.items[index].priceQty;
+    tempPartialData.items[index].total = newTotal;
+
+    // Update UI Row
+    document.getElementById(`pTotal-${index}`).textContent = formatMoney(newTotal);
+
+    // Recalculate Global
+    recalcPartialGrandTotal();
+  }
+
+  function recalcPartialGrandTotal() {
+    let grandTotal = 0;
+    tempPartialData.items.forEach(item => {
+        grandTotal += (item.total || 0);
+    });
+
+    // RUMUS: DPP = Subtotal / 1.11
+    // PPN = Subtotal - DPP
+    const dpp = grandTotal / 1.11;
+    const ppn = grandTotal - dpp;
+
+    // Update UI
+    document.getElementById('pDPP').textContent = formatMoney(dpp);
+    document.getElementById('pPPN').textContent = formatMoney(ppn);
+    document.getElementById('pGrand').textContent = formatMoney(grandTotal);
+
+    // Update Temp Data Globals (untuk dikirim ke backend)
+    tempPartialData.dpp = dpp;
+    tempPartialData.ppn = ppn;
+    tempPartialData.grandTotal = grandTotal;
+  }
+
+  function submitPartialDelivery() {
+    if(!confirm("Create Partial Invoice? Original invoice will be marked as 'Partially Delivered'.")) return;
+    
+    // Filter items with Qty > 0 only? Or keep 0 qty items?
+    // Usually invoice shouldn't have 0 qty lines. Let's filter.
+    const activeItems = tempPartialData.items.filter(i => i.qty > 0);
+    if(activeItems.length === 0) {
+        alert("Cannot create invoice with 0 items.");
+        return;
+    }
+
+    showLoading(true);
+    
+    const payload = {
+        originalInvoiceNumber: tempPartialData.invoiceNumber, // ID Induk
+        customerName: tempPartialData.customer,
+        keySalesOrder: tempPartialData.keySalesOrder,
+        catatan: tempPartialData.catatan,
+        items: activeItems,
+        dpp: tempPartialData.dpp,
+        ppn: tempPartialData.ppn,
+        grandTotal: tempPartialData.grandTotal
+    };
+
+    fetch(API_URL + "?action=partialDelivery", { 
+        method: "POST", 
+        body: JSON.stringify(payload) // Backend doPost will handle this
+    })
+    .then(res => res.json())
+    .then(data => {
+        showLoading(false);
+        if(data.ok) {
+            alert("Success! Created Invoice: " + data.newId);
+            document.getElementById('partialModal').style.display='none';
+            document.getElementById('invoiceModal').style.display='none';
+            fetchInvoices(); // Refresh data
+        } else {
+            alert("Failed: " + data.error);
+        }
+    })
+    .catch(err => { showLoading(false); alert("Network error"); });
+  }
+
+  // --- STANDARD API ACTIONS ---
   
   function handleApproveFromModal() {
     if(!confirm("Approve this invoice?")) return;
@@ -506,13 +702,15 @@
     }
 
     setModalLoading(true);
-    const formData = new URLSearchParams();
-    formData.append('action', 'updateStatus');
-    formData.append('invoiceNumber', currentOpenInvoiceId);
-    formData.append('status', newStatus);
-    formData.append('note', note); 
+    // Use JSON body for consistency
+    const payload = {
+        action: 'updateStatus',
+        invoiceNumber: currentOpenInvoiceId,
+        status: newStatus,
+        note: note
+    };
 
-    fetch(API_URL, { method: "POST", body: formData })
+    fetch(API_URL + "?action=updateStatus", { method: "POST", body: JSON.stringify(payload) })
     .then(res => res.json()).then(data => {
       setModalLoading(false);
       if(data.ok) {
@@ -528,7 +726,6 @@
     buttons.forEach(btn => {
       btn.disabled = isLoading;
       if (isLoading) {
-        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...';
         btn.style.opacity = 0.7;
       } else {
         btn.style.opacity = 1;
