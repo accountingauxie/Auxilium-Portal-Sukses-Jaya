@@ -289,6 +289,8 @@
     renderModalContent(newId);
   }
 
+// GANTI FULL FUNCTION INI:
+
   function renderModalContent(id) {
     const inv = allInvoices.find(i => i.invoiceNumber == id);
     if (!inv) return;
@@ -318,15 +320,32 @@
     statusEl.className = `status-badge ${inv.status === 'Approved' ? 'bg-approved' : (inv.status === 'Canceled' ? 'bg-canceled' : 'bg-pending')}`;
     statusEl.textContent = inv.status || 'Pending';
 
-    // Show/Hide Buttons
+    // --- 3. TOMBOL AKSI (LOGIKA REVERT DITAMBAHKAN DISINI) ---
     const actionDiv = document.getElementById('modalActions');
-    if (inv.status === 'Approved' || inv.status === 'Canceled') {
-      actionDiv.style.display = 'none'; 
-    } else {
-      actionDiv.style.display = 'flex'; 
+    actionDiv.innerHTML = ''; // Kosongkan tombol lama
+    actionDiv.style.display = 'flex'; // Reset display
+
+    if (inv.status === 'Approved') {
+       // Jika Approved, sembunyikan tombol (Lock)
+       actionDiv.style.display = 'none'; 
+    } 
+    else if (inv.status === 'Canceled') {
+       // Jika Canceled, Munculkan tombol Revert
+       actionDiv.innerHTML = `
+         <button class="btn" style="background-color:#6c757d; color:white; width:100%;" onclick="handleActionFromModal('Pending')">
+           Revert to Pending (Undo Reject)
+         </button>
+       `;
+    } 
+    else {
+       // Jika Pending, Munculkan tombol Approve & Cancel Biasa
+       actionDiv.innerHTML = `
+         <button class="btn btn-cancel" onclick="handleActionFromModal('Canceled')">Reject / Cancel</button>
+         <button class="btn btn-approve" id="btnApproveModal" onclick="handleApproveFromModal()">Approve Invoice</button>
+       `;
     }
 
-    // --- 3. TABEL (LOGIKA TYPE REVISI) ---
+    // --- 4. TABEL ---
     const tbody = document.getElementById('modalTableBody');
     tbody.innerHTML = '';
     
@@ -335,20 +354,14 @@
     inv.items.forEach(item => {
       subTotal += (item.total || 0);
       
-      // LOGIKA BARU: Cek "NON" dulu sebelum cek "SPANDEK"
       let typeCode = "-";
       const rawType = item.type ? item.type.toString().toUpperCase() : "";
       
-      // 1. Prioritas: Cek "NON" atau "NP"
       if (rawType.includes("NON") || rawType.includes("NP")) {
         typeCode = "NP";
-      } 
-      // 2. Jika tidak ada "NON", baru cek "SPANDEK" atau "SP"
-      else if (rawType.includes("SPANDEK") || rawType.includes("SP")) {
+      } else if (rawType.includes("SPANDEK") || rawType.includes("SP")) {
         typeCode = "SP";
-      } 
-      // 3. Fallback: Cek Nama Produk
-      else {
+      } else {
         const prodName = item.product ? item.product.toUpperCase() : "";
         if (prodName.includes("NON SPANDEK") || prodName.includes("ROOF") || prodName.includes("GENTENG")) {
            typeCode = "NP";
@@ -357,7 +370,6 @@
         }
       }
 
-      // Logic Satuan (Unit)
       const unitLabel = item.meter > 0 ? "Lembar" : "Batang";
 
       const tr = document.createElement('tr');
@@ -374,7 +386,7 @@
       tbody.appendChild(tr);
     });
 
-    // --- 4. TOTAL ---
+    // --- 5. TOTAL ---
     const dpp = subTotal;
     const ppn = subTotal * 0.12; 
     const grandTotal = dpp + ppn;
