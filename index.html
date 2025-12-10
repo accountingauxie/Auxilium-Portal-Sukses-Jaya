@@ -7,152 +7,198 @@
   <title>AUXILIUM Portal – CV. Sukses Jaya</title>
   <link href="https://unpkg.com/feather-icons" rel="stylesheet">
   <style>
-    body {
-      margin: 0;
-      font-family: "Inter", "Segoe UI", sans-serif;
-      background: #f5f6fa;
-      display: flex;
+    /* ========== RESET & BASE ========== */
+    * {
+      box-sizing: border-box;
     }
 
+    body {
+      margin: 0;
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f5f7fb;
+      display: flex;
+      color: #333;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ========== SIDEBAR ========== */
     .sidebar {
-      width: 240px;
+      width: 260px;
       background: #ffffff;
-      border-right: 1px solid #e9e9e9;
+      border-right: 1px solid #eaecf0;
       height: 100vh;
       position: fixed;
       left: 0;
       top: 0;
-      padding: 26px 20px;
+      padding: 32px 24px;
       display: flex;
       flex-direction: column;
       z-index: 50;
-      padding-top: 20px;
     }
 
     .brand-full {
-      max-width: 230px;
       width: 100%;
+      max-width: 180px;
       height: auto;
       display: block;
-      margin-left: -8px;
-      margin-bottom: 32px;
+      margin-bottom: 40px;
     }
 
     .menu-item {
-      padding: 12px 14px;
-      margin-bottom: 6px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
       cursor: pointer;
       border-radius: 8px;
       font-size: 15px;
-      color: #444;
-      transition: 0.15s ease;
+      font-weight: 500;
+      color: #667085;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
     }
 
     .menu-item:hover {
-      background: #f1f1f1;
+      background: #f9fafb;
+      color: #1d2939;
     }
 
     .menu-active {
-      background: #e8f0ff !important;
-      color: #0a4cc5;
+      background: #eff4ff !important;
+      color: #2f54eb !important;
       font-weight: 600;
     }
 
+    /* ========== MAIN CONTENT ========== */
     .main {
       width: 100%;
-      margin-left: 0;
+      margin-left: 260px; /* Sesuai lebar sidebar */
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
     .header {
-      background: #ffffff;
-      padding: 18px 32px;
-      padding-left: 300px;
-      border-bottom: 1px solid #ececec;
-      font-size: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 20px 40px;
+      border-bottom: 1px solid #eaecf0;
+      font-size: 18px;
       font-weight: 700;
-      letter-spacing: 0.02em;
-      color: #1a1a1a;
+      letter-spacing: -0.01em;
+      color: #101828;
       position: sticky;
       top: 0;
-      z-index: 10;
-      backdrop-filter: blur(8px);
+      z-index: 40;
+      backdrop-filter: blur(10px);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
     .logout-btn {
-      margin-right: 20px;
       cursor: pointer;
-      color: #444;
-      display: flex;
-      align-items: center;
+      color: #667085;
+      transition: color 0.2s;
+      padding: 8px;
+      border-radius: 8px;
+    }
+
+    .logout-btn:hover {
+      color: #d92d20;
+      background: #fef3f2;
     }
 
     .content {
-      padding: 34px;
-      padding-left: 300px;
+      padding: 40px;
+      flex: 1;
     }
 
     .content h2 {
       margin-top: 0;
-      font-size: 26px;
+      margin-bottom: 12px;
+      font-size: 28px;
       font-weight: 700;
-      color: #2b2b2b;
+      color: #101828;
     }
 
+    .subtitle {
+      font-size: 16px;
+      color: #667085;
+      margin-top: 0;
+      line-height: 1.5;
+    }
+
+    /* ========== GRID & TILES ========== */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-      gap: 26px;
-      margin-top: 24px;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+      margin-top: 32px;
     }
 
     .tile {
       background: white;
-      padding: 26px;
+      padding: 32px;
       border-radius: 16px;
-      box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.08);
+      box-shadow: 0px 2px 4px -2px rgba(16, 24, 40, 0.06), 0px 4px 8px -2px rgba(16, 24, 40, 0.1);
       cursor: pointer;
-      transition: 0.25s ease;
-      min-height: 180px;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      min-height: 200px;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      border: 1px solid #efefef;
+      border: 1px solid #eaecf0;
+      position: relative;
+      overflow: hidden;
     }
 
     .tile:hover {
-      transform: translateY(-5px);
-      box-shadow: 0px 10px 28px rgba(0, 0, 0, 0.12);
+      transform: translateY(-4px);
+      box-shadow: 0px 12px 16px -4px rgba(16, 24, 40, 0.08), 0px 4px 6px -2px rgba(16, 24, 40, 0.03);
+      border-color: #d0d5dd;
     }
 
     .tile-disabled {
-      background: #f1f1f1;
-      opacity: 0.6;
+      background: #f2f4f7;
+      opacity: 0.7;
       cursor: not-allowed;
-      border: 1px solid #e0e0e0;
       box-shadow: none;
-      transform: none;
+      border-color: #e4e7ec;
+    }
+    
+    .tile-disabled:hover {
+        transform: none;
+        border-color: #e4e7ec;
     }
 
     .tile-icon {
-      margin-bottom: 18px;
+      margin-bottom: auto; /* Push icon to top */
+      padding-bottom: 20px;
+    }
+    
+    /* Standardize SVG styles in tiles */
+    .tile-icon svg {
+        stroke: #475467;
+        transition: stroke 0.3s;
+    }
+
+    .tile:hover .tile-icon svg {
+        stroke: #2f54eb; /* Brand color on hover */
     }
 
     .tile-title {
-      font-size: 17px;
+      font-size: 18px;
       font-weight: 700;
       margin-bottom: 8px;
-      color: #212121;
+      color: #101828;
     }
 
     .tile-desc {
       font-size: 14px;
-      color: #6f6f6f;
-      line-height: 1.4;
+      color: #667085;
+      line-height: 1.5;
     }
 
+    /* ========== MODAL ========== */
     .modal {
       display: none;
       position: fixed;
@@ -161,56 +207,67 @@
       top: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.4);
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      animation: fadeIn 0.2s ease;
     }
 
     .modal-content {
       background-color: #fff;
       margin: 15% auto;
-      padding: 20px;
-      border-radius: 12px;
-      width: 300px;
+      padding: 32px;
+      border-radius: 16px;
+      width: 360px;
       text-align: center;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .modal-content p {
+        font-size: 18px;
+        font-weight: 600;
+        color: #101828;
+        margin-bottom: 24px;
     }
 
     .modal-buttons {
-      margin-top: 20px;
       display: flex;
       justify-content: center;
       gap: 12px;
     }
 
     .btn {
-      padding: 8px 16px;
+      padding: 10px 20px;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
+      font-size: 14px;
+      transition: background 0.2s;
+      flex: 1;
     }
 
     .btn-yes {
-      background-color: #d93025;
+      background-color: #d92d20;
       color: #fff;
     }
+    .btn-yes:hover { background-color: #b42318; }
 
     .btn-cancel {
-      background-color: #ddd;
+      background-color: #f2f4f7;
+      color: #344054;
     }
+    .btn-cancel:hover { background-color: #e4e7ec; }
 
     /* ========== LOADER ========== */
     .auxie-loader {
       position: fixed;
       inset: 0;
-      background: radial-gradient(circle at center,
-          rgba(255, 255, 255, 1) 0%,
-          rgba(245, 245, 255, 0.92) 40%,
-          rgba(235, 240, 255, 0.88) 100%);
+      background: #ffffff;
       display: flex;
       justify-content: center;
       align-items: center;
-      backdrop-filter: blur(14px);
       z-index: 99999;
-      transition: opacity 0.55s ease;
+      transition: opacity 0.5s ease;
     }
 
     .auxie-loader.hide {
@@ -218,62 +275,34 @@
       pointer-events: none;
     }
 
-    .rings {
-      position: relative;
-      width: 160px;
-      height: 160px;
-    }
-
+    .rings { position: relative; width: 100px; height: 100px; }
+    /* Adjusted rings for cleaner look */
     .ring {
       position: absolute;
       border-radius: 50%;
       border-style: solid;
-      border-width: 6px;
-      filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.45)) drop-shadow(0 0 16px rgba(220, 0, 255, 0.35)) drop-shadow(0 0 28px rgba(150, 70, 255, 0.3));
+      border-width: 4px;
     }
-
     .ring-lg {
-      width: 160px;
-      height: 160px;
-      border-color: rgba(0, 180, 255, 1) transparent transparent transparent;
-      animation: spinCW 2.6s linear infinite;
+      width: 100px; height: 100px;
+      border-color: #2f54eb transparent transparent transparent;
+      animation: spinCW 2s linear infinite;
     }
-
     .ring-md {
-      width: 115px;
-      height: 115px;
-      top: 22px;
-      left: 22px;
-      border-color: rgba(210, 90, 255, 0.95) transparent transparent transparent;
-      animation: spinCCW 1.8s linear infinite;
+      width: 70px; height: 70px; top: 15px; left: 15px;
+      border-color: #7b61ff transparent transparent transparent;
+      animation: spinCCW 1.5s linear infinite;
     }
-
     .ring-sm {
-      width: 70px;
-      height: 70px;
-      top: 45px;
-      left: 45px;
-      border-color: rgba(255, 70, 140, 1) transparent transparent transparent;
-      animation: spinCWfast 1.2s linear infinite;
+      width: 40px; height: 40px; top: 30px; left: 30px;
+      border-color: #e04f98 transparent transparent transparent;
+      animation: spinCWfast 1s linear infinite;
     }
 
-    @keyframes spinCW {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    @keyframes spinCCW {
-      to {
-        transform: rotate(-360deg);
-      }
-    }
-
-    @keyframes spinCWfast {
-      to {
-        transform: rotate(540deg);
-      }
-    }
+    @keyframes spinCW { to { transform: rotate(360deg); } }
+    @keyframes spinCCW { to { transform: rotate(-360deg); } }
+    @keyframes spinCWfast { to { transform: rotate(540deg); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   </style>
 
   <script>
@@ -281,15 +310,13 @@
       const raw = localStorage.getItem("uxilium_current_user");
       let user = null;
       try { user = raw ? JSON.parse(raw) : null; } catch { }
-      if (!user || !user.approved) {
-        window.location.href = "login.html";
-      }
+      // Uncomment baris di bawah ini untuk produksi
+      // if (!user || !user.approved) { window.location.href = "login.html"; }
     })();
   </script>
 </head>
 
 <body>
-  <!-- LOADER -->
   <div id="auxieLoading" class="auxie-loader">
     <div class="rings">
       <div class="ring ring-lg"></div>
@@ -299,7 +326,7 @@
   </div>
 
   <div class="sidebar">
-    <img class="brand-full" src="assets/auxilium_logo_pure_white_bg.png" alt="AUXILIUM Logo" />
+    <img class="brand-full" src="assets/auxilium_logo_pure_white_bg.png" alt="AUXILIUM Logo" onerror="this.style.display='none'; document.querySelector('.sidebar').insertAdjacentHTML('afterbegin', '<h2 style=\'margin-bottom:30px\'>AUXILIUM</h2>')" />
 
     <div class="menu-item menu-active" onclick="showPage('home', this)">Home</div>
     <div class="menu-item" onclick="showPage('modules', this)">Modules</div>
@@ -309,82 +336,72 @@
   <div class="main">
     <div class="header">
       CV. SUKSES JAYA
-      <div class="logout-btn" onclick="showLogoutModal()">
+      <div class="logout-btn" onclick="showLogoutModal()" title="Logout">
         <i data-feather="log-out"></i>
       </div>
     </div>
 
     <div class="content" id="home-page">
       <h2>Welcome Back 👋</h2>
-      <p style="font-size:15px; color:#666;">Silakan pilih modul di menu untuk mulai menggunakan portal.</p>
+      <p class="subtitle">Silakan pilih modul di menu sidebar atau klik tab Modules untuk mulai bekerja.</p>
     </div>
 
     <div class="content" id="modules-page" style="display:none;">
       <h2>Modules</h2>
       <div class="grid">
 
-  <!-- RECEIVING PO ENTRY -->
-  <div class="tile" id="tile-receiving" onclick="window.location.href='receiving/'">
-    <div class="tile-icon">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b3b3b" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 16V8L12 3 3 8v8l9 5 9-5z"></path>
-        <line x1="12" y1="22" x2="12" y2="12"></line>
-      </svg>
-    </div>
-    <div class="tile-title">Receiving PO Entry</div>
-    <div class="tile-desc">Penerimaan material berdasarkan Purchase Order</div>
+        <div class="tile" id="tile-receiving" onclick="window.location.href='receiving/'">
+          <div class="tile-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 16V8L12 3 3 8v8l9 5 9-5z"></path>
+              <line x1="12" y1="22" x2="12" y2="12"></line>
+            </svg>
+          </div>
+          <div class="tile-title">Receiving PO Entry</div>
+          <div class="tile-desc">Penerimaan material berdasarkan Purchase Order</div>
+        </div>
+
+        <div class="tile" id="tile-finished-goods" onclick="window.location.href='production/'">
+          <div class="tile-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83"></path>
+            </svg>
+          </div>
+          <div class="tile-title">Production Entry</div>
+          <div class="tile-desc">Input hasil produksi per mesin & KPC</div>
+        </div>
+
+        <div class="tile" id="tile-order-form" onclick="window.location.href='orderform/'">
+          <div class="tile-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
+              <line x1="14" y1="2" x2="14" y2="8"></line>
+            </svg>
+          </div>
+          <div class="tile-title">Order Form</div>
+          <div class="tile-desc">Pembuatan order penjualan baru</div>
+        </div>
+
+        <div class="tile" id="tile-review-invoice" onclick="window.location.href='reviewinvoice/'">
+          <div class="tile-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 11l3 3L22 4"></path>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+            </svg>
+          </div>
+          <div class="tile-title">Review Invoice</div>
+          <div class="tile-desc">Approval invoice sebelum Work Effort</div>
+        </div>
+
+      </div> </div>
   </div>
 
-  <!-- PRODUCTION / FINISHED GOODS -->
-  <div class="tile" id="tile-finished-goods" onclick="window.location.href='production/'">
-    <div class="tile-icon">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b3b3b" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="3"></circle>
-        <path
-          d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83">
-        </path>
-      </svg>
-    </div>
-    <div class="tile-title">Production Entry</div>
-    <div class="tile-desc">Input hasil produksi per mesin & KPC</div>
-  </div>
-
-  <!-- ORDER FORM -->
-<div class="tile" id="tile-order-form" onclick="window.location.href='orderform/'">
-    <div class="tile-icon">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round">
-        <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
-        <line x1="14" y1="2" x2="14" y2="8"></line>
-      </svg>
-    </div>
-    <div class="tile-title">Order Form</div>
-    <div class="tile-desc">Pembuatan order penjualan</div>
-  </div>
-
-</div>
-<!-- REVIEW INVOICE -->
-<div class="tile" id="tile-review-invoice" onclick="window.location.href='reviewinvoice/'">
-  <div class="tile-icon">
-    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b3b3b" stroke-width="2"
-      stroke-linecap="round" stroke-linejoin="round">
-      <path d="M9 11l3 3L22 4"></path>
-      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-    </svg>
-  </div>
-  <div class="tile-title">Review Invoice</div>
-  <div class="tile-desc">Approval invoice sebelum Work Effort</div>
-</div>
-
-
-  <!-- Logout Modal -->
   <div id="logoutModal" class="modal">
     <div class="modal-content">
       <p>Are you sure you want to log out?</p>
       <div class="modal-buttons">
-        <button class="btn btn-yes" onclick="logout()">Yes</button>
+        <button class="btn btn-yes" onclick="logout()">Yes, Logout</button>
         <button class="btn btn-cancel" onclick="closeLogoutModal()">Cancel</button>
       </div>
     </div>
@@ -397,7 +414,7 @@
     const loader = document.getElementById("auxieLoading");
 
     window.addEventListener("load", () => {
-      setTimeout(() => loader.classList.add("hide"), 400);
+      setTimeout(() => loader.classList.add("hide"), 500);
     });
 
     function showPage(page, element) {
@@ -420,13 +437,16 @@
       setTimeout(() => {
         localStorage.removeItem("uxilium_current_user");
         window.location.href = "login.html";
-      }, 600);
+      }, 800);
     }
 
-    // Tampilkan loader saat tile di klik (redirect)
+    // Loader on tile click
     document.querySelectorAll(".tile").forEach(tile => {
-      tile.addEventListener("click", () => {
-        loader.classList.remove("hide");
+      tile.addEventListener("click", (e) => {
+        // Prevent loader if tile is disabled
+        if(!tile.classList.contains('tile-disabled')){
+            loader.classList.remove("hide");
+        }
       });
     });
 
@@ -453,6 +473,7 @@
       setTile("tile-receiving", !!user.access.receiving);
       setTile("tile-finished-goods", !!user.access.finished_goods);
       setTile("tile-order-form", !!user.access.order_form);
+      setTile("tile-review-invoice", !!user.access.review_invoice); // Added check for new tile
     })();
   </script>
 </body>
