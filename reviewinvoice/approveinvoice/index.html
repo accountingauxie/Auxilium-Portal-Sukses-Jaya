@@ -19,11 +19,12 @@
       --approved-bg: #d1e7dd; --approved-text: #0f5132;
       --pending-bg: #fff3cd; --pending-text: #856404;
       --canceled-bg: #fef2f2; --canceled-text: #991b1b;
-      --partial-bg: #e0f2fe; --partial-text: #0369a1; /* Biru Laut */
-      --version-bg: #ede9fe; --version-text: #5b21b6; /* Ungu untuk Version Tag */
+      --partial-bg: #e0f2fe; --partial-text: #0369a1; 
+      --version-bg: #ede9fe; --version-text: #5b21b6; 
     }
     body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); margin: 0; color: var(--text-main); }
     
+    /* Navbar */
     .navbar { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); padding: 1rem 2rem; border-bottom: 1px solid var(--border-color); display: flex; gap: 2rem; align-items: center; position: sticky; top: 0; z-index: 50; }
     .nav-brand { font-weight: 800; font-size: 1.25rem; color: var(--primary); margin-right: auto; }
     .nav-link { text-decoration: none; color: var(--text-sub); font-weight: 500; font-size: 0.9rem; padding: 0.5rem 1rem; border-radius: 8px; transition: 0.2s; }
@@ -254,8 +255,7 @@
 
 <script>
   // ================= CONFIGURATION =================
-  // GANTI DENGAN URL APPS SCRIPT ANDA
-  const API_URL = "https://script.google.com/macros/s/AKfycbyyWGbr7CHkceOZVYFSNCMtsdx7MrjSdLZ87xoBf2JZ-Kw8BNC--oXdU9VHEqc2mUrN9A/exec"; 
+  const API_URL = "https://script.google.com/macros/s/AKfycbzfC-iRbTdR6eHhoZASDPWBrlvz-xT_GoN-8DM0o-Pf33Qt2T8-KzsQsWVOaucSsdy4yA/exec"; 
   // =================================================
 
   let allInvoices = [];
@@ -277,14 +277,12 @@
       .then(response => {
         showLoading(false);
         if (response.ok) {
-          // --- FIX CRUCIAL: PAKSA JADI STRING AGAR TIDAK ERROR .includes() ---
-          // Ini yang menyebabkan script mati sebelumnya
+          // SAFETY FIX: Paksa invoiceNumber jadi string
           allInvoices = response.data.map(inv => {
               inv.invoiceNumber = String(inv.invoiceNumber); 
               return inv;
           });
-          // -------------------------------------------------------------------
-
+          
           processInvoicesRelationship(); 
           renderInvoices();
         } else { alert("Error: " + response.error); }
@@ -295,6 +293,7 @@
   // --- LOGIC RELASI PARENT-CHILD ---
   function processInvoicesRelationship() {
     invoiceMap = {};
+    // First Pass: Indexing
     allInvoices.forEach(inv => {
         invoiceMap[inv.invoiceNumber] = inv;
         inv.children = []; 
@@ -302,11 +301,10 @@
         inv.isFullyShipped = false; 
     });
 
+    // Second Pass: Linking Children to Parents
     allInvoices.forEach(inv => {
-        // Safe check
-        const invNum = String(inv.invoiceNumber);
-        if (invNum.includes("-P")) {
-            const parentId = invNum.split("-P")[0];
+        if (String(inv.invoiceNumber).includes("-P")) {
+            const parentId = inv.invoiceNumber.split("-P")[0];
             if (invoiceMap[parentId]) {
                 invoiceMap[parentId].children.push(inv);
                 inv.parent = invoiceMap[parentId];
@@ -314,7 +312,7 @@
         }
     });
 
-    // Cek apakah Parent sudah "Fully Shipped"
+    // Third Pass: Calculate Status
     allInvoices.forEach(inv => {
         if (inv.children.length > 0) {
             let totalQtyOrder = inv.items.reduce((sum, i) => sum + i.qty, 0);
@@ -327,7 +325,7 @@
             });
 
             if (totalQtyShipped >= totalQtyOrder && totalQtyOrder > 0) {
-                inv.isFullyShipped = true; // Flag baru untuk Approved Logic
+                inv.isFullyShipped = true; 
             }
         }
     });
@@ -377,13 +375,11 @@
       if (currentFilter === 'All') matchStatus = true;
       else if (currentFilter === 'Approved') {
           if (invStatus === 'Approved' || displayStatus === 'Approved') matchStatus = true;
-          // Sub filter logic
           if (matchStatus && currentApprovedSubFilter !== 'All') {
               if (currentApprovedSubFilter === 'WE' && !inv.progressStatus.includes('WE')) matchStatus = false;
               if (currentApprovedSubFilter === 'Xero' && !inv.progressStatus.includes('Xero')) matchStatus = false;
           }
       } else {
-          // Filter biasa
           if (currentFilter === 'Partially Delivered' && (invStatus === 'Partially Delivered' && !inv.isFullyShipped)) {
               matchStatus = true;
           } else {
@@ -405,6 +401,7 @@
     });
 
     filtered.sort((a, b) => {
+        // Ambil angka dari Invoice Number untuk sorting yang lebih baik
         const numA = parseInt(String(a.invoiceNumber).replace(/\D/g, '')) || 0;
         const numB = parseInt(String(b.invoiceNumber).replace(/\D/g, '')) || 0;
         return (sortVal === 'asc') ? (numA - numB) : (numB - numA);
@@ -421,7 +418,6 @@
       let badgeClass = 'badge-pending';
       let versionBadge = '';
 
-      // TAMPILAN KHUSUS JIKA FULLY SHIPPED
       if (inv.isFullyShipped) {
           status = 'Approved';
           borderClass = 'border-approved';
@@ -474,7 +470,11 @@
     currentOpenInvoiceId = invoiceId;
     const select = document.getElementById('invoiceSwitcher');
     select.innerHTML = '';
-    allInvoices.forEach(inv => {
+    
+    // Sort dropdown agar rapi
+    const sortedList = [...allInvoices].sort((a,b) => String(a.invoiceNumber).localeCompare(String(b.invoiceNumber)));
+    
+    sortedList.forEach(inv => {
       const option = document.createElement('option');
       option.value = inv.invoiceNumber;
       option.text = `${inv.invoiceNumber} - ${inv.customer}`;
@@ -504,15 +504,14 @@
     }
     document.getElementById('modalDate').textContent = displayDate;
 
-    // --- REVISI 3: STATUS LOGIC (APPROVED + PARTIAL VERSION) ---
+    // STATUS LOGIC
     const statusContainer = document.getElementById('modalStatusContainer');
-    statusContainer.innerHTML = ''; // Reset
+    statusContainer.innerHTML = ''; 
 
     let badgeClass = 'badge-pending';
     let statusText = inv.status || 'Pending';
     let addVersionTag = false;
     
-    // Override jika fully shipped
     if (inv.isFullyShipped) {
         statusText = 'Approved';
         badgeClass = 'badge-approved';
@@ -528,7 +527,7 @@
     }
     statusContainer.innerHTML += `<span class="badge-pill ${badgeClass}">${statusText}</span>`;
 
-    // --- RENDER TABLE & LINKED INFO ---
+    // RENDER TABLE
     const thead = document.getElementById('modalTableHead');
     const tbody = document.getElementById('modalTableBody');
     const linkedArea = document.getElementById('linkedInfoArea');
@@ -536,11 +535,10 @@
     
     tbody.innerHTML = '';
     linkedArea.innerHTML = '';
-    outstandingArea.style.display = 'none'; // Default hide
+    outstandingArea.style.display = 'none';
 
-    // LOGIC: PARENT vs CHILD
+    // === LOGIC: PARENT VIEW ===
     if (inv.children && inv.children.length > 0) {
-        // === VIEW FOR PARENT INVOICE ===
         thead.innerHTML = `
             <tr>
                 <th style="text-align:left;">Product</th>
@@ -551,7 +549,6 @@
                 <th style="text-align:right;">Total</th>
             </tr>`;
 
-        // Calculate Remaining Value
         let totalRemainingValue = 0;
 
         const itemCalc = inv.items.map(item => {
@@ -563,6 +560,8 @@
                 }
             });
             const remain = Math.max(0, item.qty - shipped);
+            
+            // Hitung nilai sisa (Qt * Harga)
             totalRemainingValue += (remain * item.priceQty);
 
             return { ...item, shipped: shipped, remaining: remain };
@@ -580,14 +579,9 @@
             </tr>`;
         });
 
-        // --- REVISI 2: HITUNG SISA TAGIHAN (OUTSTANDING) ---
-        // Jika sisa barang > 0, hitung perkiraan sisa tagihan
-        // Asumsi: nilai sisa (Qt * Price) + PPN
-        
         document.getElementById('valOutstanding').textContent = formatMoney(totalRemainingValue);
         outstandingArea.style.display = 'block';
 
-        // Linked Info Box
         let linksHtml = inv.children.map(child => `
             <div class="linked-item">
                 <span>Invoice <a href="#" onclick="switchInvoice('${child.invoiceNumber}')">${child.invoiceNumber}</a></span>
@@ -603,7 +597,7 @@
             </div>`;
 
     } else {
-        // === VIEW FOR CHILD OR NORMAL ===
+        // === LOGIC: CHILD OR NORMAL VIEW ===
         thead.innerHTML = `
             <tr>
               <th style="text-align:center;">Type</th>
@@ -656,7 +650,7 @@
     actionDiv.innerHTML = ''; 
 
     if (inv.status === 'Approved' || inv.isFullyShipped) {
-        // No Actions (Sudah Selesai)
+        // No Actions
     } 
     else if (inv.status === 'Canceled') {
        actionDiv.innerHTML = `
@@ -677,8 +671,9 @@
          </button>
        `;
        
-       // Tombol Partial (Hanya aktif jika belum Fully Shipped)
-       if (!inv.isFullyShipped) {
+       // === FIX: HANYA TAMPILKAN PARTIAL JIKA BUKAN ANAK (PARENT) & BELUM FULL ===
+       // inv.parent ada nilainya jika ini adalah anak.
+       if (!inv.isFullyShipped && !inv.parent) {
            buttonsHtml += `
              <button class="btn-action btn-partial" onclick="openPartialModal()">
                 <i class="fa-solid fa-boxes-packing"></i> ${isParent ? 'Create Next Partial' : 'Partially Delivered'}
@@ -687,6 +682,7 @@
        }
 
        if (isParent) {
+           // Parent tidak bisa diapprove langsung, harus lewat partial sampai selesai
            buttonsHtml += `
              <button class="btn-action btn-approve" disabled title="Parent Invoice cannot be approved directly.">
                 <i class="fa-solid fa-lock"></i> Approve Invoice
@@ -807,6 +803,7 @@
 
     showLoading(true);
     
+    // Kita hanya kirim data, kalkulasi ID -P1, -P2 ada di AppScript Backend
     const payload = {
         originalInvoiceNumber: tempPartialData.invoiceNumber, 
         customerName: tempPartialData.customer,
