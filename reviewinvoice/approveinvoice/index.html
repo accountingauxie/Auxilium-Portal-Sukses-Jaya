@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Futuristic Invoice Approval</title>
+  <title>Invoice Approval System</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -15,23 +15,21 @@
       --text-main: #1e293b; --text-sub: #64748b;
       --border-color: #e2e8f0;
       
-      /* Status Colors */
       --we-bg: #FFF3CD; --we-text: #856404; --we-border: #ffeeba;
       --xero-bg: #E3F2FD; --xero-text: #0c5460; --xero-border: #b8daff;
       --approved-bg: #d1e7dd; --approved-text: #0f5132;
       --pending-bg: #fff3cd; --pending-text: #856404;
-      --partial-bg: #fff3cd; --partial-text: #856404;
       --canceled-bg: #fef2f2; --canceled-text: #991b1b;
+      --partial-bg: #e0f2fe; --partial-text: #0369a1;
+      --alldelivered-bg: #dcfce7; --alldelivered-text: #15803d;
     }
     body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); margin: 0; color: var(--text-main); }
     
-    /* Navbar */
     .navbar { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); padding: 1rem 2rem; border-bottom: 1px solid var(--border-color); display: flex; gap: 2rem; align-items: center; position: sticky; top: 0; z-index: 50; }
     .nav-brand { font-weight: 800; font-size: 1.25rem; color: var(--primary); margin-right: auto; }
     .nav-link { text-decoration: none; color: var(--text-sub); font-weight: 500; font-size: 0.9rem; padding: 0.5rem 1rem; border-radius: 8px; transition: 0.2s; }
     .nav-link:hover, .nav-link.active { background-color: #eff6ff; color: var(--primary); }
 
-    /* Layout */
     .container { padding: 2rem; max-width: 1200px; margin: 0 auto; }
     h1 { font-weight: 700; color: var(--text-main); margin-bottom: 1.5rem; }
 
@@ -60,7 +58,8 @@
     .border-pending::before { background-color: #fbbf24; }
     .border-approved::before { background-color: #10b981; }
     .border-canceled::before { background-color: #ef4444; }
-    .border-partial::before { background-color: #d97706; }
+    .border-partial::before { background-color: #0ea5e9; }
+    .border-alldelivered::before { background-color: #22c55e; }
 
     .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; padding-left: 12px; }
     .card-title { font-size: 1.1rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
@@ -73,7 +72,8 @@
     .badge-approved { background-color: var(--approved-bg); color: var(--approved-text); }
     .badge-pending { background-color: var(--pending-bg); color: var(--pending-text); }
     .badge-canceled { background-color: var(--canceled-bg); color: var(--canceled-text); }
-    .badge-partial { background-color: #fef3c7; color: #b45309; border: 1px solid #fcd34d; }
+    .badge-partial { background-color: var(--partial-bg); color: var(--partial-text); }
+    .badge-alldelivered { background-color: var(--alldelivered-bg); color: var(--alldelivered-text); }
 
     .price-tag { font-size: 1.25rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; padding-left: 12px; }
     .btn-details { margin-top: 1rem; width: 100%; padding: 12px; background: #f8fafc; color: var(--primary); border: 1px solid transparent; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
@@ -88,18 +88,26 @@
     .paper-table th { background: #f8fafc; color: var(--text-sub); font-size: 0.75rem; text-transform: uppercase; padding: 12px; }
     .paper-table td { padding: 12px; border-bottom: 1px solid var(--border-color); color: var(--text-main); font-size: 0.9rem; }
     
-    .invoice-footer { margin-top: 2rem; padding-top: 1rem; border-top: 2px solid var(--text-main); display: flex; justify-content: flex-end; }
+    .invoice-footer { margin-top: 2rem; padding-top: 1rem; border-top: 2px solid var(--text-main); display: flex; justify-content: space-between; align-items: flex-start; }
     .total-row { display: flex; justify-content: space-between; width: 300px; padding: 4px 0; }
     .grand-total { font-size: 1.25rem; font-weight: 800; color: var(--primary); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-color); }
 
     .btn-action { padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; display: flex; align-items: center; gap: 8px; }
     .btn-approve { background: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3); }
+    .btn-approve:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; }
     .btn-reject { background: #ef4444; color: white; box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3); }
     .btn-partial { background: #d97706; color: white; box-shadow: 0 4px 6px -1px rgba(217, 119, 6, 0.3); }
     .btn-partial:hover { background: #b45309; }
     .btn-revert { background: #64748b; color: white; }
 
-    /* Partial Input Styling */
+    /* New Elements for Partial */
+    .linked-box { background: #fffbe6; border: 1px solid #fcd34d; padding: 15px; border-radius: 10px; width: 100%; max-width: 350px; }
+    .linked-title { font-size: 0.85rem; font-weight: 700; color: #b45309; margin-bottom: 8px; text-transform: uppercase; }
+    .linked-item { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px dashed #e2e8f0; }
+    .linked-item a { color: var(--primary); text-decoration: none; font-weight: 500; }
+    .linked-item a:hover { text-decoration: underline; }
+    .link-parent { color: var(--primary); font-weight: 600; text-decoration: none; font-size: 1rem; display: block; margin-top: 5px; }
+
     .input-qty { width: 60px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: right; font-weight: bold; background: #fffbe6; }
     .input-qty:focus { outline: 2px solid #d97706; }
 
@@ -114,9 +122,9 @@
   <nav class="navbar">
     <div class="nav-brand"><i class="fa-solid fa-cube"></i> Auxilium Portal</div>
     <div style="display:flex; gap:10px;">
-      <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/index.html" class="nav-link active">Home Invoice</a>
-      <a href="reviewinvoice/wespandek/Index.html" class="nav-link">Work Effort</a>
-      <a href="reviewinvoice/importxeroinv" class="nav-link">Import Xero</a>
+      <a href="#" class="nav-link active">Home Invoice</a>
+      <a href="#" class="nav-link">Work Effort</a>
+      <a href="#" class="nav-link">Import Xero</a>
     </div>
   </nav>
 
@@ -185,22 +193,14 @@
       </div>
 
       <table class="paper-table" style="width:100%; border-collapse:collapse;">
-        <thead>
-          <tr>
-            <th style="text-align:center;">Type</th>
-            <th style="text-align:left;">Product</th>
-            <th style="text-align:right;">Meter</th>
-            <th style="text-align:right;">Qty</th>
-            <th style="text-align:right;">Price</th>
-            <th style="text-align:right;">Disc</th>
-            <th style="text-align:right;">Price/Qty</th>
-            <th style="text-align:right;">Total</th>
-          </tr>
-        </thead>
+        <thead id="modalTableHead"></thead>
         <tbody id="modalTableBody"></tbody>
       </table>
 
       <div class="invoice-footer">
+        
+        <div id="linkedInfoArea" style="flex-grow:1; padding-right:20px;"></div>
+
         <div style="width:100%; max-width:300px;">
           <div class="total-row"><span>Subtotal (DPP)</span><span id="valDPP">Rp 0</span></div>
           <div class="total-row"><span>PPN (12%)</span><span id="valPPN">Rp 0</span></div>
@@ -215,22 +215,22 @@
   <div id="partialModal" class="modal-overlay">
     <div class="invoice-paper" style="max-width:800px; border-top: 5px solid #d97706;">
         <h2 style="color:#b45309; margin-bottom: 20px;">Create Partial Invoice</h2>
-        <p style="color:#666; margin-bottom: 20px;">Please edit the Qty to be delivered now. The invoice number will be generated automatically (e.g. -P1, -P2).</p>
+        <p style="color:#666; margin-bottom: 20px;">Please edit the Qty to be delivered now.</p>
         
         <table class="paper-table" style="width:100%; border-collapse:collapse;">
             <thead>
                 <tr>
                     <th style="text-align:left;">Product</th>
                     <th style="text-align:right;">Price/Qty</th>
-                    <th style="text-align:right;">Original Qty</th>
+                    <th style="text-align:right;">Max Qty</th>
                     <th style="text-align:right; width:100px;">Send Qty</th>
-                    <th style="text-align:right;">New Total</th>
+                    <th style="text-align:right;">Total</th>
                 </tr>
             </thead>
             <tbody id="partialTableBody"></tbody>
         </table>
 
-        <div class="invoice-footer">
+        <div class="invoice-footer" style="justify-content: flex-end;">
             <div style="width:100%; max-width:300px;">
                 <div class="total-row"><span>Subtotal (DPP)</span><span id="pDPP">0</span></div>
                 <div class="total-row"><span>PPN</span><span id="pPPN">0</span></div>
@@ -251,14 +251,15 @@
 
 <script>
   // ================= CONFIGURATION =================
-  const API_URL = "https://script.google.com/macros/s/AKfycby7FEpJTGReHQWLZLIK-SrI32hfXC7y9WACd-Xw8Oc3u4tyQPHkkafCjG4KaC310prwsQ/exec"; 
+  const API_URL = "https://script.google.com/macros/s/AKfycbyl8FrmAwX0DoId3i46QUtpihj0MZ17WS7x8Ht7nrDlCugpceOGaqyxH9tNMIOmQRrL2w/exec"; 
   // =================================================
 
   let allInvoices = [];
+  let invoiceMap = {}; // Helper for linking parent-child
   let currentFilter = 'All'; 
   let currentApprovedSubFilter = 'All'; 
   let currentOpenInvoiceId = null; 
-  let tempPartialData = null; // Store data for partial calculation
+  let tempPartialData = null; 
 
   window.onload = fetchInvoices;
 
@@ -273,10 +274,54 @@
         showLoading(false);
         if (response.ok) {
           allInvoices = response.data;
+          processInvoicesRelationship(); // LINKING PARENT & CHILDREN
           renderInvoices();
         } else { alert("Error: " + response.error); }
       })
       .catch(err => { showLoading(false); alert("Network Error: " + err); });
+  }
+
+  // --- LOGIC RELASI PARENT-CHILD ---
+  function processInvoicesRelationship() {
+    // 1. Map all invoices
+    invoiceMap = {};
+    allInvoices.forEach(inv => {
+        invoiceMap[inv.invoiceNumber] = inv;
+        inv.children = []; // Store partials here
+        inv.parent = null; // Store link to parent
+        inv.isAllDelivered = false; // Flag for virtual status
+    });
+
+    // 2. Link them
+    allInvoices.forEach(inv => {
+        // Cek apakah invoice ini adalah anak (mengandung -P)
+        if (inv.invoiceNumber.includes("-P")) {
+            const parentId = inv.invoiceNumber.split("-P")[0];
+            if (invoiceMap[parentId]) {
+                invoiceMap[parentId].children.push(inv);
+                inv.parent = invoiceMap[parentId];
+            }
+        }
+    });
+
+    // 3. Calculate "ALL DELIVERED" for Parents
+    allInvoices.forEach(inv => {
+        if (inv.children.length > 0) {
+            // Ini adalah Parent. Cek apakah total shipped == total order
+            let totalQtyOrder = inv.items.reduce((sum, i) => sum + i.qty, 0);
+            let totalQtyShipped = 0;
+            
+            inv.children.forEach(child => {
+                if (child.status !== "Canceled") {
+                    totalQtyShipped += child.items.reduce((sum, i) => sum + i.qty, 0);
+                }
+            });
+
+            if (totalQtyShipped >= totalQtyOrder && totalQtyOrder > 0) {
+                inv.isAllDelivered = true;
+            }
+        }
+    });
   }
 
   // Handle Main Filters
@@ -284,7 +329,6 @@
     currentFilter = status;
     document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
     
-    // Mapping ID button
     let btnId = `btn-${status}`;
     if(status === 'Partially Delivered') btnId = 'btn-Partial';
     
@@ -315,18 +359,28 @@
     const sortVal = document.getElementById('sortOrder').value;
 
     const filtered = allInvoices.filter(inv => {
+      // Logic Filter Status
       const invStatus = inv.status || 'Pending';
       let matchStatus = false;
 
+      // Virtual Status Logic for ALL DELIVERED
+      let displayStatus = invStatus;
+      if (inv.isAllDelivered) displayStatus = 'ALL DELIVERED';
+
       if (currentFilter === 'All') matchStatus = true;
       else if (currentFilter === 'Approved') {
-          if (invStatus === 'Approved') {
-             if (currentApprovedSubFilter === 'All') matchStatus = true;
-             else if (currentApprovedSubFilter === 'WE' && inv.progressStatus && inv.progressStatus.includes('WE')) matchStatus = true;
-             else if (currentApprovedSubFilter === 'Xero' && inv.progressStatus && inv.progressStatus.includes('Xero')) matchStatus = true;
+          if (invStatus === 'Approved') matchStatus = true;
+          if (matchStatus && currentApprovedSubFilter !== 'All') {
+              if (currentApprovedSubFilter === 'WE' && !inv.progressStatus.includes('WE')) matchStatus = false;
+              if (currentApprovedSubFilter === 'Xero' && !inv.progressStatus.includes('Xero')) matchStatus = false;
           }
       } else {
-          matchStatus = invStatus === currentFilter;
+          // Normal filter
+          if (currentFilter === 'Partially Delivered' && (invStatus === 'Partially Delivered' || displayStatus === 'ALL DELIVERED')) {
+              matchStatus = true;
+          } else {
+              matchStatus = invStatus === currentFilter;
+          }
       }
 
       const matchSearch = inv.customer.toLowerCase().includes(searchVal) || inv.invoiceNumber.toString().toLowerCase().includes(searchVal);
@@ -350,6 +404,7 @@
       return matchStatus && matchSearch && matchDate;
     });
 
+    // Sorting
     filtered.sort((a, b) => {
         const numA = parseInt(String(a.invoiceNumber).replace(/\D/g, '')) || 0;
         const numB = parseInt(String(b.invoiceNumber).replace(/\D/g, '')) || 0;
@@ -366,36 +421,35 @@
     }
 
     filtered.forEach(inv => {
-      const status = inv.status || 'Pending';
+      let status = inv.status || 'Pending';
       let borderClass = 'border-pending';
       let badgeClass = 'badge-pending';
 
-      if (status === 'Approved') { borderClass = 'border-approved'; badgeClass = 'badge-approved'; }
-      else if (status === 'Canceled') { borderClass = 'border-canceled'; badgeClass = 'badge-canceled'; }
-      else if (status === 'Partially Delivered') { borderClass = 'border-partial'; badgeClass = 'badge-partial'; }
+      // Override display if All Delivered
+      if (inv.isAllDelivered) {
+          status = 'ALL DELIVERED';
+          borderClass = 'border-alldelivered';
+          badgeClass = 'badge-alldelivered';
+      } else {
+          if (status === 'Approved') { borderClass = 'border-approved'; badgeClass = 'badge-approved'; }
+          else if (status === 'Canceled') { borderClass = 'border-canceled'; badgeClass = 'badge-canceled'; }
+          else if (status === 'Partially Delivered') { borderClass = 'border-partial'; badgeClass = 'badge-partial'; }
+      }
 
       const grandTotal = inv.grandTotal || 0;
-
+      
       let noteHtml = '';
       if (inv.noteCanceled) {
-        noteHtml = `
-            <div style="font-size:0.8rem; color:var(--text-sub); background:#f1f5f9; padding:4px 10px; border-radius:8px; margin-top:5px; display:inline-flex; align-items:center; gap:6px; font-weight:500;">
-                <i class="fa-regular fa-comment-dots"></i>
-                <span>${inv.noteCanceled}</span>
-            </div>
-        `;
+        noteHtml = `<div style="font-size:0.8rem; color:var(--text-sub); background:#f1f5f9; padding:4px 10px; border-radius:8px; margin-top:5px; inline-flex; gap:6px;">${inv.noteCanceled}</div>`;
       }
 
       let progressBadgeHtml = '';
       if (inv.progressStatus) {
-        const badges = inv.progressStatus.split(', ');
-        badges.forEach(b => {
+        inv.progressStatus.split(', ').forEach(b => {
            let bClass = "badge-pill"; 
-           let tooltipText = "";
-           if(b.includes("WE")) { bClass += " badge-we"; tooltipText = "Created internally"; } 
-           else if(b.includes("Xero")) { bClass += " badge-xero"; tooltipText = "Synced Xero"; } 
-           else { bClass += " badge-pending"; }
-           progressBadgeHtml += `<span class="${bClass}" title="${tooltipText}">${b}</span>`;
+           if(b.includes("WE")) bClass += " badge-we"; 
+           else if(b.includes("Xero")) bClass += " badge-xero";
+           progressBadgeHtml += `<span class="${bClass}">${b}</span>`;
         });
       }
 
@@ -411,10 +465,10 @@
           <div class="status-area">
               <span class="badge-pill ${badgeClass}">${status}</span>
               ${progressBadgeHtml}
-              ${noteHtml}
           </div>
         </div>
         <div class="price-tag">${formatMoney(grandTotal)}</div>
+        ${noteHtml}
         <button class="btn-details" onclick="openInvoiceModal('${inv.invoiceNumber}')">View Details <i class="fa-solid fa-arrow-right"></i></button>
       `;
       container.appendChild(card);
@@ -444,7 +498,7 @@
   }
 
   function renderModalContent(id) {
-    const inv = allInvoices.find(i => i.invoiceNumber == id);
+    const inv = invoiceMap[id];
     if (!inv) return;
 
     document.getElementById('modalCustomer').textContent = inv.customer;
@@ -457,22 +511,135 @@
     }
     document.getElementById('modalDate').textContent = displayDate;
 
-    // Badge
+    // Badge Logic
     const statusEl = document.getElementById('modalStatus');
     let badgeClass = 'badge-pending';
-    if(inv.status === 'Approved') badgeClass = 'badge-approved';
+    let statusText = inv.status || 'Pending';
+    
+    if (inv.isAllDelivered) { statusText = 'ALL DELIVERED'; badgeClass = 'badge-alldelivered'; }
+    else if(inv.status === 'Approved') badgeClass = 'badge-approved';
     else if(inv.status === 'Canceled') badgeClass = 'badge-canceled';
     else if(inv.status === 'Partially Delivered') badgeClass = 'badge-partial';
     
     statusEl.className = `badge-pill ${badgeClass}`;
-    statusEl.textContent = inv.status || 'Pending';
+    statusEl.textContent = statusText;
 
-    // Buttons
+    // --- RENDER TABLE & LINKED INFO ---
+    const thead = document.getElementById('modalTableHead');
+    const tbody = document.getElementById('modalTableBody');
+    const linkedArea = document.getElementById('linkedInfoArea');
+    
+    tbody.innerHTML = '';
+    linkedArea.innerHTML = '';
+
+    // LOGIC: PARENT vs CHILD vs NORMAL
+    if (inv.children && inv.children.length > 0) {
+        // === VIEW FOR PARENT INVOICE ===
+        thead.innerHTML = `
+            <tr>
+                <th style="text-align:left;">Product</th>
+                <th style="text-align:right;">Order Qty</th>
+                <th style="text-align:right; color:#2563eb;">Shipped</th>
+                <th style="text-align:right; color:#ef4444;">Remaining</th>
+                <th style="text-align:right;">Price/Qty</th>
+                <th style="text-align:right;">Total</th>
+            </tr>`;
+
+        // Create Item Map for calculation
+        const itemCalc = inv.items.map(item => {
+            let shipped = 0;
+            inv.children.forEach(child => {
+                if (child.status !== 'Canceled') {
+                    const match = child.items.find(cItem => cItem.product === item.product);
+                    if (match) shipped += match.qty;
+                }
+            });
+            return { ...item, shipped: shipped, remaining: item.qty - shipped };
+        });
+
+        itemCalc.forEach(item => {
+            tbody.innerHTML += `
+            <tr>
+                <td>${item.product}</td>
+                <td style="text-align:right;">${item.qty}</td>
+                <td style="text-align:right; font-weight:bold; color:#2563eb;">${item.shipped}</td>
+                <td style="text-align:right; font-weight:bold; color:#ef4444;">${Math.max(0, item.remaining)}</td>
+                <td style="text-align:right;">${formatMoney(item.priceQty)}</td>
+                <td style="text-align:right;">${formatMoney(item.total)}</td>
+            </tr>`;
+        });
+
+        // Linked Info Box
+        let linksHtml = inv.children.map(child => `
+            <div class="linked-item">
+                <span>Invoice <a href="#" onclick="switchInvoice('${child.invoiceNumber}')">${child.invoiceNumber}</a></span>
+                <span>${formatMoney(child.grandTotal)}</span>
+            </div>
+        `).join('');
+        
+        linkedArea.innerHTML = `
+            <div class="linked-box">
+                <div class="linked-title">⚠️ Applied Partial Invoices</div>
+                ${linksHtml}
+                <div style="font-size:0.8rem; margin-top:8px; color:#64748b;">*Values deducted from original</div>
+            </div>`;
+
+    } else {
+        // === VIEW FOR CHILD OR NORMAL ===
+        thead.innerHTML = `
+            <tr>
+              <th style="text-align:center;">Type</th>
+              <th style="text-align:left;">Product</th>
+              <th style="text-align:right;">Meter</th>
+              <th style="text-align:right;">Qty</th>
+              <th style="text-align:right;">Price</th>
+              <th style="text-align:right;">Disc</th>
+              <th style="text-align:right;">Price/Qty</th>
+              <th style="text-align:right;">Total</th>
+            </tr>`;
+
+        inv.items.forEach(item => {
+            let typeCode = "-";
+            const rawType = (item.type || "").toString().toUpperCase();
+            if (rawType.includes("NON") || item.product.includes("NON SPANDEK")) typeCode = "NP";
+            else if (rawType.includes("SPANDEK") || item.product.includes("SPANDEK")) typeCode = "SP";
+
+            tbody.innerHTML += `
+            <tr>
+              <td style="text-align:center;"><span style="background:#f1f5f9; padding:2px 6px; border-radius:4px; font-size:0.8em; font-weight:bold;">${typeCode}</span></td>
+              <td>${item.product}</td>
+              <td style="text-align:right;">${item.meter > 0 ? item.meter : '-'}</td>
+              <td style="text-align:right;">${item.qty}</td>
+              <td style="text-align:right;">${formatMoney(item.unitPrice)}</td>
+              <td style="text-align:right;">${formatMoney(item.discount)}</td>
+              <td style="text-align:right; font-weight:bold; color:#2563eb;">${formatMoney(item.priceQty)}</td>
+              <td style="text-align:right; font-weight:600;">${formatMoney(item.total)}</td>
+            </tr>`;
+        });
+
+        // If Child, show link to parent
+        if (inv.parent) {
+            linkedArea.innerHTML = `
+                <div class="linked-box" style="background:#eff6ff; border-color:#bfdbfe;">
+                    <div class="linked-title" style="color:#1d4ed8;">🔗 Linked Source</div>
+                    <div>Applied to Order:</div>
+                    <a href="#" class="link-parent" onclick="switchInvoice('${inv.parent.invoiceNumber}')">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> ${inv.parent.invoiceNumber}
+                    </a>
+                </div>`;
+        }
+    }
+
+    document.getElementById('valDPP').textContent = formatMoney(inv.dpp || 0);
+    document.getElementById('valPPN').textContent = formatMoney(inv.ppn || 0);
+    document.getElementById('valGrand').textContent = formatMoney(inv.grandTotal || 0);
+
+    // --- BUTTONS LOGIC ---
     const actionDiv = document.getElementById('modalActions');
     actionDiv.innerHTML = ''; 
 
-    if (inv.status === 'Approved') {
-       // View Only
+    if (inv.status === 'Approved' || inv.isAllDelivered) {
+        // No Actions
     } 
     else if (inv.status === 'Canceled') {
        actionDiv.innerHTML = `
@@ -485,60 +652,41 @@
        `;
     } 
     else {
-       // Jika Pending atau Partially Delivered, boleh ada tombol action
+       // PENDING / PARTIALLY
+       // Jika Parent, tombol Approve Disabled
+       const isParent = inv.children.length > 0;
+       
        let buttonsHtml = `
          <button class="btn-action btn-reject" onclick="handleActionFromModal('Canceled')">
             <i class="fa-solid fa-xmark"></i> Reject
          </button>
        `;
        
-       // Tombol Partial (Hanya muncul jika belum Approved/Canceled)
-       buttonsHtml += `
-         <button class="btn-action btn-partial" onclick="openPartialModal()">
-            <i class="fa-solid fa-boxes-packing"></i> Partially Delivered
-         </button>
-       `;
+       // Tombol Partial (Active if not all delivered)
+       if (!inv.isAllDelivered) {
+           buttonsHtml += `
+             <button class="btn-action btn-partial" onclick="openPartialModal()">
+                <i class="fa-solid fa-boxes-packing"></i> ${isParent ? 'Create Next Partial' : 'Partially Delivered'}
+             </button>
+           `;
+       }
 
-       buttonsHtml += `
-         <button class="btn-action btn-approve" onclick="handleApproveFromModal()">
-            <i class="fa-solid fa-check"></i> Approve Invoice
-         </button>
-       `;
+       // Tombol Approve
+       if (isParent) {
+           buttonsHtml += `
+             <button class="btn-action btn-approve" disabled title="Cannot approve parent invoice directly. Approve the partials instead.">
+                <i class="fa-solid fa-lock"></i> Approve Invoice
+             </button>
+           `;
+       } else {
+           buttonsHtml += `
+             <button class="btn-action btn-approve" onclick="handleApproveFromModal()">
+                <i class="fa-solid fa-check"></i> Approve Invoice
+             </button>
+           `;
+       }
        actionDiv.innerHTML = buttonsHtml;
     }
-
-    // Render Table
-    const tbody = document.getElementById('modalTableBody');
-    tbody.innerHTML = '';
-    
-    inv.items.forEach(item => {
-      let typeCode = "-";
-      const rawType = (item.type || "").toString().toUpperCase();
-      const prodName = (item.product || "").toUpperCase();
-      if (rawType.includes("NON") || prodName.includes("NON SPANDEK") || prodName.includes("ROOF")) typeCode = "NP";
-      else if (rawType.includes("SPANDEK") || prodName.includes("SPANDEK")) typeCode = "SP";
-
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td style="text-align:center;"><span style="background:#f1f5f9; padding:2px 6px; border-radius:4px; font-size:0.8em; font-weight:bold;">${typeCode}</span></td>
-        <td>${item.product}</td>
-        <td style="text-align:right;">${item.meter > 0 ? item.meter : '-'}</td>
-        <td style="text-align:right;">${item.qty}</td>
-        <td style="text-align:right;">${formatMoney(item.unitPrice)}</td>
-        <td style="text-align:right;">${formatMoney(item.discount)}</td>
-        <td style="text-align:right; font-weight:bold; color:#2563eb;">${formatMoney(item.priceQty)}</td>
-        <td style="text-align:right; font-weight:600;">${formatMoney(item.total)}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-
-    const dpp = inv.dpp || 0;
-    const ppn = inv.ppn || 0;
-    const grandTotal = inv.grandTotal || 0;
-
-    document.getElementById('valDPP').textContent = formatMoney(dpp);
-    document.getElementById('valPPN').textContent = formatMoney(ppn);
-    document.getElementById('valGrand').textContent = formatMoney(grandTotal);
   }
 
   function closeModal(event) {
@@ -550,28 +698,58 @@
   // --- PARTIAL DELIVERY LOGIC ---
 
   function openPartialModal() {
-    // 1. Get Data
-    const inv = allInvoices.find(i => i.invoiceNumber == currentOpenInvoiceId);
+    const inv = invoiceMap[currentOpenInvoiceId];
     if (!inv) return;
 
-    // 2. Clone data to temp variable
-    tempPartialData = JSON.parse(JSON.stringify(inv)); // Deep copy
+    // Calculate Remaining Qty for each item
+    // Logic: Order Qty - Sum(Children Qty)
+    
+    // Deep copy data
+    tempPartialData = JSON.parse(JSON.stringify(inv)); 
 
-    // 3. Render Table Inputs
+    // Filter Items: Only items that have remaining qty > 0
+    const itemsWithRemaining = [];
+
+    tempPartialData.items.forEach(item => {
+        let shipped = 0;
+        if (inv.children) {
+            inv.children.forEach(child => {
+                if (child.status !== 'Canceled') {
+                   const match = child.items.find(c => c.product === item.product);
+                   if (match) shipped += match.qty;
+                }
+            });
+        }
+        const remaining = item.qty - shipped;
+        if (remaining > 0) {
+            item.maxQty = remaining; // Store max allowable
+            item.qty = remaining; // Default to send all remaining
+            itemsWithRemaining.push(item);
+        }
+    });
+
+    tempPartialData.items = itemsWithRemaining; // Replace items with filtered ones
+
+    if (tempPartialData.items.length === 0) {
+        alert("All items have been delivered for this order.");
+        return;
+    }
+
+    // Render Table
     const tbody = document.getElementById('partialTableBody');
     tbody.innerHTML = '';
 
     tempPartialData.items.forEach((item, index) => {
         const tr = document.createElement('tr');
-        // Initial Calculation
         const initialTotal = item.qty * item.priceQty;
+        item.total = initialTotal;
         
         tr.innerHTML = `
             <td>${item.product}</td>
             <td style="text-align:right;">${formatMoney(item.priceQty)}</td>
-            <td style="text-align:right; color:#888;">${item.qty}</td>
+            <td style="text-align:right; color:#888;">${item.maxQty}</td>
             <td style="text-align:right;">
-                <input type="number" class="input-qty" value="${item.qty}" min="0" max="${item.qty}" 
+                <input type="number" class="input-qty" value="${item.qty}" min="0" max="${item.maxQty}" 
                  oninput="recalcPartialRow(this, ${index})" onchange="recalcPartialRow(this, ${index})">
             </td>
             <td style="text-align:right; font-weight:bold;" id="pTotal-${index}">${formatMoney(initialTotal)}</td>
@@ -579,88 +757,62 @@
         tbody.appendChild(tr);
     });
 
-    recalcPartialGrandTotal(); // Calc initial totals
-    document.getElementById('partialModal').style.display = 'flex'; // Show modal
+    recalcPartialGrandTotal(); 
+    document.getElementById('partialModal').style.display = 'flex'; 
   }
 
   function recalcPartialRow(input, index) {
     let max = parseFloat(input.getAttribute('max'));
     let newQty = parseFloat(input.value);
     
-    // VALIDASI AGAR TIDAK LEBIH DARI ORIGINAL
-    if (newQty > max) {
-        alert(`Maksimal Qty untuk item ini adalah ${max}`);
-        newQty = max;
-        input.value = max;
-    }
-    if (newQty < 0 || isNaN(newQty)) {
-        newQty = 0;
-    }
+    if (newQty > max) { alert(`Maksimal Qty sisa adalah ${max}`); newQty = max; input.value = max; }
+    if (newQty < 0 || isNaN(newQty)) { newQty = 0; }
     
-    // Update temp data
     tempPartialData.items[index].qty = newQty;
-    
-    // Update Item Total (Qty * Price/Qty)
     const newTotal = newQty * tempPartialData.items[index].priceQty;
     tempPartialData.items[index].total = newTotal;
 
-    // Update UI Row
     document.getElementById(`pTotal-${index}`).textContent = formatMoney(newTotal);
-
-    // Recalculate Global
     recalcPartialGrandTotal();
   }
 
   function recalcPartialGrandTotal() {
     let grandTotal = 0;
-    tempPartialData.items.forEach(item => {
-        grandTotal += (item.total || 0);
-    });
+    tempPartialData.items.forEach(item => { grandTotal += (item.total || 0); });
 
-    // RUMUS: DPP = Subtotal / 1.11
-    // PPN = Subtotal - DPP
     const dpp = grandTotal / 1.11;
     const ppn = grandTotal - dpp;
 
-    // Update UI
     document.getElementById('pDPP').textContent = formatMoney(dpp);
     document.getElementById('pPPN').textContent = formatMoney(ppn);
     document.getElementById('pGrand').textContent = formatMoney(grandTotal);
 
-    // Update Temp Data Globals (untuk dikirim ke backend)
     tempPartialData.dpp = dpp;
     tempPartialData.ppn = ppn;
     tempPartialData.grandTotal = grandTotal;
   }
 
   function submitPartialDelivery() {
-    if(!confirm("Create Partial Invoice? Original invoice will be marked as 'Partially Delivered'.")) return;
+    if(!confirm("Create Partial Invoice? Original invoice will mark as 'Partially Delivered'.")) return;
     
-    // Filter items with Qty > 0 only? Or keep 0 qty items?
-    // Usually invoice shouldn't have 0 qty lines. Let's filter.
     const activeItems = tempPartialData.items.filter(i => i.qty > 0);
-    if(activeItems.length === 0) {
-        alert("Cannot create invoice with 0 items.");
-        return;
-    }
+    if(activeItems.length === 0) { alert("Cannot create invoice with 0 items."); return; }
 
     showLoading(true);
     
+    // SEND FULL DATA FOR INHERITANCE
     const payload = {
-        originalInvoiceNumber: tempPartialData.invoiceNumber, // ID Induk
+        originalInvoiceNumber: tempPartialData.invoiceNumber, 
         customerName: tempPartialData.customer,
         keySalesOrder: tempPartialData.keySalesOrder,
         catatan: tempPartialData.catatan,
-        items: activeItems,
+        items: activeItems, // Includes type, meter, unitPrice, etc.
         dpp: tempPartialData.dpp,
         ppn: tempPartialData.ppn,
         grandTotal: tempPartialData.grandTotal
     };
 
-    fetch(API_URL + "?action=partialDelivery", { 
-        method: "POST", 
-        body: JSON.stringify(payload) // Backend doPost will handle this
-    })
+    fetch(API_URL + "?action=partialDelivery", { method: "POST", body: JSON.stringify(payload) })
     .then(res => res.json())
     .then(data => {
         showLoading(false);
@@ -668,19 +820,17 @@
             alert("Success! Created Invoice: " + data.newId);
             document.getElementById('partialModal').style.display='none';
             document.getElementById('invoiceModal').style.display='none';
-            fetchInvoices(); // Refresh data
-        } else {
-            alert("Failed: " + data.error);
-        }
+            fetchInvoices(); 
+        } else { alert("Failed: " + data.error); }
     })
     .catch(err => { showLoading(false); alert("Network error"); });
   }
 
-  // --- STANDARD API ACTIONS ---
+  // --- ACTIONS ---
   
   function handleApproveFromModal() {
     if(!confirm("Approve this invoice?")) return;
-    const inv = allInvoices.find(i => i.invoiceNumber == currentOpenInvoiceId);
+    const inv = invoiceMap[currentOpenInvoiceId];
     if (!inv) return;
     setModalLoading(true);
     
@@ -695,8 +845,8 @@
       setModalLoading(false);
       if(data.ok) {
         alert("Approved successfully!");
-        updateLocalStatus(inv.invoiceNumber, 'Approved', '');
-        renderModalContent(inv.invoiceNumber); renderInvoices();
+        fetchInvoices(); // Refresh all to update status
+        document.getElementById('invoiceModal').style.display='none';
       } else { alert("Failed: " + data.error); }
     });
   }
@@ -712,20 +862,14 @@
     }
 
     setModalLoading(true);
-    // Use JSON body for consistency
-    const payload = {
-        action: 'updateStatus',
-        invoiceNumber: currentOpenInvoiceId,
-        status: newStatus,
-        note: note
-    };
+    const payload = { action: 'updateStatus', invoiceNumber: currentOpenInvoiceId, status: newStatus, note: note };
 
     fetch(API_URL + "?action=updateStatus", { method: "POST", body: JSON.stringify(payload) })
     .then(res => res.json()).then(data => {
       setModalLoading(false);
       if(data.ok) {
-        updateLocalStatus(currentOpenInvoiceId, newStatus, note);
-        renderModalContent(currentOpenInvoiceId); renderInvoices();
+        fetchInvoices();
+        document.getElementById('invoiceModal').style.display='none';
       } else { alert("Failed"); }
     });
   }
@@ -735,21 +879,8 @@
     const buttons = actionDiv.querySelectorAll('button');
     buttons.forEach(btn => {
       btn.disabled = isLoading;
-      if (isLoading) {
-        btn.style.opacity = 0.7;
-      } else {
-        btn.style.opacity = 1;
-      }
+      btn.style.opacity = isLoading ? 0.7 : 1;
     });
-  }
-
-  function updateLocalStatus(id, status, note) {
-    const inv = allInvoices.find(i => i.invoiceNumber == id);
-    if(inv) {
-        inv.status = status;
-        if (status === 'Canceled') inv.noteCanceled = note;
-        else if (status === 'Pending') inv.noteCanceled = "";
-    }
   }
 </script>
 </body>
