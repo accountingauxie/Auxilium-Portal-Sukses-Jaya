@@ -6,8 +6,18 @@
   <title>Invoice Approval System</title>
   <style>
     /* --- BASE STYLES --- */
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; }
-    h1 { color: #1a1a1a; margin-bottom: 20px; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: #333; }
+    
+    /* --- NAVIGATION BAR (NEW) --- */
+    .navbar { background-color: #fff; padding: 15px 20px; border-bottom: 1px solid #ddd; display: flex; gap: 20px; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; }
+    .nav-brand { font-weight: bold; font-size: 1.2em; color: #007bff; margin-right: auto; }
+    .nav-link { text-decoration: none; color: #555; font-weight: 500; font-size: 14px; padding: 8px 12px; border-radius: 5px; transition: 0.2s; }
+    .nav-link:hover { background-color: #f0f0f0; color: #007bff; }
+    .nav-link.active { background-color: #eef2f7; color: #007bff; font-weight: bold; }
+
+    /* --- CONTAINER --- */
+    .container { padding: 0 20px 20px 20px; max-width: 1200px; margin: 0 auto; }
+    h1 { color: #1a1a1a; margin-bottom: 20px; margin-top: 10px; }
 
     /* --- DASHBOARD CONTROLS --- */
     .controls { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
@@ -93,17 +103,26 @@
 </head>
 <body>
 
-  <h1>Approval Dashboard</h1>
+  <nav class="navbar">
+    <div class="nav-brand">Auxilium Portal</div>
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/index.html" class="nav-link active">Home Invoice</a>
+    <a href="reviewinvoice/wespandek/Index.html" class="nav-link">Work Effort</a>
+    <a href="reviewinvoice/importxeroinv" class="nav-link">Import Xero</a>
+  </nav>
 
-  <div class="controls">
-    <button class="filter-btn active" onclick="setFilter('All')">All</button>
-    <button class="filter-btn" onclick="setFilter('Pending')">Pending</button>
-    <button class="filter-btn" onclick="setFilter('Approved')">Approved</button>
-    <button class="filter-btn" onclick="setFilter('Canceled')">Canceled</button>
-    <input type="text" id="searchInput" class="search-bar" placeholder="Search Customer, Invoice..." onkeyup="renderInvoices()">
+  <div class="container">
+    <h1>Approval Dashboard</h1>
+
+    <div class="controls">
+      <button class="filter-btn active" onclick="setFilter('All')">All</button>
+      <button class="filter-btn" onclick="setFilter('Pending')">Pending</button>
+      <button class="filter-btn" onclick="setFilter('Approved')">Approved</button>
+      <button class="filter-btn" onclick="setFilter('Canceled')">Canceled</button>
+      <input type="text" id="searchInput" class="search-bar" placeholder="Search Customer, Invoice..." onkeyup="renderInvoices()">
+    </div>
+
+    <div id="invoiceList"></div>
   </div>
-
-  <div id="invoiceList"></div>
 
   <div id="invoiceModal" class="modal-overlay" onclick="closeModal(event)">
     <div class="invoice-paper" onclick="event.stopPropagation()">
@@ -174,9 +193,7 @@
       </div>
 
       <div class="modal-actions" id="modalActions">
-        <button class="btn btn-cancel" onclick="handleActionFromModal('Canceled')">Reject / Cancel</button>
-        <button class="btn btn-approve" id="btnApproveModal" onclick="handleApproveFromModal()">Approve Invoice</button>
-      </div>
+        </div>
 
     </div>
   </div>
@@ -187,6 +204,7 @@
 
 <script>
   // ================= CONFIGURATION =================
+  // Update API URL sesuai dengan Deployment terbaru Anda
   const API_URL = "https://script.google.com/macros/s/AKfycbybu4aO4-uCNQ2dRw-ivkMjum5Iq_WceNzxsr0UcjLuUEth7Og-DNyiSCxwHc7pe0fOQA/exec"; 
   // =================================================
 
@@ -289,8 +307,6 @@
     renderModalContent(newId);
   }
 
-// GANTI FULL FUNCTION INI:
-
   function renderModalContent(id) {
     const inv = allInvoices.find(i => i.invoiceNumber == id);
     if (!inv) return;
@@ -320,17 +336,15 @@
     statusEl.className = `status-badge ${inv.status === 'Approved' ? 'bg-approved' : (inv.status === 'Canceled' ? 'bg-canceled' : 'bg-pending')}`;
     statusEl.textContent = inv.status || 'Pending';
 
-    // --- 3. TOMBOL AKSI (LOGIKA REVERT DITAMBAHKAN DISINI) ---
+    // --- 3. TOMBOL AKSI (DENGAN LOGIKA REVERT) ---
     const actionDiv = document.getElementById('modalActions');
-    actionDiv.innerHTML = ''; // Kosongkan tombol lama
-    actionDiv.style.display = 'flex'; // Reset display
+    actionDiv.innerHTML = ''; 
+    actionDiv.style.display = 'flex'; 
 
     if (inv.status === 'Approved') {
-       // Jika Approved, sembunyikan tombol (Lock)
        actionDiv.style.display = 'none'; 
     } 
     else if (inv.status === 'Canceled') {
-       // Jika Canceled, Munculkan tombol Revert
        actionDiv.innerHTML = `
          <button class="btn" style="background-color:#6c757d; color:white; width:100%;" onclick="handleActionFromModal('Pending')">
            Revert to Pending (Undo Reject)
@@ -338,14 +352,13 @@
        `;
     } 
     else {
-       // Jika Pending, Munculkan tombol Approve & Cancel Biasa
        actionDiv.innerHTML = `
          <button class="btn btn-cancel" onclick="handleActionFromModal('Canceled')">Reject / Cancel</button>
          <button class="btn btn-approve" id="btnApproveModal" onclick="handleApproveFromModal()">Approve Invoice</button>
        `;
     }
 
-    // --- 4. TABEL ---
+    // --- 4. TABEL (LOGIKA TIPE DIPERBAIKI) ---
     const tbody = document.getElementById('modalTableBody');
     tbody.innerHTML = '';
     
@@ -357,6 +370,7 @@
       let typeCode = "-";
       const rawType = item.type ? item.type.toString().toUpperCase() : "";
       
+      // PRIORITAS: Cek NON/NP dulu
       if (rawType.includes("NON") || rawType.includes("NP")) {
         typeCode = "NP";
       } else if (rawType.includes("SPANDEK") || rawType.includes("SP")) {
@@ -412,12 +426,11 @@
 
     setModalLoading(true);
 
-    // REVISI PAYLOAD: Tambahkan 'catatan'
     const payload = {
       invoiceNumber: inv.invoiceNumber,
       customerName: inv.customer,
       date: inv.date,
-      catatan: inv.catatan, // <--- PENTING: Kirim catatan ke backend
+      catatan: inv.catatan, // Kirim Notes ke Backend
       items: inv.items
     };
 
@@ -438,8 +451,9 @@
       }
     });
   }
+
   function handleActionFromModal(newStatus) {
-    if(!confirm("Are you sure you want to " + newStatus + " this invoice?")) return;
+    if(!confirm("Are you sure you want to change status to " + newStatus + "?")) return;
     setModalLoading(true);
     
     const formData = new URLSearchParams();
@@ -459,29 +473,20 @@
     });
   }
 
-// GANTI FUNCTION INI:
+  // LOGIKA LOADING TOMBOL YANG AMAN UNTUK REVERT
   function setModalLoading(isLoading) {
-    // 1. Ambil container tempat tombol berada
     const actionDiv = document.getElementById('modalActions');
-    
-    // 2. Ambil semua tombol yang ada di dalamnya
     const buttons = actionDiv.querySelectorAll('button');
 
     buttons.forEach(btn => {
-      // Matikan/Hidupkan tombol
       btn.disabled = isLoading;
-      
       if (isLoading) {
-        // Simpan teks asli tombol ke dalam memori sementara (dataset)
-        // supaya saat selesai loading, teksnya kembali benar (tidak berubah jadi "Approve Invoice" semua)
         if (!btn.dataset.originalText) {
            btn.dataset.originalText = btn.innerText; 
         }
-        
         btn.innerText = "Processing...";
         btn.classList.add('btn-disabled');
       } else {
-        // Kembalikan teks asli tombol
         if (btn.dataset.originalText) {
            btn.innerText = btn.dataset.originalText;
         }
