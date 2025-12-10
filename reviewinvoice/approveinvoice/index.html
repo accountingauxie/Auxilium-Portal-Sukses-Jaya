@@ -264,12 +264,12 @@
 
 <script>
   // ================= CONFIGURATION =================
-  const API_URL = "https://script.google.com/macros/s/AKfycbwhJilUKa_qc68JKpgn6xezdgKXiS72wwq_DF1xyc5KOgW_5wfs06ZTc-PeWdtaX92W5g/exec"; 
+  const API_URL = "https://script.google.com/macros/s/AKfycbyEKhoBzbE7vsWKAXskdiYaaE6NYqrrt5nvefD8hLBn2hMa9UZ2W3MxrO89zutXYF5lqg/exec"; 
   // =================================================
 
   let allInvoices = [];
-  let currentFilter = 'All'; // 'All', 'Pending', 'Approved', 'Canceled'
-  let currentApprovedSubFilter = 'All'; // 'All', 'WE', 'Xero'
+  let currentFilter = 'All'; 
+  let currentApprovedSubFilter = 'All'; 
   let currentOpenInvoiceId = null; 
 
   window.onload = fetchInvoices;
@@ -295,11 +295,9 @@
   function setFilter(status) {
     currentFilter = status;
     
-    // Update Active UI
     document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
     document.getElementById(`btn-${status}`).classList.add('active');
 
-    // Jika pindah tab, reset subfilter approved
     if(status !== 'Approved') {
         currentApprovedSubFilter = 'All';
     }
@@ -309,15 +307,13 @@
   // Handle Approved Dropdown Selection
   function setApprovedFilter(subType) {
       currentFilter = 'Approved';
-      currentApprovedSubFilter = subType; // 'All', 'WE', 'Xero'
+      currentApprovedSubFilter = subType; 
       
-      // Update UI Tabs manually
       document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
       document.getElementById('btn-Approved').classList.add('active');
       
-      // Update Dropdown Items UI
       document.querySelectorAll('.dropdown-item').forEach(item => item.classList.remove('active-sub'));
-      event.target.classList.add('active-sub'); // Highlight selected dropdown
+      event.target.classList.add('active-sub'); 
 
       renderInvoices();
   }
@@ -339,14 +335,12 @@
       if (currentFilter === 'All') {
           matchStatus = true;
       } else if (currentFilter === 'Approved') {
-          // Logic Khusus Dropdown
           if (invStatus === 'Approved') {
              if (currentApprovedSubFilter === 'All') matchStatus = true;
              else if (currentApprovedSubFilter === 'WE' && inv.progressStatus && inv.progressStatus.includes('WE')) matchStatus = true;
              else if (currentApprovedSubFilter === 'Xero' && inv.progressStatus && inv.progressStatus.includes('Xero')) matchStatus = true;
           }
       } else {
-          // Pending or Canceled
           matchStatus = invStatus === currentFilter;
       }
 
@@ -392,9 +386,10 @@
     filtered.forEach(inv => {
       const status = inv.status || 'Pending';
       const borderClass = status === 'Approved' ? 'border-approved' : (status === 'Canceled' ? 'border-canceled' : 'border-pending');
-      const grandTotal = inv.items.reduce((s, i) => s + (i.total || 0), 0) * 1.12; 
+      
+      // [REVISI] Ambil Grand Total langsung dari Sheet (Kolom O)
+      const grandTotal = inv.grandTotal || 0;
 
-      // --- PERUBAHAN DI SINI: MENAMBAHKAN ICON COMMENT ---
       let noteHtml = '';
       if (status === 'Canceled' && inv.noteCanceled) {
         noteHtml = `
@@ -404,9 +399,7 @@
             </div>
         `;
       }
-      // ----------------------------------------------------
 
-      // Logic Badge Progress
       let progressBadgeHtml = '';
       if (inv.progressStatus) {
         const badges = inv.progressStatus.split(', ');
@@ -529,10 +522,8 @@
     // Render Table Items
     const tbody = document.getElementById('modalTableBody');
     tbody.innerHTML = '';
-    let subTotal = 0;
-
+    
     inv.items.forEach(item => {
-      subTotal += (item.total || 0);
       let typeCode = "-";
       const rawType = (item.type || "").toString().toUpperCase();
       const prodName = (item.product || "").toUpperCase();
@@ -554,9 +545,10 @@
       tbody.appendChild(tr);
     });
 
-    const dpp = subTotal;
-    const ppn = subTotal * 0.12; 
-    const grandTotal = dpp + ppn;
+    // [REVISI] Menggunakan data dari sheet, tidak hitung ulang
+    const dpp = inv.dpp || 0;
+    const ppn = inv.ppn || 0;
+    const grandTotal = inv.grandTotal || 0;
 
     document.getElementById('valDPP').textContent = formatMoney(dpp);
     document.getElementById('valPPN').textContent = formatMoney(ppn);
@@ -576,10 +568,15 @@
     const inv = allInvoices.find(i => i.invoiceNumber == currentOpenInvoiceId);
     if (!inv) return;
     setModalLoading(true);
+    
+    // Kirim data lengkap ke backend
     const payload = {
       invoiceNumber: inv.invoiceNumber, customerName: inv.customer, date: inv.date,
-      catatan: inv.catatan, keySalesOrder: inv.keySalesOrder, items: inv.items
+      catatan: inv.catatan, keySalesOrder: inv.keySalesOrder, items: inv.items,
+      // [REVISI] Kirim Total Juga biar Backend tidak perlu hitung ulang saat Export
+      dpp: inv.dpp, ppn: inv.ppn, grandTotal: inv.grandTotal
     };
+    
     fetch(API_URL + "?action=approveInvoice", { method: "POST", body: JSON.stringify(payload) })
     .then(res => res.json()).then(data => {
       setModalLoading(false);
