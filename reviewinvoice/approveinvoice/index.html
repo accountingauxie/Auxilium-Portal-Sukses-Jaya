@@ -1,3 +1,269 @@
+Tentu, ini bisa dilakukan. Logikanya adalah:
+
+1.  **Backend (Get):** Script membaca kolom "Key Sales Order" dari Spreadsheet Awal.
+2.  **Frontend (Web):** Data Key disimpan di memori browser (variabel `allInvoices`), tapi **tidak ditampilkan** di HTML (tabel/modal).
+3.  **Frontend (Send):** Saat tombol Approve diklik, data Key yang tersembunyi tadi ikut dikirim balik ke Backend.
+4.  **Backend (Save):** Script menerima data Key dan menuliskannya ke Kolom Q (setelah Catatan) di Spreadsheet Tujuan.
+
+Berikut adalah **Full Source Code** yang sudah direvisi.
+
+-----
+
+### 1\. Backend (`Code.gs`)
+
+**Perubahan:**
+
+  * `getInvoices_`: Menambahkan logika pencarian kolom "Key Sales Order".
+  * `saveToDestinationSheets_`: Menambahkan `keySalesOrder` ke dalam array yang ditulis ke Spreadsheet 2 (posisi setelah Catatan).
+
+<!-- end list -->
+
+```javascript
+/************************************************************
+ * 1. CONFIGURATION
+ ************************************************************/
+const ORDER_SPREADSHEET = SpreadsheetApp.getActive();
+const ORDER_SHEET_NAME  = "OrderResult";  // Sheet sumber
+
+// ID Spreadsheet ke-2 (Tujuan)
+const DEST_SPREADSHEET_ID = "1VAzrgusC_jdLAB4IZe3qdaqAGXNIx4lm9GfdANxOx98"; 
+
+const SHEET_APPROVED_NAME = "Sales Order Approved"; 
+const SHEET_XERO_NAME     = "Import to Xero";     
+
+/************************************************************
+ * 2. HELPER: JSON RESPONSE
+ ************************************************************/
+function jsonResponse(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+/************************************************************
+ * 3. WEB APP ENTRY POINTS
+ ************************************************************/
+function doGet(e) {
+  const action = e.parameter.action;
+
+  if (action === "listInvoices") {
+    try {
+      const data = getInvoices_();
+      return jsonResponse({ ok: true, data: data });
+    } catch (err) {
+      return jsonResponse({ ok: false, error: err.message });
+    }
+  }
+  return HtmlService.createHtmlOutput("Backend System is Running.");
+}
+
+function doPost(e) {
+  const action = e.parameter.action;
+
+  try {
+    if (action === "approveInvoice") {
+      const invoiceData = JSON.parse(e.postData.contents);
+      // Saat Approve, status Approved, tanpa note cancel
+      updateInvoiceStatus_(invoiceData.invoiceNumber, "Approved", ""); 
+      saveToDestinationSheets_(invoiceData);
+      return jsonResponse({ ok: true, message: "Invoice Approved & Data Exported." });
+    }
+
+    if (action === "updateStatus") {
+      const note = e.parameter.note || ""; 
+      updateInvoiceStatus_(e.parameter.invoiceNumber, e.parameter.status, note);
+      return jsonResponse({ ok: true });
+    }
+
+    return jsonResponse({ ok: false, error: "Unknown action: " + action });
+
+  } catch (err) {
+    return jsonResponse({ ok: false, error: err.message });
+  }
+}
+
+/************************************************************
+ * 4. CORE FUNCTIONS
+ ************************************************************/
+
+function getInvoices_() {
+  const sh = ORDER_SPREADSHEET.getSheetByName(ORDER_SHEET_NAME);
+  if (!sh) throw new Error(`Sheet "${ORDER_SHEET_NAME}" tidak ditemukan.`);
+  
+  const values = sh.getDataRange().getValues();
+  const headers = values[0];
+
+  const findCol = (keywords) => headers.findIndex(h => 
+    keywords.some(k => h.toString().toLowerCase() === k.toLowerCase()) || 
+    keywords.some(k => h.toString().toLowerCase().includes(k.toLowerCase()))
+  );
+
+  const idx = {
+    orderNumber: findCol(["Order Number", "Invoice Number", "No Inv"]),
+    customer: findCol(["Customer", "Pelanggan"]),
+    date: findCol(["Date", "Tanggal", "Tgl"]),
+    type: findCol(["Type", "Tipe", "Jenis"]),
+    product: findCol(["Product", "Produk", "Description"]),
+    meter: findCol(["Meter", "Length", "Panjang"]),
+    qty: findCol(["Qty", "Quantity", "Jumlah"]),
+    unitPrice: findCol(["Unit Price", "Harga"]),
+    discount: findCol(["Discount", "Disc"]),
+    total: findCol(["Total", "Amount"]),
+    catatan: findCol(["Catatan", "Notes", "Keterangan"]), 
+    status: findCol(["Status"]),
+    noteCanceled: findCol(["Note - Canceled", "Alasan Cancel"]),
+    // [BARU] Ambil Kolom Key Sales Order
+    keySales: findCol(["Key Sales Order", "Key Sales", "SO Key", "Key"])
+  };
+
+  if (idx.orderNumber === -1) throw new Error("Kolom Order Number tidak ditemukan.");
+
+  const map = {};
+
+  for (let r = 1; r < values.length; r++) {
+    const row = values[r];
+    const inv = row[idx.orderNumber];
+    if (!inv) continue;
+
+    if (!map[inv]) {
+      map[inv] = {
+        invoiceNumber: inv,
+        customer: (idx.customer > -1) ? row[idx.customer] : "No Name",
+        date: (idx.date > -1) ? row[idx.date] : null,
+        catatan: (idx.catatan > -1) ? row[idx.catatan] : "",
+        status: (idx.status > -1) ? row[idx.status] : "",
+        noteCanceled: (idx.noteCanceled > -1) ? row[idx.noteCanceled] : "",
+        // [BARU] Simpan Key ke object invoice (Hidden dari UI nanti)
+        keySalesOrder: (idx.keySales > -1) ? row[idx.keySales] : "", 
+        items: []
+      };
+    }
+
+    const parseNum = (v) => {
+       if (typeof v === 'number') return v;
+       if (!v) return 0;
+       return parseFloat(String(v).replace(/Rp\s?/g, '').replace(/\./g, '').replace(/,/g, '.')) || 0;
+    };
+
+    map[inv].items.push({
+      type: (idx.type > -1) ? row[idx.type] : "",
+      product: (idx.product > -1) ? row[idx.product] : "",
+      meter: (idx.meter > -1) ? row[idx.meter] : 0,
+      qty: (idx.qty > -1) ? row[idx.qty] : 0,
+      unitPrice: (idx.unitPrice > -1) ? parseNum(row[idx.unitPrice]) : 0,
+      discount: (idx.discount > -1) ? parseNum(row[idx.discount]) : 0,
+      total: (idx.total > -1) ? parseNum(row[idx.total]) : 0
+    });
+  }
+
+  return Object.values(map);
+}
+
+function updateInvoiceStatus_(invoiceNumber, newStatus, newNote) {
+  const sh = ORDER_SPREADSHEET.getSheetByName(ORDER_SHEET_NAME);
+  const values = sh.getDataRange().getValues();
+  let headers = values[0]; 
+
+  let statusCol = headers.findIndex(h => h.toString().toLowerCase() === "status");
+  if (statusCol === -1) {
+    statusCol = headers.length;
+    sh.getRange(1, statusCol + 1).setValue("Status");
+    headers[statusCol] = "Status"; 
+  }
+
+  let noteCancelCol = headers.findIndex(h => h.toString().toLowerCase() === "note - canceled");
+  if (noteCancelCol === -1) {
+    noteCancelCol = headers.length; 
+    sh.getRange(1, noteCancelCol + 1).setValue("Note - Canceled");
+  }
+
+  const orderCol = headers.findIndex(h => ["order number", "invoice number", "no inv"].some(k => h.toString().toLowerCase().includes(k)));
+
+  for (let r = 1; r < values.length; r++) {
+    if (String(values[r][orderCol]).trim() === String(invoiceNumber).trim()) {
+      sh.getRange(r + 1, statusCol + 1).setValue(newStatus);
+      
+      if (newStatus === "Canceled" && newNote) {
+         sh.getRange(r + 1, noteCancelCol + 1).setValue(newNote);
+      } else if (newStatus === "Pending" || newStatus === "Approved") {
+         sh.getRange(r + 1, noteCancelCol + 1).setValue(""); 
+      }
+    }
+  }
+}
+
+function saveToDestinationSheets_(data) {
+  const ssDest = SpreadsheetApp.openById(DEST_SPREADSHEET_ID);
+  
+  // --- A. SHEET "Sales Order Approved" ---
+  const sheetApproved = ssDest.getSheetByName(SHEET_APPROVED_NAME);
+  if (!sheetApproved) throw new Error(`Sheet "${SHEET_APPROVED_NAME}" tidak ditemukan.`);
+
+  let globalDPP = 0;
+  data.items.forEach(item => { globalDPP += Number(item.total) || 0; });
+
+  const globalPPN = globalDPP * 0.12;
+  const globalGrandTotal = globalDPP + globalPPN;
+  const cleanCatatan = data.catatan || ""; 
+  const keySO = data.keySalesOrder || ""; // [BARU] Ambil Key dari data yang dikirim frontend
+
+  const approvedRows = [];
+  data.items.forEach(item => {
+    approvedRows.push([
+      new Date(),          // Col A
+      data.invoiceNumber,  // Col B
+      data.customerName,   // Col C
+      data.date,           // Col D
+      item.type,           // Col E
+      item.product,        // Col F
+      item.meter,          // Col G
+      item.qty,            // Col H
+      item.unitPrice,      // Col I
+      item.discount,       // Col J
+      item.priceQty || (item.total / item.qty), // Col K
+      item.total,          // Col L
+      globalDPP,           // Col M
+      globalPPN,           // Col N
+      globalGrandTotal,    // Col O
+      cleanCatatan,        // Col P (Catatan)
+      keySO                // Col Q (KEY SALES ORDER) - MASUK SINI
+    ]);
+  });
+
+  if (approvedRows.length > 0) {
+    sheetApproved.getRange(sheetApproved.getLastRow() + 1, 1, approvedRows.length, approvedRows[0].length)
+      .setValues(approvedRows);
+  }
+
+  // --- B. SHEET "Import to Xero" ---
+  const sheetXero = ssDest.getSheetByName(SHEET_XERO_NAME);
+  if (sheetXero) { 
+    const xeroRows = [];
+    data.items.forEach(item => {
+      xeroRows.push([
+        data.customerName, data.invoiceNumber, data.date, data.date, 
+        item.product, item.qty, item.total, "200", "Tax Exclusive"
+      ]);
+    });
+    if (xeroRows.length > 0) {
+      sheetXero.getRange(sheetXero.getLastRow() + 1, 1, xeroRows.length, xeroRows[0].length).setValues(xeroRows);
+    }
+  }
+}
+```
+
+-----
+
+### 2\. Frontend (`index.html`)
+
+**Perubahan:**
+
+  * Saya tidak menambahkan tampilan visual baru untuk Key.
+  * Pada fungsi `handleApproveFromModal`, saya menambahkan `keySalesOrder: inv.keySalesOrder` ke dalam paket data (`payload`) yang dikirim ke backend agar bisa disimpan.
+
+<!-- end list -->
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,9 +293,8 @@
     .filter-btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; background: #f0f0f0; color: #555; font-weight: 600; transition: 0.2s; }
     .filter-btn.active, .filter-btn:hover { background-color: #007bff; color: white; }
 
-    /* NEW STYLES FOR DATE & SORT INPUTS */
+    /* DATE & SORT INPUTS */
     .control-input { padding: 9px; border: 1px solid #ddd; border-radius: 6px; outline: none; color: #555; font-family: inherit; }
-    .control-label { font-size: 0.85em; font-weight: bold; color: #777; margin-right: 5px; }
     .filter-group { display: flex; align-items: center; gap: 5px; }
 
     /* --- INVOICE LIST CARD --- */
@@ -44,7 +309,6 @@
     .status-wrapper { text-align: right; display: flex; flex-direction: column; align-items: flex-end; }
     .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 0.8em; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; }
     
-    /* NEW: Cancellation Note Style */
     .cancel-note { font-size: 0.85em; color: #dc3545; margin-top: 5px; display: flex; align-items: center; gap: 5px; background: #fff5f5; padding: 4px 8px; border-radius: 4px; border: 1px solid #f5c6cb; max-width: 250px; }
     
     .border-pending { border-left-color: #ffc107; }
@@ -187,7 +451,7 @@
 
 <script>
   // ================= CONFIGURATION =================
-  // Update API URL ke yang terbaru setelah Update Code.gs
+  // Jangan lupa update URL Web App setelah Deploy New Version
   const API_URL = "https://script.google.com/macros/s/AKfycbzRE0QUtrfOUlWGqtDdJ-FdVM_4VlH113qAJGlG2-qmPOQRJTpaO3rRSR9ZtUHSimpgxA/exec"; 
   // =================================================
 
@@ -220,7 +484,6 @@
     renderInvoices();
   }
 
-  // --- UPDATED RENDER FUNCTION WITH SORT & DATE FILTER ---
   function renderInvoices() {
     const container = document.getElementById('invoiceList');
     container.innerHTML = '';
@@ -240,14 +503,9 @@
       // Date Range Filter
       let matchDate = true;
       if (inv.date) {
-        // Convert inv.date to Date Object (Assuming format allows it)
         const invDate = new Date(inv.date);
-        
-        // Check if date is valid
         if (!isNaN(invDate.getTime())) {
-          // Reset hours for accurate date comparison
           invDate.setHours(0,0,0,0);
-
           if (startDateVal) {
              const sDate = new Date(startDateVal);
              sDate.setHours(0,0,0,0);
@@ -260,21 +518,14 @@
           }
         }
       }
-      
       return matchStatus && matchSearch && matchDate;
     });
 
     // 2. SORTING
     filtered.sort((a, b) => {
-        // Hapus karakter non-digit agar bisa sorting angka murni (jika ada prefix string)
         const numA = parseInt(String(a.invoiceNumber).replace(/\D/g, '')) || 0;
         const numB = parseInt(String(b.invoiceNumber).replace(/\D/g, '')) || 0;
-        
-        if (sortVal === 'asc') {
-            return numA - numB;
-        } else {
-            return numB - numA;
-        }
+        return (sortVal === 'asc') ? (numA - numB) : (numB - numA);
     });
 
     // 3. RENDERING
@@ -320,9 +571,6 @@
     currentOpenInvoiceId = invoiceId;
     const select = document.getElementById('invoiceSwitcher');
     select.innerHTML = '';
-    // Use renderInvoices logic (filtered list) or allInvoices for dropdown?
-    // Usually modal navigation should reflect current filter or all items. 
-    // Using allInvoices ensures user can jump to any invoice regardless of filter
     allInvoices.forEach(inv => {
       const option = document.createElement('option');
       option.value = inv.invoiceNumber;
@@ -395,7 +643,6 @@
       let typeCode = "-";
       const rawType = item.type ? item.type.toString().toUpperCase() : "";
       
-      // PRIORITAS: Cek NON/NP dulu
       if (rawType.includes("NON") || rawType.includes("NP")) {
         typeCode = "NP";
       } else if (rawType.includes("SPANDEK") || rawType.includes("SP")) {
@@ -452,7 +699,8 @@
       invoiceNumber: inv.invoiceNumber,
       customerName: inv.customer,
       date: inv.date,
-      catatan: inv.catatan, // Kirim Catatan Asli (Kolom P) ke Backend
+      catatan: inv.catatan, 
+      keySalesOrder: inv.keySalesOrder, // [NEW] Kirim Key Tersembunyi
       items: inv.items
     };
 
@@ -474,7 +722,6 @@
   function handleActionFromModal(newStatus) {
     let note = "";
 
-    // --- LOGIC WAJIB NOTE SAAT CANCEL ---
     if (newStatus === 'Canceled') {
        note = prompt("Mohon masukkan alasan Reject/Cancel (Wajib):");
        if (note === null) return; 
@@ -493,14 +740,13 @@
     formData.append('action', 'updateStatus');
     formData.append('invoiceNumber', currentOpenInvoiceId);
     formData.append('status', newStatus);
-    formData.append('note', note); // Kirim note baru ke backend
+    formData.append('note', note); 
 
     fetch(API_URL, { method: "POST", body: formData })
     .then(res => res.json())
     .then(data => {
       setModalLoading(false);
       if(data.ok) {
-        // Update local data
         updateLocalStatus(currentOpenInvoiceId, newStatus, note);
         renderModalContent(currentOpenInvoiceId);
         renderInvoices();
@@ -539,3 +785,4 @@
 
 </body>
 </html>
+```
