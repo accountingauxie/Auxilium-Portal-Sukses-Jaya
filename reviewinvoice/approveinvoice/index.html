@@ -20,10 +20,17 @@
     h1 { color: #1a1a1a; margin-bottom: 20px; margin-top: 10px; }
 
     /* --- CONTROLS --- */
-    .controls { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-    .search-bar { padding: 10px; border: 1px solid #ddd; border-radius: 6px; flex-grow: 1; outline: none; }
+    .controls { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); align-items: center; }
+    
+    .search-bar { padding: 10px; border: 1px solid #ddd; border-radius: 6px; flex-grow: 1; outline: none; min-width: 200px; }
+    
     .filter-btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; background: #f0f0f0; color: #555; font-weight: 600; transition: 0.2s; }
     .filter-btn.active, .filter-btn:hover { background-color: #007bff; color: white; }
+
+    /* NEW STYLES FOR DATE & SORT INPUTS */
+    .control-input { padding: 9px; border: 1px solid #ddd; border-radius: 6px; outline: none; color: #555; font-family: inherit; }
+    .control-label { font-size: 0.85em; font-weight: bold; color: #777; margin-right: 5px; }
+    .filter-group { display: flex; align-items: center; gap: 5px; }
 
     /* --- INVOICE LIST CARD --- */
     .invoice-card { background: white; padding: 20px; margin-bottom: 15px; border-radius: 10px; border-left: 5px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: transform 0.2s; }
@@ -112,6 +119,18 @@
       <button class="filter-btn" onclick="setFilter('Pending')">Pending</button>
       <button class="filter-btn" onclick="setFilter('Approved')">Approved</button>
       <button class="filter-btn" onclick="setFilter('Canceled')">Canceled</button>
+      
+      <div class="filter-group">
+        <input type="date" id="filterStartDate" class="control-input" onchange="renderInvoices()" title="Start Date">
+        <span style="color:#aaa">-</span>
+        <input type="date" id="filterEndDate" class="control-input" onchange="renderInvoices()" title="End Date">
+      </div>
+
+      <select id="sortOrder" class="control-input" onchange="renderInvoices()" title="Sort By">
+        <option value="desc">Order No (Desc)</option>
+        <option value="asc">Order No (Asc)</option>
+      </select>
+
       <input type="text" id="searchInput" class="search-bar" placeholder="Search Customer, Invoice..." onkeyup="renderInvoices()">
     </div>
     <div id="invoiceList"></div>
@@ -201,17 +220,64 @@
     renderInvoices();
   }
 
+  // --- UPDATED RENDER FUNCTION WITH SORT & DATE FILTER ---
   function renderInvoices() {
     const container = document.getElementById('invoiceList');
     container.innerHTML = '';
+    
+    // Get Filter Values
     const searchVal = document.getElementById('searchInput').value.toLowerCase();
+    const startDateVal = document.getElementById('filterStartDate').value;
+    const endDateVal = document.getElementById('filterEndDate').value;
+    const sortVal = document.getElementById('sortOrder').value;
 
+    // 1. FILTERING
     const filtered = allInvoices.filter(inv => {
+      // Status & Search Filter
       const matchStatus = currentFilter === 'All' || (inv.status || 'Pending') === currentFilter;
       const matchSearch = inv.customer.toLowerCase().includes(searchVal) || inv.invoiceNumber.toString().toLowerCase().includes(searchVal);
-      return matchStatus && matchSearch;
+      
+      // Date Range Filter
+      let matchDate = true;
+      if (inv.date) {
+        // Convert inv.date to Date Object (Assuming format allows it)
+        const invDate = new Date(inv.date);
+        
+        // Check if date is valid
+        if (!isNaN(invDate.getTime())) {
+          // Reset hours for accurate date comparison
+          invDate.setHours(0,0,0,0);
+
+          if (startDateVal) {
+             const sDate = new Date(startDateVal);
+             sDate.setHours(0,0,0,0);
+             if (invDate < sDate) matchDate = false;
+          }
+          if (endDateVal && matchDate) {
+             const eDate = new Date(endDateVal);
+             eDate.setHours(0,0,0,0);
+             if (invDate > eDate) matchDate = false;
+          }
+        }
+      }
+      
+      return matchStatus && matchSearch && matchDate;
     });
 
+    // 2. SORTING
+    filtered.sort((a, b) => {
+        // Hapus karakter non-digit agar bisa sorting angka murni (jika ada prefix string)
+        const numA = parseInt(String(a.invoiceNumber).replace(/\D/g, '')) || 0;
+        const numB = parseInt(String(b.invoiceNumber).replace(/\D/g, '')) || 0;
+        
+        if (sortVal === 'asc') {
+            return numA - numB;
+        } else {
+            return numB - numA;
+        }
+    });
+
+    // 3. RENDERING
     if (filtered.length === 0) { container.innerHTML = '<p style="text-align:center; color:#888;">No data found.</p>'; return; }
 
     filtered.forEach(inv => {
@@ -254,6 +320,9 @@
     currentOpenInvoiceId = invoiceId;
     const select = document.getElementById('invoiceSwitcher');
     select.innerHTML = '';
+    // Use renderInvoices logic (filtered list) or allInvoices for dropdown?
+    // Usually modal navigation should reflect current filter or all items. 
+    // Using allInvoices ensures user can jump to any invoice regardless of filter
     allInvoices.forEach(inv => {
       const option = document.createElement('option');
       option.value = inv.invoiceNumber;
