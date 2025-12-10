@@ -1,342 +1,169 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Review Invoice</title>
-
   <style>
-    :root {
-      --ux-blue: #0077e4;
-      --ux-blue-soft: #ecf4ff;
-      --ux-border: #d3d7e3;
-      --ux-border-soft: #e5e9f2;
-      --ux-bg: #f5f7fa;
-      --ux-text-main: #1f2933;
-      --ux-text-sub: #55627a;
-      --ux-danger: #d33;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
     body {
+      font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background: var(--ux-bg);
-      font-family: "Segoe UI", Roboto, sans-serif;
-      font-size: 13px;
-      color: #333;
+      background-color: #f4f4f4;
     }
 
-    /* Navbar */
-    .topnav {
-      width: 100%;
-      background: white;
-      padding: 14px 40px;
+    .container {
       display: flex;
+      flex-wrap: wrap;
+      padding: 20px;
       justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #ececec;
-      position: sticky;
-      top: 0;
-      z-index: 100;
     }
 
-    .nav-left .nav-brand {
-      font-size: 19px;
-      font-weight: 700;
-      color: #1e1e1e;
-      letter-spacing: 0.3px;
-    }
-
-    .nav-left .nav-sub {
-      font-size: 12px;
-      color: #9aa1ac;
-      margin-top: -2px;
-    }
-
-    .nav-right {
-      display: flex;
-      align-items: center;
-      gap: 26px;
-    }
-
-    .nav-link {
-      font-size: 14.5px;
-      color: #9aa1ac;
-      cursor: pointer;
-      text-decoration: none;
-      font-weight: 500;
-      transition: 0.2s ease;
-    }
-
-    .nav-link:hover {
-      color: #1e1e1e;
-      font-weight: 600;
-    }
-
-    /* Main page content */
-    .page {
-      max-width: 1180px;
-      margin: 32px auto;
-      padding: 0 20px 40px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 28px 32px 30px;
-      box-shadow:
-        0 0 0 1px rgba(15, 23, 42, 0.03),
-        0 18px 40px rgba(15, 23, 42, 0.08);
-    }
-
-    .card-title {
-      font-size: 21px;
-      font-weight: 600;
-      margin-bottom: 20px;
-      color: var(--ux-text-main);
-    }
-
-    /* Table Styling */
-    .table-wrapper {
-      width: 100%;
-      overflow-x: auto;
+    .invoice-card {
+      background-color: #fff;
       border-radius: 8px;
-      border: 1px solid var(--ux-border-soft);
-      background: #fff;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-      table-layout: auto;
-    }
-
-    thead {
-      background: #eef2f7;
-    }
-
-    th {
-      padding: 8px 8px;
-      font-size: 12px;
-      font-weight: 600;
-      color: #465166;
-      text-align: left;
-      white-space: nowrap;
-      border-bottom: 1px solid var(--ux-border-soft);
-    }
-
-    td {
-      padding: 6px 7px;
-      border-bottom: 1px solid #f1f3f6;
-      vertical-align: middle;
-      font-size: 12.5px;
-    }
-
-    tbody tr:nth-child(even) {
-      background: #fafbff;
-    }
-
-    tbody tr:hover {
-      background: #f2f6ff;
-    }
-
-    /* Approve / Cancel Buttons */
-    .actions-row {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .approve-btn, .cancel-btn {
-      padding: 8px 16px;
-      font-size: 14px;
-      border-radius: 6px;
-      border: none;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin: 10px;
+      width: 280px;
+      text-align: center;
       cursor: pointer;
+      transition: all 0.3s ease;
     }
 
-    .approve-btn {
-      background-color: #4CAF50; /* Green for Approve */
+    .invoice-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .invoice-card h3 {
+      font-size: 18px;
+      margin: 10px 0;
+    }
+
+    .invoice-card p {
+      margin: 5px 0;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .invoice-card .total {
+      font-weight: bold;
+      font-size: 16px;
+      color: #4CAF50;
+    }
+
+    .invoice-detail {
+      display: none;
+      background-color: #fff;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .invoice-detail h3 {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    .invoice-detail .details {
+      margin-bottom: 10px;
+    }
+
+    .invoice-detail button {
+      background-color: #4CAF50;
       color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
     }
 
-    .approve-btn:hover {
+    .invoice-detail button:hover {
       background-color: #45a049;
     }
-
-    .cancel-btn {
-      background-color: #f44336; /* Red for Cancel */
-      color: white;
-    }
-
-    .cancel-btn:hover {
-      background-color: #e53935;
-    }
-
-    /* Loading spinner */
-    #loadingOverlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(255,255,255,.7);
-      backdrop-filter: blur(2px);
-      z-index: 9999;
-      display: none;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .loading-spinner {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 4px solid #d0d7e2;
-      border-top-color: #1a73e8;
-      animation: spin .85s linear infinite;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
-
 <body>
-
-<!-- TOP NAVBAR -->
-<div class="topnav">
-  <div class="nav-left">
-    <span class="nav-brand">UXILIUM</span>
-    <span class="nav-sub">Accounting Management Service</span>
+  <div class="container" id="invoice-container">
+    <!-- Invoice cards will be dynamically inserted here -->
   </div>
 
-  <div class="nav-right">
-    <a href="../index.html" class="nav-link">Home</a>
-    <div class="nav-dropdown">
-      <button class="nav-link dropdown-btn">Modules ▾</button>
-      <div class="dropdown-content">
-        <a href="../receiving/">Receiving PO Entry</a>
-        <a href="../production/">Production Entry</a>
-        <span class="disabled-link">Order Form</span>
-      </div>
+  <div id="invoice-detail" class="invoice-detail">
+    <h3>Invoice Details</h3>
+    <div id="invoice-details-content">
+      <!-- Detailed invoice information will be displayed here -->
     </div>
-    <a class="nav-link disabled-link">Settings</a>
+    <button onclick="window.location.reload();">Back to Invoice List</button>
+    <button id="approveBtn" onclick="approveInvoice()" style="background-color: #4CAF50;">Approve</button>
+    <button id="cancelBtn" onclick="cancelInvoice()" style="background-color: #f44336;">Cancel</button>
   </div>
-</div>
 
-<!-- REVIEW INVOICE PAGE -->
-<div class="page">
-  <div class="card">
-    <div class="card-title">Review Invoice</div>
+  <script>
+    // Mendapatkan data invoice dari Google Apps Script
+    function getInvoicesData() {
+      google.script.run.withSuccessHandler(renderInvoiceCards).getInvoices();
+    }
 
-    <!-- Invoice Table -->
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>Invoice Number</th>
-            <th>Customer</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Example of invoice row -->
-          <tr>
-            <td>INV-001</td>
-            <td>Tasya</td>
-            <td>2025-12-05</td>
-            <td>Pending</td>
-            <td>
-              <button class="approve-btn" onclick="approveInvoice('INV-001')">Approve</button>
-              <button class="cancel-btn" onclick="cancelInvoice('INV-001')">Cancel</button>
-            </td>
-          </tr>
-          <tr>
-            <td>INV-002</td>
-            <td>CV Sukses Jaya</td>
-            <td>2025-12-06</td>
-            <td>Pending</td>
-            <td>
-              <button class="approve-btn" onclick="approveInvoice('INV-002')">Approve</button>
-              <button class="cancel-btn" onclick="cancelInvoice('INV-002')">Cancel</button>
-            </td>
-          </tr>
-          <!-- More rows as needed -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
+    // Menampilkan invoice cards di halaman
+    function renderInvoiceCards(invoices) {
+      const container = document.getElementById('invoice-container');
+      container.innerHTML = '';
 
-<!-- Loading Overlay -->
-<div id="loadingOverlay"><div class="loading-spinner"></div></div>
+      invoices.forEach(invoice => {
+        const card = document.createElement('div');
+        card.className = 'invoice-card';
+        card.onclick = () => showInvoiceDetail(invoice);
 
-<script>
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycby1b0ogVzuLIuskNK-GZhNXnuUEu8AqeUE31mg06VSxpixQGOk4uD0wjV7ibK88s1UjRA/exec';
+        card.innerHTML = `
+          <h3>Invoice: ${invoice.orderNumber}</h3>
+          <p><strong>Customer:</strong> ${invoice.customer}</p>
+          <p><strong>Date:</strong> ${invoice.timestamp}</p>
+          <p class="total">Total: ${invoice.grandTotal}</p>
+        `;
+        
+        container.appendChild(card);
+      });
+    }
 
-  function approveInvoice(invoiceId) {
-    showLoading();
+    // Menampilkan detail invoice ketika klik pada kartu
+    function showInvoiceDetail(invoice) {
+      const detailSection = document.getElementById('invoice-detail');
+      const content = document.getElementById('invoice-details-content');
+      content.innerHTML = `
+        <h4>Order Number: ${invoice.orderNumber}</h4>
+        <p><strong>Customer:</strong> ${invoice.customer}</p>
+        <p><strong>Date:</strong> ${invoice.timestamp}</p>
+        <p><strong>Total Invoice:</strong> ${invoice.grandTotal}</p>
+        <p><strong>Product:</strong> ${invoice.product}</p>
+        <p><strong>Meter:</strong> ${invoice.meter}</p>
+        <p><strong>Qty:</strong> ${invoice.qty}</p>
+        <p><strong>Unit Price:</strong> ${invoice.unitPrice}</p>
+        <p><strong>Discount:</strong> ${invoice.discount}</p>
+        <p><strong>Price per Qty:</strong> ${invoice.pricePerQty}</p>
+        <p><strong>Total:</strong> ${invoice.total}</p>
+      `;
+      detailSection.style.display = 'block';
+      document.body.scrollTop = document.documentElement.scrollTop = 0;
+    }
 
-    fetch(scriptUrl, {
-      method: 'POST',
-      body: new URLSearchParams({
-        'action': 'approve',
-        'invoiceId': invoiceId
-      }),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    })
-    .then(response => response.text())
-    .then(result => {
-      hideLoading();
-      alert(result); // Menampilkan status hasil approve
-    })
-    .catch(error => {
-      hideLoading();
-      alert('Error: ' + error);
-    });
-  }
+    // Fungsi untuk mengapprove invoice
+    function approveInvoice() {
+      const orderNumber = document.getElementById('invoice-details-content').children[0].innerText.split(': ')[1];
+      google.script.run.approveInvoice(orderNumber, 'Approved');
+      alert('Invoice Approved!');
+      window.location.reload();
+    }
 
-  function cancelInvoice(invoiceId) {
-    showLoading();
+    // Fungsi untuk membatalkan invoice
+    function cancelInvoice() {
+      const orderNumber = document.getElementById('invoice-details-content').children[0].innerText.split(': ')[1];
+      google.script.run.approveInvoice(orderNumber, 'Canceled');
+      alert('Invoice Canceled!');
+      window.location.reload();
+    }
 
-    fetch(scriptUrl, {
-      method: 'POST',
-      body: new URLSearchParams({
-        'action': 'cancel',
-        'invoiceId': invoiceId
-      }),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    })
-    .then(response => response.text())
-    .then(result => {
-      hideLoading();
-      alert(result); // Menampilkan status hasil cancel
-    })
-    .catch(error => {
-      hideLoading();
-      alert('Error: ' + error);
-    });
-  }
-
-  // Fungsi untuk menampilkan loading spinner
-  function showLoading() {
-    document.getElementById("loadingOverlay").style.display = "flex";
-  }
-
-  // Fungsi untuk menyembunyikan loading spinner
-  function hideLoading() {
-    document.getElementById("loadingOverlay").style.display = "none";
-  }
-</script>
-
+    // Menjalankan fungsi untuk mengambil data invoice
+    getInvoicesData();
+  </script>
 </body>
 </html>
