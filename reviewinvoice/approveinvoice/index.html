@@ -186,7 +186,7 @@
 <script>
   // ================= CONFIGURATION =================
   // Jangan lupa update URL Web App setelah Deploy New Version
-  const API_URL = "https://script.google.com/macros/s/AKfycbwpyBW0fg7xzWMmPl6BhiN5jHrNI1KcVagNgA4IOXVAPFm3mE32Trky0Ys-PfaC04M0vw/exec"; 
+  const API_URL = "https://script.google.com/macros/s/AKfycbwhJilUKa_qc68JKpgn6xezdgKXiS72wwq_DF1xyc5KOgW_5wfs06ZTc-PeWdtaX92W5g/exec"; 
   // =================================================
 
   let allInvoices = [];
@@ -218,36 +218,30 @@
     renderInvoices();
   }
 
-  function renderInvoices() {
+ function renderInvoices() {
     const container = document.getElementById('invoiceList');
     container.innerHTML = '';
     
-    // Get Filter Values
     const searchVal = document.getElementById('searchInput').value.toLowerCase();
     const startDateVal = document.getElementById('filterStartDate').value;
     const endDateVal = document.getElementById('filterEndDate').value;
     const sortVal = document.getElementById('sortOrder').value;
 
-    // 1. FILTERING
     const filtered = allInvoices.filter(inv => {
-      // Status & Search Filter
       const matchStatus = currentFilter === 'All' || (inv.status || 'Pending') === currentFilter;
       const matchSearch = inv.customer.toLowerCase().includes(searchVal) || inv.invoiceNumber.toString().toLowerCase().includes(searchVal);
       
-      // Date Range Filter
       let matchDate = true;
       if (inv.date) {
         const invDate = new Date(inv.date);
         if (!isNaN(invDate.getTime())) {
           invDate.setHours(0,0,0,0);
           if (startDateVal) {
-             const sDate = new Date(startDateVal);
-             sDate.setHours(0,0,0,0);
+             const sDate = new Date(startDateVal); sDate.setHours(0,0,0,0);
              if (invDate < sDate) matchDate = false;
           }
           if (endDateVal && matchDate) {
-             const eDate = new Date(endDateVal);
-             eDate.setHours(0,0,0,0);
+             const eDate = new Date(endDateVal); eDate.setHours(0,0,0,0);
              if (invDate > eDate) matchDate = false;
           }
         }
@@ -255,14 +249,12 @@
       return matchStatus && matchSearch && matchDate;
     });
 
-    // 2. SORTING
     filtered.sort((a, b) => {
         const numA = parseInt(String(a.invoiceNumber).replace(/\D/g, '')) || 0;
         const numB = parseInt(String(b.invoiceNumber).replace(/\D/g, '')) || 0;
         return (sortVal === 'asc') ? (numA - numB) : (numB - numA);
     });
 
-    // 3. RENDERING
     if (filtered.length === 0) { container.innerHTML = '<p style="text-align:center; color:#888;">No data found.</p>'; return; }
 
     filtered.forEach(inv => {
@@ -270,10 +262,23 @@
       const borderClass = status === 'Approved' ? 'border-approved' : (status === 'Canceled' ? 'border-canceled' : 'border-pending');
       const grandTotal = inv.items.reduce((s, i) => s + (i.total || 0), 0);
 
-      // --- LOGIC NOTE DISPLAY (GUNAKAN NOTE CANCELED) ---
       let noteHtml = '';
       if (status === 'Canceled' && inv.noteCanceled) {
         noteHtml = `<div class="cancel-note">💬 ${inv.noteCanceled}</div>`;
+      }
+
+      // [BARU] LOGIC PROGRESS BADGE
+      let progressBadgeHtml = '';
+      if (inv.progressStatus) {
+        // Jika ada status "WE Generated" atau "Xero Imported"
+        const badges = inv.progressStatus.split(', ');
+        badges.forEach(b => {
+           let colorStyle = "background-color: #e2e6ea; color: #495057;"; // Default Grey
+           if(b.includes("WE")) colorStyle = "background-color: #cce5ff; color: #004085;"; // Blueish for WE
+           if(b.includes("Xero")) colorStyle = "background-color: #d4edda; color: #155724;"; // Greenish for Xero
+           
+           progressBadgeHtml += `<span style="font-size:0.75em; padding:4px 8px; border-radius:12px; margin-left:5px; ${colorStyle}">${b}</span>`;
+        });
       }
 
       const card = document.createElement('div');
@@ -285,7 +290,10 @@
             <div class="card-sub">${inv.customer}</div>
           </div>
           <div class="status-wrapper">
-             <span class="status-badge ${status === 'Approved' ? 'bg-approved' : (status === 'Canceled' ? 'bg-canceled' : 'bg-pending')}">${status}</span>
+             <div>
+                <span class="status-badge ${status === 'Approved' ? 'bg-approved' : (status === 'Canceled' ? 'bg-canceled' : 'bg-pending')}">${status}</span>
+                ${progressBadgeHtml}
+             </div>
              ${noteHtml}
           </div>
         </div>
@@ -300,7 +308,6 @@
       container.appendChild(card);
     });
   }
-
   function openInvoiceModal(invoiceId) {
     currentOpenInvoiceId = invoiceId;
     const select = document.getElementById('invoiceSwitcher');
