@@ -5,23 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sales Order Work Flow</title>
 
-  <!-- Choices.js -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-
-  <!-- Sortable -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --ux-blue: #0077e4;
-      --ux-blue-soft: #ecf4ff;
-      --ux-border: #d3d7e3;
-      --ux-border-soft: #e5e9f2;
-      --ux-bg: #f5f7fa;
-      --ux-text-main: #1f2933;
-      --ux-text-sub: #55627a;
-      --ux-danger: #d33;
+      --primary-color: #0077e4;
+      --primary-hover: #005bb5;
+      --bg-color: #ffffff;
+      --card-bg: #ffffff;
+      --text-main: #111827;
+      --text-sub: #6b7280;
+      --border-color: #e5e7eb;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     }
 
     * {
@@ -31,141 +28,182 @@
     body {
       margin: 0;
       padding: 0;
-      background: var(--ux-bg);
-      font-family: "Segoe UI", Roboto, sans-serif;
-      font-size: 13px;
-      color: #333;
+      background-color: var(--bg-color);
+      font-family: 'Inter', sans-serif;
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* Navbar */
+    /* Navbar Modern Minimalis */
     .topnav {
       width: 100%;
-      background: white;
-      padding: 14px 40px;
+      background: #ffffff;
+      padding: 16px 40px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #ececec;
+      border-bottom: 1px solid var(--border-color);
       position: sticky;
       top: 0;
       z-index: 100;
     }
 
     .nav-left .nav-brand {
-      font-size: 19px;
-      font-weight: 700;
-      color: #1e1e1e;
-      letter-spacing: 0.3px;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary-color);
+      letter-spacing: -0.5px;
     }
 
     .nav-left .nav-sub {
-      font-size: 12px;
-      color: #9aa1ac;
-      margin-top: -2px;
+      font-size: 13px;
+      color: var(--text-sub);
+      font-weight: 500;
+      margin-left: 8px;
+      padding-left: 8px;
+      border-left: 2px solid var(--border-color);
     }
 
     .nav-right {
       display: flex;
       align-items: center;
-      gap: 26px;
+      gap: 32px;
     }
 
     .nav-link {
-      font-size: 14.5px;
-      color: #9aa1ac;
+      font-size: 14px;
+      color: var(--text-sub);
       cursor: pointer;
       text-decoration: none;
       font-weight: 500;
-      transition: 0.2s ease;
+      transition: all 0.2s ease;
     }
 
     .nav-link:hover {
-      color: #1e1e1e;
-      font-weight: 600;
+      color: var(--primary-color);
     }
 
-    /* Main page content */
-    .page {
-      max-width: 1180px;
-      margin: 32px auto;
-      padding: 0 20px 40px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 28px 32px 30px;
-      box-shadow:
-        0 0 0 1px rgba(15, 23, 42, 0.03),
-        0 18px 40px rgba(15, 23, 42, 0.08);
-    }
-
-    .card-title {
-      font-size: 21px;
-      font-weight: 600;
-      margin-bottom: 20px;
-      color: var(--ux-text-main);
-    }
-
-    /* Menu cards */
-    .menu-container {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: nowrap; /* Menghindari pembungkusan */
-      margin-bottom: 30px;
-      overflow-x: auto; /* Scroll horizontal jika terlalu panjang */
-    }
-
-    .menu-item {
-      background-color: #ffffff;
-      padding: 30px;
-      margin: 10px;
-      border-radius: 10px;
-      width: 250px;
+    /* Main Layout */
+    .page-container {
+      max-width: 1200px;
+      margin: 60px auto;
+      padding: 0 24px;
       text-align: center;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s, box-shadow 0.3s;
-      cursor: pointer;
     }
 
-    .menu-item:hover {
-      transform: scale(1.05);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    .header-section {
+      margin-bottom: 50px;
     }
 
-    .menu-item h3 {
-      font-size: 24px;
-      color: #0077e4; /* Auxie Blue */
+    .header-section h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 0 0 10px 0;
+      letter-spacing: -0.8px;
     }
 
-    .menu-item p {
+    .header-section p {
+      color: var(--text-sub);
       font-size: 16px;
-      color: #777;
-      margin: 10px 0;
+      margin: 0;
     }
 
-    .menu-item button {
-      background-color: #0077e4; /* Auxie Blue */
+    /* Menu Grid System */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      justify-content: center;
+    }
+
+    /* Advanced Card Design */
+    .menu-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 40px 30px;
+      text-align: left;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      height: 100%;
+    }
+
+    .menu-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary-color);
+    }
+
+    /* Icon Container */
+    .icon-box {
+      width: 50px;
+      height: 50px;
+      background: #f0f7ff;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      color: var(--primary-color);
+      transition: background 0.3s;
+    }
+
+    .menu-card:hover .icon-box {
+      background: var(--primary-color);
       color: white;
-      border: none;
-      padding: 12px 20px;
-      font-size: 16px;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s;
     }
 
-    .menu-item button:hover {
-      background-color: #0056b3; /* Darker Blue */
+    .icon-box svg {
+      width: 24px;
+      height: 24px;
+      stroke-width: 2;
     }
 
-    /* Loading spinner */
+    .menu-card h3 {
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0 0 12px 0;
+      color: var(--text-main);
+    }
+
+    .menu-card p {
+      font-size: 15px;
+      color: var(--text-sub);
+      margin: 0 0 30px 0;
+      line-height: 1.5;
+      flex-grow: 1;
+    }
+
+    .action-link {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--primary-color);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .action-link span {
+      transition: margin-left 0.2s;
+    }
+
+    .menu-card:hover .action-link span {
+      margin-left: 5px;
+    }
+
+    /* Loading Spinner */
     #loadingOverlay {
       position: fixed;
       inset: 0;
-      background: rgba(255,255,255,.7);
-      backdrop-filter: blur(2px);
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(4px);
       z-index: 9999;
       display: none;
       justify-content: center;
@@ -176,9 +214,9 @@
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      border: 4px solid #d0d7e2;
-      border-top-color: #1a73e8;
-      animation: spin .85s linear infinite;
+      border: 3px solid #e5e7eb;
+      border-top-color: var(--primary-color);
+      animation: spin 0.8s linear infinite;
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -187,64 +225,79 @@
 
 <body>
 
-<!-- TOP NAVBAR -->
 <div class="topnav">
   <div class="nav-left">
     <span class="nav-brand">UXILIUM</span>
-    <span class="nav-sub">Accounting Management Service</span>
+    <span class="nav-sub">Accounting Portal</span>
   </div>
 
   <div class="nav-right">
     <a href="../index.html" class="nav-link">Home</a>
-    <div class="nav-dropdown">
-      <button class="nav-link dropdown-btn">Modules ▾</button>
-      <div class="dropdown-content">
-        <a href="../receiving/">Receiving PO Entry</a>
-        <a href="../production/">Production Entry</a>
-        <span class="disabled-link">Order Form</span>
-      </div>
-    </div>
-    <a class="nav-link disabled-link">Settings</a>
+    <a href="../receiving/" class="nav-link">Receiving</a>
+    <a href="../production/" class="nav-link">Production</a>
+    <a href="#" class="nav-link" style="color:var(--text-main); font-weight:600;">Sales Order</a>
   </div>
 </div>
 
-<!-- MAIN MENU -->
-<div class="page">
-  <div class="card">
-    <div class="card-title">Sales Order Work Flow</div>
+<div class="page-container">
+  
+  <div class="header-section">
+    <h1>Sales Order Workflow</h1>
+    <p>Select a module below to manage invoices, work efforts, and accounting integration.</p>
+  </div>
 
-    <!-- Menu Items -->
-    <div class="menu-container">
-      <!-- Review Invoice -->
-      <div class="menu-item" onclick="window.location.href='https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/approveinvoice/index.html'">
-        <h3>Review Invoice</h3>
-        <p>Review, approve, or cancel invoices.</p>
-        <button>Go to Review</button>
+  <div class="menu-grid">
+    
+    <div class="menu-card" onclick="handleNavigation('https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/approveinvoice/index.html')">
+      <div class="icon-box">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
       </div>
+      <h3>Review Invoice</h3>
+      <p>Verify customer orders, approve pending invoices, or cancel invalid transactions.</p>
+      <div class="action-link">Open Review Module <span>&rarr;</span></div>
+    </div>
 
-      <!-- Work Effort (WE) -->
-      <div class="menu-item" onclick="window.location.href='reviewinvoice/workEffort.html'">
-        <h3>Work Effort - Spandek</h3>
-        <p>Record work efforts for Spandek orders.</p>
-        <button>Go to Work Effort</button>
+    <div class="menu-card" onclick="handleNavigation('reviewinvoice/wespandek/Index.html')">
+      <div class="icon-box">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+        </svg>
       </div>
+      <h3>Work Effort - Spandek</h3>
+      <p>Record machine usage, labor hours, and production output for Spandek orders.</p>
+      <div class="action-link">Input Work Effort <span>&rarr;</span></div>
+    </div>
 
-      <!-- Import to Xero -->
-      <div class="menu-item" onclick="window.location.href='reviewinvoice/importToXero.html'">
-        <h3>Import to Xero</h3>
-        <p>Import orders to Xero and lock PO Sales.</p>
-        <button>Go to Xero Import</button>
+    <div class="menu-card" onclick="handleNavigation('reviewinvoice/importToXero.html')">
+      <div class="icon-box">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+        </svg>
       </div>
+      <h3>Import to Xero</h3>
+      <p>Sync finalized orders to Xero Accounting and lock Sales POs.</p>
+      <div class="action-link">Sync Data <span>&rarr;</span></div>
     </div>
 
   </div>
 </div>
 
-<!-- Loading Overlay -->
-<div id="loadingOverlay"><div class="loading-spinner"></div></div>
+<div id="loadingOverlay">
+  <div class="loading-spinner"></div>
+</div>
 
 <script>
-// Add your JS functionality if needed
+  function handleNavigation(url) {
+    const loader = document.getElementById('loadingOverlay');
+    loader.style.display = 'flex';
+    
+    // Simulate slight delay for effect or just go immediately
+    setTimeout(() => {
+      window.location.href = url;
+    }, 300);
+  }
 </script>
 
 </body>
