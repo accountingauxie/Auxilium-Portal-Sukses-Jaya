@@ -255,7 +255,7 @@
 <script>
   // ================= CONFIGURATION =================
   // GANTI DENGAN URL APPS SCRIPT ANDA
-  const API_URL = "https://script.google.com/macros/s/AKfycby7FEpJTGReHQWLZLIK-SrI32hfXC7y9WACd-Xw8Oc3u4tyQPHkkafCjG4KaC310prwsQ/exec"; 
+  const API_URL = "https://script.google.com/macros/s/AKfycbyyWGbr7CHkceOZVYFSNCMtsdx7MrjSdLZ87xoBf2JZ-Kw8BNC--oXdU9VHEqc2mUrN9A/exec"; 
   // =================================================
 
   let allInvoices = [];
@@ -277,12 +277,13 @@
       .then(response => {
         showLoading(false);
         if (response.ok) {
-          // --- FIX 1: PAKSA JADI STRING AGAR TIDAK ERROR ---
+          // --- FIX CRUCIAL: PAKSA JADI STRING AGAR TIDAK ERROR .includes() ---
+          // Ini yang menyebabkan script mati sebelumnya
           allInvoices = response.data.map(inv => {
               inv.invoiceNumber = String(inv.invoiceNumber); 
               return inv;
           });
-          // -------------------------------------------------
+          // -------------------------------------------------------------------
 
           processInvoicesRelationship(); 
           renderInvoices();
@@ -302,8 +303,10 @@
     });
 
     allInvoices.forEach(inv => {
-        if (String(inv.invoiceNumber).includes("-P")) {
-            const parentId = inv.invoiceNumber.split("-P")[0];
+        // Safe check
+        const invNum = String(inv.invoiceNumber);
+        if (invNum.includes("-P")) {
+            const parentId = invNum.split("-P")[0];
             if (invoiceMap[parentId]) {
                 invoiceMap[parentId].children.push(inv);
                 inv.parent = invoiceMap[parentId];
@@ -560,8 +563,6 @@
                 }
             });
             const remain = Math.max(0, item.qty - shipped);
-            
-            // Hitung nilai sisa (Qt * Harga)
             totalRemainingValue += (remain * item.priceQty);
 
             return { ...item, shipped: shipped, remaining: remain };
@@ -580,30 +581,9 @@
         });
 
         // --- REVISI 2: HITUNG SISA TAGIHAN (OUTSTANDING) ---
-        // Asumsi PPN 11% dari sisa (sesuaikan logika PPN Anda, di sini saya pakai proporsional atau hitung ulang)
-        // Cara paling aman: Sisa Barang * Harga Barang + PPN (jika ada)
-        // Cek apakah original invoice pakai PPN
-        let outstandingGrand = 0;
-        if (totalRemainingValue > 0) {
-            // Cek rasio PPN di parent
-            const dppOrig = inv.dpp || 0;
-            const ppnOrig = inv.ppn || 0;
-            let taxRatio = 0;
-            if (dppOrig > 0) taxRatio = ppnOrig / dppOrig; // misal 0.11
-
-            // Hitung DPP Sisa (DPP biasanya = Total / 1.11 jika include, atau Total jika exclude. 
-            // Mari kita asumsi Total Remaining Value adalah "Amount" baris, yang belum tentu DPP murni.
-            // Gunakan pendekatan sederhana: Sisa = Total Remaining Value + PPNnya
-            // Agar akurat, kita ikuti pola perhitungan partial: Total / 1.11 = DPP
-            
-            // *CATATAN*: Sistem Anda menghitung DPP = Total / 1.11
-            const remainingDPP = totalRemainingValue / 1.11;
-            const remainingPPN = totalRemainingValue - remainingDPP;
-            outstandingGrand = totalRemainingValue; // Karena totalRemainingValue adalah sum(qty*price) yang biasanya sudah inc PPN di sistem ini? 
-            // Tunggu, di Apps Script Anda: dpp = grandTotal / 1.11. Berarti item.total adalah Inc PPN.
-            // Jadi totalRemainingValue sudah Grand Total.
-        }
-
+        // Jika sisa barang > 0, hitung perkiraan sisa tagihan
+        // Asumsi: nilai sisa (Qt * Price) + PPN
+        
         document.getElementById('valOutstanding').textContent = formatMoney(totalRemainingValue);
         outstandingArea.style.display = 'block';
 
