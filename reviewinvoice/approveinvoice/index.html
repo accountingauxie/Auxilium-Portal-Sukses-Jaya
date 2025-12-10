@@ -287,29 +287,52 @@
     renderModalContent(newId);
   }
 
+// GANTI FULL FUNCTION INI:
+
   function renderModalContent(id) {
     const inv = allInvoices.find(i => i.invoiceNumber == id);
     if (!inv) return;
 
-    // Header Info
+    // --- 1. BAGIAN HEADER INFO (UPDATE DI SINI) ---
     document.getElementById('modalCustomer').textContent = inv.customer;
     document.getElementById('modalInvoiceNum').textContent = inv.invoiceNumber;
-    document.getElementById('modalDate').textContent = inv.date ? new Date(inv.date).toLocaleDateString('id-ID') : '-';
-    
-    // Status Badge
+
+    // LOGIKA BARU UNTUK TANGGAL (Agar tidak strip "-")
+    let displayDate = "-";
+    if (inv.date) {
+      try {
+        // Coba jadikan object Date
+        const d = new Date(inv.date);
+        
+        // Cek apakah valid date
+        if (!isNaN(d.getTime())) {
+          // Jika valid, format jadi DD/MM/YYYY
+          displayDate = d.toLocaleDateString('id-ID', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        } else {
+          // Jika tidak valid (misal teks biasa), tampilkan apa adanya dari sheet
+          displayDate = inv.date;
+        }
+      } catch (e) {
+        // Jika error, tampilkan raw datanya saja
+        displayDate = inv.date;
+      }
+    }
+    document.getElementById('modalDate').textContent = displayDate;
+
+    // --- 2. BAGIAN STATUS ---
     const statusEl = document.getElementById('modalStatus');
     statusEl.className = `status-badge ${inv.status === 'Approved' ? 'bg-approved' : (inv.status === 'Canceled' ? 'bg-canceled' : 'bg-pending')}`;
     statusEl.textContent = inv.status || 'Pending';
 
-    // Show/Hide Action Buttons based on status
+    // Show/Hide Action Buttons
     const actionDiv = document.getElementById('modalActions');
     if (inv.status === 'Approved' || inv.status === 'Canceled') {
-      actionDiv.style.display = 'none'; // Sembunyikan tombol jika sudah diproses
+      actionDiv.style.display = 'none'; 
     } else {
-      actionDiv.style.display = 'flex'; // Tampilkan jika Pending
+      actionDiv.style.display = 'flex'; 
     }
 
-    // Table Rows
+    // --- 3. BAGIAN TABEL (UPDATE LOGIKA TYPE) ---
     const tbody = document.getElementById('modalTableBody');
     tbody.innerHTML = '';
     
@@ -318,10 +341,27 @@
     inv.items.forEach(item => {
       subTotal += (item.total || 0);
       
-      // Logic Jenis (SP/NP) simpel: Ambil huruf depan tipe atau default
-      const typeCode = item.type ? item.type.substring(0,2).toUpperCase() : '-';
+      // LOGIKA BARU: Menebak Type (SP/NP)
+      let typeCode = "-";
+      // Ambil data dari kolom Type/Jenis
+      const rawType = item.type ? item.type.toString().toUpperCase() : "";
       
-      // Logic Satuan: Jika meter > 0 maka "Lbr", jika 0 maka "Btg"
+      // Cek isi kolom Type
+      if (rawType.includes("SPANDEK") || rawType.includes("SP")) {
+        typeCode = "SP";
+      } else if (rawType.includes("NON") || rawType.includes("NP")) {
+        typeCode = "NP";
+      } else {
+        // Jika kolom Type kosong, cek Nama Produk
+        const prodName = item.product ? item.product.toUpperCase() : "";
+        if (prodName.includes("SPANDEK") || prodName.includes("PUMA")) { // Tambah keyword PUMA jika perlu
+           typeCode = "SP";
+        } else if (prodName.includes("ROOF") || prodName.includes("GENTENG")) {
+           typeCode = "NP";
+        }
+      }
+
+      // Logic Satuan (Unit)
       const unitLabel = item.meter > 0 ? "Lembar" : "Batang";
 
       const tr = document.createElement('tr');
@@ -329,22 +369,16 @@
         <td>${item.product}</td>
         <td style="text-align:center; font-weight:bold;">${typeCode}</td>
         <td style="text-align:right;">${item.meter > 0 ? item.meter : '-'}</td>
-        <td style="text-align:right;">${new Intl.NumberFormat('id-ID').format(item.unitPrice)}</td>
-        <td style="text-align:right;">${new Intl.NumberFormat('id-ID').format(item.discount)}</td>
+        <td style="text-align:right;">${formatMoney(item.unitPrice)}</td>
+        <td style="text-align:right;">${formatMoney(item.discount)}</td>
         <td style="text-align:right;">${item.qty}</td>
         <td>${unitLabel}</td>
-        <td style="text-align:right; font-weight:bold;">${new Intl.NumberFormat('id-ID').format(item.total)}</td>
+        <td style="text-align:right; font-weight:bold;">${formatMoney(item.total)}</td>
       `;
       tbody.appendChild(tr);
     });
 
-    // Footer Calculations (Asumsi: Item Total di tabel adalah Subtotal sebelum PPN)
-    // Jika di data Anda 'total' sudah termasuk PPN, sesuaikan rumus ini.
-    // Rumus di bawah: Subtotal -> PPN 12% -> Grand Total
-    
-    // Menggunakan logika standard invoice Indonesia:
-    // Total Items = DPP
-    // PPN = 12% * DPP
+    // --- 4. BAGIAN TOTAL ---
     const dpp = subTotal;
     const ppn = subTotal * 0.12; 
     const grandTotal = dpp + ppn;
@@ -353,7 +387,6 @@
     document.getElementById('valPPN').textContent = formatMoney(ppn);
     document.getElementById('valGrand').textContent = formatMoney(grandTotal);
   }
-
   function closeModal(event) {
     if (event.target.id === 'invoiceModal') {
       document.getElementById('invoiceModal').style.display = 'none';
