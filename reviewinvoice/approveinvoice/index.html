@@ -19,11 +19,20 @@
     .container { padding: 0 20px 20px 20px; max-width: 1200px; margin: 0 auto; }
     h1 { color: #1a1a1a; margin-bottom: 20px; margin-top: 10px; }
 
-    /* --- CONTROLS --- */
-    .controls { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-    .search-bar { padding: 10px; border: 1px solid #ddd; border-radius: 6px; flex-grow: 1; outline: none; }
-    .filter-btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; background: #f0f0f0; color: #555; font-weight: 600; transition: 0.2s; }
+    /* --- CONTROLS SECTION (IMPROVED) --- */
+    .controls-wrapper { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px; }
+    
+    .status-filters { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+    .filter-btn { padding: 8px 16px; border: none; border-radius: 20px; cursor: pointer; background: #f0f0f0; color: #555; font-weight: 600; transition: 0.2s; font-size: 14px; }
     .filter-btn.active, .filter-btn:hover { background-color: #007bff; color: white; }
+
+    .advanced-filters { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .search-bar { padding: 10px; border: 1px solid #ddd; border-radius: 6px; flex-grow: 1; min-width: 200px; outline: none; }
+    
+    /* Input Styles for Date & Sort */
+    .filter-input { padding: 9px; border: 1px solid #ddd; border-radius: 6px; outline: none; color: #555; font-family: inherit; }
+    .filter-label { font-size: 13px; color: #777; margin-right: 5px; font-weight: 600; }
+    .filter-group { display: flex; align-items: center; gap: 5px; }
 
     /* --- INVOICE LIST CARD --- */
     .invoice-card { background: white; padding: 20px; margin-bottom: 15px; border-radius: 10px; border-left: 5px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: transform 0.2s; }
@@ -33,17 +42,14 @@
     .card-title { font-size: 1.2em; font-weight: 700; color: #2c3e50; }
     .card-sub { font-size: 0.9em; color: #7f8c8d; }
     
-    /* Status Styles */
     .status-wrapper { text-align: right; display: flex; flex-direction: column; align-items: flex-end; }
     .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 0.8em; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; }
     
-    /* NEW: Cancellation Note Style */
     .cancel-note { font-size: 0.85em; color: #dc3545; margin-top: 5px; display: flex; align-items: center; gap: 5px; background: #fff5f5; padding: 4px 8px; border-radius: 4px; border: 1px solid #f5c6cb; max-width: 250px; }
     
     .border-pending { border-left-color: #ffc107; }
     .border-approved { border-left-color: #28a745; }
     .border-canceled { border-left-color: #dc3545; }
-    
     .bg-pending { background-color: #fff3cd; color: #856404; }
     .bg-approved { background-color: #d4edda; color: #155724; }
     .bg-canceled { background-color: #f8d7da; color: #721c24; }
@@ -107,13 +113,39 @@
 
   <div class="container">
     <h1>Approval Dashboard</h1>
-    <div class="controls">
-      <button class="filter-btn active" onclick="setFilter('All')">All</button>
-      <button class="filter-btn" onclick="setFilter('Pending')">Pending</button>
-      <button class="filter-btn" onclick="setFilter('Approved')">Approved</button>
-      <button class="filter-btn" onclick="setFilter('Canceled')">Canceled</button>
-      <input type="text" id="searchInput" class="search-bar" placeholder="Search Customer, Invoice..." onkeyup="renderInvoices()">
+    
+    <div class="controls-wrapper">
+      <div class="status-filters">
+        <button class="filter-btn active" onclick="setFilter('All')">All</button>
+        <button class="filter-btn" onclick="setFilter('Pending')">Pending</button>
+        <button class="filter-btn" onclick="setFilter('Approved')">Approved</button>
+        <button class="filter-btn" onclick="setFilter('Canceled')">Canceled</button>
+      </div>
+
+      <div class="advanced-filters">
+        
+        <input type="text" id="searchInput" class="search-bar" placeholder="Search Customer, Invoice..." onkeyup="renderInvoices()">
+        
+        <div class="filter-group">
+          <span class="filter-label">From:</span>
+          <input type="date" id="dateStart" class="filter-input" onchange="renderInvoices()">
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">To:</span>
+          <input type="date" id="dateEnd" class="filter-input" onchange="renderInvoices()">
+        </div>
+
+        <div class="filter-group">
+          <span class="filter-label">Sort:</span>
+          <select id="sortOrder" class="filter-input" onchange="renderInvoices()">
+            <option value="desc">Newest Order First</option>
+            <option value="asc">Oldest Order First</option>
+          </select>
+        </div>
+
+      </div>
     </div>
+
     <div id="invoiceList"></div>
   </div>
 
@@ -168,8 +200,7 @@
 
 <script>
   // ================= CONFIGURATION =================
-  // Update API URL ke yang terbaru setelah Update Code.gs
-  const API_URL = "https://script.google.com/macros/s/AKfycbzRE0QUtrfOUlWGqtDdJ-FdVM_4VlH113qAJGlG2-qmPOQRJTpaO3rRSR9ZtUHSimpgxA/exec"; 
+  const API_URL = "https://script.google.com/macros/s/AKfycbybu4aO4-uCNQ2dRw-ivkMjum5Iq_WceNzxsr0UcjLuUEth7Og-DNyiSCxwHc7pe0fOQA/exec"; 
   // =================================================
 
   let allInvoices = [];
@@ -204,22 +235,67 @@
   function renderInvoices() {
     const container = document.getElementById('invoiceList');
     container.innerHTML = '';
-    const searchVal = document.getElementById('searchInput').value.toLowerCase();
 
-    const filtered = allInvoices.filter(inv => {
+    // Ambil nilai dari input filter
+    const searchVal = document.getElementById('searchInput').value.toLowerCase();
+    const startDateVal = document.getElementById('dateStart').value;
+    const endDateVal = document.getElementById('dateEnd').value;
+    const sortOrder = document.getElementById('sortOrder').value;
+
+    // 1. FILTERING
+    let filtered = allInvoices.filter(inv => {
+      // Filter Status
       const matchStatus = currentFilter === 'All' || (inv.status || 'Pending') === currentFilter;
-      const matchSearch = inv.customer.toLowerCase().includes(searchVal) || inv.invoiceNumber.toString().toLowerCase().includes(searchVal);
-      return matchStatus && matchSearch;
+      
+      // Filter Search Text
+      const matchSearch = inv.customer.toLowerCase().includes(searchVal) || 
+                          inv.invoiceNumber.toString().toLowerCase().includes(searchVal);
+      
+      // Filter Date Range
+      let matchDate = true;
+      if (inv.date) {
+        const invDate = new Date(inv.date);
+        invDate.setHours(0,0,0,0); // Reset jam agar akurat
+        
+        if (startDateVal) {
+          const start = new Date(startDateVal);
+          start.setHours(0,0,0,0);
+          if (invDate < start) matchDate = false;
+        }
+        if (endDateVal) {
+          const end = new Date(endDateVal);
+          end.setHours(0,0,0,0);
+          if (invDate > end) matchDate = false;
+        }
+      }
+
+      return matchStatus && matchSearch && matchDate;
     });
 
-    if (filtered.length === 0) { container.innerHTML = '<p style="text-align:center; color:#888;">No data found.</p>'; return; }
+    // 2. SORTING (Descending/Ascending berdasarkan Invoice Number)
+    // Menggunakan localeCompare dengan {numeric: true} agar sort "100076" vs "100080" benar
+    filtered.sort((a, b) => {
+      const numA = String(a.invoiceNumber);
+      const numB = String(b.invoiceNumber);
+      
+      if (sortOrder === 'asc') {
+        return numA.localeCompare(numB, undefined, {numeric: true});
+      } else {
+        return numB.localeCompare(numA, undefined, {numeric: true});
+      }
+    });
+
+    // 3. RENDERING
+    if (filtered.length === 0) { 
+        container.innerHTML = '<p style="text-align:center; color:#888; padding:20px;">No data matches your filter.</p>'; 
+        return; 
+    }
 
     filtered.forEach(inv => {
       const status = inv.status || 'Pending';
       const borderClass = status === 'Approved' ? 'border-approved' : (status === 'Canceled' ? 'border-canceled' : 'border-pending');
       const grandTotal = inv.items.reduce((s, i) => s + (i.total || 0), 0);
 
-      // --- LOGIC NOTE DISPLAY (GUNAKAN NOTE CANCELED) ---
       let noteHtml = '';
       if (status === 'Canceled' && inv.noteCanceled) {
         noteHtml = `<div class="cancel-note">💬 ${inv.noteCanceled}</div>`;
@@ -254,6 +330,9 @@
     currentOpenInvoiceId = invoiceId;
     const select = document.getElementById('invoiceSwitcher');
     select.innerHTML = '';
+    
+    // Sort dropdown modal juga mengikuti data yang sudah difilter/sort di list
+    // (Opsional: atau pakai allInvoices jika ingin semua tetap ada di dropdown)
     allInvoices.forEach(inv => {
       const option = document.createElement('option');
       option.value = inv.invoiceNumber;
@@ -261,6 +340,7 @@
       if (inv.invoiceNumber == invoiceId) option.selected = true;
       select.appendChild(option);
     });
+    
     renderModalContent(invoiceId);
     document.getElementById('invoiceModal').style.display = 'flex';
   }
@@ -300,7 +380,6 @@
        actionDiv.style.display = 'none'; 
     } 
     else if (inv.status === 'Canceled') {
-       // REVERT BUTTON
        actionDiv.innerHTML = `
          <div style="color:#dc3545; font-size:0.9em; margin-right:auto; align-self:center;">
             <b>Alasan Cancel:</b> ${inv.noteCanceled || '-'}
@@ -326,7 +405,6 @@
       let typeCode = "-";
       const rawType = item.type ? item.type.toString().toUpperCase() : "";
       
-      // PRIORITAS: Cek NON/NP dulu
       if (rawType.includes("NON") || rawType.includes("NP")) {
         typeCode = "NP";
       } else if (rawType.includes("SPANDEK") || rawType.includes("SP")) {
@@ -370,8 +448,6 @@
     }
   }
 
-  // --- ACTIONS ---
-
   function handleApproveFromModal() {
     if(!confirm("Approve this invoice?")) return;
     const inv = allInvoices.find(i => i.invoiceNumber == currentOpenInvoiceId);
@@ -383,7 +459,7 @@
       invoiceNumber: inv.invoiceNumber,
       customerName: inv.customer,
       date: inv.date,
-      catatan: inv.catatan, // Kirim Catatan Asli (Kolom P) ke Backend
+      catatan: inv.catatan, 
       items: inv.items
     };
 
@@ -404,8 +480,6 @@
 
   function handleActionFromModal(newStatus) {
     let note = "";
-
-    // --- LOGIC WAJIB NOTE SAAT CANCEL ---
     if (newStatus === 'Canceled') {
        note = prompt("Mohon masukkan alasan Reject/Cancel (Wajib):");
        if (note === null) return; 
@@ -424,14 +498,13 @@
     formData.append('action', 'updateStatus');
     formData.append('invoiceNumber', currentOpenInvoiceId);
     formData.append('status', newStatus);
-    formData.append('note', note); // Kirim note baru ke backend
+    formData.append('note', note); 
 
     fetch(API_URL, { method: "POST", body: formData })
     .then(res => res.json())
     .then(data => {
       setModalLoading(false);
       if(data.ok) {
-        // Update local data
         updateLocalStatus(currentOpenInvoiceId, newStatus, note);
         renderModalContent(currentOpenInvoiceId);
         renderInvoices();
