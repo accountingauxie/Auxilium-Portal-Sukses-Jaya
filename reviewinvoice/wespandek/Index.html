@@ -1,168 +1,274 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Work Effort - Spandek</title>
+    <title>WE Generator - Spandek</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; padding: 20px; }
-        h2 { color: #333; }
-        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        :root { --primary: #007bff; --bg: #f4f7f6; --text: #333; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-size: 14px; }
-        th { background-color: #007bff; color: white; }
-        tr:hover { background-color: #f1f1f1; }
+        /* Layout Container */
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
         
-        /* Input Styles */
-        select, input[type="text"] {
-            padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 100%;
-        }
+        /* Card Style */
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         
-        .machine-select { min-width: 150px; }
-        .kcp-input { min-width: 100px; }
-        
-        .btn-export {
-            background-color: #28a745; color: white; padding: 10px 20px; border: none; 
-            border-radius: 4px; cursor: pointer; float: right; margin-bottom: 15px;
-        }
-        .btn-export:hover { background-color: #218838; }
+        h1, h2 { margin-top: 0; color: #2c3e50; }
+        .subtitle { color: #7f8c8d; margin-bottom: 20px; }
 
-        .loading { text-align: center; padding: 20px; color: #666; }
+        /* --- MENU SECTION (STEP 1) --- */
+        #menuSection { text-align: center; max-width: 600px; margin: 0 auto; }
+        .select-box { margin: 30px 0; }
+        select.big-select {
+            padding: 15px; font-size: 18px; width: 100%; border: 2px solid #ddd; border-radius: 8px; outline: none; transition: 0.3s;
+        }
+        select.big-select:focus { border-color: var(--primary); }
+        
+        .btn-primary {
+            background-color: var(--primary); color: white; padding: 12px 30px; font-size: 16px; border: none; border-radius: 6px; cursor: pointer; transition: 0.2s;
+        }
+        .btn-primary:hover { background-color: #0056b3; }
+        .btn-primary:disabled { background-color: #ccc; cursor: not-allowed; }
+
+        /* --- WORKSPACE SECTION (STEP 2) --- */
+        #workSection { display: none; } /* Hidden by default */
+        
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .order-info { background: #eef2f7; padding: 10px 20px; border-radius: 6px; font-weight: bold; border-left: 5px solid var(--primary); }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
+        th { background-color: #f8f9fa; color: #495057; text-align: left; padding: 15px; border-bottom: 2px solid #dee2e6; }
+        td { padding: 12px 15px; border-bottom: 1px solid #eee; vertical-align: middle; }
+        
+        /* Inputs in Table */
+        .form-control { width: 100%; padding: 8px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box; }
+        .machine-select { min-width: 180px; }
+        
+        .we-preview { font-family: 'Courier New', monospace; font-weight: bold; color: var(--primary); font-size: 14px; }
+
+        .btn-secondary { background: #6c757d; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin-right: 10px; }
+        .btn-success { background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+
+        .loading-spinner { font-size: 1.2em; color: #666; margin-top: 20px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>📋 Work Effort (WE) Generator - Spandek Only</h2>
-    <p>Data diambil dari: Sales Order Approved (Filtered: Spandek)</p>
-    
-    <button class="btn-export" onclick="exportData()">Download CSV Hasil</button>
-    
-    <div id="loading" class="loading">Sedang mengambil data dari Google Sheet...</div>
 
-    <table id="weTable" style="display:none;">
-        <thead>
-            <tr>
-                <th>Order No</th>
-                <th>Customer</th>
-                <th>Produk</th>
-                <th>Meter</th>
-                <th>Qty</th>
-                <th>Pilih Mesin</th>
-                <th>No. KCP</th>
-                <th>WE Number (Preview)</th>
-            </tr>
-        </thead>
-        <tbody id="tableBody">
-            </tbody>
-    </table>
+    <div id="menuSection" class="card">
+        <h1><i class="fas fa-tasks"></i> Spandek WE Generator</h1>
+        <p class="subtitle">Select an Order Number to begin processing.</p>
+        
+        <div id="loadingData" class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i> Fetching data from Google Sheets...
+        </div>
+
+        <div id="selectorArea" style="display:none;">
+            <div class="select-box">
+                <label for="orderDropdown" style="display:block; text-align:left; margin-bottom:8px; font-weight:bold;">Select Order No:</label>
+                <select id="orderDropdown" class="big-select">
+                    <option value="">-- Choose Order No --</option>
+                    </select>
+            </div>
+            <button class="btn-primary" onclick="openWorkspace()">
+                Open Order Workspace <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="workSection">
+        <div class="card">
+            <div class="header-row">
+                <div>
+                    <button class="btn-secondary" onclick="backToMenu()"><i class="fas fa-arrow-left"></i> Back</button>
+                    <span id="currentOrderDisplay" class="order-info">Order #...</span>
+                </div>
+                <button class="btn-success" onclick="exportToCSV()"><i class="fas fa-file-csv"></i> Export Result</button>
+            </div>
+
+            <table id="weTable">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th width="80">Meter</th>
+                        <th width="60">Qty</th>
+                        <th>Machine Selection</th>
+                        <th>KCP Number</th>
+                        <th>WE Number (Result)</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
 
 <script>
-    // --- GANTI URL INI DENGAN URL DARI LANGKAH 1 ---
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzC_IJCKjNTXgIuyr3hmwcMbkQhmF-Ph6CFfnQAGZz2fi8tqlSlM8PIr4AHhx25T8tI/exec'; 
+    // --- SETTING URL APPS SCRIPT ---
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwry1DyLDeDgy9nWbrS-Iv0g-liTxukBzwU0GUA0jMMCXyP3OvXohZD-YcY244WCBut/exec'; 
 
-    async function fetchData() {
+    let globalData = []; // Menyimpan semua data mentah
+
+    // 1. Fetch Data saat Web dibuka
+    async function init() {
         try {
             const response = await fetch(SCRIPT_URL);
             const data = await response.json();
-            renderTable(data);
+            globalData = data;
+            
+            populateOrderDropdown(data);
+            
+            document.getElementById('loadingData').style.display = 'none';
+            document.getElementById('selectorArea').style.display = 'block';
         } catch (error) {
-            document.getElementById('loading').innerText = "Gagal mengambil data. Pastikan URL Apps Script benar.";
+            document.getElementById('loadingData').innerText = "Error loading data. Please check URL.";
             console.error(error);
         }
     }
 
+    // 2. Isi Dropdown dengan Order No yang unik
+    function populateOrderDropdown(data) {
+        const dropdown = document.getElementById('orderDropdown');
+        
+        // Ambil list Order No yang unik saja
+        const uniqueOrders = [...new Set(data.map(item => item.orderNumber))];
+        
+        // Urutkan (terbaru/terbesar di atas jika angka)
+        uniqueOrders.sort().reverse(); 
+
+        uniqueOrders.forEach(orderNo => {
+            let option = document.createElement('option');
+            option.value = orderNo;
+            // Cari nama customer untuk label (opsional, biar lebih informatif)
+            let sampleRow = data.find(d => d.orderNumber === orderNo);
+            option.text = `${orderNo} - ${sampleRow.customer}`;
+            dropdown.appendChild(option);
+        });
+    }
+
+    // 3. Buka Tampilan Kerja (Workspace)
+    function openWorkspace() {
+        const selectedOrder = document.getElementById('orderDropdown').value;
+        if (!selectedOrder) {
+            alert("Please select an Order Number first!");
+            return;
+        }
+
+        // Filter data hanya untuk order yang dipilih
+        const orderData = globalData.filter(d => d.orderNumber == selectedOrder);
+        
+        // Render Tabel
+        renderTable(orderData);
+
+        // UI Switching
+        document.getElementById('currentOrderDisplay').innerText = `Order: ${selectedOrder} | Customer: ${orderData[0].customer}`;
+        document.getElementById('menuSection').style.display = 'none';
+        document.getElementById('workSection').style.display = 'block';
+    }
+
+    // 4. Kembali ke Menu Utama
+    function backToMenu() {
+        document.getElementById('workSection').style.display = 'none';
+        document.getElementById('menuSection').style.display = 'block'; // Kembali ke box kecil
+        // Reset tabel biar bersih kalau buka order lain
+        document.getElementById('tableBody').innerHTML = ""; 
+    }
+
+    // 5. Render Baris Tabel
     function renderTable(data) {
         const tbody = document.getElementById('tableBody');
-        const loading = document.getElementById('loading');
-        const table = document.getElementById('weTable');
-        
-        loading.style.display = 'none';
-        table.style.display = 'table';
+        tbody.innerHTML = "";
 
-        data.forEach((row, index) => {
+        data.forEach(row => {
             const tr = document.createElement('tr');
-            
-            // Format Tanggal (opsional, ambil 10 digit pertama)
-            let dateStr = row.date ? new Date(row.date).toLocaleDateString('id-ID') : '-';
-
             tr.innerHTML = `
-                <td>${row.orderNumber}</td>
-                <td>${row.customer}</td>
                 <td>${row.product}</td>
                 <td>${row.meter}</td>
                 <td>${row.qty}</td>
                 <td>
-                    <select class="machine-select" onchange="generateWE(this)">
-                        <option value="">-- Pilih Mesin --</option>
+                    <select class="form-control machine-select" onchange="generateWE(this)">
+                        <option value="">-- Select Machine --</option>
                         <option value="MX PUMA08-NF-V">MX PUMA08-NF-V</option>
                         <option value="MX PUMA14-NF-V">MX PUMA14-NF-V</option>
                     </select>
                 </td>
                 <td>
-                    <input type="text" class="kcp-input" placeholder="Isi KCP" oninput="generateWE(this)">
+                    <input type="text" class="form-control" placeholder="Input KCP No" oninput="generateWE(this)">
                 </td>
-                <td class="we-result" style="font-weight:bold; color:#007bff;">-</td>
+                <td class="we-preview" data-orderno="${row.orderNumber}">-</td>
             `;
             tbody.appendChild(tr);
         });
     }
 
-    // Fungsi untuk membuat kode WE otomatis saat user mengisi data
+    // 6. Logic Generator WE Number
     window.generateWE = function(element) {
         const row = element.closest('tr');
-        const orderNo = row.cells[0].innerText;
-        const machine = row.querySelector('.machine-select').value;
-        const kcp = row.querySelector('.kcp-input').value;
-        const resultCell = row.querySelector('.we-result');
+        const machineSelect = row.querySelector('select');
+        const kcpInput = row.querySelector('input');
+        const outputCell = row.querySelector('.we-preview');
+        const orderNo = outputCell.getAttribute('data-orderno');
+
+        const machine = machineSelect.value;
+        const kcp = kcpInput.value;
 
         if (machine && kcp) {
-            // LOGIKA PEMBUATAN KODE WE (Bisa disesuaikan)
-            // Contoh: WE-[OrderNo]-[KodeMesinSingkat]-[KCP]
-            const machineShort = machine.includes('08') ? 'P08' : (machine.includes('14') ? 'P14' : 'XX');
-            resultCell.innerText = `WE/${orderNo}/${machineShort}/${kcp}`;
+            // Ambil kode singkatan mesin (P08 atau P14)
+            let machineCode = "XX";
+            if(machine.includes("08")) machineCode = "P08";
+            if(machine.includes("14")) machineCode = "P14";
+
+            // FORMAT: WE / OrderNo / MachineCode / KCP
+            outputCell.innerText = `WE/${orderNo}/${machineCode}/${kcp}`;
         } else {
-            resultCell.innerText = '-';
+            outputCell.innerText = "-";
         }
     }
 
-    // Fungsi Export ke Excel/CSV
-    window.exportData = function() {
-        let csv = [];
-        const rows = document.querySelectorAll("table tr");
+    // 7. Export CSV
+    window.exportToCSV = function() {
+        let csv = ["Order No, Customer, Product, Meter, Qty, Machine, KCP, WE Number"]; // Header
         
-        for (let i = 0; i < rows.length; i++) {
-            const row = [], cols = rows[i].querySelectorAll("td, th");
+        const rows = document.querySelectorAll("#tableBody tr");
+        const orderInfo = document.getElementById('currentOrderDisplay').innerText; // Untuk nama file nanti
+        const selectedOrder = document.getElementById('orderDropdown').value;
+
+        rows.forEach(row => {
+            const cols = row.querySelectorAll("td");
+            // Ambil data statis
+            const product = cols[0].innerText;
+            const meter = cols[1].innerText;
+            const qty = cols[2].innerText;
             
-            for (let j = 0; j < cols.length; j++) {
-                // Jika ada input/select, ambil valuenya
-                const select = cols[j].querySelector("select");
-                const input = cols[j].querySelector("input");
-                
-                if (select) row.push(select.value);
-                else if (input) row.push(input.value);
-                else row.push(cols[j].innerText);
-            }
-            csv.push(row.join(","));
-        }
+            // Ambil input user
+            const machine = row.querySelector("select").value;
+            const kcp = row.querySelector("input").value;
+            const weNum = cols[5].innerText;
 
-        downloadCSV(csv.join("\n"), "WE-Spandek-Output.csv");
+            // Kita butuh Customer name lagi, ambil dari variable global atau display
+            // Cara cepat: ambil dari globalData filter
+            const customerName = globalData.find(d => d.orderNumber == selectedOrder).customer;
+
+            // Gabung jadi string CSV (bungkus kutip untuk aman)
+            let rowString = `"${selectedOrder}", "${customerName}", "${product}", "${meter}", "${qty}", "${machine}", "${kcp}", "${weNum}"`;
+            csv.push(rowString);
+        });
+
+        const blob = new Blob([csv.join("\n")], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `WE_Order_${selectedOrder}.csv`;
+        a.click();
     }
 
-    function downloadCSV(csv, filename) {
-        const csvFile = new Blob([csv], {type: "text/csv"});
-        const downloadLink = document.createElement("a");
-        downloadLink.download = filename;
-        downloadLink.href = window.URL.createObjectURL(csvFile);
-        downloadLink.style.display = "none";
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-    }
-
-    // Jalankan saat halaman dibuka
-    fetchData();
+    // Jalankan init saat halaman load
+    init();
 </script>
 
 </body>
