@@ -107,9 +107,9 @@
     </div>
 
     <script>
-        // --- PASTIKAN URL INI ADALAH VERSI TERBARU (NEW VERSION DEPLOYMENT) ---
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbya-zt97QYngOEZ_ZOwbFRzu-n6b-4Lz2fwf4cctDnJEKbKKOcdOuztVpaPsThNVwDC/exec"; 
-        // ------------------------------------------------------------------------
+        // --- GANTI URL DI BAWAH INI DENGAN URL BARU SETELAH DEPLOY NEW VERSION ---
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxdfKmeJQ2rEOVX-z0tLVJN7kzMUFvEz0DdBzQDuAoZL3G0IHt3vAzTSmIXsDY1Fszj/exec"; 
+        // -------------------------------------------------------------------------
 
         let globalData = [];
         let currentOrderNo = "";
@@ -132,13 +132,21 @@
             const uniqueOrders = [...new Set(data.map(item => item.orderNumber))];
             uniqueOrders.sort().reverse();
 
-            uniqueOrders.forEach(orderId => {
-                let row = data.find(d => d.orderNumber === orderId);
-                let option = document.createElement('option');
-                option.value = orderId;
-                option.text = `${orderId} - ${row.customer}`;
-                dropdown.appendChild(option);
-            });
+            // Logic Dropdown: Jika uniqueOrders kosong, berarti semua order sudah diproses
+            if (uniqueOrders.length === 0) {
+                 let option = document.createElement('option');
+                 option.text = "Semua Order sudah diproses";
+                 dropdown.appendChild(option);
+                 dropdown.disabled = true;
+            } else {
+                uniqueOrders.forEach(orderId => {
+                    let row = data.find(d => d.orderNumber === orderId);
+                    let option = document.createElement('option');
+                    option.value = orderId;
+                    option.text = `${orderId} - ${row.customer}`;
+                    dropdown.appendChild(option);
+                });
+            }
 
             document.getElementById('loading').style.display = 'none';
             document.getElementById('selectorArea').style.display = 'block';
@@ -167,9 +175,7 @@
         }
 
         function backToMenu() {
-            document.getElementById('workSection').style.display = 'none';
-            document.getElementById('menuSection').style.display = 'block';
-            document.getElementById('tableBody').innerHTML = '';
+            location.reload(); // Refresh halaman agar data order ter-update (hilang dari list)
         }
 
         // 4. RENDER TABLE
@@ -188,7 +194,6 @@
                 const badgeHtml = isSpandek ? '<span class="badge bg-sp">SP</span>' : '<span class="badge bg-np">NP</span>';
                 const rowBg = isSpandek ? '' : 'style="background-color: #fafafa;"';
 
-                // DROPDOWN MESIN DIPERBARUI (PM08 / PM14)
                 tr.innerHTML = `
                     <td ${rowBg}>${row.product}</td>
                     <td ${rowBg} align="center">${badgeHtml}</td>
@@ -221,7 +226,7 @@
 
         // 5. RUMUS WE NUMBER
         function calcWE(idx) {
-            const machVal = document.getElementById(`mach_${idx}`).value; // Akan ambil PM08 atau PM14
+            const machVal = document.getElementById(`mach_${idx}`).value; 
             const kcpVal = document.getElementById(`kcp_${idx}`).value;
             const pTypeVal = document.getElementById(`ptype_${idx}`).value;
             const invFull = document.getElementById('invNumber').value;
@@ -236,7 +241,6 @@
             let inv3 = invFull.length >= 3 ? invFull.slice(-3) : invFull;
             let typeCode = (pTypeVal === 'Plat') ? 'PLT' : 'CTM';
             
-            // Format: PM08_KCP...
             resultEl.value = `${machVal}_${kcpVal}_${order3}_${inv3}_${typeCode}`;
         }
 
@@ -245,7 +249,6 @@
             const btn = document.getElementById('btnSubmit');
             const originalText = btn.innerHTML;
             
-            // 1. Kumpulkan Data
             const rows = document.querySelectorAll("#tableBody tr");
             let payload = [];
             let isValid = true;
@@ -264,10 +267,9 @@
                     const pType = document.getElementById(`ptype_${index}`).value;
                     const weNum = document.getElementById(`result_${index}`).value;
 
-                    // Validasi: Wajib isi semua
                     if (!mach || !kcp || !pType || weNum === '-' || weNum === '') {
                         isValid = false;
-                        document.getElementById(`kcp_${index}`).style.borderColor = "red"; // Highlight error
+                        document.getElementById(`kcp_${index}`).style.borderColor = "red";
                     } else {
                         document.getElementById(`kcp_${index}`).style.borderColor = "#dee2e6";
                         
@@ -300,14 +302,10 @@
                 return;
             }
 
-            // 2. Kirim ke Google Apps Script (POST)
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
             btn.disabled = true;
 
             try {
-                // Menggunakan 'no-cors' karena fetch POST dari GitHub ke Google sering kena CORS preflight.
-                // Namun untuk mendapatkan response, kita gunakan method POST standar dengan body string JSON.
-                // Google Apps Script doPost yang kita buat akan menerima ini.
                 const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
                     body: JSON.stringify({ data: payload })
@@ -316,15 +314,16 @@
                 const result = await response.json();
 
                 if(result.status === 'success') {
-                    alert("Sukses! Data telah disimpan ke Sheet WE Spandek.");
-                    backToMenu(); // Kembali ke menu
+                    alert("Sukses! Data tersimpan dan Status diupdate.");
+                    // Refresh halaman agar dropdown order terupdate (order yg baru dikerjakan hilang)
+                    location.reload(); 
                 } else {
                     alert("Gagal menyimpan: " + result.message);
                 }
 
             } catch (error) {
                 console.error(error);
-                alert("Terjadi kesalahan saat mengirim data. Cek Console.");
+                alert("Terjadi kesalahan saat mengirim data.");
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
