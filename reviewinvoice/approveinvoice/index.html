@@ -27,7 +27,7 @@
       --xero-bg: #E3F2FD; --xero-text: #0c5460; --xero-border: #b8daff;
       --approved-bg: #d1e7dd; --approved-text: #0f5132;
       --pending-bg: #fff3cd; --pending-text: #856404;
-      --canceled-bg: #f8d7da; --canceled-text: #721c24;
+      --canceled-bg: #fef2f2; --canceled-text: #991b1b;
     }
 
     body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); margin: 0; color: var(--text-main); -webkit-font-smoothing: antialiased; }
@@ -392,14 +392,21 @@
     filtered.forEach(inv => {
       const status = inv.status || 'Pending';
       const borderClass = status === 'Approved' ? 'border-approved' : (status === 'Canceled' ? 'border-canceled' : 'border-pending');
-      const grandTotal = inv.items.reduce((s, i) => s + (i.total || 0), 0) * 1.12; // Estimasi including PPN logic display
+      const grandTotal = inv.items.reduce((s, i) => s + (i.total || 0), 0) * 1.12; 
 
+      // --- PERUBAHAN DI SINI: MENAMBAHKAN ICON COMMENT ---
       let noteHtml = '';
       if (status === 'Canceled' && inv.noteCanceled) {
-        noteHtml = `<div style="font-size:0.8rem; color:#dc2626; background:#fef2f2; padding:4px 8px; border-radius:6px; margin-top:5px;">Reason: ${inv.noteCanceled}</div>`;
+        noteHtml = `
+            <div style="font-size:0.8rem; color:var(--canceled-text); background:var(--canceled-bg); padding:4px 10px; border-radius:8px; margin-top:5px; display:inline-flex; align-items:center; gap:6px; font-weight:500;">
+                <i class="fa-regular fa-comment-dots"></i>
+                <span>${inv.noteCanceled}</span>
+            </div>
+        `;
       }
+      // ----------------------------------------------------
 
-      // --- LOGIC BADGE PROGRESS (Revisi 1: Desain Baru) ---
+      // Logic Badge Progress
       let progressBadgeHtml = '';
       if (inv.progressStatus) {
         const badges = inv.progressStatus.split(', ');
@@ -414,7 +421,7 @@
                badgeClass += " badge-xero";
                tooltipText = "Synced from Xero accounting";
            } else {
-               badgeClass += " badge-pending"; // Fallback
+               badgeClass += " badge-pending"; 
            }
            
            progressBadgeHtml += `<span class="${badgeClass}" title="${tooltipText}">${b}</span>`;
@@ -449,7 +456,7 @@
     });
   }
 
-  // --- MODAL FUNCTIONS (Sama seperti sebelumnya, hanya update styling class) ---
+  // --- MODAL FUNCTIONS ---
   
   function openInvoiceModal(invoiceId) {
     currentOpenInvoiceId = invoiceId;
@@ -496,12 +503,12 @@
     actionDiv.innerHTML = ''; 
 
     if (inv.status === 'Approved') {
-       // Bisa tambah tombol 'Print' disini jika mau
+       // Done
     } 
     else if (inv.status === 'Canceled') {
        actionDiv.innerHTML = `
-         <div style="margin-right:auto; color:#dc2626; font-size:0.9rem;">
-            <b>Reason:</b> ${inv.noteCanceled || '-'}
+         <div style="margin-right:auto; color:var(--canceled-text); font-size:0.9rem; display:flex; align-items:center; gap:5px;">
+            <i class="fa-regular fa-comment-dots"></i> <b>Reason:</b> ${inv.noteCanceled || '-'}
          </div>
          <button class="btn-action btn-revert" onclick="handleActionFromModal('Pending')">
            <i class="fa-solid fa-rotate-left"></i> Revert to Pending
@@ -527,7 +534,6 @@
     inv.items.forEach(item => {
       subTotal += (item.total || 0);
       let typeCode = "-";
-      // Simple Type Logic check
       const rawType = (item.type || "").toString().toUpperCase();
       const prodName = (item.product || "").toUpperCase();
       
@@ -563,7 +569,7 @@
     }
   }
 
-  // --- API ACTIONS (Sama seperti logic asli, tidak dirubah) ---
+  // --- API ACTIONS ---
   
   function handleApproveFromModal() {
     if(!confirm("Approve this invoice?")) return;
@@ -622,7 +628,6 @@
         btn.style.opacity = 0.7;
       } else {
         btn.style.opacity = 1;
-        // Teks tombol akan kereset saat renderModalContent dipanggil ulang
       }
     });
   }
