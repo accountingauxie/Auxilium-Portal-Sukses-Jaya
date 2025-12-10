@@ -412,10 +412,12 @@
 
     setModalLoading(true);
 
+    // REVISI PAYLOAD: Tambahkan 'catatan'
     const payload = {
       invoiceNumber: inv.invoiceNumber,
       customerName: inv.customer,
       date: inv.date,
+      catatan: inv.catatan, // <--- PENTING: Kirim catatan ke backend
       items: inv.items
     };
 
@@ -436,7 +438,6 @@
       }
     });
   }
-
   function handleActionFromModal(newStatus) {
     if(!confirm("Are you sure you want to " + newStatus + " this invoice?")) return;
     setModalLoading(true);
