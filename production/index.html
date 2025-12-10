@@ -6,16 +6,14 @@
 <title>Production Entry</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<!-- Choices.js -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
 <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
-<!-- Sortable -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
 <style>
 
-   /* Prevent layout overflow */
+/* Prevent layout overflow */
 * {
   box-sizing: border-box;
 }
@@ -23,14 +21,17 @@
 body {
   overflow-x: hidden;
 }
-/* Tambahkan DI SINI */
+
+/* PERBAIKAN: Menambahkan kurung tutup "}" di sini */
 html {
   overflow-x: hidden !important;
+}
+
 /* ---------- NAVBAR CLEAN RESPONSIVE ---------- */
 .topnav {
   width: 100%;
   background: white;
-  padding: 14px 28px; /* <= responsif, tidak mepet */
+  padding: 14px 28px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -47,14 +48,14 @@ html {
   flex-direction: column;
 }
 
-.nav-left .nav-brand {
+.nav-brand {
   font-size: 19px;
   font-weight: 700;
   color: #1e1e1e;
   letter-spacing: 0.3px;
 }
 
-.nav-left .nav-sub {
+.nav-sub {
   font-size: 12px;
   color: #9aa1ac;
   margin-top: -2px;
@@ -138,18 +139,18 @@ html {
 /* ---------- RESPONSIVENESS FIX ---------- */
 @media (max-width: 768px) {
   .topnav {
-    padding: 12px 16px; /* <= lebih kecil agar muat */
+    padding: 12px 16px;
   }
 
   .nav-right {
     gap: 16px;
   }
 
-  .nav-left .nav-brand {
+  .nav-brand {
     font-size: 17px;
   }
 
-  .nav-left .nav-sub {
+  .nav-sub {
     font-size: 11px;
   }
 
@@ -181,30 +182,6 @@ input:hover, select:hover, textarea:hover, .choices__inner:hover {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-}
-
-/* ==========================================================
-   TOP BAR
-========================================================== */
-.top-bar {
-  height: 50px;
-  display: flex;
-  align-items: center;
-  padding: 0 48px;
-  background: #ffffff;
-  border-bottom: 1px solid #e1e4e8;
-}
-
-.brand-main {
-  font-weight: 600;
-  font-size: 17px;
-  letter-spacing: 0.08em;
-  margin-right: 6px;
-}
-
-.brand-sub {
-  font-size: 13px;
-  color: #7a8699;
 }
 
 /* ==========================================================
@@ -291,9 +268,8 @@ table {
   background: #ffffff;
   border-radius: 6px;
   border: 1px solid #e3e6ea;
-  overflow: hidden !important;  /* FIX UTAMA */
+  overflow: visible !important; /* FIX: Visible agar dropdown tidak terpotong */
 }
-
 
 thead tr { height: 32px; }
 
@@ -342,10 +318,9 @@ table tr { height: 34px !important; }
    DROPDOWN FIX
 ========================================================== */
 table, tbody, tr, td {
-  overflow: hidden !important;  /* FIX */
+  overflow: visible !important; 
   position: relative !important;
 }
-
 
 .choices__list--dropdown,
 .choices__list[aria-expanded] {
@@ -478,7 +453,6 @@ textarea {
   background: #e2ebff;
 }
 
-/* Icon */
 .sheet-icon {
   width: 18px;
   height: 18px;
@@ -489,12 +463,10 @@ textarea {
 
 <body>
 
-<!-- Loading Overlay -->
 <div id="loadingOverlay">
   <div class="loading-spinner"></div>
 </div>
 
-<!-- TOP NAVBAR -->
 <div class="topnav">
   <div class="nav-left">
     <span class="nav-brand">UXILIUM</span>
@@ -517,8 +489,6 @@ textarea {
   </div>
 </div>
 
-
-
 <div class="page">
   <div class="card">
 
@@ -526,7 +496,6 @@ textarea {
       <div class="card-title">Production Entry</div>
     </div>
 
-    <!-- Top Form -->
     <div class="row-flex">
       <div>
         <label>Date</label>
@@ -549,7 +518,6 @@ textarea {
       </div>
     </div>
 
-    <!-- Table -->
     <table>
       <thead>
         <tr>
@@ -569,22 +537,21 @@ textarea {
 
     <div class="notes-label">Additional Notes</div>
     <textarea id="notes"></textarea>
-<!-- Google Sheet Button at Bottom -->
-<div class="sheet-bottom-wrapper">
-  <a 
-    href="https://docs.google.com/spreadsheets/d/1KQ4uKabzjyVcw6a-wlqHFha7OWPfgqbghFXS59dZf5Q/edit?gid=1028502721"
-    target="_blank"
-    class="sheet-bottom-btn">
+    
+    <div class="sheet-bottom-wrapper">
+      <a 
+        href="https://docs.google.com/spreadsheets/d/1KQ4uKabzjyVcw6a-wlqHFha7OWPfgqbghFXS59dZf5Q/edit?gid=1028502721"
+        target="_blank"
+        class="sheet-bottom-btn">
 
-    <!-- Icon Google Sheets (SVG) -->
-    <svg class="sheet-icon" viewBox="0 0 24 24">
-      <path fill="#0F9D58" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
-      <path fill="#FFF" d="M7 7h10v2H7zM7 11h10v2H7zM7 15h7v2H7z"/>
-    </svg>
+        <svg class="sheet-icon" viewBox="0 0 24 24">
+          <path fill="#0F9D58" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+          <path fill="#FFF" d="M7 7h10v2H7zM7 11h10v2H7zM7 15h7v2H7z"/>
+        </svg>
 
-    Open Google Sheet
-  </a>
-</div>
+        Open Google Sheet
+      </a>
+    </div>
 
     <div class="actions-row">
       <button class="submit-btn" onclick="submitForm()">Submit</button>
@@ -594,6 +561,7 @@ textarea {
 </div>
 
 <script>
+// PERBAIKAN: Gunakan nama variabel SCRIPT_URL
 const SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycby5iiAvTSJ4AqKe7MbfmilGLLrkiDAoYFG72xn_5ruOssqV9bqVUmZeJeIotXfLc1waVA/exec";
 
@@ -604,14 +572,14 @@ let kpcList = [];
    LOADING
 ====================================================== */
 function showLoading() {
-  loadingOverlay.style.display = "flex";
+  document.getElementById("loadingOverlay").style.display = "flex";
 }
 function hideLoading() {
-  loadingOverlay.style.display = "none";
+  document.getElementById("loadingOverlay").style.display = "none";
 }
 
 /* ======================================================
-   NEW — GET SERVER LAST ID & CALCULATE NEXT ID
+   GET SERVER LAST ID & CALCULATE NEXT ID
 ====================================================== */
 async function loadNextEntryId() {
   try {
@@ -626,15 +594,17 @@ async function loadNextEntryId() {
 
     const prefix = `FGP${yy}${mm}`;
 
+    const entryIdField = document.getElementById("entryId");
+
     // If no ID exists or different month prefix → start fresh
     if (!lastId || !lastId.startsWith(prefix)) {
-      entryId.value = prefix + "0000001";
+      entryIdField.value = prefix + "0000001";
       return;
     }
 
     // Extract sequence
     const seq = parseInt(lastId.substring(7)) + 1;
-    entryId.value = prefix + String(seq).padStart(7, "0");
+    entryIdField.value = prefix + String(seq).padStart(7, "0");
 
   } catch (err) {
     console.error("Error loading last ID:", err);
@@ -642,7 +612,7 @@ async function loadNextEntryId() {
     const today = new Date();
     const yy = String(today.getFullYear()).slice(2);
     const mm = String(today.getMonth() + 1).padStart(2, "0");
-    entryId.value = `FGP${yy}${mm}0000001`;
+    document.getElementById("entryId").value = `FGP${yy}${mm}0000001`;
   }
 }
 
@@ -652,7 +622,7 @@ async function loadNextEntryId() {
 window.addEventListener("DOMContentLoaded", async () => {
   showLoading();
 
-  await loadNextEntryId();  // ⬅️ USE NEW LOGIC
+  await loadNextEntryId(); 
 
   try {
     const [itemRes, kpcRes] = await Promise.all([
@@ -666,7 +636,8 @@ window.addEventListener("DOMContentLoaded", async () => {
     addRow();
     setupSortable();
   } catch (e) {
-    alert("Error loading dropdown data.");
+    console.error("Fetch Error:", e);
+    alert("Error loading data from Google Sheet. Check console.");
   }
 
   hideLoading();
@@ -676,7 +647,7 @@ window.addEventListener("DOMContentLoaded", async () => {
    SORTABLE ROWS
 ====================================================== */
 function setupSortable() {
-  Sortable.create(tableBody, {
+  Sortable.create(document.getElementById("tableBody"), {
     handle: ".row-handle",
     animation: 150
   });
@@ -687,6 +658,7 @@ function setupSortable() {
 ====================================================== */
 function addRow() {
   const row = document.createElement("tr");
+  const tableBody = document.getElementById("tableBody");
 
   row.innerHTML = `
     <td class="row-handle">⋮⋮</td>
@@ -711,6 +683,12 @@ function addRow() {
    INIT CHOICES
 ====================================================== */
 function initChoices(selectEl, optionsArray, placeholderText) {
+  // Guard clause: pastikan data adalah array
+  if (!Array.isArray(optionsArray)) {
+     console.error("Data bukan array:", optionsArray);
+     return;
+  }
+
   const ph = document.createElement("option");
   ph.value = "";
   ph.disabled = true;
@@ -737,7 +715,7 @@ function initChoices(selectEl, optionsArray, placeholderText) {
    UPDATE TOTALS
 ====================================================== */
 function updateTotals() {
-  tableBody.querySelectorAll("tr").forEach(r => {
+  document.querySelectorAll("#tableBody tr").forEach(r => {
     const m = parseFloat(r.querySelector(".meter").value) || 0;
     const q = parseFloat(r.querySelector(".qty").value) || 0;
     r.querySelector(".total").value = m * q;
@@ -748,8 +726,11 @@ function updateTotals() {
    VALIDATION
 ====================================================== */
 function validateForm() {
-  if (!productionDate.value) return "Date is required.";
-  if (!machineUsed.value) return "Machine is required.";
+  const dateVal = document.getElementById("productionDate").value;
+  const machineVal = document.getElementById("machineUsed").value;
+
+  if (!dateVal) return "Date is required.";
+  if (!machineVal) return "Machine is required.";
 
   const rows = document.querySelectorAll("#tableBody tr");
   if (!rows.length) return "At least 1 item required.";
@@ -777,11 +758,16 @@ function submitForm() {
     return;
   }
 
+  const entryId = document.getElementById("entryId").value;
+  const productionDate = document.getElementById("productionDate").value;
+  const machine = document.getElementById("machineUsed").value;
+  const notes = document.getElementById("notes").value;
+
   const payload = {
-    productionEntryId: entryId.value,
-    productionDate: productionDate.value,
-    machine: machineUsed.value,
-    notes: notes.value,
+    productionEntryId: entryId,
+    productionDate: productionDate,
+    machine: machine,
+    notes: notes,
     items: Array.from(document.querySelectorAll("#tableBody tr")).map(r => ({
       item: r.querySelector(".item-select").value,
       meter: r.querySelector(".meter").value,
@@ -800,8 +786,9 @@ function submitForm() {
       hideLoading();
 
       if (reply.status === "success") {
-        entryId.value = reply.entryId;
+        document.getElementById("entryId").value = reply.entryId;
         alert("Submitted successfully!\nProduction Entry ID: " + reply.entryId);
+        // location.reload(); // Uncomment jika ingin refresh halaman setelah submit
       } else {
         alert("Error saving: " + reply.message);
       }
