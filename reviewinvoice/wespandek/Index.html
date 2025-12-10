@@ -1,1 +1,169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work Effort - Spandek</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; padding: 20px; }
+        h2 { color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-size: 14px; }
+        th { background-color: #007bff; color: white; }
+        tr:hover { background-color: #f1f1f1; }
+        
+        /* Input Styles */
+        select, input[type="text"] {
+            padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 100%;
+        }
+        
+        .machine-select { min-width: 150px; }
+        .kcp-input { min-width: 100px; }
+        
+        .btn-export {
+            background-color: #28a745; color: white; padding: 10px 20px; border: none; 
+            border-radius: 4px; cursor: pointer; float: right; margin-bottom: 15px;
+        }
+        .btn-export:hover { background-color: #218838; }
 
+        .loading { text-align: center; padding: 20px; color: #666; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>📋 Work Effort (WE) Generator - Spandek Only</h2>
+    <p>Data diambil dari: Sales Order Approved (Filtered: Spandek)</p>
+    
+    <button class="btn-export" onclick="exportData()">Download CSV Hasil</button>
+    
+    <div id="loading" class="loading">Sedang mengambil data dari Google Sheet...</div>
+
+    <table id="weTable" style="display:none;">
+        <thead>
+            <tr>
+                <th>Order No</th>
+                <th>Customer</th>
+                <th>Produk</th>
+                <th>Meter</th>
+                <th>Qty</th>
+                <th>Pilih Mesin</th>
+                <th>No. KCP</th>
+                <th>WE Number (Preview)</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            </tbody>
+    </table>
+</div>
+
+<script>
+    // --- GANTI URL INI DENGAN URL DARI LANGKAH 1 ---
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzC_IJCKjNTXgIuyr3hmwcMbkQhmF-Ph6CFfnQAGZz2fi8tqlSlM8PIr4AHhx25T8tI/exec'; 
+
+    async function fetchData() {
+        try {
+            const response = await fetch(SCRIPT_URL);
+            const data = await response.json();
+            renderTable(data);
+        } catch (error) {
+            document.getElementById('loading').innerText = "Gagal mengambil data. Pastikan URL Apps Script benar.";
+            console.error(error);
+        }
+    }
+
+    function renderTable(data) {
+        const tbody = document.getElementById('tableBody');
+        const loading = document.getElementById('loading');
+        const table = document.getElementById('weTable');
+        
+        loading.style.display = 'none';
+        table.style.display = 'table';
+
+        data.forEach((row, index) => {
+            const tr = document.createElement('tr');
+            
+            // Format Tanggal (opsional, ambil 10 digit pertama)
+            let dateStr = row.date ? new Date(row.date).toLocaleDateString('id-ID') : '-';
+
+            tr.innerHTML = `
+                <td>${row.orderNumber}</td>
+                <td>${row.customer}</td>
+                <td>${row.product}</td>
+                <td>${row.meter}</td>
+                <td>${row.qty}</td>
+                <td>
+                    <select class="machine-select" onchange="generateWE(this)">
+                        <option value="">-- Pilih Mesin --</option>
+                        <option value="MX PUMA08-NF-V">MX PUMA08-NF-V</option>
+                        <option value="MX PUMA14-NF-V">MX PUMA14-NF-V</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" class="kcp-input" placeholder="Isi KCP" oninput="generateWE(this)">
+                </td>
+                <td class="we-result" style="font-weight:bold; color:#007bff;">-</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // Fungsi untuk membuat kode WE otomatis saat user mengisi data
+    window.generateWE = function(element) {
+        const row = element.closest('tr');
+        const orderNo = row.cells[0].innerText;
+        const machine = row.querySelector('.machine-select').value;
+        const kcp = row.querySelector('.kcp-input').value;
+        const resultCell = row.querySelector('.we-result');
+
+        if (machine && kcp) {
+            // LOGIKA PEMBUATAN KODE WE (Bisa disesuaikan)
+            // Contoh: WE-[OrderNo]-[KodeMesinSingkat]-[KCP]
+            const machineShort = machine.includes('08') ? 'P08' : (machine.includes('14') ? 'P14' : 'XX');
+            resultCell.innerText = `WE/${orderNo}/${machineShort}/${kcp}`;
+        } else {
+            resultCell.innerText = '-';
+        }
+    }
+
+    // Fungsi Export ke Excel/CSV
+    window.exportData = function() {
+        let csv = [];
+        const rows = document.querySelectorAll("table tr");
+        
+        for (let i = 0; i < rows.length; i++) {
+            const row = [], cols = rows[i].querySelectorAll("td, th");
+            
+            for (let j = 0; j < cols.length; j++) {
+                // Jika ada input/select, ambil valuenya
+                const select = cols[j].querySelector("select");
+                const input = cols[j].querySelector("input");
+                
+                if (select) row.push(select.value);
+                else if (input) row.push(input.value);
+                else row.push(cols[j].innerText);
+            }
+            csv.push(row.join(","));
+        }
+
+        downloadCSV(csv.join("\n"), "WE-Spandek-Output.csv");
+    }
+
+    function downloadCSV(csv, filename) {
+        const csvFile = new Blob([csv], {type: "text/csv"});
+        const downloadLink = document.createElement("a");
+        downloadLink.download = filename;
+        downloadLink.href = window.URL.createObjectURL(csvFile);
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+    }
+
+    // Jalankan saat halaman dibuka
+    fetchData();
+</script>
+
+</body>
+</html>
