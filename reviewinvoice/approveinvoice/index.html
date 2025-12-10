@@ -158,7 +158,9 @@
         </div>
       </div>
 
-      <div class="modal-actions" id="modalActions"></div>
+      <div class="modal-actions" id="modalActions">
+        </div>
+
     </div>
   </div>
 
@@ -166,7 +168,8 @@
 
 <script>
   // ================= CONFIGURATION =================
-  const API_URL = "https://script.google.com/macros/s/AKfycbxZX0EEi1Ao-Gg1pfXo62H4s8Bz9VayE2iAP40JtKjeXJhFeskrC9jI5gHVVlXFdbZSBA/exec"; 
+  // Update API URL ke yang terbaru setelah Update Code.gs
+  const API_URL = "https://script.google.com/macros/s/AKfycbzRE0QUtrfOUlWGqtDdJ-FdVM_4VlH113qAJGlG2-qmPOQRJTpaO3rRSR9ZtUHSimpgxA/exec"; 
   // =================================================
 
   let allInvoices = [];
@@ -216,10 +219,10 @@
       const borderClass = status === 'Approved' ? 'border-approved' : (status === 'Canceled' ? 'border-canceled' : 'border-pending');
       const grandTotal = inv.items.reduce((s, i) => s + (i.total || 0), 0);
 
-      // --- LOGIC NOTE DISPLAY (NEW) ---
+      // --- LOGIC NOTE DISPLAY (GUNAKAN NOTE CANCELED) ---
       let noteHtml = '';
-      if (status === 'Canceled' && inv.catatan) {
-        noteHtml = `<div class="cancel-note">💬 ${inv.catatan}</div>`;
+      if (status === 'Canceled' && inv.noteCanceled) {
+        noteHtml = `<div class="cancel-note">💬 ${inv.noteCanceled}</div>`;
       }
 
       const card = document.createElement('div');
@@ -297,10 +300,10 @@
        actionDiv.style.display = 'none'; 
     } 
     else if (inv.status === 'Canceled') {
-       // REVERT BUTTON (Implicitly clears note via backend)
+       // REVERT BUTTON
        actionDiv.innerHTML = `
          <div style="color:#dc3545; font-size:0.9em; margin-right:auto; align-self:center;">
-            <b>Note:</b> ${inv.catatan || '-'}
+            <b>Alasan Cancel:</b> ${inv.noteCanceled || '-'}
          </div>
          <button class="btn" style="background-color:#6c757d; color:white;" onclick="handleActionFromModal('Pending')">
            Revert to Pending
@@ -323,12 +326,18 @@
       let typeCode = "-";
       const rawType = item.type ? item.type.toString().toUpperCase() : "";
       
-      if (rawType.includes("NON") || rawType.includes("NP")) { typeCode = "NP"; } 
-      else if (rawType.includes("SPANDEK") || rawType.includes("SP")) { typeCode = "SP"; } 
-      else {
+      // PRIORITAS: Cek NON/NP dulu
+      if (rawType.includes("NON") || rawType.includes("NP")) {
+        typeCode = "NP";
+      } else if (rawType.includes("SPANDEK") || rawType.includes("SP")) {
+        typeCode = "SP";
+      } else {
         const prodName = item.product ? item.product.toUpperCase() : "";
-        if (prodName.includes("NON SPANDEK") || prodName.includes("ROOF") || prodName.includes("GENTENG")) { typeCode = "NP"; } 
-        else if (prodName.includes("SPANDEK") || prodName.includes("PUMA")) { typeCode = "SP"; }
+        if (prodName.includes("NON SPANDEK") || prodName.includes("ROOF") || prodName.includes("GENTENG")) {
+           typeCode = "NP";
+        } else if (prodName.includes("SPANDEK") || prodName.includes("PUMA")) {
+           typeCode = "SP";
+        }
       }
 
       const unitLabel = item.meter > 0 ? "Lembar" : "Batang";
@@ -374,7 +383,7 @@
       invoiceNumber: inv.invoiceNumber,
       customerName: inv.customer,
       date: inv.date,
-      catatan: inv.catatan, 
+      catatan: inv.catatan, // Kirim Catatan Asli (Kolom P) ke Backend
       items: inv.items
     };
 
@@ -386,7 +395,7 @@
       setModalLoading(false);
       if(data.ok) {
         alert("Approved successfully!");
-        updateLocalStatus(inv.invoiceNumber, 'Approved');
+        updateLocalStatus(inv.invoiceNumber, 'Approved', '');
         renderModalContent(inv.invoiceNumber); 
         renderInvoices(); 
       } else { alert("Failed: " + data.error); }
@@ -399,15 +408,14 @@
     // --- LOGIC WAJIB NOTE SAAT CANCEL ---
     if (newStatus === 'Canceled') {
        note = prompt("Mohon masukkan alasan Reject/Cancel (Wajib):");
-       if (note === null) return; // User cancel prompt
+       if (note === null) return; 
        if (note.trim() === "") {
           alert("Alasan tidak boleh kosong!");
           return;
        }
     } 
-    // Jika Revert to Pending, note otomatis kosong (logic di backend)
     else if (newStatus === 'Pending') {
-       if(!confirm("Revert status kembali ke Pending? (Catatan akan dihapus)")) return;
+       if(!confirm("Revert status kembali ke Pending? (Alasan cancel akan dihapus)")) return;
     }
 
     setModalLoading(true);
@@ -416,19 +424,15 @@
     formData.append('action', 'updateStatus');
     formData.append('invoiceNumber', currentOpenInvoiceId);
     formData.append('status', newStatus);
-    formData.append('note', note); // Kirim note ke backend
+    formData.append('note', note); // Kirim note baru ke backend
 
     fetch(API_URL, { method: "POST", body: formData })
     .then(res => res.json())
     .then(data => {
       setModalLoading(false);
       if(data.ok) {
-        // Update local data agar UI langsung berubah tanpa refresh
-        const inv = allInvoices.find(i => i.invoiceNumber == currentOpenInvoiceId);
-        if(inv) {
-            inv.status = newStatus;
-            inv.catatan = (newStatus === 'Canceled') ? note : ""; // Clear note jika pending
-        }
+        // Update local data
+        updateLocalStatus(currentOpenInvoiceId, newStatus, note);
         renderModalContent(currentOpenInvoiceId);
         renderInvoices();
       } else { alert("Failed"); }
@@ -451,9 +455,16 @@
     });
   }
 
-  function updateLocalStatus(id, status) {
+  function updateLocalStatus(id, status, note) {
     const inv = allInvoices.find(i => i.invoiceNumber == id);
-    if(inv) inv.status = status;
+    if(inv) {
+        inv.status = status;
+        if (status === 'Canceled') {
+            inv.noteCanceled = note;
+        } else if (status === 'Pending') {
+            inv.noteCanceled = "";
+        }
+    }
   }
 </script>
 
