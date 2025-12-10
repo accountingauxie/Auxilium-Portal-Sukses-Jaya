@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Production Form - WE Generator</title>
+    <title>Production WE Generator - Split Feature</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <style>
@@ -13,20 +13,32 @@
         .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 20px; }
         h2 { margin-top: 0; color: #495057; font-size: 1.5rem; }
         .sub-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--bg); padding-bottom: 15px; margin-bottom: 20px; }
-        .form-control, .form-select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 5px; box-sizing: border-box; font-size: 14px; }
+        .form-control, .form-select { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; box-sizing: border-box; font-size: 13px; }
         input:disabled, select:disabled { background-color: #e9ecef; cursor: not-allowed; color: #6c757d; }
-        input[readonly] { background-color: #e8f0fe; color: #000; font-weight: 500; }
-        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+        input[readonly] { background-color: #f8f9fa; color: #333; font-weight: 500; }
+        
+        .btn { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-success { background: var(--success); color: white; }
         .btn-secondary { background: #6c757d; color: white; }
+        .btn-warning { background: #ffc107; color: #000; }
+        .btn-danger { background: #dc3545; color: white; }
+
         table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
-        th { background: #f8f9fa; text-align: left; padding: 12px; border-bottom: 2px solid var(--border); color: #495057; font-weight: 600; }
-        td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-        .badge { padding: 5px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; color: white; }
+        th { background: #f8f9fa; text-align: left; padding: 12px; border-bottom: 2px solid var(--border); color: #495057; font-weight: 600; font-size: 0.9rem; }
+        td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; color: white; }
         .bg-sp { background-color: var(--success); }
         .bg-np { background-color: #6c757d; }
-        .we-result-input { font-family: 'Courier New', monospace; font-weight: bold; color: var(--primary); border: 1px dashed var(--primary); background: #fbfdff; }
+        
+        /* CSS KHUSUS FITUR SPLIT */
+        .split-row { background-color: #f0f8ff; } /* Warna biru muda untuk anak */
+        .parent-row.has-splits { background-color: #fff3cd; } /* Warna kuning tipis untuk induk yg displit */
+        .split-indicator { border-left: 3px solid var(--primary); padding-left: 8px; margin-left: 10px; }
+        .qty-remaining { font-size: 0.8rem; color: #dc3545; font-weight: bold; display: block; margin-top: 4px; }
+        
+        .we-result-input { font-family: 'Courier New', monospace; font-weight: bold; color: var(--primary); border: 1px dashed var(--primary); background: #fbfdff; width: 100%; }
         #loading { text-align: center; padding: 40px; color: #666; font-size: 1.2rem; }
         .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
         .info-group label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; color: #666; }
@@ -39,19 +51,13 @@
         <div id="menuSection" class="card" style="text-align: center; max-width: 600px; margin: 50px auto;">
             <h2><i class="fas fa-industry"></i> Production WE Generator</h2>
             <p style="color:#666;">Pilih Nomor Order untuk mulai memproses data Spandek.</p>
-            
-            <div id="loading">
-                <i class="fas fa-circle-notch fa-spin"></i> Memuat Data Order...
-            </div>
-
+            <div id="loading"><i class="fas fa-circle-notch fa-spin"></i> Memuat Data Order...</div>
             <div id="selectorArea" style="display:none; margin-top: 20px;">
                 <select id="orderDropdown" class="form-select" style="font-size: 1.1rem; padding: 15px;">
                     <option value="">-- Pilih Order Number --</option>
                 </select>
                 <br>
-                <button class="btn btn-primary" onclick="openWorkspace()" style="width: 100%; justify-content: center;">
-                    Buka Order <i class="fas fa-arrow-right"></i>
-                </button>
+                <button class="btn btn-primary" onclick="openWorkspace()" style="width: 100%; justify-content: center;">Buka Order <i class="fas fa-arrow-right"></i></button>
             </div>
         </div>
 
@@ -79,23 +85,21 @@
                         <label>Invoice Number (Auto-Generated)</label>
                         <input type="text" id="invNumber" class="form-control" readonly>
                     </div>
-                    <div class="info-group" style="display: flex; align-items: end;">
-                        <span style="font-size: 0.8rem; color: #888;">*Pastikan semua kolom Spandek terisi sebelum submit.</span>
-                    </div>
                 </div>
 
                 <div style="overflow-x: auto;">
                     <table id="mainTable">
                         <thead>
                             <tr>
-                                <th style="width: 20%;">Product Name</th>
+                                <th style="width: 3%;">Action</th>
+                                <th style="width: 17%;">Product Name</th>
                                 <th style="width: 5%; text-align: center;">Type</th>
                                 <th style="width: 5%; text-align: center;">Meter</th>
-                                <th style="width: 5%; text-align: center;">Qty</th>
-                                <th style="width: 15%;">Machine Selection</th>
+                                <th style="width: 7%; text-align: center;">Qty</th>
+                                <th style="width: 15%;">Machine</th>
                                 <th style="width: 12%;">KCP Number</th>
-                                <th style="width: 12%;">Prod. Type</th>
-                                <th style="width: 26%;">WE Number (Result)</th>
+                                <th style="width: 10%;">Prod. Type</th>
+                                <th style="width: 25%;">WE Number (Result)</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody"></tbody>
@@ -107,14 +111,13 @@
     </div>
 
     <script>
-        // --- GANTI URL DI BAWAH INI DENGAN URL BARU SETELAH DEPLOY NEW VERSION ---
+        // --- URL DEPLOYMENT ANDA ---
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxdfKmeJQ2rEOVX-z0tLVJN7kzMUFvEz0DdBzQDuAoZL3G0IHt3vAzTSmIXsDY1Fszj/exec"; 
-        // -------------------------------------------------------------------------
-
+        
         let globalData = [];
         let currentOrderNo = "";
 
-        // 1. FETCH DATA
+        // 1. INIT
         window.onload = async function() {
             document.getElementById('prodDate').valueAsDate = new Date();
             try {
@@ -122,7 +125,7 @@
                 const data = await response.json();
                 onDataLoaded(data);
             } catch (error) {
-                document.getElementById('loading').innerHTML = `<span style="color:red">Error: Gagal koneksi ke server.<br>${error.message}</span>`;
+                document.getElementById('loading').innerHTML = `<span style="color:red">Error: ${error.message}</span>`;
             }
         };
 
@@ -132,7 +135,6 @@
             const uniqueOrders = [...new Set(data.map(item => item.orderNumber))];
             uniqueOrders.sort().reverse();
 
-            // Logic Dropdown: Jika uniqueOrders kosong, berarti semua order sudah diproses
             if (uniqueOrders.length === 0) {
                  let option = document.createElement('option');
                  option.text = "Semua Order sudah diproses";
@@ -147,38 +149,30 @@
                     dropdown.appendChild(option);
                 });
             }
-
             document.getElementById('loading').style.display = 'none';
             document.getElementById('selectorArea').style.display = 'block';
         }
 
-        // 2. INVOICE
-        function generateLocalInvoice() {
-            const date = new Date();
-            const year = date.getFullYear().toString().substr(-2);
-            const month = ("0" + (date.getMonth() + 1)).slice(-2);
-            const seq = "0001"; 
-            return `INV-SJ-${year}-${month}-${seq}`;
-        }
-
-        // 3. WORKSPACE
+        // 2. WORKSPACE LOGIC
         function openWorkspace() {
             const selectedOrder = document.getElementById('orderDropdown').value;
             if(!selectedOrder) { alert("Pilih Order Number!"); return; }
-
             currentOrderNo = selectedOrder;
-            document.getElementById('invNumber').value = generateLocalInvoice();
-            renderTable(selectedOrder);
+            
+            // Generate Invoice Lokal
+            const date = new Date();
+            const year = date.getFullYear().toString().substr(-2);
+            const month = ("0" + (date.getMonth() + 1)).slice(-2);
+            document.getElementById('invNumber').value = `INV-SJ-${year}-${month}-0001`;
 
+            renderTable(selectedOrder);
             document.getElementById('menuSection').style.display = 'none';
             document.getElementById('workSection').style.display = 'block';
         }
 
-        function backToMenu() {
-            location.reload(); // Refresh halaman agar data order ter-update (hilang dari list)
-        }
+        function backToMenu() { location.reload(); }
 
-        // 4. RENDER TABLE
+        // 3. RENDER TABLE (PARENT ROWS)
         function renderTable(orderId) {
             const filteredData = globalData.filter(d => d.orderNumber == orderId);
             document.getElementById('dispOrder').innerText = orderId;
@@ -188,49 +182,184 @@
             tbody.innerHTML = '';
 
             filteredData.forEach((row, index) => {
-                const tr = document.createElement('tr');
                 const isSpandek = (row.type === 'SP');
                 const disabledAttr = isSpandek ? '' : 'disabled';
+                const rowId = `parent_${index}`;
                 const badgeHtml = isSpandek ? '<span class="badge bg-sp">SP</span>' : '<span class="badge bg-np">NP</span>';
                 const rowBg = isSpandek ? '' : 'style="background-color: #fafafa;"';
 
+                // Tombol Split hanya muncul jika Tipe = SP
+                const splitBtn = isSpandek 
+                    ? `<button class="btn btn-warning btn-sm" onclick="addSplitRow('${rowId}', ${row.qty})"><i class="fas fa-code-branch"></i> Split</button>` 
+                    : '';
+
+                const tr = document.createElement('tr');
+                tr.id = rowId;
+                tr.className = "parent-row";
+                tr.setAttribute('data-original-qty', row.qty);
+                tr.setAttribute('data-product', row.product);
+                tr.setAttribute('data-meter', row.meter);
+
                 tr.innerHTML = `
-                    <td ${rowBg}>${row.product}</td>
-                    <td ${rowBg} align="center">${badgeHtml}</td>
-                    <td ${rowBg} align="center">${row.meter}</td>
-                    <td ${rowBg} align="center">${row.qty}</td>
-                    <td ${rowBg}>
-                        <select class="form-select" id="mach_${index}" onchange="calcWE(${index})" ${disabledAttr}>
+                    <td align="center">${splitBtn}</td>
+                    <td>${row.product}</td>
+                    <td align="center">${badgeHtml}</td>
+                    <td align="center">${row.meter}</td>
+                    <td align="center">
+                        <span id="qty_disp_${rowId}">${row.qty}</span>
+                        <span id="rem_disp_${rowId}" class="qty-remaining" style="display:none;">Rem: ${row.qty}</span>
+                    </td>
+                    <td>
+                        <select class="form-select machine-input" id="mach_${rowId}" onchange="calcWE('${rowId}')" ${disabledAttr}>
                             <option value="">-- Select --</option>
                             <option value="PM08">MX PUMA08-NF-V</option>
                             <option value="PM14">MX PUMA14-NF-V</option>
                         </select>
                     </td>
-                    <td ${rowBg}>
-                        <input type="text" class="form-control" id="kcp_${index}" placeholder="Input KCP" oninput="calcWE(${index})" ${disabledAttr}>
+                    <td>
+                        <input type="text" class="form-control kcp-input" id="kcp_${rowId}" placeholder="Input KCP" oninput="calcWE('${rowId}')" ${disabledAttr}>
                     </td>
-                    <td ${rowBg}>
-                        <select class="form-select" id="ptype_${index}" onchange="calcWE(${index})" ${disabledAttr}>
+                    <td>
+                        <select class="form-select type-input" id="ptype_${rowId}" onchange="calcWE('${rowId}')" ${disabledAttr}>
                             <option value="">-- Type --</option>
                             <option value="Plat">Plat</option>
                             <option value="Custom">Custom</option>
                         </select>
                     </td>
-                    <td ${rowBg}>
-                        <input type="text" class="form-control we-result-input" id="result_${index}" readonly value="${isSpandek ? '-' : ''}">
+                    <td>
+                        <input type="text" class="form-control we-result-input" id="result_${rowId}" readonly value="${isSpandek ? '-' : ''}">
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        // 5. RUMUS WE NUMBER
-        function calcWE(idx) {
-            const machVal = document.getElementById(`mach_${idx}`).value; 
-            const kcpVal = document.getElementById(`kcp_${idx}`).value;
-            const pTypeVal = document.getElementById(`ptype_${idx}`).value;
+        // 4. ADD SPLIT ROW FUNCTION
+        function addSplitRow(parentId, maxQty) {
+            const parentTr = document.getElementById(parentId);
+            
+            // Matikan input di parent karena sekarang pakai split
+            parentTr.classList.add('has-splits');
+            parentTr.querySelector('.machine-input').disabled = true;
+            parentTr.querySelector('.kcp-input').disabled = true;
+            parentTr.querySelector('.type-input').disabled = true;
+            parentTr.querySelector('.we-result-input').value = "--- SPLITTED ---";
+
+            // Generate ID unik untuk anak
+            const childId = `${parentId}_split_${Date.now()}`;
+            
+            // Ambil data product dari parent
+            const productName = parentTr.getAttribute('data-product');
+            const meter = parentTr.getAttribute('data-meter');
+
+            const newTr = document.createElement('tr');
+            newTr.className = `split-row child-of-${parentId}`;
+            newTr.id = childId;
+
+            newTr.innerHTML = `
+                <td align="center">
+                    <button class="btn btn-danger btn-sm" onclick="removeSplitRow('${childId}', '${parentId}')"><i class="fas fa-trash"></i></button>
+                </td>
+                <td><div class="split-indicator">${productName}</div></td>
+                <td align="center"><span class="badge bg-sp">SPLIT</span></td>
+                <td align="center">${meter}</td>
+                <td>
+                    <input type="number" class="form-control split-qty-input" id="qty_${childId}" placeholder="Qty" oninput="updateRemaining('${parentId}')" style="width:70px;">
+                </td>
+                <td>
+                    <select class="form-select" id="mach_${childId}" onchange="calcWE('${childId}')">
+                        <option value="">-- Select --</option>
+                        <option value="PM08">MX PUMA08-NF-V</option>
+                        <option value="PM14">MX PUMA14-NF-V</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" class="form-control" id="kcp_${childId}" placeholder="Input KCP" oninput="calcWE('${childId}')">
+                </td>
+                <td>
+                    <select class="form-select" id="ptype_${childId}" onchange="calcWE('${childId}')">
+                        <option value="">-- Type --</option>
+                        <option value="Plat">Plat</option>
+                        <option value="Custom">Custom</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" class="form-control we-result-input" id="result_${childId}" readonly value="-">
+                </td>
+            `;
+
+            // Insert baris anak SETELAH baris parent (atau setelah anak terakhir parent tsb)
+            const children = document.querySelectorAll(`.child-of-${parentId}`);
+            if (children.length > 0) {
+                children[children.length - 1].after(newTr);
+            } else {
+                parentTr.after(newTr);
+            }
+
+            updateRemaining(parentId);
+        }
+
+        // 5. REMOVE SPLIT ROW
+        function removeSplitRow(childId, parentId) {
+            document.getElementById(childId).remove();
+            
+            // Cek apakah masih ada anak lain?
+            const remainingChildren = document.querySelectorAll(`.child-of-${parentId}`);
+            if (remainingChildren.length === 0) {
+                // Jika tidak ada anak, aktifkan kembali parent
+                const parentTr = document.getElementById(parentId);
+                parentTr.classList.remove('has-splits');
+                parentTr.querySelector('.machine-input').disabled = false;
+                parentTr.querySelector('.kcp-input').disabled = false;
+                parentTr.querySelector('.type-input').disabled = false;
+                
+                // Clear display remaining
+                document.getElementById(`rem_disp_${parentId}`).style.display = 'none';
+                
+                // Trigger calcWE ulang parent
+                calcWE(parentId);
+            } else {
+                updateRemaining(parentId);
+            }
+        }
+
+        // 6. UPDATE REMAINING QTY LOGIC
+        function updateRemaining(parentId) {
+            const parentTr = document.getElementById(parentId);
+            const originalQty = parseFloat(parentTr.getAttribute('data-original-qty'));
+            
+            const children = document.querySelectorAll(`.child-of-${parentId}`);
+            let totalSplitQty = 0;
+
+            children.forEach(row => {
+                const qtyVal = row.querySelector('.split-qty-input').value;
+                totalSplitQty += qtyVal ? parseFloat(qtyVal) : 0;
+            });
+
+            const remaining = originalQty - totalSplitQty;
+            const remDisplay = document.getElementById(`rem_disp_${parentId}`);
+            
+            remDisplay.style.display = 'block';
+            remDisplay.innerText = `Sisa: ${remaining}`;
+
+            if (remaining < 0) {
+                remDisplay.style.color = 'red';
+                remDisplay.innerText = `Over: ${Math.abs(remaining)}`;
+            } else if (remaining === 0) {
+                remDisplay.style.color = 'green';
+                remDisplay.innerText = `Pas (0)`;
+            } else {
+                remDisplay.style.color = 'orange';
+            }
+        }
+
+        // 7. CALC WE NUMBER (Bisa dipakai Parent maupun Split Row)
+        function calcWE(rowId) {
+            const machVal = document.getElementById(`mach_${rowId}`).value;
+            const kcpVal = document.getElementById(`kcp_${rowId}`).value;
+            const pTypeVal = document.getElementById(`ptype_${rowId}`).value;
             const invFull = document.getElementById('invNumber').value;
-            const resultEl = document.getElementById(`result_${idx}`);
+            const resultEl = document.getElementById(`result_${rowId}`);
 
             if(!machVal || !kcpVal || !pTypeVal || !invFull) {
                 resultEl.value = "-";
@@ -244,64 +373,96 @@
             resultEl.value = `${machVal}_${kcpVal}_${order3}_${inv3}_${typeCode}`;
         }
 
-        // 6. SUBMIT DATA FUNCTION
+        // 8. SUBMIT DATA (Logic Baru untuk Handle Split)
         async function submitData() {
             const btn = document.getElementById('btnSubmit');
             const originalText = btn.innerHTML;
             
-            const rows = document.querySelectorAll("#tableBody tr");
+            // Ambil semua Parent Row
+            const parentRows = document.querySelectorAll('.parent-row');
             let payload = [];
             let isValid = true;
+            let errorMessage = "";
 
             const dateVal = document.getElementById('prodDate').value;
             const invVal = document.getElementById('invNumber').value;
             const custName = document.getElementById('dispCust').innerText;
 
-            rows.forEach((row, index) => {
-                const typeCell = row.querySelectorAll("td")[1].innerText;
-                
-                // Hanya proses baris SPANDEK
-                if (typeCell.includes("SP")) {
-                    const mach = document.getElementById(`mach_${index}`).value;
-                    const kcp = document.getElementById(`kcp_${index}`).value;
-                    const pType = document.getElementById(`ptype_${index}`).value;
-                    const weNum = document.getElementById(`result_${index}`).value;
+            parentRows.forEach(pRow => {
+                const pId = pRow.id;
+                const productName = pRow.getAttribute('data-product');
+                const meter = pRow.getAttribute('data-meter');
+                const pTypeCell = pRow.querySelectorAll("td")[2].innerText; // Kolom Type (SP/NP)
 
-                    if (!mach || !kcp || !pType || weNum === '-' || weNum === '') {
+                // Skip Non-Spandek
+                if (!pTypeCell.includes("SP")) return;
+
+                // Cek apakah punya Split?
+                const children = document.querySelectorAll(`.child-of-${pId}`);
+                
+                if (children.length > 0) {
+                    // --- MODE SPLIT: Ambil data dari anak-anak ---
+                    // Cek Total Qty dulu
+                    const remTxt = document.getElementById(`rem_disp_${pId}`).innerText;
+                    if (remTxt.includes("Over") || (remTxt.includes("Sisa") && !remTxt.includes("0"))) {
                         isValid = false;
-                        document.getElementById(`kcp_${index}`).style.borderColor = "red";
+                        errorMessage = `Total Qty untuk ${productName} belum pas (Harus 0 sisa).`;
+                        return;
+                    }
+
+                    children.forEach(cRow => {
+                        const cId = cRow.id;
+                        const qty = document.getElementById(`qty_${cId}`).value;
+                        const mach = document.getElementById(`mach_${cId}`).value;
+                        const kcp = document.getElementById(`kcp_${cId}`).value;
+                        const pType = document.getElementById(`ptype_${cId}`).value;
+                        const weNum = document.getElementById(`result_${cId}`).value;
+
+                        if(!qty || !mach || !kcp || !pType || weNum === '-') {
+                            isValid = false;
+                            document.getElementById(`kcp_${cId}`).style.borderColor = "red";
+                        } else {
+                            document.getElementById(`kcp_${cId}`).style.borderColor = "#dee2e6";
+                            payload.push({
+                                orderNo: currentOrderNo, customer: custName, date: dateVal, invoice: invVal,
+                                product: productName, type: 'SP', meter: meter, qty: qty, // Qty Split
+                                machine: mach, kcp: kcp, prodType: pType, weNumber: weNum
+                            });
+                        }
+                    });
+
+                } else {
+                    // --- MODE NORMAL (Parent Langsung) ---
+                    const qty = document.getElementById(`qty_disp_${pId}`).innerText; // Original Qty
+                    const mach = document.getElementById(`mach_${pId}`).value;
+                    const kcp = document.getElementById(`kcp_${pId}`).value;
+                    const pType = document.getElementById(`ptype_${pId}`).value;
+                    const weNum = document.getElementById(`result_${pId}`).value;
+
+                    if(!mach || !kcp || !pType || weNum === '-') {
+                        isValid = false;
+                        document.getElementById(`kcp_${pId}`).style.borderColor = "red";
                     } else {
-                        document.getElementById(`kcp_${index}`).style.borderColor = "#dee2e6";
-                        
-                        const cols = row.querySelectorAll("td");
+                        document.getElementById(`kcp_${pId}`).style.borderColor = "#dee2e6";
                         payload.push({
-                            orderNo: currentOrderNo,
-                            customer: custName,
-                            date: dateVal,
-                            invoice: invVal,
-                            product: cols[0].innerText,
-                            type: 'SP',
-                            meter: cols[2].innerText,
-                            qty: cols[3].innerText,
-                            machine: mach,
-                            kcp: kcp,
-                            prodType: pType,
-                            weNumber: weNum
+                            orderNo: currentOrderNo, customer: custName, date: dateVal, invoice: invVal,
+                            product: productName, type: 'SP', meter: meter, qty: qty,
+                            machine: mach, kcp: kcp, prodType: pType, weNumber: weNum
                         });
                     }
                 }
             });
 
             if (!isValid) {
-                alert("Mohon lengkapi semua kolom input untuk item SPANDEK!");
+                alert(errorMessage || "Mohon lengkapi data yang ditandai merah atau cek perhitungan Qty Split!");
                 return;
             }
 
             if (payload.length === 0) {
-                alert("Tidak ada data Spandek untuk disimpan.");
-                return;
+                alert("Tidak ada data Spandek untuk disimpan."); return;
             }
 
+            // Kirim ke Backend
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
             btn.disabled = true;
 
@@ -310,20 +471,16 @@
                     method: 'POST',
                     body: JSON.stringify({ data: payload })
                 });
-                
                 const result = await response.json();
-
                 if(result.status === 'success') {
-                    alert("Sukses! Data tersimpan dan Status diupdate.");
-                    // Refresh halaman agar dropdown order terupdate (order yg baru dikerjakan hilang)
-                    location.reload(); 
+                    alert("Sukses! Data tersimpan.");
+                    location.reload();
                 } else {
-                    alert("Gagal menyimpan: " + result.message);
+                    alert("Gagal: " + result.message);
                 }
-
             } catch (error) {
                 console.error(error);
-                alert("Terjadi kesalahan saat mengirim data.");
+                alert("Error Network.");
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
