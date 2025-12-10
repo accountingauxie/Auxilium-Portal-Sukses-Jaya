@@ -5,68 +5,179 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Invoice Approval System</title>
   <style>
-    body { font-family: 'Segoe UI', sans-serif; background-color: #f5f7fa; margin: 0; padding: 20px; }
-    h1 { color: #333; margin-bottom: 20px; }
+    /* --- BASE STYLES --- */
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; }
+    h1 { color: #1a1a1a; margin-bottom: 20px; }
 
-    /* Controls */
-    .controls { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-    .search-bar { padding: 10px; border: 1px solid #ddd; border-radius: 5px; flex-grow: 1; min-width: 200px; }
-    .filter-btn { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; background: #ddd; color: #333; }
-    .filter-btn.active { background-color: #007bff; color: white; }
+    /* --- DASHBOARD CONTROLS --- */
+    .controls { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    .search-bar { padding: 10px; border: 1px solid #ddd; border-radius: 6px; flex-grow: 1; outline: none; }
+    .filter-btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; background: #f0f0f0; color: #555; font-weight: 600; transition: 0.2s; }
+    .filter-btn.active, .filter-btn:hover { background-color: #007bff; color: white; }
 
-    /* Cards */
-    .invoice-card { background: white; padding: 20px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    /* --- INVOICE LIST CARD --- */
+    .invoice-card { background: white; padding: 20px; margin-bottom: 15px; border-radius: 10px; border-left: 5px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: transform 0.2s; }
+    .invoice-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    
     .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .card-title { font-size: 1.1em; font-weight: bold; }
+    .card-title { font-size: 1.2em; font-weight: 700; color: #2c3e50; }
+    .card-sub { font-size: 0.9em; color: #7f8c8d; }
     
-    /* Status Badges */
-    .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 0.85em; font-weight: bold; color: white; }
-    .bg-pending { background-color: #ffc107; color: #333; }
-    .bg-approved { background-color: #28a745; }
-    .bg-canceled { background-color: #dc3545; }
-
-    .card-info { font-size: 0.9em; color: #555; line-height: 1.6; }
-
-    /* Expand Section */
-    .expand-btn { margin-top: 10px; padding: 8px 12px; background: #f8f9fa; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; width: 100%; text-align: center; }
-    .expand-btn:hover { background: #e2e6ea; }
+    /* Status Colors */
+    .border-pending { border-left-color: #ffc107; }
+    .border-approved { border-left-color: #28a745; }
+    .border-canceled { border-left-color: #dc3545; }
     
-    .details-container { display: none; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
-    
-    /* Table */
-    table { width: 100%; border-collapse: collapse; font-size: 0.9em; margin-bottom: 15px; }
-    th, td { padding: 8px; text-align: left; border-bottom: 1px solid #eee; }
-    th { background-color: #f8f9fa; font-weight: 600; }
-    .text-right { text-align: right; }
+    .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 0.8em; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+    .bg-pending { background-color: #fff3cd; color: #856404; }
+    .bg-approved { background-color: #d4edda; color: #155724; }
+    .bg-canceled { background-color: #f8d7da; color: #721c24; }
 
-    /* Action Buttons */
-    .action-row { display: flex; gap: 10px; justify-content: flex-end; }
-    .btn { padding: 8px 20px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: 600; }
-    .btn-approve { background-color: #007bff; }
+    .btn-details { margin-top: 15px; width: 100%; padding: 10px; background: #eef2f7; color: #007bff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+    .btn-details:hover { background: #dbe4ef; }
+
+    /* --- MODAL (INVOICE PAPER VIEW) --- */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; display: none; justify-content: center; align-items: center; overflow-y: auto; padding: 20px; box-sizing: border-box; }
+    
+    .invoice-paper { background: white; width: 100%; max-width: 900px; min-height: 80vh; padding: 40px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; display: flex; flex-direction: column; animation: slideUp 0.3s ease-out; }
+
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    /* Modal Header & Controls */
+    .paper-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }
+    .company-info h2 { margin: 0; color: #333; font-size: 24px; text-transform: uppercase; letter-spacing: 1px; }
+    .company-info p { margin: 5px 0 0; color: #666; font-size: 14px; }
+
+    .invoice-navigator { display: flex; gap: 10px; align-items: center; }
+    .nav-select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; min-width: 150px; cursor: pointer; }
+    .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #999; }
+    .close-btn:hover { color: #dc3545; }
+
+    /* Invoice Meta Data */
+    .invoice-meta { display: flex; justify-content: space-between; margin-bottom: 30px; }
+    .meta-box label { display: block; font-size: 12px; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
+    .meta-box div { font-size: 16px; font-weight: 600; color: #333; }
+
+    /* Invoice Table */
+    .paper-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 13px; }
+    .paper-table th { text-align: left; padding: 12px 8px; border-top: 2px solid #333; border-bottom: 2px solid #333; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+    .paper-table td { padding: 12px 8px; border-bottom: 1px solid #eee; color: #444; vertical-align: middle; }
+    .paper-table tr:last-child td { border-bottom: none; }
+    
+    /* Column Widths to match Image */
+    .col-desc { width: 35%; }
+    .col-type { width: 5%; text-align: center; }
+    .col-num { text-align: right; width: 10%; }
+    .col-unit { width: 8%; padding-left: 10px; }
+
+    /* Footer Totals */
+    .invoice-footer { display: flex; justify-content: flex-end; margin-top: auto; padding-top: 20px; border-top: 2px solid #333; }
+    .totals-area { width: 300px; }
+    .total-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
+    .total-row.grand { font-size: 18px; font-weight: bold; color: #000; border-top: 1px solid #ccc; padding-top: 10px; margin-top: 10px; }
+
+    /* Action Buttons in Modal */
+    .modal-actions { margin-top: 40px; display: flex; gap: 15px; justify-content: flex-end; }
+    .btn { padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; transition: 0.2s; }
+    .btn-approve { background-color: #007bff; color: white; }
     .btn-approve:hover { background-color: #0056b3; }
-    .btn-cancel { background-color: #dc3545; }
+    .btn-cancel { background-color: #dc3545; color: white; }
     .btn-cancel:hover { background-color: #a71d2a; }
-    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-disabled { opacity: 0.6; cursor: not-allowed; }
 
-    /* Loading */
-    .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; display: none; }
+    /* Loading Spinner */
+    .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: none; justify-content: center; align-items: center; z-index: 2000; }
     .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #007bff; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
 
-  <h1>Invoice Approval Dashboard</h1>
+  <h1>Approval Dashboard</h1>
 
   <div class="controls">
     <button class="filter-btn active" onclick="setFilter('All')">All</button>
     <button class="filter-btn" onclick="setFilter('Pending')">Pending</button>
     <button class="filter-btn" onclick="setFilter('Approved')">Approved</button>
     <button class="filter-btn" onclick="setFilter('Canceled')">Canceled</button>
-    <input type="text" id="searchInput" class="search-bar" placeholder="Search Customer or Invoice..." onkeyup="renderInvoices()">
+    <input type="text" id="searchInput" class="search-bar" placeholder="Search Customer, Invoice..." onkeyup="renderInvoices()">
   </div>
 
   <div id="invoiceList"></div>
+
+  <div id="invoiceModal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="invoice-paper" onclick="event.stopPropagation()"> <div class="paper-header">
+        <div class="company-info">
+          <h2>INVOICE DETAIL</h2>
+          <p>Review & Approval System</p>
+        </div>
+        <div class="invoice-navigator">
+          <select id="invoiceSwitcher" class="nav-select" onchange="switchInvoice(this.value)">
+            </select>
+          <button class="close-btn" onclick="document.getElementById('invoiceModal').style.display='none'">&times;</button>
+        </div>
+      </div>
+
+      <div class="invoice-meta">
+        <div class="meta-box">
+          <label>Customer</label>
+          <div id="modalCustomer">Vonny</div>
+        </div>
+        <div class="meta-box">
+          <label>Order Number</label>
+          <div id="modalInvoiceNum">INV-001</div>
+        </div>
+        <div class="meta-box">
+          <label>Date</label>
+          <div id="modalDate">12/09/2025</div>
+        </div>
+        <div class="meta-box">
+          <label>Status</label>
+          <div id="modalStatus" class="status-badge bg-pending">Pending</div>
+        </div>
+      </div>
+
+      <table class="paper-table">
+        <thead>
+          <tr>
+            <th class="col-desc">Description</th>
+            <th class="col-type">Type</th>
+            <th class="col-num">Length</th>
+            <th class="col-num">Price</th>
+            <th class="col-num">Disc</th>
+            <th class="col-num">Qty</th>
+            <th class="col-unit">Unit</th>
+            <th class="col-num">Total</th>
+          </tr>
+        </thead>
+        <tbody id="modalTableBody">
+          </tbody>
+      </table>
+
+      <div class="invoice-footer">
+        <div class="totals-area">
+          <div class="total-row">
+            <span>Subtotal (DPP)</span>
+            <span id="valDPP">Rp 0</span>
+          </div>
+          <div class="total-row">
+            <span>PPN (12%)</span>
+            <span id="valPPN">Rp 0</span>
+          </div>
+          <div class="total-row grand">
+            <span>GRAND TOTAL</span>
+            <span id="valGrand">Rp 0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions" id="modalActions">
+        <button class="btn btn-cancel" onclick="handleActionFromModal('Canceled')">Reject / Cancel</button>
+        <button class="btn btn-approve" id="btnApproveModal" onclick="handleApproveFromModal()">Approve Invoice</button>
+      </div>
+
+    </div>
+  </div>
 
   <div id="loading" class="loading-overlay">
     <div class="spinner"></div>
@@ -74,32 +185,19 @@
 
 <script>
   // ================= CONFIGURATION =================
-  // GANTI URL INI dengan URL Web App Script Anda yang baru
-  const API_URL = "https://script.google.com/macros/s/AKfycbxWUCj6fAA9Abzc9g8ViGPSxDWr7nH06q2woHGQanw53mFmR0Vz9OHVRG7A27-hZoyAqw/exec"; 
+  const API_URL = "https://script.google.com/macros/s/AKfycbyqNTa94-EbTXGYyO3AWnRu_q-sLKQh5s4z8UY7wphaqBKO2UcBSFNkyfRdtLhzHn9jEQ/exec"; 
   // =================================================
 
   let allInvoices = [];
   let currentFilter = 'All';
+  let currentOpenInvoiceId = null; // Menyimpan ID invoice yang sedang dibuka di modal
 
-  // --- INITIALIZATION ---
   window.onload = fetchInvoices;
 
-  function showLoading(show) {
-    document.getElementById('loading').style.display = show ? 'flex' : 'none';
-  }
+  function showLoading(show) { document.getElementById('loading').style.display = show ? 'flex' : 'none'; }
+  function formatMoney(amount) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount); }
 
-  // --- FORMATTER HELPERS ---
-  function formatMoney(amount) {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
-  }
-
-  function getStatusClass(status) {
-    if (!status || status === 'Pending') return 'bg-pending';
-    if (status === 'Approved') return 'bg-approved';
-    return 'bg-canceled';
-  }
-
-  // --- API CALLS ---
+  // --- FETCH DATA ---
   function fetchInvoices() {
     showLoading(true);
     fetch(API_URL + "?action=listInvoices")
@@ -109,22 +207,15 @@
         if (response.ok) {
           allInvoices = response.data;
           renderInvoices();
-        } else {
-          alert("Gagal mengambil data: " + response.error);
-        }
+        } else { alert("Error: " + response.error); }
       })
-      .catch(err => {
-        showLoading(false);
-        alert("Network Error: " + err.message);
-      });
+      .catch(err => { showLoading(false); alert("Network Error"); });
   }
 
-  // --- RENDER LOGIC ---
+  // --- RENDER LIST ---
   function setFilter(status) {
     currentFilter = status;
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.textContent === status);
-    });
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.toggle('active', btn.textContent === status));
     renderInvoices();
   }
 
@@ -133,193 +224,216 @@
     container.innerHTML = '';
     const searchVal = document.getElementById('searchInput').value.toLowerCase();
 
-    // Filter Logic
     const filtered = allInvoices.filter(inv => {
       const matchStatus = currentFilter === 'All' || (inv.status || 'Pending') === currentFilter;
-      const matchSearch = inv.customer.toLowerCase().includes(searchVal) || 
-                          inv.invoiceNumber.toString().toLowerCase().includes(searchVal);
+      const matchSearch = inv.customer.toLowerCase().includes(searchVal) || inv.invoiceNumber.toString().toLowerCase().includes(searchVal);
       return matchStatus && matchSearch;
     });
 
-    if (filtered.length === 0) {
-      container.innerHTML = '<p style="text-align:center; color:#888;">No invoices found.</p>';
-      return;
-    }
+    if (filtered.length === 0) { container.innerHTML = '<p style="text-align:center; color:#888;">No data found.</p>'; return; }
 
     filtered.forEach(inv => {
-      const card = document.createElement('div');
-      card.className = 'invoice-card';
-      
-      // Hitung Grand Total (Display purposes)
-      const grandTotal = inv.items.reduce((sum, item) => sum + (item.total || 0), 0);
       const status = inv.status || 'Pending';
+      const borderClass = status === 'Approved' ? 'border-approved' : (status === 'Canceled' ? 'border-canceled' : 'border-pending');
+      const grandTotal = inv.items.reduce((s, i) => s + (i.total || 0), 0);
 
-      // Header Card
+      const card = document.createElement('div');
+      card.className = `invoice-card ${borderClass}`;
       card.innerHTML = `
         <div class="card-header">
-          <div class="card-title">${inv.invoiceNumber} - ${inv.customer}</div>
-          <span class="status-badge ${getStatusClass(status)}" id="badge-${inv.invoiceNumber}">${status}</span>
-        </div>
-        <div class="card-info">
-          Date: ${inv.date ? new Date(inv.date).toLocaleDateString() : '-'}<br>
-          Total Amount: <b>${formatMoney(grandTotal)}</b>
-        </div>
-        <button class="expand-btn" onclick="toggleDetails('${inv.invoiceNumber}')">Show Details</button>
-        
-        <div id="details-${inv.invoiceNumber}" class="details-container">
-          ${renderTable(inv.items)}
-          
-          <div class="action-row">
-            ${status === 'Pending' ? `
-              <button class="btn btn-cancel" onclick="handleAction('${inv.invoiceNumber}', 'Canceled')">Cancel</button>
-              <button class="btn btn-approve" onclick="handleApprove('${inv.invoiceNumber}')">Approve</button>
-            ` : ''}
+          <div>
+            <div class="card-title">${inv.invoiceNumber}</div>
+            <div class="card-sub">${inv.customer}</div>
           </div>
+          <span class="status-badge ${status === 'Approved' ? 'bg-approved' : (status === 'Canceled' ? 'bg-canceled' : 'bg-pending')}">${status}</span>
         </div>
+        <div style="font-size:0.9em; color:#666; margin-bottom:5px;">
+          Date: ${inv.date ? new Date(inv.date).toLocaleDateString('id-ID') : '-'}
+        </div>
+        <div style="font-weight:bold; font-size:1.1em;">
+          ${formatMoney(grandTotal)}
+        </div>
+        <button class="btn-details" onclick="openInvoiceModal('${inv.invoiceNumber}')">Show Details</button>
       `;
       container.appendChild(card);
     });
   }
 
-  function renderTable(items) {
-    if (!items || items.length === 0) return '<p>No items.</p>';
+  // ================= MODAL LOGIC =================
+
+  function openInvoiceModal(invoiceId) {
+    currentOpenInvoiceId = invoiceId;
     
-    return `
-      <table>
-        <thead>
-          <tr>
-            <th>Type</th>
-            <th>Product</th>
-            <th class="text-right">Meter</th>
-            <th class="text-right">Qty</th>
-            <th class="text-right">Unit Price</th>
-            <th class="text-right">Disc</th>
-            <th class="text-right">Price/Qty</th>
-            <th class="text-right">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${items.map(item => `
-            <tr>
-              <td>${item.type || '-'}</td>
-              <td>${item.product}</td>
-              <td class="text-right">${item.meter}</td>
-              <td class="text-right">${item.qty}</td>
-              <td class="text-right">${formatMoney(item.unitPrice)}</td>
-              <td class="text-right">${formatMoney(item.discount)}</td>
-              <td class="text-right">${formatMoney(item.priceQty)}</td>
-              <td class="text-right"><b>${formatMoney(item.total)}</b></td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    `;
+    // 1. Populate Dropdown dengan semua Invoice yang ada (untuk navigasi cepat)
+    const select = document.getElementById('invoiceSwitcher');
+    select.innerHTML = '';
+    allInvoices.forEach(inv => {
+      const option = document.createElement('option');
+      option.value = inv.invoiceNumber;
+      option.text = `${inv.invoiceNumber} - ${inv.customer}`;
+      if (inv.invoiceNumber == invoiceId) option.selected = true;
+      select.appendChild(option);
+    });
+
+    // 2. Render Isi Modal
+    renderModalContent(invoiceId);
+
+    // 3. Tampilkan Modal
+    document.getElementById('invoiceModal').style.display = 'flex';
   }
 
-  function toggleDetails(id) {
-    const el = document.getElementById(`details-${id}`);
-    if (el.style.display === 'block') {
-      el.style.display = 'none';
+  function switchInvoice(newId) {
+    currentOpenInvoiceId = newId;
+    renderModalContent(newId);
+  }
+
+  function renderModalContent(id) {
+    const inv = allInvoices.find(i => i.invoiceNumber == id);
+    if (!inv) return;
+
+    // Header Info
+    document.getElementById('modalCustomer').textContent = inv.customer;
+    document.getElementById('modalInvoiceNum').textContent = inv.invoiceNumber;
+    document.getElementById('modalDate').textContent = inv.date ? new Date(inv.date).toLocaleDateString('id-ID') : '-';
+    
+    // Status Badge
+    const statusEl = document.getElementById('modalStatus');
+    statusEl.className = `status-badge ${inv.status === 'Approved' ? 'bg-approved' : (inv.status === 'Canceled' ? 'bg-canceled' : 'bg-pending')}`;
+    statusEl.textContent = inv.status || 'Pending';
+
+    // Show/Hide Action Buttons based on status
+    const actionDiv = document.getElementById('modalActions');
+    if (inv.status === 'Approved' || inv.status === 'Canceled') {
+      actionDiv.style.display = 'none'; // Sembunyikan tombol jika sudah diproses
     } else {
-      el.style.display = 'block';
+      actionDiv.style.display = 'flex'; // Tampilkan jika Pending
+    }
+
+    // Table Rows
+    const tbody = document.getElementById('modalTableBody');
+    tbody.innerHTML = '';
+    
+    let subTotal = 0;
+
+    inv.items.forEach(item => {
+      subTotal += (item.total || 0);
+      
+      // Logic Jenis (SP/NP) simpel: Ambil huruf depan tipe atau default
+      const typeCode = item.type ? item.type.substring(0,2).toUpperCase() : '-';
+      
+      // Logic Satuan: Jika meter > 0 maka "Lbr", jika 0 maka "Btg"
+      const unitLabel = item.meter > 0 ? "Lembar" : "Batang";
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${item.product}</td>
+        <td style="text-align:center; font-weight:bold;">${typeCode}</td>
+        <td style="text-align:right;">${item.meter > 0 ? item.meter : '-'}</td>
+        <td style="text-align:right;">${new Intl.NumberFormat('id-ID').format(item.unitPrice)}</td>
+        <td style="text-align:right;">${new Intl.NumberFormat('id-ID').format(item.discount)}</td>
+        <td style="text-align:right;">${item.qty}</td>
+        <td>${unitLabel}</td>
+        <td style="text-align:right; font-weight:bold;">${new Intl.NumberFormat('id-ID').format(item.total)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    // Footer Calculations (Asumsi: Item Total di tabel adalah Subtotal sebelum PPN)
+    // Jika di data Anda 'total' sudah termasuk PPN, sesuaikan rumus ini.
+    // Rumus di bawah: Subtotal -> PPN 12% -> Grand Total
+    
+    // Menggunakan logika standard invoice Indonesia:
+    // Total Items = DPP
+    // PPN = 12% * DPP
+    const dpp = subTotal;
+    const ppn = subTotal * 0.12; 
+    const grandTotal = dpp + ppn;
+
+    document.getElementById('valDPP').textContent = formatMoney(dpp);
+    document.getElementById('valPPN').textContent = formatMoney(ppn);
+    document.getElementById('valGrand').textContent = formatMoney(grandTotal);
+  }
+
+  function closeModal(event) {
+    if (event.target.id === 'invoiceModal') {
+      document.getElementById('invoiceModal').style.display = 'none';
     }
   }
 
-  // --- ACTION HANDLERS ---
+  // --- APPROVE / CANCEL LOGIC FROM MODAL ---
 
-  // 1. Handle APPROVE (Kirim Full JSON)
-  function handleApprove(invoiceNumber) {
-    if (!confirm("Are you sure you want to approve this invoice? Data will be sent to Production.")) return;
+  function handleApproveFromModal() {
+    if(!confirm("Approve this invoice?")) return;
+    
+    const inv = allInvoices.find(i => i.invoiceNumber == currentOpenInvoiceId);
+    if (!inv) return;
 
-    // Cari data invoice object secara utuh dari array local
-    const invoiceObj = allInvoices.find(i => i.invoiceNumber == invoiceNumber);
-    if (!invoiceObj) {
-      alert("Error: Data invoice not found in local memory.");
-      return;
-    }
+    setModalLoading(true);
 
-    // Siapkan Payload khusus backend baru (Code.gs yang terakhir kita buat)
     const payload = {
-      invoiceNumber: invoiceObj.invoiceNumber,
-      customerName: invoiceObj.customer,
-      date: invoiceObj.date, // Pastikan format date aman
-      items: invoiceObj.items // Kirim semua detail item
+      invoiceNumber: inv.invoiceNumber,
+      customerName: inv.customer,
+      date: inv.date,
+      items: inv.items
     };
 
-    setLoadingBtn(invoiceNumber, true);
-
-    // Gunakan fetch POST dengan body JSON
     fetch(API_URL + "?action=approveInvoice", {
       method: "POST",
       body: JSON.stringify(payload)
     })
     .then(res => res.json())
     .then(data => {
-      setLoadingBtn(invoiceNumber, false);
-      if (data.ok) {
-        alert("Success! Invoice Approved.");
-        // Update tampilan lokal
-        updateLocalStatus(invoiceNumber, 'Approved');
+      setModalLoading(false);
+      if(data.ok) {
+        alert("Approved successfully!");
+        updateLocalStatus(inv.invoiceNumber, 'Approved');
+        renderModalContent(inv.invoiceNumber); // Refresh modal view
+        renderInvoices(); // Refresh list view
       } else {
         alert("Failed: " + data.error);
       }
-    })
-    .catch(err => {
-      setLoadingBtn(invoiceNumber, false);
-      alert("Error: " + err.message);
     });
   }
 
-  // 2. Handle CANCEL (Cuma Update Status)
-  function handleAction(invoiceNumber, newStatus) {
-    if (!confirm(`Mark this invoice as ${newStatus}?`)) return;
-
-    setLoadingBtn(invoiceNumber, true);
-
-    // Pakai x-www-form-urlencoded untuk action simple
+  function handleActionFromModal(newStatus) {
+    if(!confirm("Are you sure you want to " + newStatus + " this invoice?")) return;
+    setModalLoading(true);
+    
     const formData = new URLSearchParams();
     formData.append('action', 'updateStatus');
-    formData.append('invoiceNumber', invoiceNumber);
+    formData.append('invoiceNumber', currentOpenInvoiceId);
     formData.append('status', newStatus);
 
-    fetch(API_URL, {
-      method: "POST",
-      body: formData
-    })
+    fetch(API_URL, { method: "POST", body: formData })
     .then(res => res.json())
     .then(data => {
-      setLoadingBtn(invoiceNumber, false);
-      if (data.ok) {
-        updateLocalStatus(invoiceNumber, newStatus);
-      } else {
-        alert("Failed: " + (data.error || "Unknown error"));
-      }
-    })
-    .catch(err => {
-      setLoadingBtn(invoiceNumber, false);
-      alert("Error: " + err.message);
+      setModalLoading(false);
+      if(data.ok) {
+        updateLocalStatus(currentOpenInvoiceId, newStatus);
+        renderModalContent(currentOpenInvoiceId);
+        renderInvoices();
+      } else { alert("Failed"); }
     });
   }
 
-  // Helper untuk update UI tanpa reload page
+  function setModalLoading(isLoading) {
+    const btn = document.getElementById('btnApproveModal');
+    if(isLoading) {
+      btn.textContent = "Processing...";
+      btn.classList.add('btn-disabled');
+      btn.disabled = true;
+    } else {
+      btn.textContent = "Approve Invoice";
+      btn.classList.remove('btn-disabled');
+      btn.disabled = false;
+    }
+  }
+
   function updateLocalStatus(id, status) {
-    // Update data di array memory
     const inv = allInvoices.find(i => i.invoiceNumber == id);
-    if (inv) inv.status = status;
-    
-    // Render ulang agar pindah tab atau ganti warna badge
-    renderInvoices();
+    if(inv) inv.status = status;
   }
 
-  function setLoadingBtn(id, isLoading) {
-    const detailDiv = document.getElementById(`details-${id}`);
-    const buttons = detailDiv.querySelectorAll('button');
-    buttons.forEach(btn => {
-      btn.disabled = isLoading;
-      if (isLoading && btn.classList.contains('btn-approve')) btn.textContent = "Processing...";
-      if (!isLoading && btn.classList.contains('btn-approve')) btn.textContent = "Approve";
-    });
-  }
 </script>
 
 </body>
