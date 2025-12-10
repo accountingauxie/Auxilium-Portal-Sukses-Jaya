@@ -20,7 +20,7 @@
       --xero-bg: #E3F2FD; --xero-text: #0c5460; --xero-border: #b8daff;
       --approved-bg: #d1e7dd; --approved-text: #0f5132;
       --pending-bg: #fff3cd; --pending-text: #856404;
-      --partial-bg: #fff3cd; --partial-text: #856404; /* Kuning agak gelap */
+      --partial-bg: #fff3cd; --partial-text: #856404;
       --canceled-bg: #fef2f2; --canceled-text: #991b1b;
     }
     body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); margin: 0; color: var(--text-main); }
@@ -60,7 +60,7 @@
     .border-pending::before { background-color: #fbbf24; }
     .border-approved::before { background-color: #10b981; }
     .border-canceled::before { background-color: #ef4444; }
-    .border-partial::before { background-color: #d97706; } /* Orange Partial */
+    .border-partial::before { background-color: #d97706; }
 
     .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; padding-left: 12px; }
     .card-title { font-size: 1.1rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
@@ -572,7 +572,7 @@
             <td style="text-align:right; color:#888;">${item.qty}</td>
             <td style="text-align:right;">
                 <input type="number" class="input-qty" value="${item.qty}" min="0" max="${item.qty}" 
-                 onchange="recalcPartialRow(this, ${index})">
+                 oninput="recalcPartialRow(this, ${index})" onchange="recalcPartialRow(this, ${index})">
             </td>
             <td style="text-align:right; font-weight:bold;" id="pTotal-${index}">${formatMoney(initialTotal)}</td>
         `;
@@ -584,8 +584,18 @@
   }
 
   function recalcPartialRow(input, index) {
-    let newQty = parseFloat(input.value) || 0;
-    if (newQty < 0) newQty = 0;
+    let max = parseFloat(input.getAttribute('max'));
+    let newQty = parseFloat(input.value);
+    
+    // VALIDASI AGAR TIDAK LEBIH DARI ORIGINAL
+    if (newQty > max) {
+        alert(`Maksimal Qty untuk item ini adalah ${max}`);
+        newQty = max;
+        input.value = max;
+    }
+    if (newQty < 0 || isNaN(newQty)) {
+        newQty = 0;
+    }
     
     // Update temp data
     tempPartialData.items[index].qty = newQty;
