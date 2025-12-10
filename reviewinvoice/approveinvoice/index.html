@@ -8,7 +8,7 @@
     /* --- BASE STYLES --- */
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: #333; }
     
-    /* --- NAVIGATION BAR (NEW) --- */
+    /* --- NAVIGATION BAR --- */
     .navbar { background-color: #fff; padding: 15px 20px; border-bottom: 1px solid #ddd; display: flex; gap: 20px; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; }
     .nav-brand { font-weight: bold; font-size: 1.2em; color: #007bff; margin-right: auto; }
     .nav-link { text-decoration: none; color: #555; font-weight: 500; font-size: 14px; padding: 8px 12px; border-radius: 5px; transition: 0.2s; }
@@ -19,7 +19,7 @@
     .container { padding: 0 20px 20px 20px; max-width: 1200px; margin: 0 auto; }
     h1 { color: #1a1a1a; margin-bottom: 20px; margin-top: 10px; }
 
-    /* --- DASHBOARD CONTROLS --- */
+    /* --- CONTROLS --- */
     .controls { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
     .search-bar { padding: 10px; border: 1px solid #ddd; border-radius: 6px; flex-grow: 1; outline: none; }
     .filter-btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; background: #f0f0f0; color: #555; font-weight: 600; transition: 0.2s; }
@@ -29,16 +29,21 @@
     .invoice-card { background: white; padding: 20px; margin-bottom: 15px; border-radius: 10px; border-left: 5px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: transform 0.2s; }
     .invoice-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     
-    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
     .card-title { font-size: 1.2em; font-weight: 700; color: #2c3e50; }
     .card-sub { font-size: 0.9em; color: #7f8c8d; }
     
-    /* Status Colors */
+    /* Status Styles */
+    .status-wrapper { text-align: right; display: flex; flex-direction: column; align-items: flex-end; }
+    .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 0.8em; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; }
+    
+    /* NEW: Cancellation Note Style */
+    .cancel-note { font-size: 0.85em; color: #dc3545; margin-top: 5px; display: flex; align-items: center; gap: 5px; background: #fff5f5; padding: 4px 8px; border-radius: 4px; border: 1px solid #f5c6cb; max-width: 250px; }
+    
     .border-pending { border-left-color: #ffc107; }
     .border-approved { border-left-color: #28a745; }
     .border-canceled { border-left-color: #dc3545; }
     
-    .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 0.8em; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
     .bg-pending { background-color: #fff3cd; color: #856404; }
     .bg-approved { background-color: #d4edda; color: #155724; }
     .bg-canceled { background-color: #f8d7da; color: #721c24; }
@@ -46,14 +51,11 @@
     .btn-details { margin-top: 15px; width: 100%; padding: 10px; background: #eef2f7; color: #007bff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
     .btn-details:hover { background: #dbe4ef; }
 
-    /* --- MODAL (INVOICE PAPER VIEW) --- */
+    /* --- MODAL --- */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; display: none; justify-content: center; align-items: center; overflow-y: auto; padding: 20px; box-sizing: border-box; }
-    
     .invoice-paper { background: white; width: 100%; max-width: 900px; min-height: 80vh; padding: 40px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; display: flex; flex-direction: column; animation: slideUp 0.3s ease-out; }
-
     @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-    /* Modal Header & Controls */
     .paper-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }
     .company-info h2 { margin: 0; color: #333; font-size: 24px; text-transform: uppercase; letter-spacing: 1px; }
     .company-info p { margin: 5px 0 0; color: #666; font-size: 14px; }
@@ -63,30 +65,24 @@
     .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #999; }
     .close-btn:hover { color: #dc3545; }
 
-    /* Invoice Meta Data */
     .invoice-meta { display: flex; justify-content: space-between; margin-bottom: 30px; }
     .meta-box label { display: block; font-size: 12px; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
     .meta-box div { font-size: 16px; font-weight: 600; color: #333; }
 
-    /* Invoice Table */
     .paper-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 13px; }
     .paper-table th { text-align: left; padding: 12px 8px; border-top: 2px solid #333; border-bottom: 2px solid #333; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
     .paper-table td { padding: 12px 8px; border-bottom: 1px solid #eee; color: #444; vertical-align: middle; }
-    .paper-table tr:last-child td { border-bottom: none; }
     
-    /* Column Widths */
     .col-desc { width: 35%; }
     .col-type { width: 5%; text-align: center; }
     .col-num { text-align: right; width: 10%; }
     .col-unit { width: 8%; padding-left: 10px; }
 
-    /* Footer Totals */
     .invoice-footer { display: flex; justify-content: flex-end; margin-top: auto; padding-top: 20px; border-top: 2px solid #333; }
     .totals-area { width: 300px; }
     .total-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
     .total-row.grand { font-size: 18px; font-weight: bold; color: #000; border-top: 1px solid #ccc; padding-top: 10px; margin-top: 10px; }
 
-    /* Action Buttons in Modal */
     .modal-actions { margin-top: 40px; display: flex; gap: 15px; justify-content: flex-end; }
     .btn { padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; transition: 0.2s; }
     .btn-approve { background-color: #007bff; color: white; }
@@ -95,7 +91,6 @@
     .btn-cancel:hover { background-color: #a71d2a; }
     .btn-disabled { opacity: 0.6; cursor: not-allowed; }
 
-    /* Loading Spinner */
     .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: none; justify-content: center; align-items: center; z-index: 2000; }
     .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #007bff; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -112,7 +107,6 @@
 
   <div class="container">
     <h1>Approval Dashboard</h1>
-
     <div class="controls">
       <button class="filter-btn active" onclick="setFilter('All')">All</button>
       <button class="filter-btn" onclick="setFilter('Pending')">Pending</button>
@@ -120,42 +114,24 @@
       <button class="filter-btn" onclick="setFilter('Canceled')">Canceled</button>
       <input type="text" id="searchInput" class="search-bar" placeholder="Search Customer, Invoice..." onkeyup="renderInvoices()">
     </div>
-
     <div id="invoiceList"></div>
   </div>
 
   <div id="invoiceModal" class="modal-overlay" onclick="closeModal(event)">
     <div class="invoice-paper" onclick="event.stopPropagation()">
-      
       <div class="paper-header">
-        <div class="company-info">
-          <h2>INVOICE DETAIL</h2>
-          <p>Review & Approval System</p>
-        </div>
+        <div class="company-info"><h2>INVOICE DETAIL</h2><p>Review & Approval System</p></div>
         <div class="invoice-navigator">
-          <select id="invoiceSwitcher" class="nav-select" onchange="switchInvoice(this.value)">
-            </select>
+          <select id="invoiceSwitcher" class="nav-select" onchange="switchInvoice(this.value)"></select>
           <button class="close-btn" onclick="document.getElementById('invoiceModal').style.display='none'">&times;</button>
         </div>
       </div>
 
       <div class="invoice-meta">
-        <div class="meta-box">
-          <label>Customer</label>
-          <div id="modalCustomer">Vonny</div>
-        </div>
-        <div class="meta-box">
-          <label>Order Number</label>
-          <div id="modalInvoiceNum">INV-001</div>
-        </div>
-        <div class="meta-box">
-          <label>Date</label>
-          <div id="modalDate">12/09/2025</div>
-        </div>
-        <div class="meta-box">
-          <label>Status</label>
-          <div id="modalStatus" class="status-badge bg-pending">Pending</div>
-        </div>
+        <div class="meta-box"><label>Customer</label><div id="modalCustomer"></div></div>
+        <div class="meta-box"><label>Order Number</label><div id="modalInvoiceNum"></div></div>
+        <div class="meta-box"><label>Date</label><div id="modalDate"></div></div>
+        <div class="meta-box"><label>Status</label><div id="modalStatus" class="status-badge"></div></div>
       </div>
 
       <table class="paper-table">
@@ -171,41 +147,26 @@
             <th class="col-num">Total</th>
           </tr>
         </thead>
-        <tbody id="modalTableBody">
-          </tbody>
+        <tbody id="modalTableBody"></tbody>
       </table>
 
       <div class="invoice-footer">
         <div class="totals-area">
-          <div class="total-row">
-            <span>Subtotal (DPP)</span>
-            <span id="valDPP">Rp 0</span>
-          </div>
-          <div class="total-row">
-            <span>PPN (12%)</span>
-            <span id="valPPN">Rp 0</span>
-          </div>
-          <div class="total-row grand">
-            <span>GRAND TOTAL</span>
-            <span id="valGrand">Rp 0</span>
-          </div>
+          <div class="total-row"><span>Subtotal (DPP)</span><span id="valDPP">Rp 0</span></div>
+          <div class="total-row"><span>PPN (12%)</span><span id="valPPN">Rp 0</span></div>
+          <div class="total-row grand"><span>GRAND TOTAL</span><span id="valGrand">Rp 0</span></div>
         </div>
       </div>
 
-      <div class="modal-actions" id="modalActions">
-        </div>
-
+      <div class="modal-actions" id="modalActions"></div>
     </div>
   </div>
 
-  <div id="loading" class="loading-overlay">
-    <div class="spinner"></div>
-  </div>
+  <div id="loading" class="loading-overlay"><div class="spinner"></div></div>
 
 <script>
   // ================= CONFIGURATION =================
-  // Update API URL sesuai dengan Deployment terbaru Anda
-  const API_URL = "https://script.google.com/macros/s/AKfycbybu4aO4-uCNQ2dRw-ivkMjum5Iq_WceNzxsr0UcjLuUEth7Og-DNyiSCxwHc7pe0fOQA/exec"; 
+  const API_URL = "https://script.google.com/macros/s/AKfycbxZX0EEi1Ao-Gg1pfXo62H4s8Bz9VayE2iAP40JtKjeXJhFeskrC9jI5gHVVlXFdbZSBA/exec"; 
   // =================================================
 
   let allInvoices = [];
@@ -217,7 +178,6 @@
   function showLoading(show) { document.getElementById('loading').style.display = show ? 'flex' : 'none'; }
   function formatMoney(amount) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount); }
 
-  // --- FETCH DATA ---
   function fetchInvoices() {
     showLoading(true);
     fetch(API_URL + "?action=listInvoices")
@@ -232,7 +192,6 @@
       .catch(err => { showLoading(false); alert("Network Error"); });
   }
 
-  // --- RENDER LIST ---
   function setFilter(status) {
     currentFilter = status;
     document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.toggle('active', btn.textContent === status));
@@ -257,6 +216,12 @@
       const borderClass = status === 'Approved' ? 'border-approved' : (status === 'Canceled' ? 'border-canceled' : 'border-pending');
       const grandTotal = inv.items.reduce((s, i) => s + (i.total || 0), 0);
 
+      // --- LOGIC NOTE DISPLAY (NEW) ---
+      let noteHtml = '';
+      if (status === 'Canceled' && inv.catatan) {
+        noteHtml = `<div class="cancel-note">💬 ${inv.catatan}</div>`;
+      }
+
       const card = document.createElement('div');
       card.className = `invoice-card ${borderClass}`;
       card.innerHTML = `
@@ -265,7 +230,10 @@
             <div class="card-title">${inv.invoiceNumber}</div>
             <div class="card-sub">${inv.customer}</div>
           </div>
-          <span class="status-badge ${status === 'Approved' ? 'bg-approved' : (status === 'Canceled' ? 'bg-canceled' : 'bg-pending')}">${status}</span>
+          <div class="status-wrapper">
+             <span class="status-badge ${status === 'Approved' ? 'bg-approved' : (status === 'Canceled' ? 'bg-canceled' : 'bg-pending')}">${status}</span>
+             ${noteHtml}
+          </div>
         </div>
         <div style="font-size:0.9em; color:#666; margin-bottom:5px;">
           Date: ${inv.date ? new Date(inv.date).toLocaleDateString('id-ID') : '-'}
@@ -279,12 +247,8 @@
     });
   }
 
-  // ================= MODAL LOGIC =================
-
   function openInvoiceModal(invoiceId) {
     currentOpenInvoiceId = invoiceId;
-    
-    // 1. Populate Dropdown
     const select = document.getElementById('invoiceSwitcher');
     select.innerHTML = '';
     allInvoices.forEach(inv => {
@@ -294,11 +258,7 @@
       if (inv.invoiceNumber == invoiceId) option.selected = true;
       select.appendChild(option);
     });
-
-    // 2. Render Isi Modal
     renderModalContent(invoiceId);
-
-    // 3. Tampilkan Modal
     document.getElementById('invoiceModal').style.display = 'flex';
   }
 
@@ -311,32 +271,24 @@
     const inv = allInvoices.find(i => i.invoiceNumber == id);
     if (!inv) return;
 
-    // --- 1. HEADER INFO ---
     document.getElementById('modalCustomer').textContent = inv.customer;
     document.getElementById('modalInvoiceNum').textContent = inv.invoiceNumber;
 
-    // Logika Tanggal
     let displayDate = "-";
     if (inv.date) {
       try {
         const d = new Date(inv.date);
         if (!isNaN(d.getTime())) {
           displayDate = d.toLocaleDateString('id-ID', { year: 'numeric', month: '2-digit', day: '2-digit' });
-        } else {
-          displayDate = inv.date;
-        }
-      } catch (e) {
-        displayDate = inv.date;
-      }
+        } else { displayDate = inv.date; }
+      } catch (e) { displayDate = inv.date; }
     }
     document.getElementById('modalDate').textContent = displayDate;
 
-    // --- 2. STATUS ---
     const statusEl = document.getElementById('modalStatus');
     statusEl.className = `status-badge ${inv.status === 'Approved' ? 'bg-approved' : (inv.status === 'Canceled' ? 'bg-canceled' : 'bg-pending')}`;
     statusEl.textContent = inv.status || 'Pending';
 
-    // --- 3. TOMBOL AKSI (DENGAN LOGIKA REVERT) ---
     const actionDiv = document.getElementById('modalActions');
     actionDiv.innerHTML = ''; 
     actionDiv.style.display = 'flex'; 
@@ -345,9 +297,13 @@
        actionDiv.style.display = 'none'; 
     } 
     else if (inv.status === 'Canceled') {
+       // REVERT BUTTON (Implicitly clears note via backend)
        actionDiv.innerHTML = `
-         <button class="btn" style="background-color:#6c757d; color:white; width:100%;" onclick="handleActionFromModal('Pending')">
-           Revert to Pending (Undo Reject)
+         <div style="color:#dc3545; font-size:0.9em; margin-right:auto; align-self:center;">
+            <b>Note:</b> ${inv.catatan || '-'}
+         </div>
+         <button class="btn" style="background-color:#6c757d; color:white;" onclick="handleActionFromModal('Pending')">
+           Revert to Pending
          </button>
        `;
     } 
@@ -358,34 +314,24 @@
        `;
     }
 
-    // --- 4. TABEL (LOGIKA TIPE DIPERBAIKI) ---
     const tbody = document.getElementById('modalTableBody');
     tbody.innerHTML = '';
-    
     let subTotal = 0;
 
     inv.items.forEach(item => {
       subTotal += (item.total || 0);
-      
       let typeCode = "-";
       const rawType = item.type ? item.type.toString().toUpperCase() : "";
       
-      // PRIORITAS: Cek NON/NP dulu
-      if (rawType.includes("NON") || rawType.includes("NP")) {
-        typeCode = "NP";
-      } else if (rawType.includes("SPANDEK") || rawType.includes("SP")) {
-        typeCode = "SP";
-      } else {
+      if (rawType.includes("NON") || rawType.includes("NP")) { typeCode = "NP"; } 
+      else if (rawType.includes("SPANDEK") || rawType.includes("SP")) { typeCode = "SP"; } 
+      else {
         const prodName = item.product ? item.product.toUpperCase() : "";
-        if (prodName.includes("NON SPANDEK") || prodName.includes("ROOF") || prodName.includes("GENTENG")) {
-           typeCode = "NP";
-        } else if (prodName.includes("SPANDEK") || prodName.includes("PUMA")) {
-           typeCode = "SP";
-        }
+        if (prodName.includes("NON SPANDEK") || prodName.includes("ROOF") || prodName.includes("GENTENG")) { typeCode = "NP"; } 
+        else if (prodName.includes("SPANDEK") || prodName.includes("PUMA")) { typeCode = "SP"; }
       }
 
       const unitLabel = item.meter > 0 ? "Lembar" : "Batang";
-
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${item.product}</td>
@@ -400,7 +346,6 @@
       tbody.appendChild(tr);
     });
 
-    // --- 5. TOTAL ---
     const dpp = subTotal;
     const ppn = subTotal * 0.12; 
     const grandTotal = dpp + ppn;
@@ -416,11 +361,10 @@
     }
   }
 
-  // --- APPROVE / CANCEL LOGIC ---
+  // --- ACTIONS ---
 
   function handleApproveFromModal() {
     if(!confirm("Approve this invoice?")) return;
-    
     const inv = allInvoices.find(i => i.invoiceNumber == currentOpenInvoiceId);
     if (!inv) return;
 
@@ -430,13 +374,12 @@
       invoiceNumber: inv.invoiceNumber,
       customerName: inv.customer,
       date: inv.date,
-      catatan: inv.catatan, // Kirim Notes ke Backend
+      catatan: inv.catatan, 
       items: inv.items
     };
 
     fetch(API_URL + "?action=approveInvoice", {
-      method: "POST",
-      body: JSON.stringify(payload)
+      method: "POST", body: JSON.stringify(payload)
     })
     .then(res => res.json())
     .then(data => {
@@ -446,50 +389,63 @@
         updateLocalStatus(inv.invoiceNumber, 'Approved');
         renderModalContent(inv.invoiceNumber); 
         renderInvoices(); 
-      } else {
-        alert("Failed: " + data.error);
-      }
+      } else { alert("Failed: " + data.error); }
     });
   }
 
   function handleActionFromModal(newStatus) {
-    if(!confirm("Are you sure you want to change status to " + newStatus + "?")) return;
+    let note = "";
+
+    // --- LOGIC WAJIB NOTE SAAT CANCEL ---
+    if (newStatus === 'Canceled') {
+       note = prompt("Mohon masukkan alasan Reject/Cancel (Wajib):");
+       if (note === null) return; // User cancel prompt
+       if (note.trim() === "") {
+          alert("Alasan tidak boleh kosong!");
+          return;
+       }
+    } 
+    // Jika Revert to Pending, note otomatis kosong (logic di backend)
+    else if (newStatus === 'Pending') {
+       if(!confirm("Revert status kembali ke Pending? (Catatan akan dihapus)")) return;
+    }
+
     setModalLoading(true);
     
     const formData = new URLSearchParams();
     formData.append('action', 'updateStatus');
     formData.append('invoiceNumber', currentOpenInvoiceId);
     formData.append('status', newStatus);
+    formData.append('note', note); // Kirim note ke backend
 
     fetch(API_URL, { method: "POST", body: formData })
     .then(res => res.json())
     .then(data => {
       setModalLoading(false);
       if(data.ok) {
-        updateLocalStatus(currentOpenInvoiceId, newStatus);
+        // Update local data agar UI langsung berubah tanpa refresh
+        const inv = allInvoices.find(i => i.invoiceNumber == currentOpenInvoiceId);
+        if(inv) {
+            inv.status = newStatus;
+            inv.catatan = (newStatus === 'Canceled') ? note : ""; // Clear note jika pending
+        }
         renderModalContent(currentOpenInvoiceId);
         renderInvoices();
       } else { alert("Failed"); }
     });
   }
 
-  // LOGIKA LOADING TOMBOL YANG AMAN UNTUK REVERT
   function setModalLoading(isLoading) {
     const actionDiv = document.getElementById('modalActions');
     const buttons = actionDiv.querySelectorAll('button');
-
     buttons.forEach(btn => {
       btn.disabled = isLoading;
       if (isLoading) {
-        if (!btn.dataset.originalText) {
-           btn.dataset.originalText = btn.innerText; 
-        }
+        if (!btn.dataset.originalText) { btn.dataset.originalText = btn.innerText; }
         btn.innerText = "Processing...";
         btn.classList.add('btn-disabled');
       } else {
-        if (btn.dataset.originalText) {
-           btn.innerText = btn.dataset.originalText;
-        }
+        if (btn.dataset.originalText) { btn.innerText = btn.dataset.originalText; }
         btn.classList.remove('btn-disabled');
       }
     });
@@ -499,7 +455,6 @@
     const inv = allInvoices.find(i => i.invoiceNumber == id);
     if(inv) inv.status = status;
   }
-
 </script>
 
 </body>
