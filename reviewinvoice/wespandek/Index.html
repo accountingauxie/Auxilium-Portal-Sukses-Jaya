@@ -3,264 +3,354 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WE Generator - Spandek</title>
+    <title>Production Form - WE Generator</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
     <style>
-        :root { --primary: #007bff; --bg: #f4f7f6; --text: #333; --disabled-bg: #e9ecef; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; }
-        
-        /* Layout Container */
-        .container { max-width: 1300px; margin: 30px auto; padding: 0 20px; }
-        
-        /* Card Style */
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        
-        h1, h2 { margin-top: 0; color: #2c3e50; }
-        .subtitle { color: #7f8c8d; margin-bottom: 20px; }
+        /* --- CSS STYLING --- */
+        :root { 
+            --primary: #0d6efd; 
+            --success: #198754; 
+            --bg: #f4f6f9; 
+            --text: #333; 
+            --border: #dee2e6;
+        }
 
-        /* --- MENU SECTION (STEP 1) --- */
-        #menuSection { text-align: center; max-width: 600px; margin: 50px auto; }
-        select.big-select { padding: 15px; font-size: 18px; width: 100%; border: 2px solid #ddd; border-radius: 8px; outline: none; margin: 20px 0; }
-        select.big-select:focus { border-color: var(--primary); }
-        
-        .btn-primary { background-color: var(--primary); color: white; padding: 12px 30px; font-size: 16px; border: none; border-radius: 6px; cursor: pointer; transition: 0.2s; }
-        .btn-primary:hover { background-color: #0056b3; }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
 
-        /* --- WORKSPACE SECTION (STEP 2) --- */
-        #workSection { display: none; }
+        /* Container & Cards */
+        .container { max-width: 1400px; margin: 0 auto; }
+        .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 20px; }
         
-        /* Header Grid untuk Tgl & Invoice */
-        .meta-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; align-items: end; margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #dee2e6; }
+        /* Headers */
+        h2 { margin-top: 0; color: #495057; font-size: 1.5rem; }
+        .sub-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--bg); padding-bottom: 15px; margin-bottom: 20px; }
+
+        /* Inputs & Selects */
+        .form-control, .form-select {
+            width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 5px; box-sizing: border-box; font-size: 14px;
+        }
+        .form-control:focus, .form-select:focus { outline: 2px solid var(--primary); border-color: transparent; }
         
-        .form-group label { display: block; font-size: 0.85em; font-weight: bold; color: #555; margin-bottom: 5px; }
-        .form-control { width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
-        .form-control:focus { border-color: var(--primary); outline: none; }
-        .form-control[readonly], .form-control:disabled { background-color: var(--disabled-bg); color: #6c757d; cursor: not-allowed; }
+        /* Disabled State (Untuk Non-Spandek) */
+        input:disabled, select:disabled { background-color: #e9ecef; cursor: not-allowed; color: #6c757d; }
+        input[readonly] { background-color: #e8f0fe; color: #000; font-weight: 500; }
+
+        /* Buttons */
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #0b5ed7; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #157347; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-secondary:hover { background: #5c636a; }
 
         /* Table Styling */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
-        th { background-color: #2c3e50; color: white; text-align: left; padding: 12px; }
-        td { padding: 10px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
-        tr:hover { background-color: #f1f1f1; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
+        th { background: #f8f9fa; text-align: left; padding: 12px; border-bottom: 2px solid var(--border); color: #495057; font-weight: 600; font-size: 0.9rem; }
+        td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        tr:hover { background-color: #fdfdfd; }
 
-        /* Badges for Type */
-        .badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8em; color: white; }
-        .badge-sp { background-color: #28a745; } /* Hijau untuk Spandek */
-        .badge-np { background-color: #6c757d; } /* Abu untuk Non-Spandek */
+        /* Badges (SP/NP) */
+        .badge { padding: 5px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; color: white; }
+        .bg-sp { background-color: var(--success); }
+        .bg-np { background-color: #6c757d; }
 
-        .we-result { font-family: 'Courier New', monospace; font-weight: bold; color: var(--primary); background: #eef2f7; border: none; }
+        /* Special Column: WE Result */
+        .we-result-input { 
+            font-family: 'Courier New', monospace; 
+            font-weight: bold; 
+            color: var(--primary); 
+            border: 1px dashed var(--primary);
+            background: #fbfdff;
+        }
 
-        .btn-secondary { background: #6c757d; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin-right: 10px; }
-        .btn-success { background: #198754; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; float: right; }
-
-        .loading-overlay { text-align: center; padding: 20px; color: #666; }
+        /* Loading Overlay */
+        #loading { text-align: center; padding: 40px; color: #666; font-size: 1.2rem; }
+        
+        /* Layout Grid for Header Info */
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .info-group label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; color: #666; }
     </style>
 </head>
 <body>
 
-<div class="container">
-
-    <div id="menuSection" class="card">
-        <h1><i class="fas fa-industry"></i> Spandek Production</h1>
-        <p class="subtitle">Select an Order Number to start.</p>
+    <div class="container">
         
-        <div id="loadingData" class="loading-overlay">
-            <i class="fas fa-spinner fa-spin"></i> Connecting to Server...
-        </div>
-
-        <div id="selectorArea" style="display:none;">
-            <select id="orderDropdown" class="big-select">
-                <option value="">-- Choose Order No --</option>
-            </select>
-            <button class="btn-primary" onclick="openWorkspace()">
-                Process Order <i class="fas fa-arrow-right"></i>
-            </button>
-        </div>
-    </div>
-
-    <div id="workSection">
-        <div class="card">
-            <div style="margin-bottom: 20px; display:flex; justify-content:space-between;">
-                <button class="btn-secondary" onclick="backToMenu()"><i class="fas fa-arrow-left"></i> Back</button>
-                <h3 style="margin:0;">Order: <span id="displayOrderNo" style="color:var(--primary)">-</span> | Customer: <span id="displayCustomer">-</span></h3>
+        <div id="menuSection" class="card" style="text-align: center; max-width: 600px; margin: 50px auto;">
+            <h2><i class="fas fa-industry"></i> Production WE Generator</h2>
+            <p style="color:#666;">Pilih Nomor Order untuk mulai memproses data Spandek.</p>
+            
+            <div id="loading">
+                <i class="fas fa-circle-notch fa-spin"></i> Memuat Data Order...
             </div>
 
-            <div class="meta-grid">
-                <div class="form-group">
-                    <label>Tanggal Produksi</label>
-                    <input type="date" id="prodDate" class="form-control">
+            <div id="selectorArea" style="display:none; margin-top: 20px;">
+                <select id="orderDropdown" class="form-select" style="font-size: 1.1rem; padding: 15px;">
+                    <option value="">-- Pilih Order Number --</option>
+                </select>
+                <br>
+                <button class="btn btn-primary" onclick="openWorkspace()" style="width: 100%; justify-content: center;">
+                    Buka Order <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="workSection" style="display:none;">
+            <div class="card">
+                <div class="sub-header">
+                    <div>
+                        <button class="btn btn-secondary" onclick="backToMenu()"><i class="fas fa-arrow-left"></i> Kembali</button>
+                        <span style="margin-left: 15px; font-weight: bold; font-size: 1.1rem;">
+                            Order: <span id="dispOrder" style="color:var(--primary)">...</span> | 
+                            Customer: <span id="dispCust">...</span>
+                        </span>
+                    </div>
+                    <button class="btn btn-success" onclick="exportToCSV()">
+                        <i class="fas fa-file-csv"></i> Export Result
+                    </button>
                 </div>
-                <div class="form-group">
-                    <label>Invoice Number (Auto)</label>
-                    <input type="text" id="invNumber" class="form-control" readonly style="font-weight:bold; letter-spacing:1px;">
+
+                <div class="info-grid">
+                    <div class="info-group">
+                        <label>Tanggal Produksi</label>
+                        <input type="date" id="prodDate" class="form-control">
+                    </div>
+                    <div class="info-group">
+                        <label>Invoice Number (Auto-Generated)</label>
+                        <input type="text" id="invNumber" class="form-control" readonly>
+                    </div>
+                    <div class="info-group" style="display: flex; align-items: end;">
+                        <span style="font-size: 0.8rem; color: #888;">*Pastikan semua kolom Spandek terisi sebelum export.</span>
+                    </div>
                 </div>
-                <div style="text-align: right;">
-                    <button class="btn-success" onclick="exportData()"><i class="fas fa-save"></i> Save & Export</button>
+
+                <div style="overflow-x: auto;">
+                    <table id="mainTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 20%;">Product Name</th>
+                                <th style="width: 5%; text-align: center;">Type</th>
+                                <th style="width: 5%; text-align: center;">Meter</th>
+                                <th style="width: 5%; text-align: center;">Qty</th>
+                                <th style="width: 15%;">Machine Selection</th>
+                                <th style="width: 12%;">KCP Number</th>
+                                <th style="width: 12%;">Prod. Type</th>
+                                <th style="width: 26%;">WE Number (Result)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            </tbody>
+                    </table>
                 </div>
             </div>
-
-            <table id="prodTable">
-                <thead>
-                    <tr>
-                        <th width="20%">Product</th>
-                        <th width="5%" class="text-center">Type</th>
-                        <th width="7%" class="text-center">Meter</th>
-                        <th width="5%" class="text-center">Qty</th>
-                        <th width="15%">Machine</th>
-                        <th width="12%">KCP Number</th>
-                        <th width="12%">Prod. Type</th>
-                        <th width="24%">WE Number (Result)</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    </tbody>
-            </table>
         </div>
+
     </div>
 
-</div>
+    <script>
+        let globalData = [];
+        let currentOrderNo = "";
 
-<script>
-    let globalData = [];
-    let currentOrderNo = "";
-
-    // 1. INIT SAAT LOAD
-    window.onload = function() {
-        // Ambil Data dari Server (Code.gs)
-        google.script.run.withSuccessHandler(onDataLoaded).getOrderData();
-        
-        // Set Default Date ke Hari Ini
-        document.getElementById('prodDate').valueAsDate = new Date();
-    };
-
-    function onDataLoaded(data) {
-        globalData = data;
-        
-        // Isi Dropdown
-        const dropdown = document.getElementById('orderDropdown');
-        const uniqueOrders = [...new Set(data.map(item => item.orderNumber))];
-        
-        uniqueOrders.forEach(orderNo => {
-            let option = document.createElement('option');
-            option.value = orderNo;
-            let sample = data.find(d => d.orderNumber === orderNo);
-            option.text = `${orderNo} - ${sample.customer}`;
-            dropdown.appendChild(option);
-        });
-
-        document.getElementById('loadingData').style.display = 'none';
-        document.getElementById('selectorArea').style.display = 'block';
-    }
-
-    // 2. BUKA WORKSPACE
-    function openWorkspace() {
-        const selectedOrder = document.getElementById('orderDropdown').value;
-        if (!selectedOrder) return alert("Pilih Order No dulu!");
-
-        currentOrderNo = selectedOrder;
-
-        // Ambil Invoice Baru dari Server
-        google.script.run.withSuccessHandler(function(inv) {
-            document.getElementById('invNumber').value = inv;
-            // Setelah Invoice ada, baru render tabel supaya rumus WE jalan
-            renderTable(selectedOrder);
-        }).generateInvoiceNumber();
-
-        document.getElementById('menuSection').style.display = 'none';
-        document.getElementById('workSection').style.display = 'block';
-    }
-
-    function backToMenu() {
-        document.getElementById('workSection').style.display = 'none';
-        document.getElementById('menuSection').style.display = 'block';
-        document.getElementById('tableBody').innerHTML = "";
-    }
-
-    // 3. RENDER TABEL (INTI LOGIKA)
-    function renderTable(orderNo) {
-        const data = globalData.filter(d => d.orderNumber == orderNo);
-        const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = "";
-        
-        // Update Info Header
-        document.getElementById('displayOrderNo').innerText = orderNo;
-        document.getElementById('displayCustomer').innerText = data[0].customer;
-
-        data.forEach((row, index) => {
-            const tr = document.createElement('tr');
+        // 1. INITIALIZATION
+        window.onload = function() {
+            // Set Default Date ke hari ini
+            document.getElementById('prodDate').valueAsDate = new Date();
             
-            // Cek Type SP atau NP
-            const isSpandek = (row.type === 'SP');
-            const disabledAttr = isSpandek ? '' : 'disabled'; // Kalau NP, disabled
-            const badgeClass = isSpandek ? 'badge-sp' : 'badge-np';
-            
-            tr.innerHTML = `
-                <td>${row.product}</td>
-                <td align="center"><span class="badge ${badgeClass}">${row.type}</span></td>
-                <td align="center">${row.meter}</td>
-                <td align="center">${row.qty}</td>
-                
-                <td>
-                    <select class="form-control machine-select" id="machine_${index}" onchange="calcWE(${index})" ${disabledAttr}>
-                        <option value="">-- Select --</option>
-                        <option value="M01">M01 - Puma 8</option>
-                        <option value="M02">M02 - Puma 14</option>
-                    </select>
-                </td>
+            // Panggil fungsi Server untuk ambil data
+            google.script.run
+                .withSuccessHandler(onDataLoaded)
+                .withFailureHandler(onFailure)
+                .getOrderData();
+        };
 
-                <td>
-                    <input type="text" class="form-control kcp-input" id="kcp_${index}" placeholder="Input No" oninput="calcWE(${index})" ${disabledAttr}>
-                </td>
-
-                <td>
-                    <select class="form-control type-select" id="prodType_${index}" onchange="calcWE(${index})" ${disabledAttr}>
-                        <option value="">-- Type --</option>
-                        <option value="Plat">Plat</option>
-                        <option value="Custom">Custom</option>
-                    </select>
-                </td>
-
-                <td>
-                    <input type="text" class="form-control we-result" id="weResult_${index}" readonly value="${isSpandek ? '-' : 'N/A (Non-Spandek)'}">
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
-
-    // 4. GENERATOR RUMUS WE NUMBER
-    // Format: Machine_KCP_Order(3digit)_Inv(3digit)_TipeProd
-    function calcWE(idx) {
-        const machineFull = document.getElementById(`machine_${idx}`).value; // Misal M01
-        const kcp = document.getElementById(`kcp_${idx}`).value;
-        const prodType = document.getElementById(`prodType_${idx}`).value;
-        const invFull = document.getElementById('invNumber').value;
-
-        const output = document.getElementById(`weResult_${idx}`);
-
-        // Jika data belum lengkap, jangan generate
-        if (!machineFull || !kcp || !prodType || !invFull) {
-            output.value = "-";
-            return;
+        function onFailure(error) {
+            document.getElementById('loading').innerHTML = `<span style="color:red">Error: ${error.message}</span>`;
         }
 
-        // Logic String Manipulation
-        const machine = machineFull; // Bisa juga ambil substring kalau mau
-        const last3Order = currentOrderNo.slice(-3);
-        const last3Inv = invFull.slice(-3);
-        const typeCode = (prodType === "Plat") ? "PLT" : "CTM";
+        function onDataLoaded(data) {
+            globalData = data;
+            const dropdown = document.getElementById('orderDropdown');
+            
+            // Ambil Order ID Unik
+            const uniqueOrders = [...new Set(data.map(item => item.orderNumber))];
+            
+            // Sort Descending (Terbaru diatas)
+            uniqueOrders.sort().reverse();
 
-        // GABUNGKAN
-        output.value = `${machine}_${kcp}_${last3Order}_${last3Inv}_${typeCode}`;
-    }
+            uniqueOrders.forEach(orderId => {
+                let row = data.find(d => d.orderNumber === orderId);
+                let option = document.createElement('option');
+                option.value = orderId;
+                option.text = `${orderId} - ${row.customer}`;
+                dropdown.appendChild(option);
+            });
 
-    // 5. EXPORT / SAVE
-    function exportData() {
-        alert("Data siap disimpan/export! Cek WE Number yang sudah tergenerate.");
-        // Anda bisa tambahkan fungsi google.script.run.saveData(...) disini
-    }
+            // Tampilkan Menu
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('selectorArea').style.display = 'block';
+        }
 
-</script>
+        // 2. OPEN WORKSPACE
+        function openWorkspace() {
+            const selectedOrder = document.getElementById('orderDropdown').value;
+            if(!selectedOrder) {
+                alert("Mohon pilih Nomor Order terlebih dahulu.");
+                return;
+            }
 
+            currentOrderNo = selectedOrder;
+            
+            // Generate Invoice dari Server
+            google.script.run.withSuccessHandler(function(inv) {
+                document.getElementById('invNumber').value = inv;
+                renderTable(selectedOrder); // Render tabel setelah invoice siap
+            }).generateInvoiceNumber();
+
+            // Switch UI
+            document.getElementById('menuSection').style.display = 'none';
+            document.getElementById('workSection').style.display = 'block';
+        }
+
+        function backToMenu() {
+            document.getElementById('workSection').style.display = 'none';
+            document.getElementById('menuSection').style.display = 'block';
+            document.getElementById('tableBody').innerHTML = ''; // Clear table
+        }
+
+        // 3. RENDER TABLE ROWS
+        function renderTable(orderId) {
+            const filteredData = globalData.filter(d => d.orderNumber == orderId);
+            
+            // Update Header Info
+            document.getElementById('dispOrder').innerText = orderId;
+            document.getElementById('dispCust').innerText = filteredData[0].customer;
+
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            filteredData.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                
+                // Logic cek SP vs NP
+                const isSpandek = (row.type === 'SP');
+                const disabledAttr = isSpandek ? '' : 'disabled';
+                const badgeHtml = isSpandek 
+                    ? '<span class="badge bg-sp">SP</span>' 
+                    : '<span class="badge bg-np">NP</span>';
+                const rowBg = isSpandek ? '' : 'style="background-color: #fafafa;"';
+
+                tr.innerHTML = `
+                    <td ${rowBg}>${row.product}</td>
+                    <td ${rowBg} align="center">${badgeHtml}</td>
+                    <td ${rowBg} align="center">${row.meter}</td>
+                    <td ${rowBg} align="center">${row.qty}</td>
+                    
+                    <td ${rowBg}>
+                        <select class="form-select" id="mach_${index}" onchange="calcWE(${index})" ${disabledAttr}>
+                            <option value="">-- Select Machine --</option>
+                            <option value="M01">M01 (Puma 8)</option>
+                            <option value="M02">M02 (Puma 14)</option>
+                        </select>
+                    </td>
+                    
+                    <td ${rowBg}>
+                        <input type="text" class="form-control" id="kcp_${index}" placeholder="Input KCP" oninput="calcWE(${index})" ${disabledAttr}>
+                    </td>
+
+                    <td ${rowBg}>
+                        <select class="form-select" id="ptype_${index}" onchange="calcWE(${index})" ${disabledAttr}>
+                            <option value="">-- Type --</option>
+                            <option value="Plat">Plat</option>
+                            <option value="Custom">Custom</option>
+                        </select>
+                    </td>
+
+                    <td ${rowBg}>
+                        <input type="text" class="form-control we-result-input" id="result_${index}" readonly value="${isSpandek ? '-' : ''}">
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // 4. GENERATE WE NUMBER LOGIC
+        // Rumus: Machine_KCP_Order(3)_Inv(3)_Type(PLT/CTM)
+        function calcWE(idx) {
+            const machVal = document.getElementById(`mach_${idx}`).value;
+            const kcpVal = document.getElementById(`kcp_${idx}`).value;
+            const pTypeVal = document.getElementById(`ptype_${idx}`).value;
+            const invFull = document.getElementById('invNumber').value;
+            const resultEl = document.getElementById(`result_${idx}`);
+
+            // Validasi kelengkapan data
+            if(!machVal || !kcpVal || !pTypeVal || !invFull) {
+                resultEl.value = "-";
+                return;
+            }
+
+            // 1. Ambil 3 digit order
+            // Order No: 1000077 -> ambil '077'
+            let order3 = currentOrderNo.length >= 3 ? currentOrderNo.slice(-3) : currentOrderNo;
+
+            // 2. Ambil 3 digit invoice
+            // Inv: INV-SJ-25-12-0001 -> ambil '001'
+            let inv3 = invFull.length >= 3 ? invFull.slice(-3) : invFull;
+
+            // 3. Mapping Tipe Produksi
+            let typeCode = (pTypeVal === 'Plat') ? 'PLT' : 'CTM';
+
+            // 4. Gabung
+            let finalWE = `${machVal}_${kcpVal}_${order3}_${inv3}_${typeCode}`;
+            
+            resultEl.value = finalWE;
+        }
+
+        // 5. EXPORT TO CSV FUNCTION
+        function exportToCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            
+            // Header CSV
+            csvContent += "Order No,Customer,Date,Invoice,Product,Type,Meter,Qty,Machine,KCP,ProdType,WE Number\n";
+
+            // Data Statis Header Form
+            const dateVal = document.getElementById('prodDate').value;
+            const invVal = document.getElementById('invNumber').value;
+            const custName = document.getElementById('dispCust').innerText;
+
+            // Loop Table Rows
+            const rows = document.querySelectorAll("#tableBody tr");
+            
+            rows.forEach((row, index) => {
+                const cols = row.querySelectorAll("td");
+                
+                // Ambil data Text dari kolom
+                const prod = cols[0].innerText.replace(/,/g, " "); // Hapus koma agar CSV aman
+                const type = cols[1].innerText;
+                const meter = cols[2].innerText;
+                const qty = cols[3].innerText;
+                
+                // Ambil data Value dari Input/Select
+                const mach = document.getElementById(`mach_${index}`).value;
+                const kcp = document.getElementById(`kcp_${index}`).value;
+                const pType = document.getElementById(`ptype_${index}`).value;
+                const weNum = document.getElementById(`result_${index}`).value;
+
+                // Gabung baris
+                let rowStr = `${currentOrderNo},"${custName}",${dateVal},${invVal},"${prod}",${type},${meter},${qty},${mach},${kcp},${pType},${weNum}`;
+                csvContent += rowStr + "\n";
+            });
+
+            // Trigger Download
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `WE_Result_${currentOrderNo}_${invVal}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+    </script>
 </body>
 </html>
