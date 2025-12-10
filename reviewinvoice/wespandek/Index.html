@@ -7,68 +7,28 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <style>
-        /* --- CSS STYLING --- */
-        :root { 
-            --primary: #0d6efd; 
-            --success: #198754; 
-            --bg: #f4f6f9; 
-            --text: #333; 
-            --border: #dee2e6;
-        }
-
+        /* CSS SAMA SEPERTI SEBELUMNYA */
+        :root { --primary: #0d6efd; --success: #198754; --bg: #f4f6f9; --text: #333; --border: #dee2e6; }
         body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
-
-        /* Container & Cards */
         .container { max-width: 1400px; margin: 0 auto; }
         .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 20px; }
-        
-        /* Headers */
         h2 { margin-top: 0; color: #495057; font-size: 1.5rem; }
         .sub-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--bg); padding-bottom: 15px; margin-bottom: 20px; }
-
-        /* Inputs & Selects */
-        .form-control, .form-select {
-            width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 5px; box-sizing: border-box; font-size: 14px;
-        }
-        .form-control:focus, .form-select:focus { outline: 2px solid var(--primary); border-color: transparent; }
-        
-        /* Disabled State (Untuk Non-Spandek) */
+        .form-control, .form-select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 5px; box-sizing: border-box; font-size: 14px; }
         input:disabled, select:disabled { background-color: #e9ecef; cursor: not-allowed; color: #6c757d; }
         input[readonly] { background-color: #e8f0fe; color: #000; font-weight: 500; }
-
-        /* Buttons */
-        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: #0b5ed7; }
         .btn-success { background: var(--success); color: white; }
-        .btn-success:hover { background: #157347; }
         .btn-secondary { background: #6c757d; color: white; }
-        .btn-secondary:hover { background: #5c636a; }
-
-        /* Table Styling */
         table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
-        th { background: #f8f9fa; text-align: left; padding: 12px; border-bottom: 2px solid var(--border); color: #495057; font-weight: 600; font-size: 0.9rem; }
+        th { background: #f8f9fa; text-align: left; padding: 12px; border-bottom: 2px solid var(--border); color: #495057; font-weight: 600; }
         td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-        tr:hover { background-color: #fdfdfd; }
-
-        /* Badges (SP/NP) */
         .badge { padding: 5px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; color: white; }
         .bg-sp { background-color: var(--success); }
         .bg-np { background-color: #6c757d; }
-
-        /* Special Column: WE Result */
-        .we-result-input { 
-            font-family: 'Courier New', monospace; 
-            font-weight: bold; 
-            color: var(--primary); 
-            border: 1px dashed var(--primary);
-            background: #fbfdff;
-        }
-
-        /* Loading Overlay */
+        .we-result-input { font-family: 'Courier New', monospace; font-weight: bold; color: var(--primary); border: 1px dashed var(--primary); background: #fbfdff; }
         #loading { text-align: center; padding: 40px; color: #666; font-size: 1.2rem; }
-        
-        /* Layout Grid for Header Info */
         .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
         .info-group label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; color: #666; }
     </style>
@@ -82,7 +42,7 @@
             <p style="color:#666;">Pilih Nomor Order untuk mulai memproses data Spandek.</p>
             
             <div id="loading">
-                <i class="fas fa-circle-notch fa-spin"></i> Memuat Data Order...
+                <i class="fas fa-circle-notch fa-spin"></i> Memuat Data Order dari Google Sheets...
             </div>
 
             <div id="selectorArea" style="display:none; margin-top: 20px;">
@@ -139,8 +99,7 @@
                                 <th style="width: 26%;">WE Number (Result)</th>
                             </tr>
                         </thead>
-                        <tbody id="tableBody">
-                            </tbody>
+                        <tbody id="tableBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -149,33 +108,30 @@
     </div>
 
     <script>
+        // --- GANTI URL DI BAWAH INI DENGAN URL DEPLOYMENT BARU ANDA ---
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZjgAreEGcWDx8JHMa-9TdDOOhAAbtwywsLPZgY1pCODm5IzFz0pJg9CWxeIAp4P_N/exec"; 
+        // ----------------------------------------------------------------
+
         let globalData = [];
         let currentOrderNo = "";
 
-        // 1. INITIALIZATION
-        window.onload = function() {
-            // Set Default Date ke hari ini
+        // 1. FETCH DATA SAAT LOAD
+        window.onload = async function() {
             document.getElementById('prodDate').valueAsDate = new Date();
             
-            // Panggil fungsi Server untuk ambil data
-            google.script.run
-                .withSuccessHandler(onDataLoaded)
-                .withFailureHandler(onFailure)
-                .getOrderData();
+            try {
+                const response = await fetch(SCRIPT_URL);
+                const data = await response.json();
+                onDataLoaded(data);
+            } catch (error) {
+                document.getElementById('loading').innerHTML = `<span style="color:red">Error: Gagal mengambil data. Pastikan URL Script benar.<br>${error.message}</span>`;
+            }
         };
-
-        function onFailure(error) {
-            document.getElementById('loading').innerHTML = `<span style="color:red">Error: ${error.message}</span>`;
-        }
 
         function onDataLoaded(data) {
             globalData = data;
             const dropdown = document.getElementById('orderDropdown');
-            
-            // Ambil Order ID Unik
             const uniqueOrders = [...new Set(data.map(item => item.orderNumber))];
-            
-            // Sort Descending (Terbaru diatas)
             uniqueOrders.sort().reverse();
 
             uniqueOrders.forEach(orderId => {
@@ -186,28 +142,34 @@
                 dropdown.appendChild(option);
             });
 
-            // Tampilkan Menu
             document.getElementById('loading').style.display = 'none';
             document.getElementById('selectorArea').style.display = 'block';
         }
 
-        // 2. OPEN WORKSPACE
+        // 2. GENERATE INVOICE LOKAL (JS)
+        function generateLocalInvoice() {
+            const date = new Date();
+            const year = date.getFullYear().toString().substr(-2);
+            const month = ("0" + (date.getMonth() + 1)).slice(-2);
+            // Simulasi urutan 0001 (Kelemahan fetch: susah sync urutan realtime dari server tanpa database complex)
+            // Jadi kita set default urutan
+            const seq = "0001"; 
+            return `INV-SJ-${year}-${month}-${seq}`;
+        }
+
+        // 3. OPEN WORKSPACE
         function openWorkspace() {
             const selectedOrder = document.getElementById('orderDropdown').value;
-            if(!selectedOrder) {
-                alert("Mohon pilih Nomor Order terlebih dahulu.");
-                return;
-            }
+            if(!selectedOrder) { alert("Pilih Order Number!"); return; }
 
             currentOrderNo = selectedOrder;
             
-            // Generate Invoice dari Server
-            google.script.run.withSuccessHandler(function(inv) {
-                document.getElementById('invNumber').value = inv;
-                renderTable(selectedOrder); // Render tabel setelah invoice siap
-            }).generateInvoiceNumber();
+            // Generate Invoice via JS (karena tidak pakai google.script.run)
+            const inv = generateLocalInvoice();
+            document.getElementById('invNumber').value = inv;
 
-            // Switch UI
+            renderTable(selectedOrder);
+
             document.getElementById('menuSection').style.display = 'none';
             document.getElementById('workSection').style.display = 'block';
         }
@@ -215,14 +177,12 @@
         function backToMenu() {
             document.getElementById('workSection').style.display = 'none';
             document.getElementById('menuSection').style.display = 'block';
-            document.getElementById('tableBody').innerHTML = ''; // Clear table
+            document.getElementById('tableBody').innerHTML = '';
         }
 
-        // 3. RENDER TABLE ROWS
+        // 4. RENDER TABLE
         function renderTable(orderId) {
             const filteredData = globalData.filter(d => d.orderNumber == orderId);
-            
-            // Update Header Info
             document.getElementById('dispOrder').innerText = orderId;
             document.getElementById('dispCust').innerText = filteredData[0].customer;
 
@@ -231,13 +191,9 @@
 
             filteredData.forEach((row, index) => {
                 const tr = document.createElement('tr');
-                
-                // Logic cek SP vs NP
                 const isSpandek = (row.type === 'SP');
                 const disabledAttr = isSpandek ? '' : 'disabled';
-                const badgeHtml = isSpandek 
-                    ? '<span class="badge bg-sp">SP</span>' 
-                    : '<span class="badge bg-np">NP</span>';
+                const badgeHtml = isSpandek ? '<span class="badge bg-sp">SP</span>' : '<span class="badge bg-np">NP</span>';
                 const rowBg = isSpandek ? '' : 'style="background-color: #fafafa;"';
 
                 tr.innerHTML = `
@@ -245,19 +201,16 @@
                     <td ${rowBg} align="center">${badgeHtml}</td>
                     <td ${rowBg} align="center">${row.meter}</td>
                     <td ${rowBg} align="center">${row.qty}</td>
-                    
                     <td ${rowBg}>
                         <select class="form-select" id="mach_${index}" onchange="calcWE(${index})" ${disabledAttr}>
-                            <option value="">-- Select Machine --</option>
+                            <option value="">-- Select --</option>
                             <option value="M01">M01 (Puma 8)</option>
                             <option value="M02">M02 (Puma 14)</option>
                         </select>
                     </td>
-                    
                     <td ${rowBg}>
                         <input type="text" class="form-control" id="kcp_${index}" placeholder="Input KCP" oninput="calcWE(${index})" ${disabledAttr}>
                     </td>
-
                     <td ${rowBg}>
                         <select class="form-select" id="ptype_${index}" onchange="calcWE(${index})" ${disabledAttr}>
                             <option value="">-- Type --</option>
@@ -265,7 +218,6 @@
                             <option value="Custom">Custom</option>
                         </select>
                     </td>
-
                     <td ${rowBg}>
                         <input type="text" class="form-control we-result-input" id="result_${index}" readonly value="${isSpandek ? '-' : ''}">
                     </td>
@@ -274,8 +226,7 @@
             });
         }
 
-        // 4. GENERATE WE NUMBER LOGIC
-        // Rumus: Machine_KCP_Order(3)_Inv(3)_Type(PLT/CTM)
+        // 5. RUMUS WE NUMBER
         function calcWE(idx) {
             const machVal = document.getElementById(`mach_${idx}`).value;
             const kcpVal = document.getElementById(`kcp_${idx}`).value;
@@ -283,65 +234,44 @@
             const invFull = document.getElementById('invNumber').value;
             const resultEl = document.getElementById(`result_${idx}`);
 
-            // Validasi kelengkapan data
             if(!machVal || !kcpVal || !pTypeVal || !invFull) {
                 resultEl.value = "-";
                 return;
             }
 
-            // 1. Ambil 3 digit order
-            // Order No: 1000077 -> ambil '077'
             let order3 = currentOrderNo.length >= 3 ? currentOrderNo.slice(-3) : currentOrderNo;
-
-            // 2. Ambil 3 digit invoice
-            // Inv: INV-SJ-25-12-0001 -> ambil '001'
             let inv3 = invFull.length >= 3 ? invFull.slice(-3) : invFull;
-
-            // 3. Mapping Tipe Produksi
             let typeCode = (pTypeVal === 'Plat') ? 'PLT' : 'CTM';
-
-            // 4. Gabung
-            let finalWE = `${machVal}_${kcpVal}_${order3}_${inv3}_${typeCode}`;
             
-            resultEl.value = finalWE;
+            resultEl.value = `${machVal}_${kcpVal}_${order3}_${inv3}_${typeCode}`;
         }
 
-        // 5. EXPORT TO CSV FUNCTION
+        // 6. EXPORT CSV
         function exportToCSV() {
             let csvContent = "data:text/csv;charset=utf-8,";
-            
-            // Header CSV
             csvContent += "Order No,Customer,Date,Invoice,Product,Type,Meter,Qty,Machine,KCP,ProdType,WE Number\n";
 
-            // Data Statis Header Form
             const dateVal = document.getElementById('prodDate').value;
             const invVal = document.getElementById('invNumber').value;
             const custName = document.getElementById('dispCust').innerText;
 
-            // Loop Table Rows
             const rows = document.querySelectorAll("#tableBody tr");
-            
             rows.forEach((row, index) => {
                 const cols = row.querySelectorAll("td");
-                
-                // Ambil data Text dari kolom
-                const prod = cols[0].innerText.replace(/,/g, " "); // Hapus koma agar CSV aman
+                const prod = cols[0].innerText.replace(/,/g, " ");
                 const type = cols[1].innerText;
                 const meter = cols[2].innerText;
                 const qty = cols[3].innerText;
                 
-                // Ambil data Value dari Input/Select
                 const mach = document.getElementById(`mach_${index}`).value;
                 const kcp = document.getElementById(`kcp_${index}`).value;
                 const pType = document.getElementById(`ptype_${index}`).value;
                 const weNum = document.getElementById(`result_${index}`).value;
 
-                // Gabung baris
                 let rowStr = `${currentOrderNo},"${custName}",${dateVal},${invVal},"${prod}",${type},${meter},${qty},${mach},${kcp},${pType},${weNum}`;
                 csvContent += rowStr + "\n";
             });
 
-            // Trigger Download
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
@@ -350,7 +280,6 @@
             link.click();
             document.body.removeChild(link);
         }
-
     </script>
 </body>
 </html>
