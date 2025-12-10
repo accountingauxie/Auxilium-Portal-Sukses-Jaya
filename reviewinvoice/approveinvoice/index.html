@@ -15,13 +15,12 @@
       --text-main: #1e293b; --text-sub: #64748b;
       --border-color: #e2e8f0;
       
-      --we-bg: #FFF3CD; --we-text: #856404; --we-border: #ffeeba;
-      --xero-bg: #E3F2FD; --xero-text: #0c5460; --xero-border: #b8daff;
+      /* Status Colors */
       --approved-bg: #d1e7dd; --approved-text: #0f5132;
       --pending-bg: #fff3cd; --pending-text: #856404;
       --canceled-bg: #fef2f2; --canceled-text: #991b1b;
-      --partial-bg: #e0f2fe; --partial-text: #0369a1;
-      --alldelivered-bg: #dcfce7; --alldelivered-text: #15803d;
+      --partial-bg: #e0f2fe; --partial-text: #0369a1; /* Biru Laut */
+      --version-bg: #ede9fe; --version-text: #5b21b6; /* Ungu untuk Version Tag */
     }
     body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); margin: 0; color: var(--text-main); }
     
@@ -59,7 +58,6 @@
     .border-approved::before { background-color: #10b981; }
     .border-canceled::before { background-color: #ef4444; }
     .border-partial::before { background-color: #0ea5e9; }
-    .border-alldelivered::before { background-color: #22c55e; }
 
     .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; padding-left: 12px; }
     .card-title { font-size: 1.1rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
@@ -67,13 +65,14 @@
     .status-area { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
     
     .badge-pill { padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.3px; display: inline-flex; align-items: center; gap: 6px; }
-    .badge-we { background-color: var(--we-bg); color: var(--we-text); border: 1px solid var(--we-border); }
-    .badge-xero { background-color: var(--xero-bg); color: var(--xero-text); border: 1px solid var(--xero-border); }
+    .badge-we { background-color: #FFF3CD; color: #856404; border: 1px solid #ffeeba; }
+    .badge-xero { background-color: #E3F2FD; color: #0c5460; border: 1px solid #b8daff; }
+    
     .badge-approved { background-color: var(--approved-bg); color: var(--approved-text); }
     .badge-pending { background-color: var(--pending-bg); color: var(--pending-text); }
     .badge-canceled { background-color: var(--canceled-bg); color: var(--canceled-text); }
     .badge-partial { background-color: var(--partial-bg); color: var(--partial-text); }
-    .badge-alldelivered { background-color: var(--alldelivered-bg); color: var(--alldelivered-text); }
+    .badge-version { background-color: var(--version-bg); color: var(--version-text); border: 1px solid #ddd6fe; }
 
     .price-tag { font-size: 1.25rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; padding-left: 12px; }
     .btn-details { margin-top: 1rem; width: 100%; padding: 12px; background: #f8fafc; color: var(--primary); border: 1px solid transparent; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
@@ -91,10 +90,11 @@
     .invoice-footer { margin-top: 2rem; padding-top: 1rem; border-top: 2px solid var(--text-main); display: flex; justify-content: space-between; align-items: flex-start; }
     .total-row { display: flex; justify-content: space-between; width: 300px; padding: 4px 0; }
     .grand-total { font-size: 1.25rem; font-weight: 800; color: var(--primary); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-color); }
+    .outstanding-row { font-size: 1rem; font-weight: 700; color: #ef4444; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #e2e8f0; }
 
     .btn-action { padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; display: flex; align-items: center; gap: 8px; }
     .btn-approve { background: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3); }
-    .btn-approve:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; }
+    .btn-approve:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; opacity: 0.6; }
     .btn-reject { background: #ef4444; color: white; box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3); }
     .btn-partial { background: #d97706; color: white; box-shadow: 0 4px 6px -1px rgba(217, 119, 6, 0.3); }
     .btn-partial:hover { background: #b45309; }
@@ -114,7 +114,6 @@
     .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(2px); }
     .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 0.8s linear infinite; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    @keyframes fadeIn { from { opacity: 0; margin-top: 10px; } to { opacity: 1; margin-top: 0; } }
   </style>
 </head>
 <body>
@@ -189,7 +188,7 @@
         <div><label style="font-size:12px; color:#94a3b8; text-transform:uppercase; font-weight:700;">Customer</label><div id="modalCustomer" style="font-weight:600;"></div></div>
         <div><label style="font-size:12px; color:#94a3b8; text-transform:uppercase; font-weight:700;">Order No</label><div id="modalInvoiceNum" style="font-weight:600;"></div></div>
         <div><label style="font-size:12px; color:#94a3b8; text-transform:uppercase; font-weight:700;">Date</label><div id="modalDate" style="font-weight:600;"></div></div>
-        <div><label style="font-size:12px; color:#94a3b8; text-transform:uppercase; font-weight:700;">Status</label><div id="modalStatus"></div></div>
+        <div><label style="font-size:12px; color:#94a3b8; text-transform:uppercase; font-weight:700;">Status</label><div id="modalStatusContainer" style="display:flex; gap:5px;"></div></div>
       </div>
 
       <table class="paper-table" style="width:100%; border-collapse:collapse;">
@@ -205,6 +204,10 @@
           <div class="total-row"><span>Subtotal (DPP)</span><span id="valDPP">Rp 0</span></div>
           <div class="total-row"><span>PPN (12%)</span><span id="valPPN">Rp 0</span></div>
           <div class="total-row grand-total"><span>GRAND TOTAL</span><span id="valGrand">Rp 0</span></div>
+          <div id="outstandingArea" style="display:none;">
+              <div class="total-row outstanding-row"><span>SISA TAGIHAN</span><span id="valOutstanding">Rp 0</span></div>
+              <small style="color:#64748b; font-size:0.75rem; text-align:right; display:block;">(Remaining Balance)</small>
+          </div>
         </div>
       </div>
 
@@ -251,11 +254,12 @@
 
 <script>
   // ================= CONFIGURATION =================
-  const API_URL = "https://script.google.com/macros/s/AKfycbwPv_Nyrko_-jZ88ziCqrCxZZsE4Arwr5-AUjM0rmPwzWd3lAFaLIcSG7aWlvl02iCFvA/exec"; 
+  // GANTI DENGAN URL APPS SCRIPT ANDA
+  const API_URL = "https://script.google.com/macros/s/AKfycby7FEpJTGReHQWLZLIK-SrI32hfXC7y9WACd-Xw8Oc3u4tyQPHkkafCjG4KaC310prwsQ/exec"; 
   // =================================================
 
   let allInvoices = [];
-  let invoiceMap = {}; // Helper for linking parent-child
+  let invoiceMap = {}; 
   let currentFilter = 'All'; 
   let currentApprovedSubFilter = 'All'; 
   let currentOpenInvoiceId = null; 
@@ -273,8 +277,14 @@
       .then(response => {
         showLoading(false);
         if (response.ok) {
-          allInvoices = response.data;
-          processInvoicesRelationship(); // LINKING PARENT & CHILDREN
+          // --- FIX 1: PAKSA JADI STRING AGAR TIDAK ERROR ---
+          allInvoices = response.data.map(inv => {
+              inv.invoiceNumber = String(inv.invoiceNumber); 
+              return inv;
+          });
+          // -------------------------------------------------
+
+          processInvoicesRelationship(); 
           renderInvoices();
         } else { alert("Error: " + response.error); }
       })
@@ -283,19 +293,16 @@
 
   // --- LOGIC RELASI PARENT-CHILD ---
   function processInvoicesRelationship() {
-    // 1. Map all invoices
     invoiceMap = {};
     allInvoices.forEach(inv => {
         invoiceMap[inv.invoiceNumber] = inv;
-        inv.children = []; // Store partials here
-        inv.parent = null; // Store link to parent
-        inv.isAllDelivered = false; // Flag for virtual status
+        inv.children = []; 
+        inv.parent = null; 
+        inv.isFullyShipped = false; 
     });
 
-    // 2. Link them
     allInvoices.forEach(inv => {
-        // Cek apakah invoice ini adalah anak (mengandung -P)
-        if (inv.invoiceNumber.includes("-P")) {
+        if (String(inv.invoiceNumber).includes("-P")) {
             const parentId = inv.invoiceNumber.split("-P")[0];
             if (invoiceMap[parentId]) {
                 invoiceMap[parentId].children.push(inv);
@@ -304,10 +311,9 @@
         }
     });
 
-    // 3. Calculate "ALL DELIVERED" for Parents
+    // Cek apakah Parent sudah "Fully Shipped"
     allInvoices.forEach(inv => {
         if (inv.children.length > 0) {
-            // Ini adalah Parent. Cek apakah total shipped == total order
             let totalQtyOrder = inv.items.reduce((sum, i) => sum + i.qty, 0);
             let totalQtyShipped = 0;
             
@@ -318,13 +324,12 @@
             });
 
             if (totalQtyShipped >= totalQtyOrder && totalQtyOrder > 0) {
-                inv.isAllDelivered = true;
+                inv.isFullyShipped = true; // Flag baru untuk Approved Logic
             }
         }
     });
   }
 
-  // Handle Main Filters
   function setFilter(status) {
     currentFilter = status;
     document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
@@ -359,24 +364,24 @@
     const sortVal = document.getElementById('sortOrder').value;
 
     const filtered = allInvoices.filter(inv => {
-      // Logic Filter Status
       const invStatus = inv.status || 'Pending';
       let matchStatus = false;
 
-      // Virtual Status Logic for ALL DELIVERED
+      // Logic "Virtual" Approved untuk Parent
       let displayStatus = invStatus;
-      if (inv.isAllDelivered) displayStatus = 'ALL DELIVERED';
+      if (inv.isFullyShipped) displayStatus = 'Approved';
 
       if (currentFilter === 'All') matchStatus = true;
       else if (currentFilter === 'Approved') {
-          if (invStatus === 'Approved') matchStatus = true;
+          if (invStatus === 'Approved' || displayStatus === 'Approved') matchStatus = true;
+          // Sub filter logic
           if (matchStatus && currentApprovedSubFilter !== 'All') {
               if (currentApprovedSubFilter === 'WE' && !inv.progressStatus.includes('WE')) matchStatus = false;
               if (currentApprovedSubFilter === 'Xero' && !inv.progressStatus.includes('Xero')) matchStatus = false;
           }
       } else {
-          // Normal filter
-          if (currentFilter === 'Partially Delivered' && (invStatus === 'Partially Delivered' || displayStatus === 'ALL DELIVERED')) {
+          // Filter biasa
+          if (currentFilter === 'Partially Delivered' && (invStatus === 'Partially Delivered' && !inv.isFullyShipped)) {
               matchStatus = true;
           } else {
               matchStatus = invStatus === currentFilter;
@@ -384,27 +389,18 @@
       }
 
       const matchSearch = inv.customer.toLowerCase().includes(searchVal) || inv.invoiceNumber.toString().toLowerCase().includes(searchVal);
-      
       let matchDate = true;
       if (inv.date) {
         const invDate = new Date(inv.date);
         if (!isNaN(invDate.getTime())) {
           invDate.setHours(0,0,0,0);
-          if (startDateVal) {
-             const sDate = new Date(startDateVal); sDate.setHours(0,0,0,0);
-             if (invDate < sDate) matchDate = false;
-          }
-          if (endDateVal && matchDate) {
-             const eDate = new Date(endDateVal); eDate.setHours(0,0,0,0);
-             if (invDate > eDate) matchDate = false;
-          }
+          if (startDateVal) { const sDate = new Date(startDateVal); sDate.setHours(0,0,0,0); if (invDate < sDate) matchDate = false; }
+          if (endDateVal && matchDate) { const eDate = new Date(endDateVal); eDate.setHours(0,0,0,0); if (invDate > eDate) matchDate = false; }
         }
       }
-
       return matchStatus && matchSearch && matchDate;
     });
 
-    // Sorting
     filtered.sort((a, b) => {
         const numA = parseInt(String(a.invoiceNumber).replace(/\D/g, '')) || 0;
         const numB = parseInt(String(b.invoiceNumber).replace(/\D/g, '')) || 0;
@@ -412,11 +408,7 @@
     });
 
     if (filtered.length === 0) { 
-        container.innerHTML = `
-        <div style="text-align:center; padding: 40px; color:#94a3b8;">
-            <i class="fa-regular fa-folder-open" style="font-size: 3rem; margin-bottom: 10px; display:block;"></i>
-            No invoices found.
-        </div>`; 
+        container.innerHTML = `<div style="text-align:center; padding: 40px; color:#94a3b8;"><i class="fa-regular fa-folder-open" style="font-size: 3rem; margin-bottom: 10px; display:block;"></i>No invoices found.</div>`; 
         return; 
     }
 
@@ -424,12 +416,14 @@
       let status = inv.status || 'Pending';
       let borderClass = 'border-pending';
       let badgeClass = 'badge-pending';
+      let versionBadge = '';
 
-      // Override display if All Delivered
-      if (inv.isAllDelivered) {
-          status = 'ALL DELIVERED';
-          borderClass = 'border-alldelivered';
-          badgeClass = 'badge-alldelivered';
+      // TAMPILAN KHUSUS JIKA FULLY SHIPPED
+      if (inv.isFullyShipped) {
+          status = 'Approved';
+          borderClass = 'border-approved';
+          badgeClass = 'badge-approved';
+          versionBadge = '<span class="badge-pill badge-version"><i class="fa-solid fa-code-branch"></i> Partial Ver.</span>';
       } else {
           if (status === 'Approved') { borderClass = 'border-approved'; badgeClass = 'badge-approved'; }
           else if (status === 'Canceled') { borderClass = 'border-canceled'; badgeClass = 'badge-canceled'; }
@@ -437,11 +431,7 @@
       }
 
       const grandTotal = inv.grandTotal || 0;
-      
-      let noteHtml = '';
-      if (inv.noteCanceled) {
-        noteHtml = `<div style="font-size:0.8rem; color:var(--text-sub); background:#f1f5f9; padding:4px 10px; border-radius:8px; margin-top:5px; inline-flex; gap:6px;">${inv.noteCanceled}</div>`;
-      }
+      let noteHtml = inv.noteCanceled ? `<div style="font-size:0.8rem; color:var(--text-sub); background:#f1f5f9; padding:4px 10px; border-radius:8px; margin-top:5px; inline-flex; gap:6px;">${inv.noteCanceled}</div>` : '';
 
       let progressBadgeHtml = '';
       if (inv.progressStatus) {
@@ -463,7 +453,7 @@
             <div class="card-sub" style="font-size:0.8rem;"><i class="fa-regular fa-calendar"></i> ${inv.date ? new Date(inv.date).toLocaleDateString('id-ID') : '-'}</div>
           </div>
           <div class="status-area">
-              <span class="badge-pill ${badgeClass}">${status}</span>
+              <div style="display:flex; gap:4px;">${versionBadge}<span class="badge-pill ${badgeClass}">${status}</span></div>
               ${progressBadgeHtml}
           </div>
         </div>
@@ -511,28 +501,41 @@
     }
     document.getElementById('modalDate').textContent = displayDate;
 
-    // Badge Logic
-    const statusEl = document.getElementById('modalStatus');
+    // --- REVISI 3: STATUS LOGIC (APPROVED + PARTIAL VERSION) ---
+    const statusContainer = document.getElementById('modalStatusContainer');
+    statusContainer.innerHTML = ''; // Reset
+
     let badgeClass = 'badge-pending';
     let statusText = inv.status || 'Pending';
+    let addVersionTag = false;
     
-    if (inv.isAllDelivered) { statusText = 'ALL DELIVERED'; badgeClass = 'badge-alldelivered'; }
-    else if(inv.status === 'Approved') badgeClass = 'badge-approved';
-    else if(inv.status === 'Canceled') badgeClass = 'badge-canceled';
-    else if(inv.status === 'Partially Delivered') badgeClass = 'badge-partial';
-    
-    statusEl.className = `badge-pill ${badgeClass}`;
-    statusEl.textContent = statusText;
+    // Override jika fully shipped
+    if (inv.isFullyShipped) {
+        statusText = 'Approved';
+        badgeClass = 'badge-approved';
+        addVersionTag = true;
+    } else {
+        if(inv.status === 'Approved') badgeClass = 'badge-approved';
+        else if(inv.status === 'Canceled') badgeClass = 'badge-canceled';
+        else if(inv.status === 'Partially Delivered') badgeClass = 'badge-partial';
+    }
+
+    if(addVersionTag) {
+        statusContainer.innerHTML += `<span class="badge-pill badge-version"><i class="fa-solid fa-code-branch"></i> Partial Delivered Version</span>`;
+    }
+    statusContainer.innerHTML += `<span class="badge-pill ${badgeClass}">${statusText}</span>`;
 
     // --- RENDER TABLE & LINKED INFO ---
     const thead = document.getElementById('modalTableHead');
     const tbody = document.getElementById('modalTableBody');
     const linkedArea = document.getElementById('linkedInfoArea');
+    const outstandingArea = document.getElementById('outstandingArea');
     
     tbody.innerHTML = '';
     linkedArea.innerHTML = '';
+    outstandingArea.style.display = 'none'; // Default hide
 
-    // LOGIC: PARENT vs CHILD vs NORMAL
+    // LOGIC: PARENT vs CHILD
     if (inv.children && inv.children.length > 0) {
         // === VIEW FOR PARENT INVOICE ===
         thead.innerHTML = `
@@ -545,7 +548,9 @@
                 <th style="text-align:right;">Total</th>
             </tr>`;
 
-        // Create Item Map for calculation
+        // Calculate Remaining Value
+        let totalRemainingValue = 0;
+
         const itemCalc = inv.items.map(item => {
             let shipped = 0;
             inv.children.forEach(child => {
@@ -554,7 +559,12 @@
                     if (match) shipped += match.qty;
                 }
             });
-            return { ...item, shipped: shipped, remaining: item.qty - shipped };
+            const remain = Math.max(0, item.qty - shipped);
+            
+            // Hitung nilai sisa (Qt * Harga)
+            totalRemainingValue += (remain * item.priceQty);
+
+            return { ...item, shipped: shipped, remaining: remain };
         });
 
         itemCalc.forEach(item => {
@@ -563,11 +573,39 @@
                 <td>${item.product}</td>
                 <td style="text-align:right;">${item.qty}</td>
                 <td style="text-align:right; font-weight:bold; color:#2563eb;">${item.shipped}</td>
-                <td style="text-align:right; font-weight:bold; color:#ef4444;">${Math.max(0, item.remaining)}</td>
+                <td style="text-align:right; font-weight:bold; color:#ef4444;">${item.remaining}</td>
                 <td style="text-align:right;">${formatMoney(item.priceQty)}</td>
                 <td style="text-align:right;">${formatMoney(item.total)}</td>
             </tr>`;
         });
+
+        // --- REVISI 2: HITUNG SISA TAGIHAN (OUTSTANDING) ---
+        // Asumsi PPN 11% dari sisa (sesuaikan logika PPN Anda, di sini saya pakai proporsional atau hitung ulang)
+        // Cara paling aman: Sisa Barang * Harga Barang + PPN (jika ada)
+        // Cek apakah original invoice pakai PPN
+        let outstandingGrand = 0;
+        if (totalRemainingValue > 0) {
+            // Cek rasio PPN di parent
+            const dppOrig = inv.dpp || 0;
+            const ppnOrig = inv.ppn || 0;
+            let taxRatio = 0;
+            if (dppOrig > 0) taxRatio = ppnOrig / dppOrig; // misal 0.11
+
+            // Hitung DPP Sisa (DPP biasanya = Total / 1.11 jika include, atau Total jika exclude. 
+            // Mari kita asumsi Total Remaining Value adalah "Amount" baris, yang belum tentu DPP murni.
+            // Gunakan pendekatan sederhana: Sisa = Total Remaining Value + PPNnya
+            // Agar akurat, kita ikuti pola perhitungan partial: Total / 1.11 = DPP
+            
+            // *CATATAN*: Sistem Anda menghitung DPP = Total / 1.11
+            const remainingDPP = totalRemainingValue / 1.11;
+            const remainingPPN = totalRemainingValue - remainingDPP;
+            outstandingGrand = totalRemainingValue; // Karena totalRemainingValue adalah sum(qty*price) yang biasanya sudah inc PPN di sistem ini? 
+            // Tunggu, di Apps Script Anda: dpp = grandTotal / 1.11. Berarti item.total adalah Inc PPN.
+            // Jadi totalRemainingValue sudah Grand Total.
+        }
+
+        document.getElementById('valOutstanding').textContent = formatMoney(totalRemainingValue);
+        outstandingArea.style.display = 'block';
 
         // Linked Info Box
         let linksHtml = inv.children.map(child => `
@@ -617,7 +655,6 @@
             </tr>`;
         });
 
-        // If Child, show link to parent
         if (inv.parent) {
             linkedArea.innerHTML = `
                 <div class="linked-box" style="background:#eff6ff; border-color:#bfdbfe;">
@@ -638,8 +675,8 @@
     const actionDiv = document.getElementById('modalActions');
     actionDiv.innerHTML = ''; 
 
-    if (inv.status === 'Approved' || inv.isAllDelivered) {
-        // No Actions
+    if (inv.status === 'Approved' || inv.isFullyShipped) {
+        // No Actions (Sudah Selesai)
     } 
     else if (inv.status === 'Canceled') {
        actionDiv.innerHTML = `
@@ -652,8 +689,6 @@
        `;
     } 
     else {
-       // PENDING / PARTIALLY
-       // Jika Parent, tombol Approve Disabled
        const isParent = inv.children.length > 0;
        
        let buttonsHtml = `
@@ -662,8 +697,8 @@
          </button>
        `;
        
-       // Tombol Partial (Active if not all delivered)
-       if (!inv.isAllDelivered) {
+       // Tombol Partial (Hanya aktif jika belum Fully Shipped)
+       if (!inv.isFullyShipped) {
            buttonsHtml += `
              <button class="btn-action btn-partial" onclick="openPartialModal()">
                 <i class="fa-solid fa-boxes-packing"></i> ${isParent ? 'Create Next Partial' : 'Partially Delivered'}
@@ -671,10 +706,9 @@
            `;
        }
 
-       // Tombol Approve
        if (isParent) {
            buttonsHtml += `
-             <button class="btn-action btn-approve" disabled title="Cannot approve parent invoice directly. Approve the partials instead.">
+             <button class="btn-action btn-approve" disabled title="Parent Invoice cannot be approved directly.">
                 <i class="fa-solid fa-lock"></i> Approve Invoice
              </button>
            `;
@@ -701,13 +735,7 @@
     const inv = invoiceMap[currentOpenInvoiceId];
     if (!inv) return;
 
-    // Calculate Remaining Qty for each item
-    // Logic: Order Qty - Sum(Children Qty)
-    
-    // Deep copy data
     tempPartialData = JSON.parse(JSON.stringify(inv)); 
-
-    // Filter Items: Only items that have remaining qty > 0
     const itemsWithRemaining = [];
 
     tempPartialData.items.forEach(item => {
@@ -722,20 +750,19 @@
         }
         const remaining = item.qty - shipped;
         if (remaining > 0) {
-            item.maxQty = remaining; // Store max allowable
-            item.qty = remaining; // Default to send all remaining
+            item.maxQty = remaining; 
+            item.qty = remaining; 
             itemsWithRemaining.push(item);
         }
     });
 
-    tempPartialData.items = itemsWithRemaining; // Replace items with filtered ones
+    tempPartialData.items = itemsWithRemaining; 
 
     if (tempPartialData.items.length === 0) {
         alert("All items have been delivered for this order.");
         return;
     }
 
-    // Render Table
     const tbody = document.getElementById('partialTableBody');
     tbody.innerHTML = '';
 
@@ -800,13 +827,12 @@
 
     showLoading(true);
     
-    // SEND FULL DATA FOR INHERITANCE
     const payload = {
         originalInvoiceNumber: tempPartialData.invoiceNumber, 
         customerName: tempPartialData.customer,
         keySalesOrder: tempPartialData.keySalesOrder,
         catatan: tempPartialData.catatan,
-        items: activeItems, // Includes type, meter, unitPrice, etc.
+        items: activeItems, 
         dpp: tempPartialData.dpp,
         ppn: tempPartialData.ppn,
         grandTotal: tempPartialData.grandTotal
@@ -845,7 +871,7 @@
       setModalLoading(false);
       if(data.ok) {
         alert("Approved successfully!");
-        fetchInvoices(); // Refresh all to update status
+        fetchInvoices(); 
         document.getElementById('invoiceModal').style.display='none';
       } else { alert("Failed: " + data.error); }
     });
