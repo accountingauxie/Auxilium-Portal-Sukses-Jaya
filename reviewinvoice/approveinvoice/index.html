@@ -64,7 +64,7 @@
     .paper-table td { padding: 12px 8px; border-bottom: 1px solid #eee; color: #444; vertical-align: middle; }
     .paper-table tr:last-child td { border-bottom: none; }
     
-    /* Column Widths to match Image */
+    /* Column Widths */
     .col-desc { width: 35%; }
     .col-type { width: 5%; text-align: center; }
     .col-num { text-align: right; width: 10%; }
@@ -106,7 +106,9 @@
   <div id="invoiceList"></div>
 
   <div id="invoiceModal" class="modal-overlay" onclick="closeModal(event)">
-    <div class="invoice-paper" onclick="event.stopPropagation()"> <div class="paper-header">
+    <div class="invoice-paper" onclick="event.stopPropagation()">
+      
+      <div class="paper-header">
         <div class="company-info">
           <h2>INVOICE DETAIL</h2>
           <p>Review & Approval System</p>
@@ -190,7 +192,7 @@
 
   let allInvoices = [];
   let currentFilter = 'All';
-  let currentOpenInvoiceId = null; // Menyimpan ID invoice yang sedang dibuka di modal
+  let currentOpenInvoiceId = null; 
 
   window.onload = fetchInvoices;
 
@@ -264,7 +266,7 @@
   function openInvoiceModal(invoiceId) {
     currentOpenInvoiceId = invoiceId;
     
-    // 1. Populate Dropdown dengan semua Invoice yang ada (untuk navigasi cepat)
+    // 1. Populate Dropdown
     const select = document.getElementById('invoiceSwitcher');
     select.innerHTML = '';
     allInvoices.forEach(inv => {
@@ -287,44 +289,36 @@
     renderModalContent(newId);
   }
 
-// GANTI FULL FUNCTION INI:
-
   function renderModalContent(id) {
     const inv = allInvoices.find(i => i.invoiceNumber == id);
     if (!inv) return;
 
-    // --- 1. BAGIAN HEADER INFO (UPDATE DI SINI) ---
+    // --- 1. HEADER INFO ---
     document.getElementById('modalCustomer').textContent = inv.customer;
     document.getElementById('modalInvoiceNum').textContent = inv.invoiceNumber;
 
-    // LOGIKA BARU UNTUK TANGGAL (Agar tidak strip "-")
+    // Logika Tanggal
     let displayDate = "-";
     if (inv.date) {
       try {
-        // Coba jadikan object Date
         const d = new Date(inv.date);
-        
-        // Cek apakah valid date
         if (!isNaN(d.getTime())) {
-          // Jika valid, format jadi DD/MM/YYYY
           displayDate = d.toLocaleDateString('id-ID', { year: 'numeric', month: '2-digit', day: '2-digit' });
         } else {
-          // Jika tidak valid (misal teks biasa), tampilkan apa adanya dari sheet
           displayDate = inv.date;
         }
       } catch (e) {
-        // Jika error, tampilkan raw datanya saja
         displayDate = inv.date;
       }
     }
     document.getElementById('modalDate').textContent = displayDate;
 
-    // --- 2. BAGIAN STATUS ---
+    // --- 2. STATUS ---
     const statusEl = document.getElementById('modalStatus');
     statusEl.className = `status-badge ${inv.status === 'Approved' ? 'bg-approved' : (inv.status === 'Canceled' ? 'bg-canceled' : 'bg-pending')}`;
     statusEl.textContent = inv.status || 'Pending';
 
-    // Show/Hide Action Buttons
+    // Show/Hide Buttons
     const actionDiv = document.getElementById('modalActions');
     if (inv.status === 'Approved' || inv.status === 'Canceled') {
       actionDiv.style.display = 'none'; 
@@ -332,7 +326,7 @@
       actionDiv.style.display = 'flex'; 
     }
 
-    // --- 3. BAGIAN TABEL (UPDATE LOGIKA TYPE) ---
+    // --- 3. TABEL (LOGIKA TYPE REVISI) ---
     const tbody = document.getElementById('modalTableBody');
     tbody.innerHTML = '';
     
@@ -341,23 +335,25 @@
     inv.items.forEach(item => {
       subTotal += (item.total || 0);
       
-      // LOGIKA BARU: Menebak Type (SP/NP)
+      // LOGIKA BARU: Cek "NON" dulu sebelum cek "SPANDEK"
       let typeCode = "-";
-      // Ambil data dari kolom Type/Jenis
       const rawType = item.type ? item.type.toString().toUpperCase() : "";
       
-      // Cek isi kolom Type
-      if (rawType.includes("SPANDEK") || rawType.includes("SP")) {
-        typeCode = "SP";
-      } else if (rawType.includes("NON") || rawType.includes("NP")) {
+      // 1. Prioritas: Cek "NON" atau "NP"
+      if (rawType.includes("NON") || rawType.includes("NP")) {
         typeCode = "NP";
-      } else {
-        // Jika kolom Type kosong, cek Nama Produk
+      } 
+      // 2. Jika tidak ada "NON", baru cek "SPANDEK" atau "SP"
+      else if (rawType.includes("SPANDEK") || rawType.includes("SP")) {
+        typeCode = "SP";
+      } 
+      // 3. Fallback: Cek Nama Produk
+      else {
         const prodName = item.product ? item.product.toUpperCase() : "";
-        if (prodName.includes("SPANDEK") || prodName.includes("PUMA")) { // Tambah keyword PUMA jika perlu
-           typeCode = "SP";
-        } else if (prodName.includes("ROOF") || prodName.includes("GENTENG")) {
+        if (prodName.includes("NON SPANDEK") || prodName.includes("ROOF") || prodName.includes("GENTENG")) {
            typeCode = "NP";
+        } else if (prodName.includes("SPANDEK") || prodName.includes("PUMA")) {
+           typeCode = "SP";
         }
       }
 
@@ -378,7 +374,7 @@
       tbody.appendChild(tr);
     });
 
-    // --- 4. BAGIAN TOTAL ---
+    // --- 4. TOTAL ---
     const dpp = subTotal;
     const ppn = subTotal * 0.12; 
     const grandTotal = dpp + ppn;
@@ -387,13 +383,14 @@
     document.getElementById('valPPN').textContent = formatMoney(ppn);
     document.getElementById('valGrand').textContent = formatMoney(grandTotal);
   }
+
   function closeModal(event) {
     if (event.target.id === 'invoiceModal') {
       document.getElementById('invoiceModal').style.display = 'none';
     }
   }
 
-  // --- APPROVE / CANCEL LOGIC FROM MODAL ---
+  // --- APPROVE / CANCEL LOGIC ---
 
   function handleApproveFromModal() {
     if(!confirm("Approve this invoice?")) return;
@@ -420,8 +417,8 @@
       if(data.ok) {
         alert("Approved successfully!");
         updateLocalStatus(inv.invoiceNumber, 'Approved');
-        renderModalContent(inv.invoiceNumber); // Refresh modal view
-        renderInvoices(); // Refresh list view
+        renderModalContent(inv.invoiceNumber); 
+        renderInvoices(); 
       } else {
         alert("Failed: " + data.error);
       }
