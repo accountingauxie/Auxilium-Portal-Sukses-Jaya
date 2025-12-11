@@ -2,14 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Accounting Management Service</title>
+  <title>Receiving PO Entry</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Choices.js -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
-  <!-- Sortable -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
   <style>
@@ -37,27 +35,65 @@
       color: #333;
     }
 
+    /* =========================== 
+       TOP BAR / NAVIGATION STYLE 
+       =========================== */
     .top-bar {
-      height: 54px;
+      padding: 10px 40px;
+      background: #ffffff;
+      border-bottom: 1px solid #e3e6ea;
       display: flex;
       align-items: center;
-      padding: 0 48px;
-      background: #fff;
-      border-bottom: 1px solid #e3e6ea;
-    }
-    .brand-main {
-      font-size: 18px;
+      justify-content: space-between;
+      font-size: 15px;
       font-weight: 600;
-      margin-right: 6px;
-      letter-spacing: 0.04em;
-    }
-    .brand-sub {
-      font-size: 13px;
-      color: #7a8699;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
+    .logo-section {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #1e1e1e;
+        font-size: 19px;
+        font-weight: 700;
+    }
+
+    .nav-menu {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+    }
+
+    .nav-item {
+        text-decoration: none;
+        color: #64748b;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 8px 16px;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+    }
+
+    .nav-item:hover {
+        background-color: #f1f5f9;
+        color: var(--ux-blue);
+    }
+
+    /* Active State for Current Page */
+    .nav-item.active {
+        background-color: var(--ux-blue-soft);
+        color: var(--ux-blue);
+        font-weight: 600;
+    }
+
+    /* =========================== 
+       PAGE & CARD STYLE 
+       =========================== */
     .page {
-      max-width: 1180px;
+      max-width: 1280px; /* Sedikit diperlebar agar muat */
       margin: 32px auto;
       padding: 0 20px 40px;
     }
@@ -259,35 +295,17 @@
       user-select: none;
       width: 26px;
     }
-  /* Sub-line indent style */
-.subline-row td {
-    background: #f7faff;
-    border-top: 1px dashed #d6e3ff;
-}
+    
+    /* Sub-line indent style */
+    .subline-row td {
+      background: #f7faff;
+      border-top: 1px dashed #d6e3ff;
+      padding-left: 10px;
+    }
 
-/* Indent enhancement (opsional tapi direkomendasikan) */
-.subline-row td {
-    padding-left: 10px;
-}
-
-.subline-row td:first-child {
-    padding-left: 22px !important;
-}
-
-/* Row handle inside subline (already correct) */
-.subline-row .row-handle {
-    padding-left: 12px;
-    font-size: 14px;
-}
-
-/* Subline label */
-.subline-label {
-    font-size: 11px;
-    color: #6b7280;
-    font-style: italic;
-    margin-right: 4px;
-}
-
+    .subline-row td:first-child {
+      padding-left: 22px !important;
+    }
 
     .subline-row .row-handle {
       padding-left: 12px;
@@ -424,148 +442,36 @@
       animation: spin .85s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-/* Google Sheet Button — Bottom Placement */
-.sheet-bottom-wrapper {
-  margin-top: 18px;
-  margin-bottom: 10px;
-}
-
-.sheet-bottom-btn {
-  background: #eef4ff;
-  border: 1px solid #cfe0ff;
-  padding: 7px 14px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #1f5ddb;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.sheet-bottom-btn:hover {
-  background: #e2ebff;
-}
-
-/* Icon */
-.sheet-icon {
-  width: 18px;
-  height: 18px;
-}
-
-/* ---------- NAVBAR CLEAN PREMIUM ---------- */
-.topnav {
-  width: 100%;
-  background: white;
-  padding: 14px 40px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #ececec;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  font-family: "Segoe UI", sans-serif;
-}
-
-/* Left side brand */
-.nav-left .nav-brand {
-  font-size: 19px;
-  font-weight: 700;
-  color: #1e1e1e;
-  letter-spacing: 0.3px;
-}
-
-.nav-left .nav-sub {
-  font-size: 12px;
-  color: #9aa1ac;
-  margin-top: -2px;
-}
-
-/* Right side */
-.nav-right {
-  display: flex;
-  align-items: center;
-  gap: 26px;
-}
-
-/* Menu link default state — soft color */
-.nav-link {
-  font-size: 14.5px;
-  color: #9aa1ac;        /* soft grey */
-  cursor: pointer;
-  text-decoration: none;
-  font-weight: 500;
-  transition: 0.2s ease;
-}
-
-/* Disabled but consistent */
-.disabled-link {
-  font-size: 14.5px;
-  color: #c7cbd1;
-  font-weight: 500;
-}
-
-/* Hover effect — bold + darker */
-.nav-link:hover,
-.dropdown-btn:hover {
-  color: #1e1e1e;
-  font-weight: 600;
-}
-
-/* Dropdown button */
-.dropdown-btn {
-  border: none;
-  background: none;
-  padding: 0;
-  font-size: 14.5px;
-  font-weight: 500;
-  cursor: pointer;
-  color: #9aa1ac;
-  transition: 0.2s ease;
-}
-
-/* Dropdown content */
-.nav-dropdown {
-  position: relative;
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background: white;
-  min-width: 180px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 14px rgba(0,0,0,0.07);
-  padding: 8px 0;
-  border: 1px solid #e5e5e5;
-  z-index: 200;
-}
-
-.dropdown-content a,
-.dropdown-content span {
-  font-size: 14px;
-  padding: 10px 16px;
-  display: block;
-  text-decoration: none;
-  color: #6a737c;
-  transition: 0.2s ease;
-}
-
-.dropdown-content a:hover {
-  background: #eef3ff;
-  font-weight: 600;
-  color: #1e1e1e;
-}
-
-/* Show dropdown on hover */
-.nav-dropdown:hover .dropdown-content {
-  display: block;
-}
-
-
     
+    /* Google Sheet Button — Bottom Placement */
+    .sheet-bottom-wrapper {
+      margin-top: 18px;
+      margin-bottom: 10px;
+    }
+
+    .sheet-bottom-btn {
+      background: #eef4ff;
+      border: 1px solid #cfe0ff;
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1f5ddb;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sheet-bottom-btn:hover {
+      background: #e2ebff;
+    }
+
+    /* Icon */
+    .sheet-icon {
+      width: 18px;
+      height: 18px;
+    }
   </style>
 </head>
 
@@ -573,29 +479,19 @@
 
 <div id="loadingOverlay"><div class="loading-spinner"></div></div>
 
-<!-- TOP NAVBAR -->
-<div class="topnav">
-  <div class="nav-left">
-    <span class="nav-brand">UXILIUM</span>
-    <span class="nav-sub">Accounting Management Service</span>
+<div class="top-bar">
+  <div class="logo-section">
+    AUXILIUM <span style="font-weight:300;color:#909090; font-size:13px; margin-left:6px;">Accounting Management Service</span>
   </div>
-
-  <div class="nav-right">
-    <a href="../index.html" class="nav-link">Home</a>
-
-    <div class="nav-dropdown">
-      <button class="nav-link dropdown-btn">Modules ▾</button>
-      <div class="dropdown-content">
-        <a href="../receiving/">Receiving PO Entry</a>
-        <a href="../production/">Production Entry</a>
-        <span class="disabled-link">Order Form</span>
-      </div>
-    </div>
-
-    <a class="nav-link disabled-link">Settings</a>
-  </div>
+  
+  <nav class="nav-menu">
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/index.html" class="nav-item">Home</a>
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/orderform/" class="nav-item">Sales Order</a>
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/" class="nav-item active">Receiving</a>
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/" class="nav-item">Production</a>
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/" class="nav-item">Review Invoice Order</a>
+  </nav>
 </div>
-
 
 
 <div class="page">
@@ -682,22 +578,21 @@
 
     <label style="margin-top:18px;">Additional Notes</label>
     <textarea id="notes"></textarea>
-<!-- Google Sheet Button at Bottom -->
-<div class="sheet-bottom-wrapper">
-  <a 
-    href="https://docs.google.com/spreadsheets/d/1waLwJDMdKHd7R2BMMtkDobfcTn3B6YRk0P7304nvH7I/edit?gid=1127389013"
-    target="_blank"
-    class="sheet-bottom-btn">
-    
-    <!-- Google Sheet Icon -->
-    <svg class="sheet-icon" viewBox="0 0 24 24">
-      <path fill="#0F9D58" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
-      <path fill="#FFF" d="M7 7h10v2H7zM7 11h10v2H7zM7 15h7v2H7z"/>
-    </svg>
 
-    Open Google Sheet
-  </a>
-</div>
+    <div class="sheet-bottom-wrapper">
+      <a 
+        href="https://docs.google.com/spreadsheets/d/1waLwJDMdKHd7R2BMMtkDobfcTn3B6YRk0P7304nvH7I/edit?gid=1127389013"
+        target="_blank"
+        class="sheet-bottom-btn">
+        
+        <svg class="sheet-icon" viewBox="0 0 24 24">
+          <path fill="#0F9D58" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+          <path fill="#FFF" d="M7 7h10v2H7zM7 11h10v2H7zM7 15h7v2H7z"/>
+        </svg>
+
+        Open Google Sheet
+      </a>
+    </div>
 
     <div class="actions-row">
       <button class="secondary-btn" type="button" onclick="reloadINV()">Reload INV</button>
@@ -733,6 +628,7 @@
   const summaryTotalOrdered = document.getElementById("summaryTotalOrdered");
   const summaryTotalReceived = document.getElementById("summaryTotalReceived");
   const summaryTotalRemaining = document.getElementById("summaryTotalRemaining");
+  
   // --- GROUP HELPERS (by rowIndex) ---
   function getAllRows() {
     return [...document.querySelectorAll("#tableBody tr")];
