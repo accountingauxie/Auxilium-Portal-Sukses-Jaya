@@ -31,9 +31,15 @@
             <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/" class="hover:text-blue-600 transition">
                 Home Invoice
             </a>
+
+            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/approveinvoice/index.html" class="hover:text-blue-600 transition">
+                Review Invoice
+            </a>
+
             <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/wespandek/Index.html" class="hover:text-blue-600 transition">
                 Work Effort
             </a>
+            
             <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/importxeroinv/index.html" class="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg font-semibold transition">
                 Import Xero
             </a>
@@ -157,11 +163,10 @@
                 });
         }
 
-        // --- FUNGSI MAPPING ACCOUNT CODE (LOGIC INI YANG PENTING) ---
+        // --- FUNGSI MAPPING ACCOUNT CODE ---
         function getAccountCode(productName) {
             let p = productName.toLowerCase();
             
-            // Logic berdasarkan screenshot Inv to Xero Anda
             if (p.includes("gobi") && p.includes("25")) return "4-3102"; // Spandek 0.25 Biru B
             if (p.includes("sakura") && p.includes("35")) return "4-3315"; // Spandek 0.35 Silver
             if (p.includes("kalsiplank")) return "4-5005"; // Kalsiplank
@@ -169,8 +174,7 @@
             if (p.includes("srikandi")) return "4-5008"; // Genteng
             if (p.includes("taso")) return "4-4103"; // Taso
             
-            // Default jika tidak ketemu pattern
-            return "4-4000"; 
+            return "4-4000"; // Default
         }
 
         function renderCards(data) {
@@ -276,14 +280,10 @@
             tbodyXero.innerHTML = '';
             
             order.items.forEach(item => {
-                // Generate Item Code Simulation
                 let cleanProduct = item.product.replace(/[^a-zA-Z0-9]/g, "").toUpperCase().substring(0, 10);
                 let itemCode = `[PR-${item.type}-${cleanProduct}]`;
-                
-                // PANGGIL FUNGSI MAPPING ACCOUNT CODE
                 let accCode = getAccountCode(item.product);
 
-                // --- LINE 1: ITEM UTAMA ---
                 tbodyXero.innerHTML += `
                     <tr>
                         <td>${itemCode}</td>
@@ -295,7 +295,6 @@
                     </tr>
                 `;
 
-                // --- LINE 2: DISKON (Jika ada) ---
                 if (item.disc > 0) {
                      tbodyXero.innerHTML += `
                     <tr class="bg-red-50">
@@ -317,7 +316,6 @@
             const normal = document.getElementById('view-normal');
             const xero = document.getElementById('view-xero');
             const btn = document.getElementById('btn-toggle-view');
-
             if (normal.classList.contains('hidden')) {
                 normal.classList.remove('hidden');
                 xero.classList.add('hidden');
@@ -344,12 +342,7 @@
             .then(res => res.json())
             .then(result => {
                 if (result.status === 'success') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Synced!',
-                        text: 'Order marked as processing. Please check Xero.',
-                        timer: 2000, showConfirmButton: false
-                    });
+                    Swal.fire({ icon: 'success', title: 'Synced!', text: 'Order marked as processing. Please check Xero.', timer: 2000, showConfirmButton: false });
                     closeModal();
                     fetchData(); 
                 } else { throw new Error(result.message); }
