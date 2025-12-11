@@ -1,1 +1,298 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Import to Xero Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 2s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
 
+    <div class="max-w-5xl mx-auto px-4 py-8">
+        <h1 class="text-2xl font-bold text-slate-800">Xero Import Dashboard</h1>
+        <p class="text-slate-500 mb-6">List order siap sync ke Xero (WE Generated & Xero Empty)</p>
+        
+        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-6 flex gap-4">
+            <input type="text" id="searchInput" onkeyup="filterData()" placeholder="Cari Customer atau No Order..." class="border rounded px-3 py-2 w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div id="order-container" class="space-y-4">
+            <div id="loading" class="text-center py-10">
+                <div class="loader"></div>
+                <p class="text-gray-400 text-sm">Memuat data...</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 transition-opacity">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl m-4 overflow-hidden transform transition-all">
+            
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-slate-50">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">INVOICE DETAIL</h2>
+                    <p class="text-xs text-blue-600 font-semibold mt-1">Status: Ready to Import</p>
+                </div>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+
+            <div class="p-6 max-h-[60vh] overflow-y-auto">
+                <div class="grid grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase font-bold">Customer</p>
+                        <p class="text-lg font-semibold" id="modal-customer">-</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase font-bold">Invoice No (Xero Ref)</p>
+                        <p class="text-lg font-semibold text-blue-600" id="modal-invoice">-</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase font-bold">Order No</p>
+                        <p class="text-gray-800" id="modal-orderno">-</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase font-bold">Date</p>
+                        <p class="text-gray-800" id="modal-date">-</p>
+                    </div>
+                </div>
+
+                <table class="w-full text-sm text-left border-collapse">
+                    <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
+                        <tr>
+                            <th class="px-4 py-2 border-b">Product</th>
+                            <th class="px-4 py-2 border-b text-center">Qty</th>
+                            <th class="px-4 py-2 border-b text-right">Price</th>
+                            <th class="px-4 py-2 border-b text-right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modal-items-body" class="divide-y divide-gray-100">
+                        </tbody>
+                </table>
+            </div>
+
+            <div class="px-6 py-4 border-t border-gray-100 flex justify-between items-center bg-slate-50">
+                <div>
+                    <p class="text-xs text-gray-500 uppercase">Grand Total</p>
+                    <p class="text-2xl font-bold text-blue-600" id="modal-grandtotal">Rp 0</p>
+                </div>
+                <button id="btn-sync" onclick="syncToXero()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded shadow-md text-sm font-bold flex items-center gap-2 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span>Sync to Xero</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // URL WEB APP KAMU (SUDAH DI-INPUT)
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz9s1x3jCXEFhh5KTWVaqLk4682FCHsNmVsJGbhjB-F7xVlZOwW0gKSs-CWyrPpaB6S/exec';
+
+        let allData = []; // Simpan data global
+        let currentOrderNo = null; // Simpan Order ID yang sedang dibuka
+
+        // 1. FETCH DATA SAAT LOAD
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchData();
+        });
+
+        function fetchData() {
+            const container = document.getElementById('order-container');
+            container.innerHTML = `
+                <div class="text-center py-10">
+                    <div class="loader"></div>
+                    <p class="text-gray-400 text-sm">Sedang mengambil data terbaru...</p>
+                </div>`;
+
+            // Panggil API dengan parameter action=getXeroData
+            fetch(`${SCRIPT_URL}?action=getXeroData`)
+                .then(response => response.json())
+                .then(data => {
+                    allData = data;
+                    renderCards(data);
+                })
+                .catch(error => {
+                    container.innerHTML = `<p class="text-red-500 text-center">Gagal memuat data. Coba refresh.<br><small>${error}</small></p>`;
+                });
+        }
+
+        // 2. RENDER KARTU ORDER
+        function renderCards(data) {
+            const container = document.getElementById('order-container');
+            container.innerHTML = ''; 
+
+            if(data.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 bg-white rounded-lg border border-dashed border-gray-300">
+                        <p class="text-gray-500 font-medium">Semua data sudah di-import!</p>
+                        <p class="text-gray-400 text-sm">Tidak ada invoice pending untuk Xero.</p>
+                    </div>`;
+                return;
+            }
+
+            data.forEach(order => {
+                let formattedTotal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(order.grand_total);
+
+                const cardHTML = `
+                <div class="bg-white rounded-lg shadow-sm border-l-4 border-l-green-500 border border-gray-200 p-5 hover:shadow-md transition group">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-lg font-bold text-gray-800">${order.order_no}</h3>
+                                <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded border border-gray-200">${order.invoice_no}</span>
+                            </div>
+                            <div class="text-sm text-gray-500 flex items-center gap-3 mt-2">
+                                <span class="flex items-center gap-1">👤 ${order.customer}</span>
+                                <span class="flex items-center gap-1">📅 ${order.date}</span>
+                            </div>
+                            <div class="mt-2 text-xl font-bold text-gray-800">
+                                ${formattedTotal}
+                            </div>
+                        </div>
+                        <div class="text-right flex flex-col items-end">
+                            <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded font-medium mb-2">Ready</span>
+                            <button onclick="openDetail('${order.order_no}')" class="text-blue-600 text-sm font-medium hover:text-blue-800 transition flex items-center gap-1 bg-blue-50 px-3 py-1.5 rounded hover:bg-blue-100">
+                                View Details &rightarrow;
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                `;
+                container.innerHTML += cardHTML;
+            });
+        }
+
+        // 3. FITUR SEARCH
+        function filterData() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allData.filter(item => 
+                item.customer.toLowerCase().includes(query) || 
+                item.order_no.toLowerCase().includes(query) ||
+                (item.invoice_no && item.invoice_no.toLowerCase().includes(query))
+            );
+            renderCards(filtered);
+        }
+
+        // 4. BUKA MODAL DETAIL
+        function openDetail(orderId) {
+            const order = allData.find(o => o.order_no == orderId);
+            if (!order) return;
+
+            currentOrderNo = orderId; // Set ID aktif untuk sync nanti
+
+            document.getElementById('modal-customer').innerText = order.customer;
+            document.getElementById('modal-invoice').innerText = order.invoice_no || "-";
+            document.getElementById('modal-orderno').innerText = order.order_no;
+            document.getElementById('modal-date').innerText = order.date;
+            
+            const tbody = document.getElementById('modal-items-body');
+            tbody.innerHTML = '';
+            
+            order.items.forEach(item => {
+                let price = new Intl.NumberFormat('id-ID').format(item.price);
+                let total = new Intl.NumberFormat('id-ID').format(item.total);
+                
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3 font-medium text-gray-800">${item.product}</td>
+                        <td class="px-4 py-3 text-center text-gray-600">${item.qty}</td>
+                        <td class="px-4 py-3 text-right text-gray-600">Rp ${price}</td>
+                        <td class="px-4 py-3 text-right font-bold text-gray-800">Rp ${total}</td>
+                    </tr>
+                `;
+            });
+
+            let grandTotal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(order.grand_total);
+            document.getElementById('modal-grandtotal').innerText = grandTotal;
+
+            // Reset Button State
+            const btn = document.getElementById('btn-sync');
+            btn.innerHTML = `<span>Sync to Xero</span> <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>`;
+            btn.disabled = false;
+            btn.classList.remove('bg-gray-400');
+            btn.classList.add('bg-blue-600');
+
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+        }
+
+        // 5. SYNC LOGIC (KIRIM DATA KE GOOGLE SHEETS)
+        function syncToXero() {
+            if (!currentOrderNo) return;
+
+            // UI Loading State
+            const btn = document.getElementById('btn-sync');
+            btn.innerHTML = `<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> <span>Processing...</span>`;
+            btn.disabled = true;
+            btn.classList.remove('bg-blue-600');
+            btn.classList.add('bg-gray-400');
+
+            // Data yang dikirim ke doPost
+            const payload = {
+                action: 'updateXeroStatus',
+                orderNo: currentOrderNo
+            };
+
+            // Kirim request POST
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.status === 'success') {
+                    // Sukses!
+                    closeModal();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Synced!',
+                        text: 'Status berhasil diupdate ke "Imported"',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    // Refresh data dashboard
+                    fetchData();
+                } else {
+                    throw new Error(result.message);
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Gagal sync data: ' + error
+                });
+                // Reset Button
+                btn.innerHTML = `<span>Try Again</span>`;
+                btn.disabled = false;
+                btn.classList.add('bg-blue-600');
+                btn.classList.remove('bg-gray-400');
+            });
+        }
+
+        // Tutup modal jika klik luar
+        window.onclick = function(event) {
+            const modal = document.getElementById('detailModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
