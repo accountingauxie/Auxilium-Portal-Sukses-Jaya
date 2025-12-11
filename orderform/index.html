@@ -2,342 +2,449 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Form Pemesanan</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form Pemesanan - Auxilium</title>
 
-<!-- Choices.js -->
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
 
-<!-- Sortable -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
 :root {
-  --border: #d6dce1;
-  --border-light: #e3e7eb;
-  --header-bg: #f7f8fa;
-  --text-muted: #697386;
+  --border: #e2e8f0;
+  --border-focus: #3b82f6;
+  --header-bg: #f8fafc;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
   --blue: #0075c9;
-  --bg: #f5f7fa;
+  --blue-light: #e0f2fe;
+  --bg: #f1f5f9;
+  --radius: 8px;
 }
 
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  font-family: "Arial", sans-serif;
+  font-family: "Inter", sans-serif;
   background: var(--bg);
-  font-size: 13px;
+  font-size: 14px;
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* TOP BAR */
-.top-bar {
-  padding: 14px 36px;
+/* ================= NAV BAR ================= */
+.top-header {
   background: #ffffff;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border);
+  padding: 0 36px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.brand-row {
+  padding: 16px 0;
   display: flex;
   align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.brand-subtitle {
+  font-weight: 400;
+  color: var(--text-muted);
+  border-left: 1px solid #cbd5e1;
+  padding-left: 10px;
+  margin-left: 5px;
+  font-size: 14px;
+}
+
+.nav-menu {
+  display: flex;
   gap: 8px;
-  font-size: 15px;
+  padding-bottom: 16px;
+}
+
+.nav-item {
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.nav-item:hover {
+  background: #f1f5f9;
+  color: var(--text-main);
+}
+
+.nav-item.active {
+  background: var(--blue-light);
+  color: var(--blue);
   font-weight: 600;
 }
 
-/* PAGE WRAPPER */
+/* ================= PAGE LAYOUT ================= */
 .page-wrap {
   display: flex;
   justify-content: center;
-  padding: 36px 0;
+  padding: 30px 20px;
 }
 
-/* CARD WIDTH */
 .invoice-card {
-  width: 1600px;
+  width: 100%;
+  max-width: 1400px; /* Responsive max width */
   background: #fff;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius);
   padding: 32px;
-  margin: 0 auto;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
 h2 {
-  margin: 0 0 18px;
-  font-size: 20px;
-  font-weight: 600;
+  margin: 0 0 24px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
 }
 
-/* HEADER GRID */
+/* ================= HEADER GRID ================= */
 .header-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 20px;
-  margin-bottom: 22px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
 }
 
 .field-label {
   display: block;
-  margin-bottom: 4px;
-  font-size: 12px;
-  color: #6b7280;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
   font-weight: 600;
 }
 
 input, select, textarea {
   width: 100%;
-  padding: 7px 10px;
-  border-radius: 4px;
+  padding: 9px 12px;
+  border-radius: 6px;
   border: 1px solid var(--border);
-  font-size: 13px;
-  background: white;
+  font-size: 14px;
+  font-family: inherit;
+  background: #fff;
+  transition: border 0.2s, box-shadow 0.2s;
 }
 
 input:focus, select:focus, textarea:focus {
-  border-color: #9fb3c8;
+  border-color: var(--blue);
   outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 117, 201, 0.1);
 }
 
-/* TABLE */
-.table-wrapper {
+input[readonly] {
+  background-color: #f8fafc;
+  color: #64748b;
+  cursor: default;
+}
+
+/* ================= TABLE ================= */
+.table-container {
   border: 1px solid var(--border);
-  border-radius: 6px;
-  background: #fff;
+  border-radius: var(--radius);
+  overflow: hidden; /* Round corners */
   margin-bottom: 16px;
-  overflow: visible !important;
+}
+
+.table-wrapper {
+  overflow-x: auto; /* Allow horizontal scroll on small screens */
+  background: #fff;
 }
 
 .items-table {
   width: 100%;
+  min-width: 1000px; /* Ensure table doesn't squash too much */
   border-collapse: collapse;
-  table-layout: fixed;
 }
 
 .items-table th {
   background: var(--header-bg);
-  padding: 9px;
+  padding: 12px 10px;
   font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   color: var(--text-muted);
   text-align: left;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
 }
 
-/* FIXED COLUMN WIDTHS */
-.items-table th:nth-child(1),  .items-table td:nth-child(1) { width: 28px; }
-.items-table th:nth-child(2),  .items-table td:nth-child(2) { width: 130px; }
-.items-table th:nth-child(3),  .items-table td:nth-child(3) { width: 370px; }
-.items-table th:nth-child(4),  .items-table td:nth-child(4) { width: 90px; }
-.items-table th:nth-child(5),  .items-table td:nth-child(5) { width: 80px; }
-.items-table th:nth-child(6),  .items-table td:nth-child(6) { width: 150px; }
-.items-table th:nth-child(7),  .items-table td:nth-child(7) { width: 100px; }
-.items-table th:nth-child(8),  .items-table td:nth-child(8) { width: 150px; }
-.items-table th:nth-child(9),  .items-table td:nth-child(9) { width: 170px; }
-.items-table th:nth-child(10), .items-table td:nth-child(10) { width: 28px; }
+/* Column Width Adjustments */
+.items-table th:nth-child(1), .items-table td:nth-child(1) { width: 40px; text-align: center; } /* Handle */
+.items-table th:nth-child(2), .items-table td:nth-child(2) { width: 140px; } /* Type */
+.items-table th:nth-child(3), .items-table td:nth-child(3) { width: 300px; } /* Item */
+.items-table th:nth-child(4), .items-table td:nth-child(4) { width: 80px; } /* Meter */
+.items-table th:nth-child(5), .items-table td:nth-child(5) { width: 80px; } /* Qty */
+.items-table th:nth-child(6), .items-table td:nth-child(6) { width: 140px; } /* Unit Price */
+.items-table th:nth-child(7), .items-table td:nth-child(7) { width: 100px; } /* Discount */
+.items-table th:nth-child(8), .items-table td:nth-child(8) { width: 140px; } /* Price/Qty */
+.items-table th:nth-child(9), .items-table td:nth-child(9) { width: 160px; } /* Total */
+.items-table th:nth-child(10), .items-table td:nth-child(10) { width: 50px; text-align: center; } /* Delete */
 
 .items-table td {
-  padding: 8px;
-  border-bottom: 1px solid var(--border-light);
-  position: relative;
-  overflow: visible !important;
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.items-table tr:hover td {
+    background-color: #f8fafc;
 }
 
 .drag-handle {
   cursor: grab;
-  text-align: center;
-  color: #999;
+  color: #94a3b8;
+  font-size: 18px;
+  padding-top: 14px !important;
 }
 
 .delete-row {
   cursor: pointer;
-  text-align: center;
-  color: #d33;
+  color: #ef4444;
   font-size: 16px;
+  transition: color 0.2s;
+  padding-top: 14px !important;
 }
 
-/* ADD ROW BUTTON */
+.delete-row:hover { color: #dc2626; }
+
+/* ================= BUTTONS ================= */
 .add-row-btn {
   font-size: 13px;
-  padding: 6px 12px;
-  border: 1px solid var(--border);
-  background: #fff;
+  padding: 8px 16px;
+  border: 1px dashed var(--border-focus);
+  color: var(--blue);
+  background: #f0f9ff;
   cursor: pointer;
-  border-radius: 4px;
-  margin-bottom: 10px;
+  border-radius: 6px;
+  margin-bottom: 24px;
+  font-weight: 500;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
-/* NOTES + TOTALS */
+.add-row-btn:hover {
+  background: #e0f2fe;
+}
+
+/* ================= FOOTER SECTION ================= */
 .notes-and-totals {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 30px;
+  gap: 48px;
+  margin-top: 10px;
 }
 
-textarea { height: 170px; }
+@media (max-width: 900px) {
+  .notes-and-totals { grid-template-columns: 1fr; gap: 24px; }
+}
 
-/* SUMMARY */
+textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.totals-box {
+  background: #f8fafc;
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
 .summary-row {
   display: flex;
   justify-content: space-between;
-  margin: 6px 0;
+  margin-bottom: 12px;
+  align-items: center;
 }
 
 .summary-divider {
   height: 1px;
-  background: #d4d7dc;
-  margin: 12px 0;
+  background: #cbd5e1;
+  margin: 16px 0;
 }
 
-.summary-row .label,
-.summary-row .value {
-  color: #333;
-  font-size: 14px;
-}
+.summary-row .label { color: var(--text-muted); font-size: 14px; }
+.summary-row .value { color: var(--text-main); font-weight: 600; font-size: 15px; }
 
-.summary-row.total .label,
-.summary-row.total .value {
-  font-size: 18px;
-  font-weight: 700;
-}
+.summary-row.total .label { font-size: 16px; font-weight: 700; color: #0f172a; }
+.summary-row.total .value { font-size: 20px; font-weight: 800; color: var(--blue); }
 
 .approve-btn {
-  margin-top: 20px;
-  padding: 12px 42px;
+  width: 100%;
+  margin-top: 24px;
+  padding: 12px;
   font-size: 15px;
   font-weight: 600;
   background: var(--blue);
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
-  align-self: flex-end;
+  transition: background 0.2s;
+  box-shadow: 0 4px 6px -1px rgba(0, 117, 201, 0.3);
 }
 
-.totals-box {
-  display: flex;
-  flex-direction: column;
-  text-align: right;
-}
+.approve-btn:hover { background: #0062a8; }
+.approve-btn:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; }
 
-/* ========================== MODAL ========================== */
+/* ================= MODAL & TOAST ================= */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  background: rgba(0,0,0,0.45);
+  background: rgba(15, 23, 42, 0.6);
   display: none;
   align-items: center;
   justify-content: center;
   z-index: 9999;
+  backdrop-filter: blur(2px);
 }
 
 .modal-box {
   background: #ffffff;
-  padding: 24px;
-  width: 380px;
-  border-radius: 10px;
-  box-shadow: 0 8px 26px rgba(0,0,0,0.2);
+  padding: 28px;
+  width: 400px;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  animation: modalFadeIn 0.2s ease-out;
 }
 
-.modal-box h3 {
-  margin-bottom: 12px;
-  font-size: 18px;
-  font-weight: 600;
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 
-.modal-box input {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 18px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-}
+.modal-box h3 { margin: 0 0 16px; font-size: 18px; color: #0f172a; }
 
 .modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 12px;
+  margin-top: 20px;
 }
 
 .btn-ok {
   background: var(--blue);
   color: white;
   border: none;
-  padding: 8px 18px;
+  padding: 8px 20px;
   border-radius: 6px;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 500;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
 }
 
 .btn-cancel {
-  background: #dddddd;
-  color: #333;
-  border: none;
+  background: white;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
   padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
+  font-weight: 500;
 }
+.btn-cancel:hover { background: #f1f5f9; }
 
-/* LOADING SPINNER DALAM MODAL */
+/* SPINNER */
 .spinner {
-  width: 16px;
-  height: 16px;
-  border-radius: 999px;
-  border: 2px solid #e5e7eb;
-  border-top-color: #ffffff;
-  animation: spin 0.7s linear infinite;
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
   display: none;
+  margin-left: 8px;
 }
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 /* TOAST */
 .toast {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
-  padding: 12px 18px;
+  bottom: 30px;
+  right: 30px;
+  padding: 14px 20px;
   border-radius: 8px;
-  background: #333;
+  background: #1e293b;
   color: #fff;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   opacity: 0;
   transform: translateY(20px);
-  transition: 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
   z-index: 99999;
+  display: flex;
+  align-items: center;
 }
+.toast.show { opacity: 1; transform: translateY(0); }
 
-.toast.show {
-  opacity: 1;
-  transform: translateY(0);
+/* Choices.js Customization */
+.choices__inner {
+  background-color: #fff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  min-height: 40px;
+  padding: 4px 10px;
+}
+.choices__list--dropdown {
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 </style>
 </head>
 
 <body>
 
-<!-- TOAST -->
 <div id="toast" class="toast"></div>
 
-<!-- ===================== MODAL ADD CUSTOMER ===================== -->
 <div id="modalAddCustomer" class="modal-overlay">
   <div class="modal-box">
     <h3>Tambah Customer Baru</h3>
-    <input id="newCustomerName" type="text" placeholder="Masukkan nama customer" />
+    <p style="color:#64748b; font-size:13px; margin-bottom:12px;">Masukkan nama customer yang ingin ditambahkan ke database.</p>
+    <input id="newCustomerName" type="text" placeholder="Nama Customer PT..." autocomplete="off" />
     <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeCustomerModal()">Cancel</button>
+      <button class="btn-cancel" onclick="closeCustomerModal()">Batal</button>
       <button class="btn-ok" onclick="submitNewCustomer()">
-        <span id="btnOkText">OK</span>
+        <span id="btnOkText">Simpan</span>
         <span id="modalSpinner" class="spinner"></span>
       </button>
     </div>
   </div>
 </div>
 
-<div class="top-bar">
-  AUXILIUM <span style="font-weight:300;color:#909090">Accounting Management Services</span>
+<div class="top-header">
+  <div class="brand-row">
+    AUXILIUM <span class="brand-subtitle">Accounting Management Services</span>
+  </div>
+  
+  <nav class="nav-menu">
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/index.html" class="nav-item active">Home Invoice</a>
+    
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/" class="nav-item">Receiving</a>
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/" class="nav-item">Production</a>
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/" class="nav-item">Review Invoice Order</a>
+  </nav>
 </div>
 
 <div class="page-wrap">
@@ -347,45 +454,49 @@ textarea { height: 170px; }
 
     <div class="header-grid">
       <div>
-        <span class="field-label">Contact</span>
+        <span class="field-label">Contact / Customer</span>
         <select id="customerSelect"></select>
       </div>
       <div>
-        <span class="field-label">Issue date</span>
+        <span class="field-label">Issue Date</span>
         <input type="date" id="issueDate">
       </div>
       <div>
-        <span class="field-label">Order number</span>
+        <span class="field-label">Order Number</span>
         <input type="text" id="orderNumber" readonly>
       </div>
     </div>
 
-    <div class="table-wrapper">
-      <table class="items-table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Type</th>
-            <th>Item</th>
-            <th>Meter</th>
-            <th>Qty</th>
-            <th>Unit Price</th>
-            <th>Discount</th>
-            <th>Price/Qty</th>
-            <th>Total</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="itemsBody"></tbody>
-      </table>
+    <div class="table-container">
+      <div class="table-wrapper">
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Type</th>
+              <th>Item</th>
+              <th>Meter</th>
+              <th>Qty</th>
+              <th>Unit Price</th>
+              <th>Discount</th>
+              <th>Price/Qty</th>
+              <th>Total</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="itemsBody"></tbody>
+        </table>
+      </div>
     </div>
 
-    <button class="add-row-btn" onclick="addRow()">Add row ▼</button>
+    <button class="add-row-btn" onclick="addRow()">
+      <span>+</span> Tambah Baris
+    </button>
 
     <div class="notes-and-totals">
       <div>
-        <span class="field-label">Catatan:</span>
-        <textarea id="notes"></textarea>
+        <span class="field-label">Catatan Tambahan:</span>
+        <textarea id="notes" placeholder="Tulis instruksi pengiriman atau catatan lain di sini..."></textarea>
       </div>
 
       <div class="totals-box">
@@ -402,7 +513,7 @@ textarea { height: 170px; }
           <span class="label">Grand Total</span>
           <span class="value" id="grandTotalDisplay">0.00</span>
         </div>
-        <button class="btn-primary approve-btn" type="button">Send Order</button>
+        <button class="approve-btn" type="button">Send Order</button>
       </div>
     </div>
 
@@ -410,74 +521,86 @@ textarea { height: 170px; }
 </div>
 
 <script>
-/* CONFIG */
-const baseURL =
-  "https://script.google.com/macros/s/AKfycbxDLvQ-of3TrOnLdXac9Iv2YbwwFPjFyh7ufUd4PBFda6_V7CCzuVIpwPT8dpG0_dZb3A/exec";
+/* CONFIGURATION */
+const baseURL = "https://script.google.com/macros/s/AKfycbxDLvQ-of3TrOnLdXac9Iv2YbwwFPjFyh7ufUd4PBFda6_V7CCzuVIpwPT8dpG0_dZb3A/exec";
 
 let listSpandek = [];
 let listNonSpandek = [];
 let spandekPrice = [];
 let nonSpandekPrice = [];
-
 let customerList = [];
 let choiceCustomer;
 
-/* ================= TOAST ================= */
+/* ================= TOAST HELPER ================= */
 function showToast(msg, type = "info") {
   const toast = document.getElementById("toast");
-  toast.textContent = msg;
+  toast.innerHTML = msg; // allow html
 
-  toast.style.background =
-    type === "success" ? "#16a34a" :
-    type === "error" ? "#dc2626" :
-    type === "warning" ? "#f97316" : "#333";
+  // Set colors based on type
+  if (type === "success") {
+    toast.style.background = "#10b981"; // Green
+    toast.innerHTML = `✅ &nbsp; ${msg}`;
+  } else if (type === "error") {
+    toast.style.background = "#ef4444"; // Red
+    toast.innerHTML = `⚠️ &nbsp; ${msg}`;
+  } else if (type === "warning") {
+    toast.style.background = "#f59e0b"; // Orange
+    toast.innerHTML = `✋ &nbsp; ${msg}`;
+  } else {
+    toast.style.background = "#1e293b"; // Dark
+  }
 
   toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 2300);
+  setTimeout(() => toast.classList.remove("show"), 3000);
 }
 
-/* ================= FORMAT RP ================= */
+/* ================= FORMATTING ================= */
 function formatMoney(num) {
   const n = Number(num) || 0;
-  return "Rp " + n.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+  return "Rp " + n.toLocaleString("id-ID", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
   });
 }
 
 function parseMoney(str) {
   if (!str) return 0;
-  return parseFloat(
-    str
-      .replace(/Rp/gi, "")
-      .replace(/\s/g, "")
-      .replace(/,/g, "")
-  ) || 0;
+  // Remove Rp, dots, spaces. keep commas if using US format, but ID format usually uses dots for thousands
+  // Adjust regex to strictly clean non-digits except if decimal is needed.
+  // Assuming inputs are plain numbers or formatted with dots as thousand separator
+  // Here we strip everything except digits
+  const clean = str.replace(/[^\d]/g, "");
+  return parseFloat(clean) || 0;
 }
 
-/* ==================== ON LOAD ======================== */
+/* ================= ON LOAD ================= */
 window.onload = async function () {
+  // Init ChoiceJS for Customer
   choiceCustomer = new Choices("#customerSelect", {
     searchEnabled: true,
     itemSelectText: "",
     shouldSort: false,
+    placeholder: true,
+    placeholderValue: "Cari Customer...",
   });
 
-  document.getElementById("issueDate").value =
-    new Date().toISOString().split("T")[0];
+  document.getElementById("issueDate").value = new Date().toISOString().split("T")[0];
 
   await loadDropdowns();
   setOrderNumber();
 
+  // Add initial rows
   for (let i = 0; i < 3; i++) addRow();
 
+  // Sortable Drag & Drop
   new Sortable(document.getElementById("itemsBody"), {
     handle: ".drag-handle",
     animation: 150,
+    ghostClass: 'sortable-ghost'
   });
 };
 
-/* ================= ORDER NUMBER ================= */
+/* ================= LOGIC: ORDER NUMBER ================= */
 function setOrderNumber() {
   const key = "ORDERFORM_LAST_ORDER";
   let last = localStorage.getItem(key);
@@ -485,11 +608,10 @@ function setOrderNumber() {
 
   const next = parseInt(last, 10) + 1;
   localStorage.setItem(key, String(next));
-
   document.getElementById("orderNumber").value = next;
 }
 
-/* ================= LOAD DATA ================= */
+/* ================= LOGIC: FETCH DATA ================= */
 async function loadDropdowns() {
   try {
     const res = await fetch(baseURL + "?action=getdata");
@@ -504,7 +626,7 @@ async function loadDropdowns() {
     choiceCustomer.clearChoices();
     choiceCustomer.setChoices(
       [
-        { value: "add_new", label: "➕ Add New Customer" },
+        { value: "add_new", label: "➕ Tambah Customer Baru", selected: false, disabled: false },
         ...customerList.map((c) => ({ value: c, label: c })),
       ],
       "value",
@@ -513,40 +635,34 @@ async function loadDropdowns() {
     );
   } catch (err) {
     console.error("loadDropdowns error:", err);
-    showToast("Gagal load data", "error");
+    showToast("Gagal mengambil data dari server", "error");
   }
 }
 
-/* ================= ADD ROW ================= */
+/* ================= LOGIC: TABLE ROWS ================= */
 function addRow() {
   const body = document.getElementById("itemsBody");
   const tr = document.createElement("tr");
 
   tr.innerHTML = `
-    <td class="drag-handle">⋮⋮</td>
-
+    <td class="drag-handle">⠿</td>
     <td>
       <select class="type-select">
-        <option value="">-- Pilih --</option>
+        <option value="">Pilih Tipe</option>
         <option value="Spandek">Spandek</option>
         <option value="Non Spandek">Non Spandek</option>
       </select>
     </td>
-
     <td>
       <select class="item-select"></select>
     </td>
-
-    <td><input type="text" class="meter-input"></td>
-    <td><input type="number" class="qty-input" step="1"></td>
-
+    <td><input type="text" class="meter-input" placeholder="0.00"></td>
+    <td><input type="number" class="qty-input" step="1" placeholder="0"></td>
     <td><input type="text" class="unit-price-input" readonly></td>
     <td><input type="text" class="discount-input" value="0"></td>
-
     <td><input type="text" class="priceqty-input" readonly></td>
-    <td><input type="text" class="line-total-input" readonly></td>
-
-    <td class="delete-row" onclick="deleteRow(this)">🗑</td>
+    <td><input type="text" class="line-total-input" readonly style="font-weight:bold;"></td>
+    <td class="delete-row" onclick="deleteRow(this)" title="Hapus baris">✕</td>
   `;
 
   body.appendChild(tr);
@@ -556,21 +672,26 @@ function addRow() {
   const meterInput = tr.querySelector(".meter-input");
   const discInput = tr.querySelector(".discount-input");
 
+  // Init State
   meterInput.disabled = true;
-  meterInput.style.background = "#f0f0f0";
+  meterInput.style.background = "#f1f5f9";
 
+  // Init Choices.js for Item Select
   const choiceItem = new Choices(itemSel, {
     searchEnabled: true,
     itemSelectText: "",
     shouldSort: false,
+    placeholder: true,
+    placeholderValue: "Pilih Item",
   });
 
+  // Helper to fill item dropdown
   function loadItemsForType() {
     let list = [];
     if (typeSel.value === "Spandek") list = listSpandek;
     if (typeSel.value === "Non Spandek") list = listNonSpandek;
 
-    itemSel.innerHTML = "";
+    choiceItem.clearChoices();
     choiceItem.setChoices(
       list.map((name) => ({ value: name, label: name })),
       "value",
@@ -579,24 +700,30 @@ function addRow() {
     );
   }
 
+  // Type Change Event
   typeSel.addEventListener("change", () => {
     if (typeSel.value === "Spandek") {
       meterInput.disabled = false;
       meterInput.style.background = "white";
       meterInput.value = "";
+      meterInput.focus();
     } else {
       meterInput.disabled = true;
-      meterInput.style.background = "#f0f0f0";
+      meterInput.style.background = "#f1f5f9";
       meterInput.value = "";
     }
 
     loadItemsForType();
 
+    // Reset values
     tr.querySelector(".unit-price-input").value = "";
     tr.querySelector(".priceqty-input").value = "";
     tr.querySelector(".line-total-input").value = "";
+    recalcRow(tr);
+    recalcTotals();
   });
 
+  // Item Change Event
   itemSel.addEventListener("change", () => {
     const item = itemSel.value;
     let price = 0;
@@ -616,22 +743,25 @@ function addRow() {
     recalcTotals();
   });
 
-  /* ========== DISCOUNT INPUT UX ========== */
+  // --- DISCOUNT INPUT ---
   discInput.addEventListener("focus", () => {
     const num = parseMoney(discInput.value);
     discInput.value = num ? String(num) : "";
+    discInput.select();
   });
 
   discInput.addEventListener("input", () => {
+    // Only allow numbers
     let raw = discInput.value.replace(/[^\d]/g, "");
     let num = parseInt(raw, 10) || 0;
 
     const unit = parseMoney(tr.querySelector(".unit-price-input").value);
-    if (num > unit) num = unit; // diskon tidak boleh > unit price
+    if (num > unit) num = unit; // Max limit logic
 
-    discInput.value = raw === "" ? "" : String(num);
-
-    recalcRow(tr);
+    discInput.value = raw === "" ? "" : String(num); // Keep clean number while typing
+    
+    // Calculate live without formatting yet
+    recalcRow(tr); 
     recalcTotals();
   });
 
@@ -640,6 +770,7 @@ function addRow() {
     discInput.value = formatMoney(num);
   });
 
+  // --- OTHER INPUTS ---
   tr.querySelectorAll("input").forEach((inp) => {
     if (inp.classList.contains("discount-input")) return;
 
@@ -650,13 +781,14 @@ function addRow() {
   });
 }
 
-/* ================= DELETE ROW ================= */
 function deleteRow(el) {
-  el.closest("tr").remove();
+  const row = el.closest("tr");
+  // Optional: Confirm if row has data
+  row.remove();
   recalcTotals();
 }
 
-/* ================= PER BARIS ================= */
+/* ================= CALCULATION ================= */
 function recalcRow(row) {
   const type = row.querySelector(".type-select").value;
   const meterInput = row.querySelector(".meter-input");
@@ -666,6 +798,7 @@ function recalcRow(row) {
   if (type === "Non Spandek") {
     meter = 1;
   } else {
+    // Handle comma as decimal just in case user types "1,5"
     const raw = meterInput.value.replace(",", ".");
     meter = parseFloat(raw);
     if (isNaN(meter) || meter < 0) meter = 0;
@@ -673,7 +806,7 @@ function recalcRow(row) {
 
   let qty = parseFloat(row.querySelector(".qty-input").value);
   if (isNaN(qty) || qty < 0) qty = 0;
-  row.querySelector(".qty-input").value = qty;
+  // Don't overwrite value while typing, just use for calc
 
   const unit = parseMoney(row.querySelector(".unit-price-input").value);
   const disc = parseMoney(row.querySelector(".discount-input").value);
@@ -688,14 +821,14 @@ function recalcRow(row) {
   row.querySelector(".line-total-input").value = formatMoney(total);
 }
 
-/* ================= TOTAL ================= */
 function recalcTotals() {
   let grand = 0;
-
   document.querySelectorAll(".line-total-input").forEach((el) => {
     grand += parseMoney(el.value);
   });
 
+  // Logic: Grand Total includes PPN? Or PPN added on top?
+  // Based on your original code: dpp = grand / 1.11 => means grand IS inclusive
   const dpp = grand / 1.11;
   const ppn = grand - dpp;
 
@@ -704,18 +837,26 @@ function recalcTotals() {
   document.getElementById("grandTotalDisplay").textContent = formatMoney(grand);
 }
 
-/* ================= MODAL HANDLERS ================= */
+/* ================= MODAL CUSTOMER ================= */
+document.getElementById("customerSelect").addEventListener("change", function () {
+  if (this.value === "add_new") {
+    openCustomerModal();
+    // Reset selection to prevent "add_new" staying selected if canceled
+    // choiceCustomer.setChoiceByValue(""); 
+  }
+});
+
 function openCustomerModal() {
   document.getElementById("modalAddCustomer").style.display = "flex";
   document.getElementById("newCustomerName").value = "";
-  document.getElementById("newCustomerName").focus();
+  setTimeout(() => document.getElementById("newCustomerName").focus(), 100);
 }
 
 function closeCustomerModal() {
   document.getElementById("modalAddCustomer").style.display = "none";
+  // clear selection if needed
 }
 
-/* ================= SUBMIT NEW CUSTOMER ================= */
 async function submitNewCustomer() {
   const name = document.getElementById("newCustomerName").value.trim();
   const spinner = document.getElementById("modalSpinner");
@@ -726,156 +867,121 @@ async function submitNewCustomer() {
     return;
   }
 
-  // Frontend duplicate check
-  const lowerList = customerList.map(c => c.toLowerCase());
-  if (lowerList.includes(name.toLowerCase())) {
-    showToast("Customer already exists", "warning");
+  // Check duplicate frontend
+  const exists = customerList.some(c => c.toLowerCase() === name.toLowerCase());
+  if (exists) {
+    showToast("Customer sudah ada di daftar", "warning");
     return;
   }
 
+  // UI Loading
   spinner.style.display = "inline-block";
-  btnText.textContent = "Saving...";
+  btnText.textContent = "Menyimpan...";
 
   try {
     const res = await fetch(baseURL + "?action=addcustomer&name=" + encodeURIComponent(name));
     const txt = await res.text();
 
     if (txt === "DUPLICATE") {
-      showToast("Customer already exists", "warning");
-      spinner.style.display = "none";
-      btnText.textContent = "OK";
-      return;
+      showToast("Customer sudah ada di database", "warning");
+    } else if (txt.includes("OK")) {
+      showToast("Customer berhasil ditambahkan", "success");
+      
+      // Update Local Data
+      customerList.push(name);
+      choiceCustomer.setChoices(
+        [{ value: name, label: name, selected: true }],
+        "value",
+        "label",
+        false
+      );
+      closeCustomerModal();
+    } else {
+      showToast("Error: " + txt, "error");
     }
-
-    if (txt !== "OK") {
-      showToast("Gagal menambahkan customer: " + txt, "error");
-      spinner.style.display = "none";
-      btnText.textContent = "OK";
-      return;
-    }
-
-    // Berhasil
-    showToast("Customer berhasil ditambahkan", "success");
-
-    // Tambah ke list & dropdown
-    customerList.push(name);
-    choiceCustomer.setChoices(
-      [{ value: name, label: name }],
-      "value",
-      "label",
-      false
-    );
-    choiceCustomer.setChoiceByValue(name);
-
-    closeCustomerModal();
-
   } catch (err) {
-    console.error("Add customer error:", err);
-    showToast("Terjadi error koneksi", "error");
+    console.error(err);
+    showToast("Gagal koneksi ke server", "error");
   }
 
   spinner.style.display = "none";
-  btnText.textContent = "OK";
+  btnText.textContent = "Simpan";
 }
-
-/* EVENT — OPEN MODAL WHEN SELECT ADD NEW CUSTOMER */
-document.getElementById("customerSelect").addEventListener("change", function () {
-  if (this.value === "add_new") {
-    openCustomerModal();
-  }
-});
 
 /* ================= SUBMIT ORDER ================= */
 document.querySelector(".approve-btn").addEventListener("click", submitOrder);
 
 async function submitOrder() {
   const btn = document.querySelector(".approve-btn");
+  
+  // Validation
+  const customer = document.getElementById("customerSelect").value;
+  if (!customer || customer === "add_new") {
+    showToast("Mohon pilih customer terlebih dahulu", "warning");
+    return;
+  }
+
+  // Collect Items
+  const items = [];
+  document.querySelectorAll("#itemsBody tr").forEach((tr) => {
+    const item = tr.querySelector(".item-select").value;
+    if (item) {
+      items.push({
+        type: tr.querySelector(".type-select").value,
+        item: item,
+        meter: tr.querySelector(".meter-input").value,
+        qty: tr.querySelector(".qty-input").value,
+        unitPrice: parseMoney(tr.querySelector(".unit-price-input").value),
+        discount: parseMoney(tr.querySelector(".discount-input").value),
+        priceQty: parseMoney(tr.querySelector(".priceqty-input").value),
+        total: parseMoney(tr.querySelector(".line-total-input").value),
+      });
+    }
+  });
+
+  if (items.length === 0) {
+    showToast("Mohon isi minimal satu item barang", "warning");
+    return;
+  }
+
+  // UI Processing
   btn.disabled = true;
-  btn.textContent = "Processing...";
+  const originalText = btn.textContent;
+  btn.textContent = "Sedang Mengirim...";
 
   try {
-    // 1. Header
-    const customer = document.getElementById("customerSelect").value;
-    const issueDate = document.getElementById("issueDate").value;
-    const orderNumber = document.getElementById("orderNumber").value;
-    const notes = document.getElementById("notes").value;
-
-    if (!customer || customer === "add_new") {
-      showToast("Pilih customer terlebih dahulu", "warning");
-      btn.disabled = false;
-      btn.textContent = "Send Order";
-      return;
-    }
-
-    // 2. Items
-    const rows = document.querySelectorAll("#itemsBody tr");
-    const items = [];
-
-    rows.forEach((tr) => {
-      const type = tr.querySelector(".type-select").value;
-      const item = tr.querySelector(".item-select").value;
-      const meter = tr.querySelector(".meter-input").value;
-      const qty = tr.querySelector(".qty-input").value;
-      const unitPrice = parseMoney(tr.querySelector(".unit-price-input").value);
-      const discount = parseMoney(tr.querySelector(".discount-input").value);
-      const priceQty = parseMoney(tr.querySelector(".priceqty-input").value);
-      const total = parseMoney(tr.querySelector(".line-total-input").value);
-
-      if (item) {
-        items.push({
-          type,
-          item,
-          meter,
-          qty,
-          unitPrice,
-          discount,
-          priceQty,
-          total,
-        });
-      }
-    });
-
-    if (items.length === 0) {
-      showToast("Minimal isi 1 baris item", "warning");
-      btn.disabled = false;
-      btn.textContent = "Send Order";
-      return;
-    }
-
-    // 3. Payload (akan di-JSON + urlencode)
     const payloadObj = {
-      customer,
-      issueDate,
-      orderNumber,
-      notes,
-      items,
+      customer: customer,
+      issueDate: document.getElementById("issueDate").value,
+      orderNumber: document.getElementById("orderNumber").value,
+      notes: document.getElementById("notes").value,
+      items: items,
       dpp: document.getElementById("dppDisplay").textContent,
       ppn: document.getElementById("ppnDisplay").textContent,
       grandTotal: document.getElementById("grandTotalDisplay").textContent,
     };
 
     const payloadStr = encodeURIComponent(JSON.stringify(payloadObj));
-
-    // 4. Kirim via GET (tidak pakai POST lagi)
     const url = `${baseURL}?action=submitorder&payload=${payloadStr}`;
 
-    const res = await fetch(url, { method: "GET" });
+    const res = await fetch(url, { method: "GET" }); // Apps Script Web App simple GET trigger
     const result = await res.text();
-    console.log("Submit result:", result);
 
     if (result.includes("OK")) {
-      showToast("Order berhasil dikirim!", "success");
-      setTimeout(() => location.reload(), 1200);
+      showToast("Order BERHASIL terkirim!", "success");
+      // Optional: Reset form or Redirect
+      setTimeout(() => location.reload(), 1500);
     } else {
-      showToast("Gagal submit: " + result, "error");
+      showToast("Gagal mengirim: " + result, "error");
+      btn.disabled = false;
+      btn.textContent = originalText;
     }
   } catch (err) {
     console.error(err);
-    showToast("Error submit order", "error");
+    showToast("Terjadi kesalahan jaringan", "error");
+    btn.disabled = false;
+    btn.textContent = originalText;
   }
-
-  btn.disabled = false;
-  btn.textContent = "Send Order";
 }
 </script>
 
