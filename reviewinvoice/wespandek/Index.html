@@ -48,7 +48,6 @@
 
     <div class="container">
         
-        <!-- MENU PILIH ORDER (fallback kalau tidak ada ?order=) -->
         <div id="menuSection" class="card" style="text-align: center; max-width: 600px; margin: 50px auto;">
             <h2><i class="fas fa-industry"></i> Production WE Generator</h2>
             <p style="color:#666;">Pilih Nomor Order untuk mulai memproses data Spandek.</p>
@@ -62,7 +61,6 @@
             </div>
         </div>
 
-        <!-- WORKSPACE WE -->
         <div id="workSection" style="display:none;">
             <div class="card">
                 <div class="sub-header">
@@ -118,19 +116,10 @@
         
         let globalData = [];
         let currentOrderNo = "";
-        let urlOrderParam = "";  // <-- param order dari URL
-
-        // HELPERS
-        function getUrlOrderParam() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get('order') || "";
-        }
 
         // 1. INIT
         window.onload = async function() {
             document.getElementById('prodDate').valueAsDate = new Date();
-            urlOrderParam = getUrlOrderParam();
-
             try {
                 const response = await fetch(SCRIPT_URL);
                 const data = await response.json();
@@ -147,10 +136,10 @@
             uniqueOrders.sort().reverse();
 
             if (uniqueOrders.length === 0) {
-                let option = document.createElement('option');
-                option.text = "Semua Order sudah diproses";
-                dropdown.appendChild(option);
-                dropdown.disabled = true;
+                 let option = document.createElement('option');
+                 option.text = "Semua Order sudah diproses";
+                 dropdown.appendChild(option);
+                 dropdown.disabled = true;
             } else {
                 uniqueOrders.forEach(orderId => {
                     let row = data.find(d => d.orderNumber === orderId);
@@ -160,30 +149,14 @@
                     dropdown.appendChild(option);
                 });
             }
-
             document.getElementById('loading').style.display = 'none';
             document.getElementById('selectorArea').style.display = 'block';
-
-            // === AUTO OPEN WORKSPACE JIKA ADA ?order= DI URL ===
-            if (urlOrderParam) {
-                const exists = uniqueOrders.includes(urlOrderParam);
-                if (exists) {
-                    dropdown.value = urlOrderParam; // set di dropdown juga (kalau balik ke menu)
-                    openWorkspace(urlOrderParam, true); // auto = true
-                } else {
-                    alert(`Order ${urlOrderParam} tidak ditemukan. Silakan pilih manual.`);
-                }
-            }
         }
 
         // 2. WORKSPACE LOGIC
-        function openWorkspace(orderFromParam, auto = false) {
-            const selectedOrder = orderFromParam || document.getElementById('orderDropdown').value;
-            if (!selectedOrder) {
-                if (!auto) alert("Pilih Order Number!");
-                return;
-            }
-
+        function openWorkspace() {
+            const selectedOrder = document.getElementById('orderDropdown').value;
+            if(!selectedOrder) { alert("Pilih Order Number!"); return; }
             currentOrderNo = selectedOrder;
             
             // Generate Invoice Lokal
@@ -197,16 +170,13 @@
             document.getElementById('workSection').style.display = 'block';
         }
 
-        function backToMenu() {
-            // Bisa pakai reload supaya bersih
-            location.href = window.location.pathname; // buang query ?order=
-        }
+        function backToMenu() { location.reload(); }
 
         // 3. RENDER TABLE (PARENT ROWS)
         function renderTable(orderId) {
             const filteredData = globalData.filter(d => d.orderNumber == orderId);
             document.getElementById('dispOrder').innerText = orderId;
-            document.getElementById('dispCust').innerText = filteredData[0]?.customer || "-";
+            document.getElementById('dispCust').innerText = filteredData[0].customer;
 
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
@@ -216,6 +186,12 @@
                 const disabledAttr = isSpandek ? '' : 'disabled';
                 const rowId = `parent_${index}`;
                 const badgeHtml = isSpandek ? '<span class="badge bg-sp">SP</span>' : '<span class="badge bg-np">NP</span>';
+                const rowBg = isSpandek ? '' : 'style="background-color: #fafafa;"';
+
+                // Tombol Split hanya muncul jika Tipe = SP
+                const splitBtn = isSpandek 
+                    ? `<button class="btn btn-warning btn-sm" onclick="addSplitRow('${rowId}', ${row.qty})"><i class="fas fa-code-branch"></i> Split</button>` 
+                    : '';
 
                 const tr = document.createElement('tr');
                 tr.id = rowId;
@@ -223,10 +199,6 @@
                 tr.setAttribute('data-original-qty', row.qty);
                 tr.setAttribute('data-product', row.product);
                 tr.setAttribute('data-meter', row.meter);
-
-                const splitBtn = isSpandek 
-                    ? `<button class="btn btn-warning btn-sm" onclick="addSplitRow('${rowId}', ${row.qty})"><i class="fas fa-code-branch"></i> Split</button>` 
-                    : '';
 
                 tr.innerHTML = `
                     <td align="center">${splitBtn}</td>
@@ -406,6 +378,7 @@
             const btn = document.getElementById('btnSubmit');
             const originalText = btn.innerHTML;
             
+            // Ambil semua Parent Row
             const parentRows = document.querySelectorAll('.parent-row');
             let payload = [];
             let isValid = true;
@@ -424,10 +397,12 @@
                 // Skip Non-Spandek
                 if (!pTypeCell.includes("SP")) return;
 
+                // Cek apakah punya Split?
                 const children = document.querySelectorAll(`.child-of-${pId}`);
                 
                 if (children.length > 0) {
                     // --- MODE SPLIT: Ambil data dari anak-anak ---
+                    // Cek Total Qty dulu
                     const remTxt = document.getElementById(`rem_disp_${pId}`).innerText;
                     if (remTxt.includes("Over") || (remTxt.includes("Sisa") && !remTxt.includes("0"))) {
                         isValid = false;
@@ -450,7 +425,7 @@
                             document.getElementById(`kcp_${cId}`).style.borderColor = "#dee2e6";
                             payload.push({
                                 orderNo: currentOrderNo, customer: custName, date: dateVal, invoice: invVal,
-                                product: productName, type: 'SP', meter: meter, qty: qty,
+                                product: productName, type: 'SP', meter: meter, qty: qty, // Qty Split
                                 machine: mach, kcp: kcp, prodType: pType, weNumber: weNum
                             });
                         }
@@ -458,7 +433,7 @@
 
                 } else {
                     // --- MODE NORMAL (Parent Langsung) ---
-                    const qty = document.getElementById(`qty_disp_${pId}`).innerText;
+                    const qty = document.getElementById(`qty_disp_${pId}`).innerText; // Original Qty
                     const mach = document.getElementById(`mach_${pId}`).value;
                     const kcp = document.getElementById(`kcp_${pId}`).value;
                     const pType = document.getElementById(`ptype_${pId}`).value;
@@ -484,10 +459,10 @@
             }
 
             if (payload.length === 0) {
-                alert("Tidak ada data Spandek untuk disimpan.");
-                return;
+                alert("Tidak ada data Spandek untuk disimpan."); return;
             }
 
+            // Kirim ke Backend
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
             btn.disabled = true;
 
@@ -499,10 +474,9 @@
                 const result = await response.json();
                 if(result.status === 'success') {
                     alert("Sukses! Data tersimpan.");
-                    // Setelah submit, balik ke Review Invoice atau reload bersih
-                    location.href = window.location.pathname;
+                    location.reload();
                 } else {
-                    alert("Gagal: " + (result.message || 'Unknown error'));
+                    alert("Gagal: " + result.message);
                 }
             } catch (error) {
                 console.error(error);
