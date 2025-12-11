@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 30px; height: 30px; animation: spin 2s linear infinite; margin: 20px auto; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #2563eb; border-radius: 50%; width: 30px; height: 30px; animation: spin 2s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
         /* Table Style Xero View */
@@ -15,97 +15,112 @@
         .xero-table th { background-color: #f8fafc; color: #64748b; font-weight: bold; text-align: left; padding: 8px; border: 1px solid #e2e8f0; }
         .xero-table td { border: 1px solid #e2e8f0; padding: 6px 8px; color: #334155; vertical-align: top; }
         .xero-neg { color: #dc2626; font-weight: bold; } /* Merah untuk minus */
+        
+        /* Fade In Animation */
+        .animate-fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans">
+<body class="bg-slate-50 text-slate-800 font-sans h-screen flex flex-col">
 
     <nav class="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center sticky top-0 z-40 shadow-sm">
         <div class="flex items-center gap-2">
             <img src="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/assets/auxilium_logo_pure_white_bg.png" 
                  alt="Auxilium Portal Logo" 
-                 class="h-10 w-auto object-contain">
+                 class="h-9 w-auto object-contain">
         </div>
         
         <div class="flex items-center gap-6 text-sm font-medium text-gray-500">
-            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/" class="hover:text-blue-600 transition">
-                Home Invoice
-            </a>
-
-            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/approveinvoice/index.html" class="hover:text-blue-600 transition">
-                Review Invoice
-            </a>
-
-            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/wespandek/Index.html" class="hover:text-blue-600 transition">
-                Work Effort
-            </a>
-            
-            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/importxeroinv/index.html" class="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg font-semibold transition">
-                Import Xero
-            </a>
+            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/" class="hover:text-blue-600 transition">Home Invoice</a>
+            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/approveinvoice/index.html" class="hover:text-blue-600 transition">Review Invoice</a>
+            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/wespandek/Index.html" class="hover:text-blue-600 transition">Work Effort</a>
+            <a href="#" class="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg font-semibold transition border border-blue-100">Import Xero</a>
         </div>
     </nav>
-    <div class="max-w-6xl mx-auto px-4 py-8">
-        <h1 class="text-2xl font-bold text-slate-800">Xero Import Dashboard</h1>
-        <p class="text-slate-500 mb-6">Manage invoices ready for Xero synchronization.</p>
+
+    <div class="flex-1 max-w-6xl w-full mx-auto px-4 py-8">
+        <div class="flex justify-between items-end mb-6">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-800">Xero Import Dashboard</h1>
+                <p class="text-slate-500 text-sm mt-1">Monitor sales orders ready for Xero packing & synchronization.</p>
+            </div>
+            <div class="text-xs text-gray-400">
+                Data Source: Sales Order Approved
+            </div>
+        </div>
         
         <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-6">
-            <input type="text" id="searchInput" onkeyup="filterData()" placeholder="Search Customer, Order No, or Invoice..." class="border rounded px-3 py-2 w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </div>
+                <input type="text" id="searchInput" onkeyup="filterData()" placeholder="Search Customer, Order No, or Invoice Ref..." class="pl-10 border border-gray-300 rounded-md px-3 py-2.5 w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+            </div>
         </div>
 
-        <div id="order-container" class="space-y-4">
-            <div id="loading" class="text-center py-10"><div class="loader"></div><p class="text-gray-400 text-sm">Memuat data...</p></div>
+        <div id="order-container" class="space-y-4 min-h-[300px]">
+            <div class="text-center py-20 bg-white rounded-lg border border-dashed border-gray-200">
+                <div class="loader"></div>
+                <p class="text-gray-400 text-sm mt-4">Connecting to AppScript...</p>
+            </div>
         </div>
     </div>
 
-    <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 transition-opacity">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-6xl m-4 overflow-hidden transform transition-all flex flex-col max-h-[90vh]">
+    <div id="detailModal" class="fixed inset-0 bg-slate-900/50 hidden flex items-center justify-center z-50 backdrop-blur-sm transition-opacity opacity-0 pointer-events-none">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-6xl m-4 overflow-hidden transform transition-all flex flex-col max-h-[90vh] scale-95" id="modal-content">
             
             <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-slate-50">
                 <div>
-                    <h2 class="text-xl font-bold text-slate-800">INVOICE DETAIL</h2>
+                    <h2 class="text-lg font-bold text-slate-800 tracking-tight">INVOICE PREVIEW</h2>
                     <div class="flex items-center gap-2 mt-1">
-                        <span id="modal-status-badge" class="px-2 py-0.5 rounded text-xs font-bold uppercase border"></span>
+                        <span id="modal-status-badge" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border"></span>
                     </div>
                 </div>
                 
                 <div class="flex items-center gap-3">
-                    <button onclick="toggleView()" id="btn-toggle-view" class="flex items-center gap-2 bg-white border border-gray-300 text-gray-600 px-3 py-1.5 rounded text-xs font-bold hover:bg-gray-50 hover:text-blue-600 transition shadow-sm">
-                        <span>👁️ Switch to Xero View</span>
+                    <button onclick="toggleView()" id="btn-toggle-view" class="flex items-center gap-2 bg-white border border-gray-300 text-gray-600 px-3 py-1.5 rounded-md text-xs font-bold hover:bg-gray-50 hover:text-blue-600 transition shadow-sm">
+                        <span>👁️ Switch to Xero Data View</span>
                     </button>
-                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-red-500 transition p-1 rounded-full hover:bg-red-50">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
                 </div>
             </div>
 
-            <div class="p-6 overflow-y-auto bg-white">
-                <div class="grid grid-cols-4 gap-6 mb-6 p-4 bg-gray-50 rounded border border-gray-100">
-                    <div><p class="text-xs text-gray-500 uppercase font-bold">Customer</p><p class="text-base font-semibold" id="modal-customer">-</p></div>
-                    <div><p class="text-xs text-gray-500 uppercase font-bold">Order No</p><p class="text-base font-semibold text-gray-800" id="modal-orderno">-</p></div>
-                    <div><p class="text-xs text-gray-500 uppercase font-bold">Date</p><p class="text-base font-semibold text-gray-800" id="modal-date">-</p></div>
-                    <div><p class="text-xs text-gray-500 uppercase font-bold">Invoice Ref</p><p class="text-base font-semibold text-blue-600" id="modal-invoice">-</p></div>
+            <div class="p-6 overflow-y-auto bg-white flex-1">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 p-4 bg-blue-50/50 rounded-lg border border-blue-100">
+                    <div><p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Customer</p><p class="text-sm font-semibold text-slate-700" id="modal-customer">-</p></div>
+                    <div><p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Order No</p><p class="text-sm font-semibold text-slate-700" id="modal-orderno">-</p></div>
+                    <div><p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Date</p><p class="text-sm font-semibold text-slate-700" id="modal-date">-</p></div>
+                    <div><p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Ref No</p><p class="text-sm font-semibold text-blue-600" id="modal-invoice">-</p></div>
                 </div>
 
-                <div id="view-normal">
+                <div id="view-normal" class="animate-fade-in">
                     <table class="w-full text-sm text-left border-collapse">
-                        <thead class="bg-gray-100 text-gray-600 uppercase text-xs font-bold">
+                        <thead class="bg-gray-50 text-gray-500 uppercase text-[10px] font-bold tracking-wider">
                             <tr>
-                                <th class="px-3 py-2 border-b w-10">Type</th>
-                                <th class="px-3 py-2 border-b">Product</th>
-                                <th class="px-3 py-2 border-b text-center">Meter</th>
-                                <th class="px-3 py-2 border-b text-center">Qty</th>
-                                <th class="px-3 py-2 border-b text-right">Price</th>
-                                <th class="px-3 py-2 border-b text-right">Disc</th>
-                                <th class="px-3 py-2 border-b text-right">Total</th>
+                                <th class="px-3 py-3 border-b border-gray-100">Type</th>
+                                <th class="px-3 py-3 border-b border-gray-100">Product Name</th>
+                                <th class="px-3 py-3 border-b border-gray-100 text-center">Meter</th>
+                                <th class="px-3 py-3 border-b border-gray-100 text-center">Qty</th>
+                                <th class="px-3 py-3 border-b border-gray-100 text-right">Unit Price</th>
+                                <th class="px-3 py-3 border-b border-gray-100 text-right">Disc</th>
+                                <th class="px-3 py-3 border-b border-gray-100 text-right">Total</th>
                             </tr>
                         </thead>
-                        <tbody id="modal-items-body" class="divide-y divide-gray-100"></tbody>
+                        <tbody id="modal-items-body" class="divide-y divide-gray-50 text-gray-600"></tbody>
                     </table>
                 </div>
 
                 <div id="view-xero" class="hidden animate-fade-in">
-                    <div class="bg-yellow-50 border border-yellow-200 p-3 rounded mb-4 text-xs text-yellow-800 flex gap-2 items-center">
-                        <span class="font-bold">⚠️ XERO SIMULATION:</span> Tampilan baris ini mensimulasikan pemetaan Account Code yang akan masuk ke Xero.
+                    <div class="bg-yellow-50 border border-yellow-200 p-3 rounded-md mb-4 flex gap-3 items-start">
+                        <span class="text-yellow-600 mt-0.5">⚠️</span>
+                        <div class="text-xs text-yellow-800">
+                            <p class="font-bold">PREVIEW MODE</p>
+                            <p>Data below will be packed into single cells <code>[..][..]</code> by the script. Account Codes will be determined by the Spreadsheet Formula.</p>
+                        </div>
                     </div>
-                    <div class="overflow-x-auto">
+                    <div class="overflow-x-auto border rounded border-gray-200">
                         <table class="xero-table">
                             <thead>
                                 <tr>
@@ -113,7 +128,6 @@
                                     <th>*Description</th>
                                     <th class="text-center">*Quantity</th>
                                     <th class="text-right">*UnitAmount</th>
-                                    <th>*AccountCode</th>
                                     <th>*TaxType</th>
                                 </tr>
                             </thead>
@@ -123,13 +137,13 @@
                 </div>
             </div>
 
-            <div class="px-6 py-4 border-t border-gray-100 flex justify-between items-center bg-slate-50 mt-auto">
+            <div class="px-6 py-4 border-t border-gray-100 flex justify-between items-center bg-gray-50 mt-auto">
                 <div class="text-right">
-                    <p class="text-xs text-gray-500 uppercase">Grand Total</p>
-                    <p class="text-2xl font-bold text-blue-600" id="modal-grandtotal">Rp 0</p>
+                    <p class="text-[10px] text-gray-500 uppercase font-bold">Grand Total</p>
+                    <p class="text-xl font-bold text-slate-800" id="modal-grandtotal">Rp 0</p>
                 </div>
-                <button id="btn-sync" onclick="syncToXero()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded shadow-md text-sm font-bold flex items-center gap-2 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                    <span>Sync to Xero</span>
+                <button id="btn-sync" onclick="syncToXero()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg shadow-sm shadow-blue-200 text-sm font-bold flex items-center gap-2 transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                    <span>Process & Sync</span>
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                     </svg>
@@ -139,7 +153,7 @@
     </div>
 
     <script>
-        // --- KONFIGURASI URL ---
+        // --- URL APPSCRIPT TERBARU (Pastikan ini yang deploy terbaru) ---
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxToGkOs5hU0Y15eS9uGy6Dcf6Hj0jL4lOpO7pfJNiDOvDiG4_xqx9CrXPtgGQV1ySf/exec';
         
         let allData = [];
@@ -149,7 +163,7 @@
 
         function fetchData() {
             const container = document.getElementById('order-container');
-            container.innerHTML = `<div class="text-center py-10"><div class="loader"></div><p class="text-gray-400 text-sm">Sedang mengambil data terbaru...</p></div>`;
+            container.innerHTML = `<div class="text-center py-10"><div class="loader"></div><p class="text-gray-400 text-xs font-medium uppercase tracking-wider mt-4">Fetching Latest Data...</p></div>`;
 
             fetch(`${SCRIPT_URL}?action=getXeroData`)
                 .then(response => response.json())
@@ -158,22 +172,15 @@
                     renderCards(data);
                 })
                 .catch(error => {
-                    container.innerHTML = `<p class="text-red-500 text-center">Gagal memuat data.<br><small>${error}</small></p>`;
+                    console.error(error);
+                    container.innerHTML = `
+                        <div class="text-center py-10">
+                            <div class="inline-block p-3 bg-red-50 rounded-full mb-3"><svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+                            <h3 class="text-lg font-bold text-gray-800">Connection Failed</h3>
+                            <p class="text-gray-500 text-sm mt-1">Could not retrieve data from Google Sheet.</p>
+                            <button onclick="fetchData()" class="mt-4 text-blue-600 font-bold text-sm hover:underline">Try Again</button>
+                        </div>`;
                 });
-        }
-
-        // --- FUNGSI MAPPING ACCOUNT CODE ---
-        function getAccountCode(productName) {
-            let p = productName.toLowerCase();
-            
-            if (p.includes("gobi") && p.includes("25")) return "4-3102"; // Spandek 0.25 Biru B
-            if (p.includes("sakura") && p.includes("35")) return "4-3315"; // Spandek 0.35 Silver
-            if (p.includes("kalsiplank")) return "4-5005"; // Kalsiplank
-            if (p.includes("granit")) return "4-5006"; // Granit
-            if (p.includes("srikandi")) return "4-5008"; // Genteng
-            if (p.includes("taso")) return "4-4103"; // Taso
-            
-            return "4-4000"; // Default
         }
 
         function renderCards(data) {
@@ -181,7 +188,7 @@
             container.innerHTML = ''; 
 
             if(data.length === 0) {
-                container.innerHTML = `<div class="text-center py-12 bg-white rounded-lg border border-dashed border-gray-300"><p class="text-gray-500">Semua data sudah di-import!</p></div>`;
+                container.innerHTML = `<div class="text-center py-16 bg-white rounded-xl border border-dashed border-gray-300"><p class="text-gray-500 font-medium">All invoices are up to date!</p><p class="text-xs text-gray-400 mt-1">No pending orders found.</p></div>`;
                 return;
             }
 
@@ -190,30 +197,35 @@
                 let isProcessing = order.status === 'Processing';
                 
                 let badgeHTML = isProcessing 
-                    ? `<span class="bg-yellow-100 text-yellow-700 border-yellow-200 px-2 py-0.5 rounded text-xs font-bold border">⏳ PROCESSING</span>`
-                    : `<span class="bg-green-100 text-green-700 border-green-200 px-2 py-0.5 rounded text-xs font-bold border">✅ READY</span>`;
+                    ? `<span class="bg-amber-100 text-amber-700 border-amber-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase border tracking-wide">⏳ Processing</span>`
+                    : `<span class="bg-emerald-100 text-emerald-700 border-emerald-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase border tracking-wide">✅ Ready</span>`;
                 
-                let borderClass = isProcessing ? 'border-l-yellow-500' : 'border-l-green-500';
+                let borderClass = isProcessing ? 'border-l-amber-400' : 'border-l-emerald-500';
 
                 const cardHTML = `
-                <div class="bg-white rounded-lg shadow-sm border-l-4 ${borderClass} border border-gray-200 p-5 hover:shadow-md transition group">
+                <div class="bg-white rounded-lg shadow-sm border-l-4 ${borderClass} border-y border-r border-gray-200 p-5 hover:shadow-md transition-all group cursor-pointer" onclick="openDetail('${order.order_no}')">
                     <div class="flex justify-between items-start">
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <h3 class="text-lg font-bold text-gray-800">${order.order_no}</h3>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <h3 class="text-lg font-bold text-gray-800 group-hover:text-blue-600 transition">${order.order_no}</h3>
                                 ${badgeHTML}
                             </div>
-                            <div class="text-sm text-gray-500 flex items-center gap-3 mt-2">
-                                <span>👤 ${order.customer}</span>
-                                <span>📅 ${order.date}</span>
-                                <span class="text-blue-600 font-medium">Ref: ${order.invoice_no || '-'}</span>
+                            <div class="grid grid-cols-2 gap-x-8 gap-y-1 mt-2">
+                                <div class="text-sm text-gray-600 flex items-center gap-2">
+                                    <span class="w-4 text-center">👤</span> <span class="font-medium">${order.customer}</span>
+                                </div>
+                                <div class="text-sm text-gray-600 flex items-center gap-2">
+                                    <span class="w-4 text-center">🧾</span> <span class="font-mono text-blue-600 text-xs">${order.invoice_no || 'No Ref'}</span>
+                                </div>
+                                <div class="text-sm text-gray-600 flex items-center gap-2">
+                                    <span class="w-4 text-center">📅</span> <span>${order.date}</span>
+                                </div>
                             </div>
-                            <div class="mt-2 text-xl font-bold text-gray-800">${formattedTotal}</div>
                         </div>
-                        <div class="text-right">
-                            <button onclick="openDetail('${order.order_no}')" class="text-blue-600 text-sm font-medium hover:text-blue-800 transition bg-blue-50 px-3 py-1.5 rounded hover:bg-blue-100">
-                                Review & Sync &rightarrow;
-                            </button>
+                        <div class="text-right pl-4 border-l border-gray-100 ml-4 flex flex-col justify-center h-full min-h-[80px]">
+                            <p class="text-xs text-gray-400 uppercase font-bold mb-1">Total Amount</p>
+                            <div class="text-lg font-bold text-gray-800">${formattedTotal}</div>
+                            <span class="text-xs text-blue-500 font-semibold mt-2 group-hover:underline">View Details &rarr;</span>
                         </div>
                     </div>
                 </div>`;
@@ -226,112 +238,123 @@
             if (!order) return;
             currentOrderNo = orderId;
 
-            // Reset View
+            // Reset View State
             document.getElementById('view-normal').classList.remove('hidden');
             document.getElementById('view-xero').classList.add('hidden');
-            document.getElementById('btn-toggle-view').innerHTML = `<span>👁️ Switch to Xero View</span>`;
+            document.getElementById('btn-toggle-view').innerHTML = `<span>👁️ Switch to Xero Data View</span>`;
+            
+            // Show Modal with Animation
+            const modal = document.getElementById('detailModal');
+            const content = document.getElementById('modal-content');
+            modal.classList.remove('hidden', 'pointer-events-none');
+            // Sedikit timeout agar transisi opacity jalan
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
 
-            // Isi Header
+            // Populate Data
             document.getElementById('modal-customer').innerText = order.customer;
             document.getElementById('modal-invoice').innerText = order.invoice_no || "-";
             document.getElementById('modal-orderno').innerText = order.order_no;
             document.getElementById('modal-date').innerText = order.date;
             document.getElementById('modal-grandtotal').innerText = formatRupiah(order.grand_total);
             
-            // Status Logic
+            // Button & Status Logic
             const badge = document.getElementById('modal-status-badge');
             const btnSync = document.getElementById('btn-sync');
             
             if (order.status === 'Processing') {
-                badge.innerText = "Processing in Xero";
-                badge.className = "px-2 py-0.5 rounded text-xs font-bold uppercase border bg-yellow-100 text-yellow-700 border-yellow-200";
+                badge.innerText = "Processing in Sheet";
+                badge.className = "px-2 py-0.5 rounded text-[10px] font-bold uppercase border tracking-wider bg-amber-100 text-amber-700 border-amber-200";
                 btnSync.disabled = true;
-                btnSync.classList.add('bg-gray-400', 'cursor-not-allowed');
-                btnSync.classList.remove('bg-blue-600', 'hover:bg-blue-700');
-                btnSync.innerText = "Already Synced";
+                btnSync.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+                btnSync.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'text-white', 'shadow-blue-200');
+                btnSync.innerHTML = `<span>Already Synced</span>`;
             } else {
                 badge.innerText = "Ready to Import";
-                badge.className = "px-2 py-0.5 rounded text-xs font-bold uppercase border bg-green-100 text-green-700 border-green-200";
+                badge.className = "px-2 py-0.5 rounded text-[10px] font-bold uppercase border tracking-wider bg-emerald-100 text-emerald-700 border-emerald-200";
                 btnSync.disabled = false;
-                btnSync.classList.remove('bg-gray-400', 'cursor-not-allowed');
-                btnSync.classList.add('bg-blue-600', 'hover:bg-blue-700');
-                btnSync.innerHTML = `<span>Sync to Xero</span><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>`;
+                btnSync.classList.remove('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+                btnSync.classList.add('bg-blue-600', 'hover:bg-blue-700', 'text-white', 'shadow-blue-200');
+                btnSync.innerHTML = `<span>Process & Sync</span><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>`;
             }
 
-            // --- RENDER NORMAL TABLE ---
+            // RENDER NORMAL TABLE
             const tbodyNormal = document.getElementById('modal-items-body');
             tbodyNormal.innerHTML = '';
             order.items.forEach(item => {
                 tbodyNormal.innerHTML += `
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-3 py-2 font-bold text-gray-700 bg-gray-50 text-center border-r border-gray-100">${item.type}</td>
-                        <td class="px-3 py-2 font-medium text-gray-800">${item.product}</td>
-                        <td class="px-3 py-2 text-center text-gray-600">${item.meter || '-'}</td>
-                        <td class="px-3 py-2 text-center text-gray-600">${item.qty}</td>
-                        <td class="px-3 py-2 text-right text-gray-600">${formatRupiah(item.price)}</td>
-                        <td class="px-3 py-2 text-right text-red-500">${item.disc > 0 ? formatRupiah(item.disc) : '-'}</td>
-                        <td class="px-3 py-2 text-right font-bold text-gray-800">${formatRupiah(item.total)}</td>
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-3 py-2 font-bold text-gray-500 bg-gray-50/50 text-center border-r border-gray-100 text-xs">${item.type}</td>
+                        <td class="px-3 py-2 font-medium text-slate-700">${item.product}</td>
+                        <td class="px-3 py-2 text-center text-slate-500">${item.meter || '-'}</td>
+                        <td class="px-3 py-2 text-center text-slate-500 font-mono">${item.qty}</td>
+                        <td class="px-3 py-2 text-right text-slate-500 font-mono">${formatRupiah(item.price)}</td>
+                        <td class="px-3 py-2 text-right text-red-500 font-mono text-xs">${item.disc > 0 ? formatRupiah(item.disc) : '-'}</td>
+                        <td class="px-3 py-2 text-right font-bold text-slate-800 font-mono">${formatRupiah(item.total)}</td>
                     </tr>`;
             });
 
-            // --- RENDER XERO TABLE (MAPPING ACCOUNT CODE) ---
+            // RENDER XERO TABLE (SIMULATION)
             const tbodyXero = document.getElementById('xero-items-body');
             tbodyXero.innerHTML = '';
             
             order.items.forEach(item => {
                 let cleanProduct = item.product.replace(/[^a-zA-Z0-9]/g, "").toUpperCase().substring(0, 10);
                 let itemCode = `[PR-${item.type}-${cleanProduct}]`;
-                let accCode = getAccountCode(item.product);
-
+                
+                // Account Code tidak lagi ditampilkan disini karena user meminta dihapus
+                
                 tbodyXero.innerHTML += `
                     <tr>
-                        <td>${itemCode}</td>
-                        <td>${item.product} ${item.meter ? item.meter+'m' : ''}</td>
-                        <td class="text-center">${item.qty}</td>
-                        <td class="text-right">${item.price}</td>
-                        <td class="text-center font-mono text-blue-700">${accCode}</td>
-                        <td class="text-center font-mono">TAX004</td>
+                        <td class="font-mono text-xs text-gray-600">${itemCode}</td>
+                        <td class="text-xs text-gray-600">${item.product} ${item.meter ? item.meter+'m' : ''}</td>
+                        <td class="text-center font-mono text-xs">${item.qty}</td>
+                        <td class="text-right font-mono text-xs">${item.price}</td>
+                        <td class="text-center font-mono text-xs">TAX004</td>
                     </tr>
                 `;
 
                 if (item.disc > 0) {
                      tbodyXero.innerHTML += `
-                    <tr class="bg-red-50">
+                    <tr class="bg-red-50/30">
                         <td></td>
-                        <td>Diskon - ${item.product}</td>
-                        <td class="text-center">${item.qty}</td>
-                        <td class="text-right xero-neg">-${item.disc}</td>
-                        <td class="text-center font-mono text-red-700">4-0001</td>
-                        <td class="text-center font-mono">TAX004</td>
+                        <td class="text-xs text-red-600 italic">Diskon - ${item.product}</td>
+                        <td class="text-center font-mono text-xs text-red-600">${item.qty}</td>
+                        <td class="text-right xero-neg font-mono text-xs">-${item.disc}</td>
+                        <td class="text-center font-mono text-xs">TAX004</td>
                     </tr>
                 `;
                 }
             });
-
-            document.getElementById('detailModal').classList.remove('hidden');
         }
 
         function toggleView() {
             const normal = document.getElementById('view-normal');
             const xero = document.getElementById('view-xero');
             const btn = document.getElementById('btn-toggle-view');
+            
             if (normal.classList.contains('hidden')) {
                 normal.classList.remove('hidden');
                 xero.classList.add('hidden');
-                btn.innerHTML = `<span>👁️ Switch to Xero View</span>`;
-                btn.classList.remove('bg-blue-50', 'text-blue-700', 'border-blue-300');
+                btn.innerHTML = `<span>👁️ Switch to Xero Data View</span>`;
+                btn.className = "flex items-center gap-2 bg-white border border-gray-300 text-gray-600 px-3 py-1.5 rounded-md text-xs font-bold hover:bg-gray-50 hover:text-blue-600 transition shadow-sm";
             } else {
                 normal.classList.add('hidden');
                 xero.classList.remove('hidden');
                 btn.innerHTML = `<span>↩️ Back to Normal View</span>`;
-                btn.classList.add('bg-blue-50', 'text-blue-700', 'border-blue-300');
+                btn.className = "flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-700 px-3 py-1.5 rounded-md text-xs font-bold hover:bg-blue-100 transition shadow-sm";
             }
         }
 
         function syncToXero() {
             if (!currentOrderNo) return;
             const btn = document.getElementById('btn-sync');
-            btn.innerHTML = `<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> <span>Processing...</span>`;
+            
+            // Loading State
+            btn.innerHTML = `<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> <span>Packing & Sending...</span>`;
             btn.disabled = true;
 
             fetch(SCRIPT_URL, {
@@ -341,20 +364,39 @@
             .then(res => res.json())
             .then(result => {
                 if (result.status === 'success') {
-                    Swal.fire({ icon: 'success', title: 'Synced!', text: 'Order marked as processing. Please check Xero.', timer: 2000, showConfirmButton: false });
-                    closeModal();
-                    fetchData(); 
+                    Swal.fire({ 
+                        icon: 'success', 
+                        title: 'Success!', 
+                        text: 'Data has been packed and sent to Sheet "Inv to Xero".',
+                        confirmButtonColor: '#2563eb'
+                    }).then(() => {
+                        closeModal();
+                        fetchData(); 
+                    });
                 } else { throw new Error(result.message); }
             })
             .catch(err => {
                 Swal.fire({ icon: 'error', title: 'Oops...', text: 'Error: ' + err });
                 btn.disabled = false;
-                btn.innerHTML = "<span>Try Again</span>";
+                btn.innerHTML = `<span>Try Again</span>`;
             });
         }
 
-        function closeModal() { document.getElementById('detailModal').classList.add('hidden'); }
+        function closeModal() {
+            const modal = document.getElementById('detailModal');
+            const content = document.getElementById('modal-content');
+            
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden', 'pointer-events-none');
+            }, 300); // Wait for transition
+        }
+
         function formatRupiah(num) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num); }
+        
         function filterData() {
             const query = document.getElementById('searchInput').value.toLowerCase();
             const filtered = allData.filter(item => 
@@ -364,6 +406,8 @@
             );
             renderCards(filtered);
         }
+
+        // Close modal on click outside
         window.onclick = function(e) { if (e.target == document.getElementById('detailModal')) closeModal(); }
     </script>
 </body>
