@@ -295,7 +295,7 @@
       user-select: none;
       width: 26px;
     }
-    
+     
     /* Sub-line indent style */
     .subline-row td {
       background: #f7faff;
@@ -442,11 +442,18 @@
       animation: spin .85s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    
-    /* Google Sheet Button — Bottom Placement */
+     
+    /* =========================================
+       BOTTOM BUTTONS WRAPPER (SHEET & XERO)
+       ========================================= */
     .sheet-bottom-wrapper {
       margin-top: 18px;
       margin-bottom: 10px;
+      /* Update: Flex untuk tombol bersebelahan */
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
     }
 
     .sheet-bottom-btn {
@@ -461,10 +468,22 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      transition: background 0.2s;
     }
 
     .sheet-bottom-btn:hover {
       background: #e2ebff;
+    }
+
+    /* Style Khusus Tombol Xero (Nuansa Cyan/Teal) */
+    .xero-btn {
+      background: #e0f7fa;
+      border: 1px solid #b2ebf2;
+      color: #00838f;
+    }
+    
+    .xero-btn:hover {
+      background: #b2ebf2;
     }
 
     /* Icon */
@@ -483,7 +502,7 @@
   <div class="logo-section">
     AUXILIUM <span style="font-weight:300;color:#909090; font-size:13px; margin-left:6px;">Accounting Management Service</span>
   </div>
-  
+   
   <nav class="nav-menu">
     <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/index.html" class="nav-item">Home</a>
     <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/orderform/" class="nav-item">Sales Order</a>
@@ -592,6 +611,19 @@
 
         Open Google Sheet
       </a>
+
+      <a 
+        href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/ImportXeroPO/index.html" 
+        class="sheet-bottom-btn xero-btn">
+        
+        <svg class="sheet-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+           <polyline points="17 8 12 3 7 8"></polyline>
+           <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+
+        Import to Xero
+      </a>
     </div>
 
     <div class="actions-row">
@@ -628,7 +660,7 @@
   const summaryTotalOrdered = document.getElementById("summaryTotalOrdered");
   const summaryTotalReceived = document.getElementById("summaryTotalReceived");
   const summaryTotalRemaining = document.getElementById("summaryTotalRemaining");
-  
+   
   // --- GROUP HELPERS (by rowIndex) ---
   function getAllRows() {
     return [...document.querySelectorAll("#tableBody tr")];
