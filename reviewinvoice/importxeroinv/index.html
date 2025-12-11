@@ -11,9 +11,9 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
         /* Table Style Xero View */
-        .xero-table { width: 100%; border-collapse: collapse; font-family: 'Courier New', Courier, monospace; font-size: 12px; }
-        .xero-table th { background-color: #f1f5f9; color: #475569; font-weight: bold; text-align: left; padding: 8px; border: 1px solid #e2e8f0; }
-        .xero-table td { border: 1px solid #e2e8f0; padding: 6px 8px; color: #334155; }
+        .xero-table { width: 100%; border-collapse: collapse; font-family: 'Courier New', Courier, monospace; font-size: 11px; }
+        .xero-table th { background-color: #f8fafc; color: #64748b; font-weight: bold; text-align: left; padding: 8px; border: 1px solid #e2e8f0; }
+        .xero-table td { border: 1px solid #e2e8f0; padding: 6px 8px; color: #334155; vertical-align: top; }
         .xero-neg { color: #dc2626; font-weight: bold; } /* Merah untuk minus */
     </style>
 </head>
@@ -78,14 +78,14 @@
 
                 <div id="view-xero" class="hidden animate-fade-in">
                     <div class="bg-yellow-50 border border-yellow-200 p-3 rounded mb-4 text-xs text-yellow-800 flex gap-2 items-center">
-                        <span class="font-bold">⚠️ AUDIT MODE:</span> Tampilan ini mensimulasikan data "bracket" [ ] yang dipecah per baris untuk Import Xero.
+                        <span class="font-bold">⚠️ XERO SIMULATION:</span> Tampilan baris ini mensimulasikan pemetaan Account Code yang akan masuk ke Xero.
                     </div>
                     <div class="overflow-x-auto">
                         <table class="xero-table">
                             <thead>
                                 <tr>
                                     <th>*InventoryItemCode</th>
-                                    <th>*Deion</th>
+                                    <th>*Description</th>
                                     <th class="text-center">*Quantity</th>
                                     <th class="text-right">*UnitAmount</th>
                                     <th>*AccountCode</th>
@@ -113,12 +113,10 @@
         </div>
     </div>
 
-    <>
-        // --- KONFIGURASI ---
-        // Pastikan URL ini adalah deployment terbaru
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwVK5XutG8uuWqfmnyA_WEQK-fWCBfhlqfcgDa2032YqqFlblRmY-ViyoasOknYknBI/exec';
+    <script>
+        // --- KONFIGURASI URL ---
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw4KgkwOEkfBdlDkaaSMQWnVLbZiNYRJNuf6VmHDeKU7MeF53cobw6XW8bmtGynLR3V/exec';
         
-        // --- GLOBAL VARIABLES ---
         let allData = [];
         let currentOrderNo = null;
 
@@ -135,8 +133,24 @@
                     renderCards(data);
                 })
                 .catch(error => {
-                    container.innerHTML = `<p class="text-red-500 text-center">Gagal memuat data. <br><small>${error}</small></p>`;
+                    container.innerHTML = `<p class="text-red-500 text-center">Gagal memuat data.<br><small>${error}</small></p>`;
                 });
+        }
+
+        // --- FUNGSI MAPPING ACCOUNT CODE (LOGIC INI YANG PENTING) ---
+        function getAccountCode(productName) {
+            let p = productName.toLowerCase();
+            
+            // Logic berdasarkan screenshot Inv to Xero Anda
+            if (p.includes("gobi") && p.includes("25")) return "4-3102"; // Spandek 0.25 Biru B
+            if (p.includes("sakura") && p.includes("35")) return "4-3315"; // Spandek 0.35 Silver
+            if (p.includes("kalsiplank")) return "4-5005"; // Kalsiplank
+            if (p.includes("granit")) return "4-5006"; // Granit
+            if (p.includes("srikandi")) return "4-5008"; // Genteng
+            if (p.includes("taso")) return "4-4103"; // Taso
+            
+            // Default jika tidak ketemu pattern
+            return "4-4000"; 
         }
 
         function renderCards(data) {
@@ -237,17 +251,17 @@
                     </tr>`;
             });
 
-            // --- RENDER XERO TABLE (DENGAN LOGIKA ACCOUNT CODE) ---
+            // --- RENDER XERO TABLE (MAPPING ACCOUNT CODE) ---
             const tbodyXero = document.getElementById('xero-items-body');
             tbodyXero.innerHTML = '';
             
             order.items.forEach(item => {
-                // Generate Item Code (Simulasi)
+                // Generate Item Code Simulation
                 let cleanProduct = item.product.replace(/[^a-zA-Z0-9]/g, "").toUpperCase().substring(0, 10);
                 let itemCode = `[PR-${item.type}-${cleanProduct}]`;
-
-                // --- LOGIKA MAPPING ACCOUNT CODE ---
-                let accCode = getAccountCode(item.product, item.type);
+                
+                // PANGGIL FUNGSI MAPPING ACCOUNT CODE
+                let accCode = getAccountCode(item.product);
 
                 // --- LINE 1: ITEM UTAMA ---
                 tbodyXero.innerHTML += `
@@ -261,7 +275,7 @@
                     </tr>
                 `;
 
-                // --- LINE 2: DISKON (Kode Diskon: 4-0001 sesuai gambar) ---
+                // --- LINE 2: DISKON (Jika ada) ---
                 if (item.disc > 0) {
                      tbodyXero.innerHTML += `
                     <tr class="bg-red-50">
@@ -277,25 +291,6 @@
             });
 
             document.getElementById('detailModal').classList.remove('hidden');
-        }
-
-        // --- FUNGSI MAPPING ACCOUNT CODE ---
-        // Ini dibuat berdasarkan screenshot Xero kamu
-        function getAccountCode(productName, type) {
-            let p = productName.toLowerCase();
-            let t = type.toLowerCase();
-
-            // 1. Cek berdasarkan kata kunci Nama Produk
-            if (p.includes("gobi")) return "4-3102";
-            if (p.includes("sakura puma")) return "4-3315";
-            if (p.includes("kalsiplank")) return "4-5005";
-            if (p.includes("granit")) return "4-5006";
-            if (p.includes("sakura srikandi")) return "4-5008";
-            if (p.includes("taso")) return "4-4103";
-            
-            // 2. Default jika produk tidak dikenal (Fallback Logic)
-            if (t.includes("spandek")) return "4-3000"; // Default Spandek Lainnya
-            return "4-5000"; // Default Non-Spandek Lainnya
         }
 
         function toggleView() {
