@@ -13,175 +13,82 @@
 
 <style>
 
-/* Prevent layout overflow */
-* {
-  box-sizing: border-box;
-}
-
-body {
-  overflow-x: hidden;
-}
-
-/* PERBAIKAN: Menambahkan kurung tutup "}" di sini */
-html {
-  overflow-x: hidden !important;
-}
-
-/* ---------- NAVBAR CLEAN RESPONSIVE ---------- */
-.topnav {
-  width: 100%;
-  background: white;
-  padding: 14px 28px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #ececec;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  font-family: "Segoe UI", sans-serif;
-}
-
-/* Left side brand */
-.nav-left {
-  display: flex;
-  flex-direction: column;
-}
-
-.nav-brand {
-  font-size: 19px;
-  font-weight: 700;
-  color: #1e1e1e;
-  letter-spacing: 0.3px;
-}
-
-.nav-sub {
-  font-size: 12px;
-  color: #9aa1ac;
-  margin-top: -2px;
-}
-
-/* Right side */
-.nav-right {
-  display: flex;
-  align-items: center;
-  gap: 26px;
-}
-
-.nav-link {
-  font-size: 14.5px;
-  color: #9aa1ac;
-  cursor: pointer;
-  text-decoration: none;
-  font-weight: 500;
-  transition: 0.2s ease;
-}
-
-.nav-link:hover,
-.dropdown-btn:hover {
-  color: #1e1e1e;
-  font-weight: 600;
-}
-
-.disabled-link {
-  color: #c7cbd1;
-}
-
-.dropdown-btn {
-  border: none;
-  background: none;
-  padding: 0;
-  font-size: 14.5px;
-  font-weight: 500;
-  cursor: pointer;
-  color: #9aa1ac;
-  transition: 0.2s ease;
-}
-
-/* Dropdown logic */
-.nav-dropdown {
-  position: relative;
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background: white;
-  min-width: 180px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 14px rgba(0,0,0,0.07);
-  padding: 8px 0;
-  border: 1px solid #e5e5e5;
-  z-index: 200;
-}
-
-.dropdown-content a,
-.dropdown-content span {
-  font-size: 14px;
-  padding: 10px 16px;
-  display: block;
-  text-decoration: none;
-  color: #6a737c;
-  transition: 0.2s ease;
-}
-
-.dropdown-content a:hover {
-  background: #eef3ff;
-  font-weight: 600;
-  color: #1e1e1e;
-}
-
-/* Show dropdown */
-.nav-dropdown:hover .dropdown-content {
-  display: block;
-}
-
-/* ---------- RESPONSIVENESS FIX ---------- */
-@media (max-width: 768px) {
-  .topnav {
-    padding: 12px 16px;
-  }
-
-  .nav-right {
-    gap: 16px;
-  }
-
-  .nav-brand {
-    font-size: 17px;
-  }
-
-  .nav-sub {
-    font-size: 11px;
-  }
-
-  .nav-link, .dropdown-btn {
-    font-size: 13.5px;
-  }
-}
-
 /* ==========================================================
-   GLOBAL BASE STYLE — Xero-like
+   GLOBAL RESET & FONTS
 ========================================================== */
+:root {
+  --border: #d6dce1;
+  --border-light: #e3e7eb;
+  --header-bg: #f7f8fa;
+  --text-muted: #697386;
+  --blue: #0075c9;
+  --bg: #f5f7fa;
+}
+
+* { box-sizing: border-box; }
+
 body {
   margin: 0;
   padding: 0;
-  background: #f5f7fa;
-  font-family: "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  font-family: "Segoe UI", Roboto, "Arial", sans-serif;
   font-size: 13px;
   color: #333;
+  overflow-x: hidden;
 }
 
-input, select, textarea, .choices__inner {
-  transition: all 0.18s ease;
+html { overflow-x: hidden !important; }
+
+/* ==========================================================
+   TOP BAR / NAVIGATION (NEW STYLE)
+========================================================== */
+.top-bar {
+  padding: 10px 36px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
-input:hover, select:hover, textarea:hover, .choices__inner:hover {
-  border-color: #b9c4d0 !important;
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #1e1e1e;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.nav-menu {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.nav-item {
+    text-decoration: none;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.nav-item:hover {
+    background-color: #f1f5f9;
+    color: var(--blue);
+}
+
+/* Active State (Pill Shape) */
+.nav-item.active {
+    background-color: #eff6ff; 
+    color: var(--blue);
+    font-weight: 600;
 }
 
 /* ==========================================================
@@ -201,9 +108,7 @@ input:hover, select:hover, textarea:hover, .choices__inner:hover {
   padding: 24px 26px 26px 26px;
 }
 
-.card-header {
-  margin-bottom: 18px;
-}
+.card-header { margin-bottom: 18px; }
 
 .card-title {
   font-size: 20px;
@@ -212,7 +117,7 @@ input:hover, select:hover, textarea:hover, .choices__inner:hover {
 }
 
 /* ==========================================================
-   LABEL
+   FORM ELEMENTS
 ========================================================== */
 label {
   font-size: 12.5px;
@@ -222,9 +127,6 @@ label {
   display: block;
 }
 
-/* ==========================================================
-   INPUT STYLE
-========================================================== */
 .input-box,
 .table-input,
 .choices__inner {
@@ -236,20 +138,15 @@ label {
   border-radius: 5px !important;
   background: #f9fafb !important;
   box-sizing: border-box;
+  transition: all 0.18s ease;
 }
 
-.choices__placeholder {
-  color: #999 !important;
-  opacity: 1 !important;
+input:hover, select:hover, textarea:hover, .choices__inner:hover {
+  border-color: #b9c4d0 !important;
 }
 
-input[type="date"] {
-  padding-right: 26px !important;
-}
+input[type="date"] { padding-right: 26px !important; }
 
-/* ==========================================================
-   TOP FORM LAYOUT
-========================================================== */
 .row-flex {
   display: grid;
   grid-template-columns: minmax(180px, 1.1fr) minmax(200px, 1.1fr) minmax(210px, 1.1fr);
@@ -268,7 +165,7 @@ table {
   background: #ffffff;
   border-radius: 6px;
   border: 1px solid #e3e6ea;
-  overflow: visible !important; /* FIX: Visible agar dropdown tidak terpotong */
+  overflow: visible !important;
 }
 
 thead tr { height: 32px; }
@@ -315,7 +212,7 @@ table tr { height: 34px !important; }
 }
 
 /* ==========================================================
-   DROPDOWN FIX
+   DROPDOWN FIX (CHOICES.JS)
 ========================================================== */
 table, tbody, tr, td {
   overflow: visible !important; 
@@ -343,13 +240,13 @@ table, tbody, tr, td {
   align-items: center !important;
 }
 
-.table-input {
-  display: flex;
-  align-items: center;
+.choices__placeholder {
+  color: #999 !important;
+  opacity: 1 !important;
 }
 
 /* ==========================================================
-   BUTTONS
+   BUTTONS & FOOTER ACTIONS
 ========================================================== */
 .add-row-btn {
   margin-top: 10px;
@@ -363,9 +260,7 @@ table, tbody, tr, td {
   cursor: pointer;
 }
 
-.add-row-btn:hover {
-  background: #e2ebff;
-}
+.add-row-btn:hover { background: #e2ebff; }
 
 .notes-label {
   margin-top: 20px;
@@ -403,8 +298,33 @@ textarea {
   cursor: pointer;
 }
 
-.submit-btn:hover {
-  background: #0b66ad;
+.submit-btn:hover { background: #0b66ad; }
+
+/* Google Sheet Button */
+.sheet-bottom-wrapper {
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.sheet-bottom-btn {
+  background: #eef4ff;
+  border: 1px solid #cfe0ff;
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f5ddb;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sheet-bottom-btn:hover { background: #e2ebff; }
+
+.sheet-icon {
+  width: 18px;
+  height: 18px;
 }
 
 /* ==========================================================
@@ -429,33 +349,9 @@ textarea {
   animation: spin .85s linear infinite;
 }
 
-/* Google Sheet Button — Bottom Placement */
-.sheet-bottom-wrapper {
-  margin-top: 16px;
-  margin-bottom: 8px;
-}
-
-.sheet-bottom-btn {
-  background: #eef4ff;
-  border: 1px solid #cfe0ff;
-  padding: 7px 14px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #1f5ddb;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.sheet-bottom-btn:hover {
-  background: #e2ebff;
-}
-
-.sheet-icon {
-  width: 18px;
-  height: 18px;
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 </style>
@@ -467,26 +363,21 @@ textarea {
   <div class="loading-spinner"></div>
 </div>
 
-<div class="topnav">
-  <div class="nav-left">
-    <span class="nav-brand">UXILIUM</span>
-    <span class="nav-sub">Accounting Management Service</span>
+<div class="top-bar">
+  <div class="logo-section">
+    AUXILIUM <span style="font-weight:300;color:#909090; margin-left: 6px;">Accounting Management Services</span>
   </div>
-
-  <div class="nav-right">
-    <a href="../index.html" class="nav-link">Home</a>
-
-    <div class="nav-dropdown">
-      <button class="nav-link dropdown-btn">Modules ▾</button>
-      <div class="dropdown-content">
-        <a href="../receiving/">Receiving PO Entry</a>
-        <a href="../production/">Production Entry</a>
-        <span class="disabled-link">Order Form</span>
-      </div>
-    </div>
-
-    <a class="nav-link disabled-link">Settings</a>
-  </div>
+  
+  <nav class="nav-menu">
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/index.html" class="nav-item">Home</a>
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/" class="nav-item">Receiving</a>
+    
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/" class="nav-item active">Production</a>
+    
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/" class="nav-item">Review Invoice Order</a>
+    
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/orderform/" class="nav-item">Sales Order</a>
+  </nav>
 </div>
 
 <div class="page">
@@ -561,7 +452,6 @@ textarea {
 </div>
 
 <script>
-// PERBAIKAN: Gunakan nama variabel SCRIPT_URL
 const SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycby5iiAvTSJ4AqKe7MbfmilGLLrkiDAoYFG72xn_5ruOssqV9bqVUmZeJeIotXfLc1waVA/exec";
 
@@ -683,7 +573,6 @@ function addRow() {
    INIT CHOICES
 ====================================================== */
 function initChoices(selectEl, optionsArray, placeholderText) {
-  // Guard clause: pastikan data adalah array
   if (!Array.isArray(optionsArray)) {
      console.error("Data bukan array:", optionsArray);
      return;
@@ -788,7 +677,6 @@ function submitForm() {
       if (reply.status === "success") {
         document.getElementById("entryId").value = reply.entryId;
         alert("Submitted successfully!\nProduction Entry ID: " + reply.entryId);
-        // location.reload(); // Uncomment jika ingin refresh halaman setelah submit
       } else {
         alert("Error saving: " + reply.message);
       }
