@@ -37,7 +37,7 @@
         }
         .btn-detail:hover { background: #dbeafe; }
 
-        /* --- MODAL STYLE (UPDATED) --- */
+        /* --- MODAL STYLE --- */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(2px); }
         
         .modal-content {
@@ -45,7 +45,6 @@
             border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
             overflow: hidden; animation: slideUp 0.3s ease-out; 
             display: flex; flex-direction: column; 
-            /* maxHeight tidak diset disini agar wrapper tabel yang handle scroll */
         }
         @keyframes slideUp { from {opacity: 0; transform: translateY(20px);} to {opacity: 1; transform: translateY(0);} }
 
@@ -58,23 +57,25 @@
         /* Grid Layout Baru untuk Header Info */
         .info-grid { 
             display: grid; 
-            grid-template-columns: repeat(4, 1fr); /* 4 Kolom Rapi */
+            grid-template-columns: repeat(4, 1fr); 
             gap: 15px 20px; 
         }
         
-        /* Responsif untuk Mobile: jadi 2 kolom */
         @media (max-width: 768px) {
             .info-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
         .info-item label { display: block; font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
         .info-item div { font-size: 14px; font-weight: 600; color: #0f172a; }
-        .status-pill { background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 99px; font-size: 12px; display: inline-block;}
-
+        
+        /* Status Pill Colors */
+        .status-pill { padding: 4px 10px; border-radius: 99px; font-size: 12px; display: inline-block; font-weight: 600;}
+        .status-pending { background: #ffedd5; color: #c2410c; } /* Merah/Orange untuk Pending */
+        .status-processed { background: #dbeafe; color: #1e40af; } /* Biru untuk Processed */
+        
         /* --- TABEL DETAIL DINAMIS --- */
         .table-wrapper { 
             width: 100%;
-            /* LOGIC DINAMIS: Max tinggi 55% layar. Kalau data dikit, dia pendek. Kalau banyak, scroll muncul. */
             max-height: 55vh; 
             overflow-y: auto;
             border-bottom: 1px solid #e2e8f0;
@@ -85,7 +86,7 @@
         th { 
             text-align: left; font-size: 11px; color: #64748b; text-transform: uppercase; 
             padding: 12px 12px; border-bottom: 2px solid #e2e8f0; background: #f8fafc; white-space: nowrap;
-            position: sticky; top: 0; z-index: 10; /* Header sticky */
+            position: sticky; top: 0; z-index: 10;
         }
         
         td { 
@@ -93,19 +94,53 @@
             font-size: 13px; color: #334155; vertical-align: middle;
         }
         
-        /* Highlight Row on Hover */
-        tr:hover td { background-color: #f8fafc; }
-        
         /* Alignment Helpers */
         .text-right { text-align: right; }
         .text-center { text-align: center; }
         .font-bold { font-weight: 600; color: #0f172a; }
         .qty-col { font-weight: 700; color: #000; }
         
-        /* Footer Total */
-        .invoice-footer { padding: 20px 24px; background-color: #fff; text-align: right; }
+        /* Footer Total dan Button */
+        .invoice-footer { 
+            padding: 15px 24px; 
+            background-color: #fff; 
+            display: flex;
+            justify-content: space-between; /* Untuk memisahkan Total dan Button */
+            align-items: center;
+            border-top: 1px solid #e2e8f0;
+        }
+        .footer-left {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+        }
         .grand-total-label { font-size: 12px; font-weight: 600; color: #64748b; }
-        .grand-total-value { font-size: 24px; font-weight: 700; color: #2563eb; margin-top: 4px; }
+        .grand-total-value { font-size: 20px; font-weight: 700; color: #0f172a; margin-left: 10px; }
+
+        /* Button Process & Sync */
+        .btn-sync {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.2s;
+        }
+        .btn-sync:hover:not(:disabled) { background: #1e40af; }
+        .btn-sync:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
 
         /* Loading */
         #loading { text-align: center; margin-top: 40px; color: #64748b; }
@@ -143,7 +178,9 @@
                     </div>
                     <div class="info-item">
                         <label>Status</label>
-                        <div><span class="status-pill">Pending Approval</span></div>
+                        <div id="modalStatusContainer">
+                            <span class="status-pill status-pending" id="modalStatus">Pending Approval</span>
+                        </div>
                     </div>
 
                     <div class="info-item">
@@ -170,7 +207,8 @@
                             <th class="text-right" style="width: 8%">Rec Before</th>
                             <th class="text-right" style="width: 8%">Qty Rec</th>
                             <th class="text-center" style="width: 5%">UoM</th>
-                            <th style="width: 10%">Notes</th> <th class="text-right" style="width: 8%">Price</th>
+                            <th style="width: 10%">Notes</th> 
+                            <th class="text-right" style="width: 8%">Price</th>
                             <th class="text-right" style="width: 8%">Total</th>
                         </tr>
                     </thead>
@@ -179,8 +217,17 @@
             </div>
 
             <div class="invoice-footer">
-                <div class="grand-total-label">Grand Total</div>
-                <div class="grand-total-value" id="modalGrandTotal">Rp 0</div>
+                <div class="footer-left">
+                    </div>
+                <div class="footer-right">
+                    <div class="grand-total-label">Grand Total</div>
+                    <div class="grand-total-value" id="modalGrandTotal">Rp 0</div>
+                    
+                    <button class="btn-sync" id="btnSync" onclick="processAndSync()">
+                        <span class="material-icons" style="font-size: 20px;">sync</span>
+                        <span id="btnSyncText">Process & Sync</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -189,9 +236,11 @@
         // ==========================================
         // PASTE URL DEPLOYMENT BARU KAMU DI SINI
         // ==========================================
-        const API_URL = "https://script.google.com/macros/s/AKfycbzDdQTIRWQ-cLtl5ttdC1Fa4oxAsGcqDNw1-dotfmw851yIar8udHG4ZNA-F1_CaHWEYw/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbwI7PmT43S0fGmvyPdijhv0gCsRVb0Zldjb9Tfytrsmwr97ZEScInByW0jpaphoYedjTQ/exec"; 
+        const DEPLOYMENT_URL_FOR_POST = API_URL.replace('/exec', '/dev'); // Gunakan /dev atau /exec tergantung setingan deployment kamu
 
         var globalData = {};
+        var currentInvKey = null; // Menyimpan kunci invoice yang sedang dilihat
         const fmtIDR = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
 
         window.onload = fetchData;
@@ -234,21 +283,44 @@
             }
         }
 
+        function updateModalStatus(status) {
+            const statusSpan = document.getElementById('modalStatus');
+            const statusContainer = document.getElementById('modalStatusContainer');
+            const syncButton = document.getElementById('btnSync');
+
+            statusSpan.innerText = status;
+            statusSpan.className = 'status-pill'; 
+
+            if (status === "Process to Import Xero") {
+                statusSpan.classList.add('status-processed');
+                syncButton.disabled = true;
+                syncButton.style.opacity = 0.5;
+            } else {
+                statusSpan.classList.add('status-pending');
+                syncButton.disabled = false;
+                syncButton.style.opacity = 1;
+            }
+        }
+
         function showDetail(key) {
             let data = globalData[key];
+            currentInvKey = key; // Simpan key yang sedang aktif
             
             // --- LOGIC 1: AMBIL DATA HEADER ---
-            // Kita ambil data umum dari item pertama di array (karena Rec ID, PO, Inv biasanya sama untuk 1 dokumen)
             let firstItem = data.items[0] || {}; 
 
             document.getElementById('modalCustomer').innerText = data.supplier;
             document.getElementById('modalOrderNo').innerText = data.poNumber || firstItem.poNum || "-";
-            document.getElementById('modalRecDate').innerText = firstItem.recDate || "-"; // Ambil Rec Date dari item
-            document.getElementById('modalRecId').innerText = firstItem.recId || "-";     // Ambil Rec ID dari item
+            document.getElementById('modalRecDate').innerText = firstItem.recDate || "-";
+            document.getElementById('modalRecId').innerText = firstItem.recId || "-";
             document.getElementById('modalInvNo').innerText = data.invNumber || "-";
             document.getElementById('modalGrandTotal').innerText = fmtIDR.format(data.totalAmount);
+            
+            // Update Status di Header Modal
+            updateModalStatus(data.status);
 
-            // --- LOGIC 2: ISI TABEL (HANYA ITEM DETAIL) ---
+
+            // --- LOGIC 2: ISI TABEL ---
             let tbody = document.getElementById('tableBody');
             tbody.innerHTML = "";
             
@@ -262,7 +334,8 @@
                     <td class="text-right">${i.recBefore}</td>
                     <td class="text-right qty-col">${i.qty}</td>
                     <td class="text-center">${i.uom}</td>
-                    <td>-</td> <td class="text-right">${i.price}</td>
+                    <td>-</td> 
+                    <td class="text-right">${i.price}</td>
                     <td class="text-right font-bold">${i.lineTotalFormatted}</td>
                 </tr>`;
             });
@@ -272,6 +345,53 @@
 
         function closeModal() {
             document.getElementById('detailModal').style.display = "none";
+        }
+
+        // --- FUNGSI BARU: PROCESS & SYNC ---
+        async function processAndSync() {
+            if (!currentInvKey) return;
+
+            const btnSync = document.getElementById('btnSync');
+            const btnText = document.getElementById('btnSyncText');
+            
+            btnSync.disabled = true;
+            btnText.innerText = "Processing...";
+
+            try {
+                const response = await fetch(DEPLOYMENT_URL_FOR_POST, {
+                    method: 'POST',
+                    body: JSON.stringify({ invKey: currentInvKey }),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const result = await response.json();
+                
+                if (result.status === "success") {
+                    alert("Sync berhasil! " + result.message);
+                    
+                    // 1. Update status di UI Modal
+                    updateModalStatus("Process to Import Xero");
+                    
+                    // 2. Hapus dari globalData dan refresh dashboard (otomatis menghilang)
+                    delete globalData[currentInvKey];
+                    renderDashboard(globalData);
+
+                    // 3. Tutup Modal
+                    closeModal();
+                } else {
+                    alert("Gagal Sync atau sudah diproses: " + result.message);
+                }
+
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                alert("Terjadi kesalahan koneksi saat sinkronisasi.");
+            } finally {
+                btnText.innerText = "Process & Sync";
+                // Jangan re-enable tombol jika status sudah Processed di updateModalStatus
+                if (document.getElementById('modalStatus').innerText !== "Process to Import Xero") {
+                    btnSync.disabled = false;
+                }
+            }
         }
         
         window.onclick = function(e) {
