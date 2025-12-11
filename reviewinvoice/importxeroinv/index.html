@@ -7,21 +7,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 2s linear infinite;
-            margin: 20px auto;
-        }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 30px; height: 30px; animation: spin 2s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* Custom Table Style untuk Xero View */
-        .xero-table th { font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; padding: 8px; border-bottom: 2px solid #e2e8f0; }
-        .xero-table td { font-size: 12px; color: #334155; padding: 8px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
-        .xero-row-disc td { color: #ef4444; font-style: italic; } /* Merah untuk diskon */
+        /* Table Style Xero View */
+        .xero-table { width: 100%; border-collapse: collapse; font-family: 'Courier New', Courier, monospace; font-size: 12px; }
+        .xero-table th { background-color: #f1f5f9; color: #475569; font-weight: bold; text-align: left; padding: 8px; border: 1px solid #e2e8f0; }
+        .xero-table td { border: 1px solid #e2e8f0; padding: 6px 8px; color: #334155; }
+        .xero-neg { color: #dc2626; font-weight: bold; } /* Merah untuk minus */
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
@@ -35,22 +28,18 @@
         </div>
 
         <div id="order-container" class="space-y-4">
-            <div id="loading" class="text-center py-10">
-                <div class="loader"></div>
-                <p class="text-gray-400 text-sm">Memuat data...</p>
-            </div>
+            <div id="loading" class="text-center py-10"><div class="loader"></div><p class="text-gray-400 text-sm">Memuat data...</p></div>
         </div>
     </div>
 
     <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 transition-opacity">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-5xl m-4 overflow-hidden transform transition-all flex flex-col max-h-[90vh]">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-6xl m-4 overflow-hidden transform transition-all flex flex-col max-h-[90vh]">
             
             <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-slate-50">
                 <div>
                     <h2 class="text-xl font-bold text-slate-800">INVOICE DETAIL</h2>
                     <div class="flex items-center gap-2 mt-1">
                         <span id="modal-status-badge" class="px-2 py-0.5 rounded text-xs font-bold uppercase border"></span>
-                        <span class="text-xs text-gray-400">Review & Approval System</span>
                     </div>
                 </div>
                 
@@ -62,7 +51,7 @@
                 </div>
             </div>
 
-            <div class="p-6 overflow-y-auto">
+            <div class="p-6 overflow-y-auto bg-white">
                 <div class="grid grid-cols-4 gap-6 mb-6 p-4 bg-gray-50 rounded border border-gray-100">
                     <div><p class="text-xs text-gray-500 uppercase font-bold">Customer</p><p class="text-base font-semibold" id="modal-customer">-</p></div>
                     <div><p class="text-xs text-gray-500 uppercase font-bold">Order No</p><p class="text-base font-semibold text-gray-800" id="modal-orderno">-</p></div>
@@ -80,7 +69,6 @@
                                 <th class="px-3 py-2 border-b text-center">Qty</th>
                                 <th class="px-3 py-2 border-b text-right">Price</th>
                                 <th class="px-3 py-2 border-b text-right">Disc</th>
-                                <th class="px-3 py-2 border-b text-right">Net Price</th>
                                 <th class="px-3 py-2 border-b text-right">Total</th>
                             </tr>
                         </thead>
@@ -89,29 +77,30 @@
                 </div>
 
                 <div id="view-xero" class="hidden animate-fade-in">
-                    <div class="bg-blue-50 border border-blue-100 p-3 rounded mb-4 text-xs text-blue-800 flex gap-2 items-center">
-                        <span>ℹ️</span> Simulasi tampilan data setelah masuk ke Xero (Baris Diskon dipisah otomatis).
+                    <div class="bg-yellow-50 border border-yellow-200 p-3 rounded mb-4 text-xs text-yellow-800 flex gap-2 items-center">
+                        <span class="font-bold">⚠️ AUDIT MODE:</span> Tampilan ini mensimulasikan data "bracket" [ ] yang dipecah per baris untuk Import Xero.
                     </div>
-                    <table class="w-full text-left xero-table">
-                        <thead>
-                            <tr>
-                                <th>Item Code</th>
-                                <th>Description</th>
-                                <th class="text-center">Qty</th>
-                                <th class="text-right">Unit Price</th>
-                                <th>Account</th>
-                                <th>Tax Rate</th>
-                                <th class="text-right">Line Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody id="xero-items-body"></tbody>
-                    </table>
+                    <div class="overflow-x-auto">
+                        <table class="xero-table">
+                            <thead>
+                                <tr>
+                                    <th>*InventoryItemCode</th>
+                                    <th>*Description</th>
+                                    <th class="text-center">*Quantity</th>
+                                    <th class="text-right">*UnitAmount</th>
+                                    <th>*AccountCode</th>
+                                    <th>*TaxType</th>
+                                </tr>
+                            </thead>
+                            <tbody id="xero-items-body"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
             <div class="px-6 py-4 border-t border-gray-100 flex justify-between items-center bg-slate-50 mt-auto">
                 <div class="text-right">
-                    <p class="text-xs text-gray-500 uppercase">Grand Total (Inc. PPN 12%)</p>
+                    <p class="text-xs text-gray-500 uppercase">Grand Total</p>
                     <p class="text-2xl font-bold text-blue-600" id="modal-grandtotal">Rp 0</p>
                 </div>
                 <button id="btn-sync" onclick="syncToXero()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded shadow-md text-sm font-bold flex items-center gap-2 transition disabled:opacity-50 disabled:cursor-not-allowed">
@@ -125,12 +114,12 @@
     </div>
 
     <script>
-        // GANTI URL INI DENGAN DEPLOYMENT TERBARU
+        // --- KONFIGURASI ---
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwQ6uojG_umdTK1AmHAZghLvdoUE-LXmqk3rucPxWXuUem9VFG3tGjZia6C_tp2TU-q/exec';
-
+        
+        // --- GLOBAL VARIABLES ---
         let allData = [];
         let currentOrderNo = null;
-        let currentOrderData = null;
 
         document.addEventListener('DOMContentLoaded', () => fetchData());
 
@@ -154,46 +143,37 @@
             container.innerHTML = ''; 
 
             if(data.length === 0) {
-                container.innerHTML = `<div class="text-center py-12 bg-white rounded-lg border border-dashed border-gray-300"><p class="text-gray-500">Semua data sudah di-import ke Xero!</p></div>`;
+                container.innerHTML = `<div class="text-center py-12 bg-white rounded-lg border border-dashed border-gray-300"><p class="text-gray-500">Semua data sudah di-import!</p></div>`;
                 return;
             }
 
             data.forEach(order => {
                 let formattedTotal = formatRupiah(order.grand_total);
+                let isProcessing = order.status === 'Processing';
                 
-                // Logika Tampilan Status
-                let statusBadge = '';
-                let statusClass = '';
-                let cardBorder = '';
+                let badgeHTML = isProcessing 
+                    ? `<span class="bg-yellow-100 text-yellow-700 border-yellow-200 px-2 py-0.5 rounded text-xs font-bold border">⏳ PROCESSING</span>`
+                    : `<span class="bg-green-100 text-green-700 border-green-200 px-2 py-0.5 rounded text-xs font-bold border">✅ READY</span>`;
                 
-                if (order.status === 'Processing') {
-                    statusBadge = '⏳ Processing';
-                    statusClass = 'bg-yellow-100 text-yellow-700 border-yellow-200';
-                    cardBorder = 'border-l-yellow-500';
-                } else {
-                    statusBadge = '✅ Ready';
-                    statusClass = 'bg-green-100 text-green-700 border-green-200';
-                    cardBorder = 'border-l-green-500';
-                }
+                let borderClass = isProcessing ? 'border-l-yellow-500' : 'border-l-green-500';
 
                 const cardHTML = `
-                <div class="bg-white rounded-lg shadow-sm border-l-4 ${cardBorder} border border-gray-200 p-5 hover:shadow-md transition group">
+                <div class="bg-white rounded-lg shadow-sm border-l-4 ${borderClass} border border-gray-200 p-5 hover:shadow-md transition group">
                     <div class="flex justify-between items-start">
                         <div>
                             <div class="flex items-center gap-2">
                                 <h3 class="text-lg font-bold text-gray-800">${order.order_no}</h3>
-                                <span class="text-xs ${statusClass} px-2 py-0.5 rounded border font-semibold">${statusBadge}</span>
+                                ${badgeHTML}
                             </div>
                             <div class="text-sm text-gray-500 flex items-center gap-3 mt-2">
                                 <span>👤 ${order.customer}</span>
                                 <span>📅 ${order.date}</span>
-                                <span class="text-gray-400">|</span>
-                                <span class="text-blue-600 font-medium">${order.invoice_no || 'No Inv Ref'}</span>
+                                <span class="text-blue-600 font-medium">Ref: ${order.invoice_no || '-'}</span>
                             </div>
                             <div class="mt-2 text-xl font-bold text-gray-800">${formattedTotal}</div>
                         </div>
-                        <div class="text-right flex flex-col items-end gap-2">
-                            <button onclick="openDetail('${order.order_no}')" class="text-blue-600 text-sm font-medium hover:text-blue-800 transition flex items-center gap-1 bg-blue-50 px-3 py-1.5 rounded hover:bg-blue-100">
+                        <div class="text-right">
+                            <button onclick="openDetail('${order.order_no}')" class="text-blue-600 text-sm font-medium hover:text-blue-800 transition bg-blue-50 px-3 py-1.5 rounded hover:bg-blue-100">
                                 Review & Sync &rightarrow;
                             </button>
                         </div>
@@ -206,7 +186,6 @@
         function openDetail(orderId) {
             const order = allData.find(o => o.order_no == orderId);
             if (!order) return;
-            currentOrderData = order;
             currentOrderNo = orderId;
 
             // Reset View
@@ -221,22 +200,20 @@
             document.getElementById('modal-date').innerText = order.date;
             document.getElementById('modal-grandtotal').innerText = formatRupiah(order.grand_total);
             
-            // Status Badge Modal
+            // Status Logic
             const badge = document.getElementById('modal-status-badge');
             const btnSync = document.getElementById('btn-sync');
             
             if (order.status === 'Processing') {
                 badge.innerText = "Processing in Xero";
                 badge.className = "px-2 py-0.5 rounded text-xs font-bold uppercase border bg-yellow-100 text-yellow-700 border-yellow-200";
-                // Disable button karena sudah diproses
                 btnSync.disabled = true;
                 btnSync.classList.add('bg-gray-400', 'cursor-not-allowed');
                 btnSync.classList.remove('bg-blue-600', 'hover:bg-blue-700');
-                btnSync.innerHTML = "<span>Already Synced</span>";
+                btnSync.innerText = "Already Synced";
             } else {
                 badge.innerText = "Ready to Import";
                 badge.className = "px-2 py-0.5 rounded text-xs font-bold uppercase border bg-green-100 text-green-700 border-green-200";
-                // Enable button
                 btnSync.disabled = false;
                 btnSync.classList.remove('bg-gray-400', 'cursor-not-allowed');
                 btnSync.classList.add('bg-blue-600', 'hover:bg-blue-700');
@@ -255,38 +232,44 @@
                         <td class="px-3 py-2 text-center text-gray-600">${item.qty}</td>
                         <td class="px-3 py-2 text-right text-gray-600">${formatRupiah(item.price)}</td>
                         <td class="px-3 py-2 text-right text-red-500">${item.disc > 0 ? formatRupiah(item.disc) : '-'}</td>
-                        <td class="px-3 py-2 text-right text-blue-600 font-medium">${formatRupiah(item.net_price)}</td>
                         <td class="px-3 py-2 text-right font-bold text-gray-800">${formatRupiah(item.total)}</td>
                     </tr>`;
             });
 
-            // --- RENDER XERO TABLE (SIMULASI) ---
+            // --- RENDER XERO TABLE (STRICT CLEAN DATA) ---
             const tbodyXero = document.getElementById('xero-items-body');
             tbodyXero.innerHTML = '';
+            
             order.items.forEach(item => {
-                // Baris 1: Item Utama
+                // Generate Item Code Simulation (Misal: PR-SP-GOBI...)
+                // Mengambil 4 huruf pertama produk agar terlihat seperti kode
+                let cleanProduct = item.product.replace(/[^a-zA-Z0-9]/g, "").toUpperCase().substring(0, 10);
+                let itemCode = `[PR-${item.type}-${cleanProduct}]`;
+
+                // --- LINE 1: ITEM UTAMA ---
+                // Account: 4-4000 (Penjualan), Tax: TAX004 (PPN)
                 tbodyXero.innerHTML += `
                     <tr>
-                        <td>[PR-${item.type}-${item.product.substring(0,5)}...]</td>
+                        <td>${itemCode}</td>
                         <td>${item.product} ${item.meter ? item.meter+'m' : ''}</td>
                         <td class="text-center">${item.qty}</td>
-                        <td class="text-right">${item.price.toLocaleString('en-US')}.00</td>
-                        <td>4-4000 (Penjualan)</td>
-                        <td>PPN 12%</td>
-                        <td class="text-right font-semibold">${(item.price * item.qty).toLocaleString('en-US')}.00</td>
+                        <td class="text-right">${item.price}</td>
+                        <td class="text-center font-mono text-blue-700">4-4000</td>
+                        <td class="text-center font-mono">TAX004</td>
                     </tr>
                 `;
-                // Baris 2: Diskon (Jika ada) - Seperti di Xero
+
+                // --- LINE 2: DISKON (Jika ada) ---
+                // Account: 4-4001 (Diskon), Tax: TAX004 (PPN), Amount: MINUS
                 if (item.disc > 0) {
                      tbodyXero.innerHTML += `
-                    <tr class="xero-row-disc bg-red-50">
+                    <tr class="bg-red-50">
                         <td></td>
-                        <td>Discount - ${item.product}</td>
+                        <td>Diskon - ${item.product}</td>
                         <td class="text-center">${item.qty}</td>
-                        <td class="text-right">-${item.disc.toLocaleString('en-US')}.00</td>
-                        <td>4-4001 (Diskon)</td>
-                        <td>PPN 12%</td>
-                        <td class="text-right">-${(item.disc * item.qty).toLocaleString('en-US')}.00</td>
+                        <td class="text-right xero-neg">-${item.disc}</td>
+                        <td class="text-center font-mono text-red-700">4-4001</td>
+                        <td class="text-center font-mono">TAX004</td>
                     </tr>
                 `;
                 }
@@ -329,11 +312,11 @@
                     Swal.fire({
                         icon: 'success',
                         title: 'Synced!',
-                        text: 'Order ditandai "Processing". Tunggu admin Xero update status ke Imported.',
+                        text: 'Order marked as processing. Please check Xero.',
                         timer: 2000, showConfirmButton: false
                     });
                     closeModal();
-                    fetchData(); // Refresh untuk update status kartu jadi kuning
+                    fetchData(); 
                 } else { throw new Error(result.message); }
             })
             .catch(err => {
