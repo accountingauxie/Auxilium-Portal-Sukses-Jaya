@@ -49,10 +49,9 @@
     }
 
     .nav-left .nav-brand {
-      font-size: 20px;
-      font-weight: 800;
-      color: var(--primary-color);
-      letter-spacing: -0.5px;
+      /* Mengganti teks dengan logo gambar */
+      height: 24px; /* Sesuaikan tinggi sesuai kebutuhan */
+      width: auto;
     }
 
     .nav-left .nav-sub {
@@ -77,10 +76,16 @@
       text-decoration: none;
       font-weight: 500;
       transition: all 0.2s ease;
+      white-space: nowrap; /* Mencegah wrap pada menu */
     }
 
     .nav-link:hover {
       color: var(--primary-color);
+    }
+    
+    .nav-link.active { /* Class untuk link yang sedang aktif */
+        color: var(--text-main); 
+        font-weight: 600;
     }
 
     /* Main Layout */
@@ -227,15 +232,15 @@
 
 <div class="topnav">
   <div class="nav-left">
-    <span class="nav-brand">UXILIUM</span>
+    <img src="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/assets/auxilium_logo_pure_white_bg.png" alt="Auxilium Logo" class="nav-brand" style="height: 28px;">
     <span class="nav-sub">Accounting Portal</span>
   </div>
 
   <div class="nav-right">
-    <a href="../index.html" class="nav-link">Home</a>
-    <a href="../receiving/" class="nav-link">Receiving</a>
-    <a href="../production/" class="nav-link">Production</a>
-    <a href="#" class="nav-link" style="color:var(--text-main); font-weight:600;">Sales Order</a>
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/" class="nav-link">Home</a>
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/approveinvoice/index.html" class="nav-link">Review Invoice</a>
+    <a href="#" class="nav-link active">Work Effort</a> 
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/importxeroinv/index.html" class="nav-link">Import to Xero</a>
   </div>
 </div>
 
@@ -248,7 +253,7 @@
 
   <div class="menu-grid">
     
-    <div class="menu-card" onclick="handleNavigation('approveinvoice/index.html')">
+    <div class="menu-card" onclick="handleNavigation('https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/approveinvoice/index.html')">
       <div class="icon-box">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -270,7 +275,7 @@
       <div class="action-link">Input Work Effort <span>&rarr;</span></div>
     </div>
 
-    <div class="menu-card" onclick="handleNavigation('importxeroinv/index.html')">
+    <div class="menu-card" onclick="handleNavigation('https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/importxeroinv/index.html')">
       <div class="icon-box">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -293,9 +298,18 @@
     const loader = document.getElementById('loadingOverlay');
     loader.style.display = 'flex';
     
+    // Check if the URL is an absolute path (starts with http) or relative
+    let targetUrl = url;
+    if (!url.startsWith('http') && !url.startsWith('/')) {
+        // If it's a relative path like 'approveinvoice/index.html'
+        // This assumes the script is running from the base reviewinvoice/ folder
+        // For menu-card clicks, we use relative paths for internal navigation
+        targetUrl = url;
+    }
+    
     // Simulate slight delay for effect
     setTimeout(() => {
-      window.location.href = url;
+      window.location.href = targetUrl;
     }, 300);
   }
 </script>
