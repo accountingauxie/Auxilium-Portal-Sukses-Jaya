@@ -85,7 +85,7 @@
                             <thead>
                                 <tr>
                                     <th>*InventoryItemCode</th>
-                                    <th>*Description</th>
+                                    <th>*Deion</th>
                                     <th class="text-center">*Quantity</th>
                                     <th class="text-right">*UnitAmount</th>
                                     <th>*AccountCode</th>
@@ -113,8 +113,9 @@
         </div>
     </div>
 
-    <script>
+    <>
         // --- KONFIGURASI ---
+        // Pastikan URL ini adalah deployment terbaru
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwVK5XutG8uuWqfmnyA_WEQK-fWCBfhlqfcgDa2032YqqFlblRmY-ViyoasOknYknBI/exec';
         
         // --- GLOBAL VARIABLES ---
@@ -236,31 +237,31 @@
                     </tr>`;
             });
 
-            // --- RENDER XERO TABLE (STRICT CLEAN DATA) ---
+            // --- RENDER XERO TABLE (DENGAN LOGIKA ACCOUNT CODE) ---
             const tbodyXero = document.getElementById('xero-items-body');
             tbodyXero.innerHTML = '';
             
             order.items.forEach(item => {
-                // Generate Item Code Simulation (Misal: PR-SP-GOBI...)
-                // Mengambil 4 huruf pertama produk agar terlihat seperti kode
+                // Generate Item Code (Simulasi)
                 let cleanProduct = item.product.replace(/[^a-zA-Z0-9]/g, "").toUpperCase().substring(0, 10);
                 let itemCode = `[PR-${item.type}-${cleanProduct}]`;
 
+                // --- LOGIKA MAPPING ACCOUNT CODE ---
+                let accCode = getAccountCode(item.product, item.type);
+
                 // --- LINE 1: ITEM UTAMA ---
-                // Account: 4-4000 (Penjualan), Tax: TAX004 (PPN)
                 tbodyXero.innerHTML += `
                     <tr>
                         <td>${itemCode}</td>
                         <td>${item.product} ${item.meter ? item.meter+'m' : ''}</td>
                         <td class="text-center">${item.qty}</td>
                         <td class="text-right">${item.price}</td>
-                        <td class="text-center font-mono text-blue-700">4-4000</td>
+                        <td class="text-center font-mono text-blue-700">${accCode}</td>
                         <td class="text-center font-mono">TAX004</td>
                     </tr>
                 `;
 
-                // --- LINE 2: DISKON (Jika ada) ---
-                // Account: 4-4001 (Diskon), Tax: TAX004 (PPN), Amount: MINUS
+                // --- LINE 2: DISKON (Kode Diskon: 4-0001 sesuai gambar) ---
                 if (item.disc > 0) {
                      tbodyXero.innerHTML += `
                     <tr class="bg-red-50">
@@ -268,7 +269,7 @@
                         <td>Diskon - ${item.product}</td>
                         <td class="text-center">${item.qty}</td>
                         <td class="text-right xero-neg">-${item.disc}</td>
-                        <td class="text-center font-mono text-red-700">4-4001</td>
+                        <td class="text-center font-mono text-red-700">4-0001</td>
                         <td class="text-center font-mono">TAX004</td>
                     </tr>
                 `;
@@ -276,6 +277,25 @@
             });
 
             document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        // --- FUNGSI MAPPING ACCOUNT CODE ---
+        // Ini dibuat berdasarkan screenshot Xero kamu
+        function getAccountCode(productName, type) {
+            let p = productName.toLowerCase();
+            let t = type.toLowerCase();
+
+            // 1. Cek berdasarkan kata kunci Nama Produk
+            if (p.includes("gobi")) return "4-3102";
+            if (p.includes("sakura puma")) return "4-3315";
+            if (p.includes("kalsiplank")) return "4-5005";
+            if (p.includes("granit")) return "4-5006";
+            if (p.includes("sakura srikandi")) return "4-5008";
+            if (p.includes("taso")) return "4-4103";
+            
+            // 2. Default jika produk tidak dikenal (Fallback Logic)
+            if (t.includes("spandek")) return "4-3000"; // Default Spandek Lainnya
+            return "4-5000"; // Default Non-Spandek Lainnya
         }
 
         function toggleView() {
