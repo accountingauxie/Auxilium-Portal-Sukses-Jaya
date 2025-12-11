@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auxilium Portal</title>
+    <title>Import Receiving PO to Xero</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
@@ -12,13 +12,12 @@
         :root {
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
-            --bg-body: #f8fafc;
+            --bg-body: #f1f5f9;
             --bg-card: #ffffff;
-            --text-main: #1e293b;
+            --text-main: #0f172a;
             --text-sub: #64748b;
             --border-color: #e2e8f0;
             --success: #10b981;
-            --success-hover: #059669;
         }
 
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); margin: 0; padding: 20px; color: var(--text-main); -webkit-font-smoothing: antialiased; }
@@ -26,204 +25,143 @@
 
         /* --- HEADER --- */
         .app-header { 
-            max-width: 1200px; margin: 0 auto 30px; 
-            display: flex; align-items: center; justify-content: space-between;
+            max-width: 1200px; margin: 0 auto 25px; 
+            display: flex; align-items: center; gap: 16px;
         }
-        
-        .header-left { display: flex; align-items: center; gap: 16px; }
 
-        /* Tombol Back Style */
         .btn-back {
             background: white; border: 1px solid var(--border-color);
             color: var(--text-sub); border-radius: 8px;
             width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
             cursor: pointer; transition: 0.2s;
         }
-        .btn-back:hover { background: #f1f5f9; color: var(--primary); border-color: var(--primary); }
+        .btn-back:hover { border-color: var(--primary); color: var(--primary); }
 
         .logo-box { 
-            background: var(--primary); color: white; padding: 6px 12px; 
-            border-radius: 8px; font-weight: 700; font-size: 14px; letter-spacing: 0.5px;
+            background: var(--primary); color: white; padding: 6px 10px; 
+            border-radius: 6px; font-weight: 700; font-size: 13px;
         }
-        .app-title { font-size: 20px; font-weight: 700; color: var(--text-main); }
+        .app-title { font-size: 18px; font-weight: 700; color: var(--text-main); }
 
-        /* --- DASHBOARD GRID --- */
-        #dashboard-container { 
-            max-width: 1200px; margin: 0 auto; 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-            gap: 20px; 
-        }
+        /* --- MAIN LIST CONTAINER (TABLE) --- */
+        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid var(--border-color); }
 
-        /* --- CARD STYLE --- */
-        .card {
-            background: var(--bg-card); border-radius: 12px; padding: 24px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            transition: all 0.2s ease;
-            display: flex; flex-direction: column; justify-content: space-between;
-            height: 100%;
-        }
-        .card:hover { 
-            transform: translateY(-4px); 
-            box-shadow: 0 12px 20px -8px rgba(0,0,0,0.1); 
-            border-color: #cbd5e1;
+        .table-responsive { width: 100%; overflow-x: auto; }
+        
+        .main-table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        
+        .main-table th { 
+            text-align: left; font-size: 12px; font-weight: 600; color: var(--text-sub); 
+            text-transform: uppercase; padding: 16px 20px; background: #f8fafc;
+            border-bottom: 1px solid var(--border-color); letter-spacing: 0.5px;
         }
         
-        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-        .inv-number { font-size: 16px; font-weight: 700; color: var(--primary); }
-        .card-date { font-size: 12px; color: var(--text-sub); background: #f1f5f9; padding: 4px 8px; border-radius: 6px; }
+        .main-table td { 
+            padding: 16px 20px; border-bottom: 1px solid var(--border-color); 
+            font-size: 14px; color: var(--text-main); vertical-align: middle;
+        }
+        
+        .main-table tr:last-child td { border-bottom: none; }
+        .main-table tr:hover td { background-color: #f8fafc; }
 
-        .supplier-name { font-size: 14px; color: var(--text-main); font-weight: 500; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
-        .supplier-name i { color: var(--text-sub); font-size: 16px; }
-
-        .card-price { font-size: 20px; font-weight: 700; color: var(--text-main); margin-top: 16px; margin-bottom: 20px; }
+        /* Column Styles */
+        .col-id { font-weight: 600; color: var(--primary); }
+        .col-date { color: var(--text-sub); font-size: 13px; }
+        .col-amount { font-weight: 600; }
         
-        .btn-detail {
-            width: 100%;
-            color: var(--primary); background: #eff6ff; border: 1px solid transparent; 
-            padding: 10px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s;
-        }
-        .btn-detail:hover { background: #dbeafe; border-color: #bfdbfe; }
-
-        /* --- MODAL STYLE --- */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); }
-        
-        .modal-content {
-            background-color: white; margin: 40px auto; width: 90%; max-width: 1000px; 
-            border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-            overflow: hidden; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
-            display: flex; flex-direction: column; max-height: 90vh;
-        }
-        @keyframes slideUp { from {opacity: 0; transform: translateY(40px);} to {opacity: 1; transform: translateY(0);} }
-
-        /* Header Modal */
-        .invoice-header { padding: 24px 32px; border-bottom: 1px solid var(--border-color); position: relative; background: #fff; }
-        .close-btn { 
-            position: absolute; right: 24px; top: 24px; cursor: pointer; 
-            background: #f1f5f9; border-radius: 50%; padding: 8px; 
-            display: flex; align-items: center; justify-content: center; transition: 0.2s; color: var(--text-sub);
-        }
-        .close-btn:hover { background: #e2e8f0; color: var(--text-main); }
-        
-        .modal-title-row { margin-bottom: 24px; }
-        .modal-title { font-size: 20px; font-weight: 700; color: var(--text-main); }
-
-        /* Grid Layout Header Info */
-        .info-grid { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px; 
-            background: #f8fafc;
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-        }
-        
-        @media (max-width: 768px) {
-            .info-grid { grid-template-columns: repeat(2, 1fr); }
-            #dashboard-container { grid-template-columns: 1fr; }
-            .app-header { flex-direction: column; align-items: flex-start; gap: 15px; }
-        }
-
-        .info-item label { display: block; font-size: 11px; color: var(--text-sub); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-        .info-item div { font-size: 14px; font-weight: 600; color: var(--text-main); }
-        .status-pill { background: #fff7ed; color: #c2410c; padding: 4px 10px; border-radius: 99px; font-size: 12px; display: inline-block; border: 1px solid #ffedd5;}
-
-        /* Tabel Detail */
-        .table-wrapper { 
-            flex: 1; overflow-y: auto; padding: 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
-        
-        th { 
-            text-align: left; font-size: 11px; color: var(--text-sub); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;
-            padding: 16px 24px; border-bottom: 1px solid var(--border-color); background: #fff;
-            position: sticky; top: 0; z-index: 10;
-        }
-        
-        td { 
-            padding: 14px 24px; border-bottom: 1px solid #f1f5f9; 
-            font-size: 13px; color: var(--text-main); vertical-align: middle;
-        }
-        
-        tbody tr:nth-child(even) { background-color: #fcfcfc; }
-        tbody tr:hover { background-color: #f1f5f9; }
-        
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
-        .font-bold { font-weight: 600; color: var(--text-main); }
-        
-        /* Footer Total */
-        .invoice-footer {
-            padding: 24px 32px;
-            background-color: #fff;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
-            box-shadow: 0 -4px 12px rgba(0,0,0,0.03);
-            z-index: 20;
-        }
-        .grand-total-label { font-size: 12px; font-weight: 600; color: var(--text-sub); text-transform: uppercase; }
-        .grand-total-value { font-size: 26px; font-weight: 700; color: var(--primary); margin-top: 4px; }
-
-        .btn-sync {
-            background: var(--success); color: #fff; border: none;
-            padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 600;
-            cursor: pointer; display: flex; align-items: center; gap: 8px;
-            transition: 0.2s;
-        }
-        .btn-sync:hover { background: var(--success-hover); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
-        .btn-sync:disabled { opacity: 0.7; cursor: not-allowed; }
-
-        .btn-secondary {
-            background: #fff; color: var(--text-sub); border: 1px solid var(--border-color);
-            padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 600;
+        .btn-view {
+            background: #eff6ff; color: var(--primary); border: none;
+            padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500;
             cursor: pointer; transition: 0.2s;
         }
-        .btn-secondary:hover { background: #f8fafc; color: var(--text-main); border-color: #cbd5e1; }
+        .btn-view:hover { background: #dbeafe; }
 
-        /* Loading & Empty States */
-        #loading { text-align: center; margin-top: 60px; color: var(--text-sub); font-size: 14px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .spinner { border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* --- MODAL DETAIL --- */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(2px); }
+        .modal-content {
+            background-color: white; margin: 3vh auto; width: 95%; max-width: 1000px; 
+            border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; max-height: 90vh;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp { from {opacity: 0; transform: translateY(20px);} to {opacity: 1; transform: translateY(0);} }
 
+        /* Modal Header */
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: #fff; }
+        .modal-title { font-size: 18px; font-weight: 700; color: var(--text-main); }
+        .close-icon { cursor: pointer; color: var(--text-sub); padding: 5px; border-radius: 50%; }
+        .close-icon:hover { background: #f1f5f9; color: var(--text-main); }
+
+        /* Modal Info Grid */
+        .info-section { padding: 20px 24px; background: #f8fafc; border-bottom: 1px solid var(--border-color); }
+        .info-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .info-item label { display: block; font-size: 11px; color: var(--text-sub); font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
+        .info-item div { font-size: 14px; font-weight: 600; color: var(--text-main); }
+
+        /* Modal Table */
+        .modal-body { overflow-y: auto; flex: 1; }
+        .detail-table { width: 100%; border-collapse: collapse; }
+        .detail-table th { position: sticky; top: 0; background: #fff; text-align: left; padding: 12px 24px; font-size: 11px; color: var(--text-sub); border-bottom: 1px solid var(--border-color); text-transform: uppercase; }
+        .detail-table td { padding: 12px 24px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: var(--text-main); }
+        
+        /* Modal Footer */
+        .modal-footer { padding: 20px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: #fff; }
+        .total-label { font-size: 12px; font-weight: 600; color: var(--text-sub); }
+        .total-value { font-size: 20px; font-weight: 700; color: var(--primary); }
+
+        .btn-sync { background: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .btn-sync:hover { background: #059669; }
+        .btn-sync:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-close { background: white; border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; margin-right: 10px; }
+        .btn-close:hover { background: #f8fafc; }
+
+        /* Loading */
+        #loading { text-align: center; margin-top: 50px; color: var(--text-sub); }
     </style>
 </head>
 <body>
 
     <div class="app-header">
-        <div class="header-left">
-            <button class="btn-back" onclick="window.history.back()" title="Kembali">
-                <span class="material-icons">arrow_back</span>
-            </button>
-            <div class="logo-box">AP</div>
-            <div class="app-title">Approval Dashboard</div>
-        </div>
-        </div>
+        <button class="btn-back" onclick="window.history.back()" title="Back">
+            <span class="material-icons">arrow_back</span>
+        </button>
+        <div class="logo-box">AP</div>
+        <div class="app-title">Import Receiving PO to Xero</div>
+    </div>
 
     <div id="loading">
-        <div class="spinner"></div>
-        <span>Memuat Data Purchase Order...</span>
+        <span class="material-icons" style="animation: spin 1s linear infinite; vertical-align: middle;">autorenew</span>
+        Memuat Data...
     </div>
-    
-    <div id="dashboard-container"></div>
+
+    <div class="container">
+        <div class="table-responsive">
+            <table class="main-table">
+                <thead>
+                    <tr>
+                        <th>Inv Number</th>
+                        <th>Rec ID</th>
+                        <th>PO Number</th>
+                        <th>Supplier</th>
+                        <th>Date</th>
+                        <th style="text-align: right;">Amount</th>
+                        <th style="text-align: center;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="dashboard-list">
+                    </tbody>
+            </table>
+        </div>
+    </div>
 
     <div id="detailModal" class="modal">
         <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Transaction Details</div>
+                <span class="material-icons close-icon" onclick="closeModal()">close</span>
+            </div>
             
-            <div class="invoice-header">
-                <div class="close-btn" onclick="closeModal()">
-                    <span class="material-icons">close</span>
-                </div>
-                
-                <div class="modal-title-row">
-                    <div class="modal-title">Purchase Order Detail</div>
-                </div>
-                
+            <div class="info-section">
                 <div class="info-grid">
                     <div class="info-item">
                         <label>Supplier</label>
@@ -234,55 +172,42 @@
                         <div id="modalOrderNo">-</div>
                     </div>
                     <div class="info-item">
-                        <label>Receiving Date</label>
-                        <div id="modalRecDate">-</div>
-                    </div>
-                    <div class="info-item">
-                        <label>Status</label>
-                        <div><span class="status-pill">Pending Approval</span></div>
-                    </div>
-
-                    <div class="info-item">
-                        <label>Rec ID</label>
+                        <label>Receiving ID</label>
                         <div id="modalRecId">-</div>
                     </div>
                     <div class="info-item">
-                        <label>Inv No</label>
+                        <label>Invoice No</label>
                         <div id="modalInvNo">-</div>
                     </div>
                 </div>
             </div>
 
-            <div class="table-wrapper">
-                <table>
+            <div class="modal-body">
+                <table class="detail-table">
                     <thead>
                         <tr>
-                            <th style="width: 10%">Item Code</th>
-                            <th style="width: 10%">KPC</th>
-                            <th style="width: 25%">Description</th>
-                            <th class="text-right" style="width: 8%">Ordered</th>
-                            <th class="text-right" style="width: 8%">Rec Before</th>
-                            <th class="text-right" style="width: 8%">Qty Rec</th>
-                            <th class="text-center" style="width: 5%">UoM</th>
-                            <th style="width: 10%">Notes</th>
-                            <th class="text-right" style="width: 10%">Price</th>
-                            <th class="text-right" style="width: 10%">Total</th>
+                            <th>Item Code</th>
+                            <th>Description</th>
+                            <th style="text-align: right;">Ord</th>
+                            <th style="text-align: right;">Rec</th>
+                            <th style="text-align: center;">UoM</th>
+                            <th style="text-align: right;">Price</th>
+                            <th style="text-align: right;">Total</th>
                         </tr>
                     </thead>
-                    <tbody id="tableBody"></tbody>
+                    <tbody id="modalTableBody"></tbody>
                 </table>
             </div>
 
-            <div class="invoice-footer">
+            <div class="modal-footer">
                 <div>
-                    <div class="grand-total-label">Grand Total</div>
-                    <div class="grand-total-value" id="modalGrandTotal">Rp 0</div>
+                    <div class="total-label">Grand Total</div>
+                    <div class="total-value" id="modalGrandTotal">Rp 0</div>
                 </div>
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn-secondary" onclick="closeModal()">Close</button>
+                <div style="display: flex;">
+                    <button class="btn-close" onclick="closeModal()">Cancel</button>
                     <button id="syncBtn" class="btn-sync" onclick="processSync()">
-                        <span class="material-icons" style="font-size: 18px;">sync</span>
-                        Process & Sync
+                        <span class="material-icons" style="font-size: 18px;">sync</span> Process & Sync
                     </button>
                 </div>
             </div>
@@ -290,11 +215,7 @@
     </div>
 
     <script>
-        // ==========================================
-        // URL WEB APP APPS SCRIPT
-        // ==========================================
         const API_URL = "https://script.google.com/macros/s/AKfycbx5ZwzUMOWxPkcA6z7sBnBSPvBXftuPIwxiHzgV838OC5Hl46J6eVsfGsQrq8UBPGTfmQ/exec";
-
         var globalData = {};
         const fmtIDR = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
 
@@ -305,40 +226,44 @@
                 .then(res => res.json())
                 .then(data => {
                     document.getElementById('loading').style.display = 'none';
-                    renderDashboard(data);
+                    renderList(data);
                 })
                 .catch(err => {
                     console.error(err);
-                    document.getElementById('loading').innerHTML = "<span style='color:red'>Gagal memuat data. Cek koneksi atau URL.</span>";
+                    document.getElementById('loading').innerHTML = "Gagal memuat data.";
                 });
         }
 
-        function renderDashboard(data) {
+        function renderList(data) {
             globalData = data;
-            const container = document.getElementById('dashboard-container');
-            container.innerHTML = "";
+            const tbody = document.getElementById('dashboard-list');
+            tbody.innerHTML = "";
 
             if (Object.keys(data).length === 0) {
-                container.innerHTML = "<div style='grid-column: 1/-1; text-align:center; padding:40px; color:#64748b'>Tidak ada data pending saat ini.</div>";
+                tbody.innerHTML = "<tr><td colspan='7' style='text-align:center; padding:30px; color:#64748b;'>Tidak ada data pending.</td></tr>";
                 return;
             }
 
             for (let key in data) {
                 let item = data[key];
-                container.innerHTML += `
-                <div class="card">
-                    <div>
-                        <div class="card-header">
-                            <span class="inv-number">${item.invNumber}</span>
-                            <span class="card-date">${item.date}</span>
-                        </div>
-                        <div class="supplier-name">
-                            <i class="material-icons">store</i> ${item.supplier}
-                        </div>
-                        <div class="card-price">${fmtIDR.format(item.totalAmount)}</div>
-                    </div>
-                    <button class="btn-detail" onclick="showDetail('${key}')">View Details</button>
-                </div>`;
+                
+                // Ambil RecID dan PO dari item pertama (asumsi struktur data sama)
+                let firstItem = item.items && item.items.length > 0 ? item.items[0] : {};
+                let recId = firstItem.recId || "-";
+                let poNum = item.poNumber || firstItem.poNum || "-";
+
+                tbody.innerHTML += `
+                <tr>
+                    <td class="col-id">${item.invNumber}</td>
+                    <td>${recId}</td>
+                    <td>${poNum}</td>
+                    <td>${item.supplier}</td>
+                    <td class="col-date">${item.date}</td>
+                    <td class="col-amount" style="text-align: right;">${fmtIDR.format(item.totalAmount)}</td>
+                    <td style="text-align: center;">
+                        <button class="btn-view" onclick="showDetail('${key}')">View Details</button>
+                    </td>
+                </tr>`;
             }
         }
 
@@ -348,59 +273,42 @@
 
             document.getElementById('modalCustomer').innerText = data.supplier;
             document.getElementById('modalOrderNo').innerText = data.poNumber || firstItem.poNum || "-";
-            document.getElementById('modalRecDate').innerText = firstItem.recDate || "-";
             document.getElementById('modalRecId').innerText = firstItem.recId || "-";
             document.getElementById('modalInvNo').innerText = data.invNumber || "-";
             document.getElementById('modalGrandTotal').innerText = fmtIDR.format(data.totalAmount);
 
-            let tbody = document.getElementById('tableBody');
+            let tbody = document.getElementById('modalTableBody');
             tbody.innerHTML = "";
             
             data.items.forEach(i => {
                 tbody.innerHTML += `
                 <tr>
-                    <td class="font-bold" style="color:var(--primary)">${i.itemCode}</td>
-                    <td>${i.kpc}</td>
+                    <td><b>${i.itemCode}</b><br><small style="color:#64748b">${i.kpc}</small></td>
                     <td>${i.desc}</td>
-                    <td class="text-right">${i.ordered}</td>
-                    <td class="text-right" style="color:#64748b">${i.recBefore}</td>
-                    <td class="text-right font-bold">${i.qty}</td>
-                    <td class="text-center"><small>${i.uom}</small></td>
-                    <td>-</td>
-                    <td class="text-right">${i.price}</td>
-                    <td class="text-right font-bold">${i.lineTotalFormatted}</td>
+                    <td style="text-align: right;">${i.ordered}</td>
+                    <td style="text-align: right; font-weight:bold;">${i.qty}</td>
+                    <td style="text-align: center;">${i.uom}</td>
+                    <td style="text-align: right;">${i.price}</td>
+                    <td style="text-align: right; font-weight:bold;">${i.lineTotalFormatted}</td>
                 </tr>`;
             });
 
-            document.getElementById('detailModal').style.display = "block";
-            // Prevent body scroll when modal is open
-            document.body.style.overflow = "hidden";
+            document.getElementById('detailModal').style.display = "flex";
         }
 
         function closeModal() {
             document.getElementById('detailModal').style.display = "none";
-            document.body.style.overflow = "auto";
-        }
-        
-        window.onclick = function(e) {
-            if (e.target == document.getElementById('detailModal')) closeModal();
         }
 
-        // ==============================
-        // PROCESS & SYNC BY REC ID
-        // ==============================
         function processSync() {
             const recId = document.getElementById("modalRecId").innerText.trim();
             const btn = document.getElementById("syncBtn");
 
-            if (!recId || recId === "-") {
-                alert("REC ID tidak ditemukan.");
-                return;
-            }
+            if (!recId || recId === "-") { alert("REC ID tidak valid."); return; }
 
-            const originalText = btn.innerHTML;
+            const oriText = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = `<span class="spinner" style="width:16px; height:16px; border-width:2px; margin-right:8px"></span> Syncing...`;
+            btn.innerHTML = "Processing...";
 
             fetch(API_URL, {
                 method: "POST",
@@ -410,24 +318,24 @@
             .then(res => res.json())
             .then(result => {
                 if (result.success) {
-                    alert("✅ Berhasil Sync data!");
+                    alert("Berhasil Sync!");
                     closeModal();
-                    // Reload data untuk refresh dashboard
-                    document.getElementById('dashboard-container').innerHTML = "";
-                    document.getElementById('loading').style.display = 'flex';
-                    fetchData();
+                    document.getElementById('loading').style.display = 'block';
+                    document.getElementById('dashboard-list').innerHTML = "";
+                    fetchData(); // Reload list
                 } else {
-                    alert("❌ Gagal: " + (result.message || "Unknown error"));
+                    alert("Gagal: " + result.message);
                 }
             })
-            .catch(err => {
-                console.error(err);
-                alert("⚠️ Terjadi error koneksi saat Sync.");
-            })
+            .catch(err => alert("Error koneksi."))
             .finally(() => {
                 btn.disabled = false;
-                btn.innerHTML = originalText;
+                btn.innerHTML = oriText;
             });
+        }
+
+        window.onclick = function(e) {
+            if (e.target == document.getElementById('detailModal')) closeModal();
         }
     </script>
 </body>
