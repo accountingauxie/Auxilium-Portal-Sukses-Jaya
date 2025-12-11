@@ -10,175 +10,200 @@
     <style>
         /* --- GLOBAL VARIABLES & RESET --- */
         :root {
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --bg-body: #f1f5f9;
+            --primary: #2563eb;       /* Corporate Blue */
+            --primary-bg: #eff6ff;
+            --accent: #3b82f6;
+            --bg-body: #f8fafc;
             --bg-card: #ffffff;
             --text-main: #0f172a;
             --text-sub: #64748b;
             --border-color: #e2e8f0;
             --success: #10b981;
+            --po-accent: #f59e0b;     /* Orange/Amber for Purchasing Context */
         }
 
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); margin: 0; padding: 20px; color: var(--text-main); -webkit-font-smoothing: antialiased; }
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; outline: none; }
+        a { text-decoration: none; }
 
-        /* --- HEADER --- */
+        /* --- HEADER SECTION --- */
         .app-header { 
-            max-width: 1200px; margin: 0 auto 25px; 
-            display: flex; align-items: center; gap: 16px;
+            max-width: 1000px; margin: 0 auto 30px; 
         }
+
+        .header-top { display: flex; align-items: center; gap: 15px; margin-bottom: 8px; }
 
         .btn-back {
             background: white; border: 1px solid var(--border-color);
             color: var(--text-sub); border-radius: 8px;
-            width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+            width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
             cursor: pointer; transition: 0.2s;
         }
-        .btn-back:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-back:hover { border-color: var(--primary); color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
-        .logo-box { 
-            background: var(--primary); color: white; padding: 6px 10px; 
-            border-radius: 6px; font-weight: 700; font-size: 13px;
+        .page-title { font-size: 24px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px; }
+        
+        .page-desc { 
+            font-size: 14px; color: var(--text-sub); margin-left: 52px; 
+            max-width: 600px; line-height: 1.5;
         }
-        .app-title { font-size: 18px; font-weight: 700; color: var(--text-main); }
 
-        /* --- MAIN LIST CONTAINER (TABLE) --- */
-        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid var(--border-color); }
+        /* --- SEARCH BAR --- */
+        .search-container {
+            max-width: 1000px; margin: 0 auto 20px;
+            background: white; border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 12px 16px;
+            display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            transition: 0.2s;
+        }
+        .search-container:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-bg); }
+        .search-input { border: none; width: 100%; font-size: 14px; color: var(--text-main); font-family: 'Inter', sans-serif; }
+        .search-input::placeholder { color: #94a3b8; }
 
-        .table-responsive { width: 100%; overflow-x: auto; }
-        
-        .main-table { width: 100%; border-collapse: collapse; min-width: 900px; }
-        
-        .main-table th { 
-            text-align: left; font-size: 12px; font-weight: 600; color: var(--text-sub); 
-            text-transform: uppercase; padding: 16px 20px; background: #f8fafc;
-            border-bottom: 1px solid var(--border-color); letter-spacing: 0.5px;
-        }
-        
-        .main-table td { 
-            padding: 16px 20px; border-bottom: 1px solid var(--border-color); 
-            font-size: 14px; color: var(--text-main); vertical-align: middle;
-        }
-        
-        .main-table tr:last-child td { border-bottom: none; }
-        .main-table tr:hover td { background-color: #f8fafc; }
+        /* --- LIST CONTAINER --- */
+        #list-container { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
 
-        /* Column Styles */
-        .col-id { font-weight: 600; color: var(--primary); }
-        .col-date { color: var(--text-sub); font-size: 13px; }
-        .col-amount { font-weight: 600; }
+        /* --- THE ROW CARD (PO ITEM) --- */
+        .po-card {
+            background: white; border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 20px 24px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: relative; overflow: hidden;
+            transition: all 0.2s ease;
+            cursor: default;
+        }
         
-        .btn-view {
-            background: #eff6ff; color: var(--primary); border: none;
-            padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500;
-            cursor: pointer; transition: 0.2s;
+        /* Left Colored Border Accent */
+        .po-card::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+            width: 4px; background: var(--po-accent);
+            border-top-left-radius: 8px; border-bottom-left-radius: 8px;
         }
-        .btn-view:hover { background: #dbeafe; }
 
-        /* --- MODAL DETAIL --- */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(2px); }
-        .modal-content {
-            background-color: white; margin: 3vh auto; width: 95%; max-width: 1000px; 
-            border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; max-height: 90vh;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
-            animation: slideUp 0.3s ease-out;
+        .po-card:hover { transform: translateY(-2px); box-shadow: 0 8px 16px -4px rgba(0,0,0,0.08); border-color: #cbd5e1; }
+
+        /* Section 1: Main ID & Supplier */
+        .col-main { flex: 1.5; min-width: 200px; }
+        .po-inv-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+        .inv-text { font-size: 16px; font-weight: 700; color: var(--text-main); }
+        .status-pill { 
+            background: #ecfdf5; color: #059669; 
+            font-size: 10px; font-weight: 700; padding: 2px 8px; 
+            border-radius: 4px; letter-spacing: 0.5px; text-transform: uppercase; border: 1px solid #d1fae5;
         }
+        
+        .supplier-info { display: flex; flex-direction: column; gap: 2px; }
+        .supplier-name { font-size: 13px; font-weight: 600; color: #334155; display: flex; align-items: center; gap: 6px; }
+        .po-date { font-size: 12px; color: #94a3b8; display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+
+        /* Section 2: Middle Details (RecID & PO) */
+        .col-details { flex: 2; display: flex; gap: 24px; align-items: center; border-left: 1px solid #f1f5f9; border-right: 1px solid #f1f5f9; padding: 0 24px; }
+        
+        .detail-group { display: flex; flex-direction: column; gap: 4px; }
+        .detail-label { font-size: 10px; text-transform: uppercase; color: #94a3b8; font-weight: 600; letter-spacing: 0.5px; }
+        .detail-value { font-size: 13px; font-weight: 500; color: var(--primary); display: flex; align-items: center; gap: 6px; background: #eff6ff; padding: 4px 8px; border-radius: 6px; width: fit-content; }
+        .detail-value i { font-size: 14px; }
+
+        /* Section 3: Financials & Action */
+        .col-action { flex: 1; text-align: right; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
+        
+        .amount-label { font-size: 10px; text-transform: uppercase; color: #94a3b8; font-weight: 600; margin-bottom: 2px; }
+        .amount-value { font-size: 18px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
+        
+        .btn-details-link {
+            font-size: 13px; font-weight: 600; color: var(--primary);
+            display: flex; align-items: center; gap: 4px; cursor: pointer;
+            transition: 0.2s; background: none; border: none; padding: 0;
+        }
+        .btn-details-link:hover { color: var(--accent); gap: 6px; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .po-card { flex-direction: column; align-items: flex-start; gap: 16px; padding: 16px; }
+            .po-card::before { width: 100%; height: 4px; bottom: auto; border-radius: 8px 8px 0 0; }
+            .col-details { border: none; padding: 0; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; padding: 12px 0; width: 100%; }
+            .col-action { width: 100%; align-items: flex-start; flex-direction: row; justify-content: space-between; align-items: center; }
+            .amount-value { margin-bottom: 0; }
+            .page-desc { margin-left: 0; margin-top: 10px; }
+        }
+
+        /* --- MODAL STYLES (Sama seperti sebelumnya, disesuaikan sedikit) --- */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(2px); }
+        .modal-content { background: white; margin: 3vh auto; width: 95%; max-width: 900px; border-radius: 12px; display: flex; flex-direction: column; max-height: 90vh; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from {opacity: 0; transform: translateY(20px);} to {opacity: 1; transform: translateY(0);} }
-
-        /* Modal Header */
-        .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: #fff; }
-        .modal-title { font-size: 18px; font-weight: 700; color: var(--text-main); }
-        .close-icon { cursor: pointer; color: var(--text-sub); padding: 5px; border-radius: 50%; }
-        .close-icon:hover { background: #f1f5f9; color: var(--text-main); }
-
-        /* Modal Info Grid */
-        .info-section { padding: 20px 24px; background: #f8fafc; border-bottom: 1px solid var(--border-color); }
-        .info-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { overflow-y: auto; padding: 0; }
+        .modal-footer { padding: 20px 24px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; }
+        
+        .detail-table { width: 100%; border-collapse: collapse; }
+        .detail-table th { position: sticky; top: 0; background: #f8fafc; text-align: left; padding: 12px 24px; font-size: 11px; color: var(--text-sub); border-bottom: 1px solid #e2e8f0; text-transform: uppercase; }
+        .detail-table td { padding: 14px 24px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: var(--text-main); }
+        
+        .info-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 20px 24px; background: #fff; }
         .info-item label { display: block; font-size: 11px; color: var(--text-sub); font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
         .info-item div { font-size: 14px; font-weight: 600; color: var(--text-main); }
 
-        /* Modal Table */
-        .modal-body { overflow-y: auto; flex: 1; }
-        .detail-table { width: 100%; border-collapse: collapse; }
-        .detail-table th { position: sticky; top: 0; background: #fff; text-align: left; padding: 12px 24px; font-size: 11px; color: var(--text-sub); border-bottom: 1px solid var(--border-color); text-transform: uppercase; }
-        .detail-table td { padding: 12px 24px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: var(--text-main); }
-        
-        /* Modal Footer */
-        .modal-footer { padding: 20px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: #fff; }
-        .total-label { font-size: 12px; font-weight: 600; color: var(--text-sub); }
-        .total-value { font-size: 20px; font-weight: 700; color: var(--primary); }
-
         .btn-sync { background: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
         .btn-sync:hover { background: #059669; }
-        .btn-sync:disabled { opacity: 0.6; cursor: not-allowed; }
-        .btn-close { background: white; border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; margin-right: 10px; }
-        .btn-close:hover { background: #f8fafc; }
+        .btn-close { background: white; border: 1px solid #e2e8f0; color: var(--text-main); padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .btn-close:hover { background: #f1f5f9; }
 
         /* Loading */
-        #loading { text-align: center; margin-top: 50px; color: var(--text-sub); }
+        #loading { text-align: center; margin-top: 60px; color: var(--text-sub); display: flex; flex-direction: column; align-items: center; gap: 10px; }
     </style>
 </head>
 <body>
 
     <div class="app-header">
-        <button class="btn-back" onclick="window.history.back()" title="Back">
-            <span class="material-icons">arrow_back</span>
-        </button>
-        <div class="logo-box">AP</div>
-        <div class="app-title">Import Receiving PO to Xero</div>
+        <div class="header-top">
+            <button class="btn-back" onclick="window.history.back()" title="Go Back">
+                <span class="material-icons">arrow_back</span>
+            </button>
+            <div class="page-title">Import Receiving PO to Xero</div>
+        </div>
+        <div class="page-desc">
+            Streamline your procurement process. Monitor and synchronize approved purchase orders to Xero for accurate financial reporting and inventory management.
+        </div>
+    </div>
+
+    <div class="search-container">
+        <span class="material-icons" style="color: #94a3b8;">search</span>
+        <input type="text" id="searchInput" class="search-input" placeholder="Search Supplier, PO Number, or Invoice Ref..." onkeyup="filterList()">
     </div>
 
     <div id="loading">
-        <span class="material-icons" style="animation: spin 1s linear infinite; vertical-align: middle;">autorenew</span>
-        Memuat Data...
+        <span class="material-icons" style="animation: spin 1s linear infinite; font-size: 24px;">autorenew</span>
+        <span>Loading Purchase Orders...</span>
     </div>
 
-    <div class="container">
-        <div class="table-responsive">
-            <table class="main-table">
-                <thead>
-                    <tr>
-                        <th>Inv Number</th>
-                        <th>Rec ID</th>
-                        <th>PO Number</th>
-                        <th>Supplier</th>
-                        <th>Date</th>
-                        <th style="text-align: right;">Amount</th>
-                        <th style="text-align: center;">Action</th>
-                    </tr>
-                </thead>
-                <tbody id="dashboard-list">
-                    </tbody>
-            </table>
+    <div id="list-container">
         </div>
-    </div>
 
     <div id="detailModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title">Transaction Details</div>
-                <span class="material-icons close-icon" onclick="closeModal()">close</span>
+                <div style="font-size: 18px; font-weight: 700;">Transaction Details</div>
+                <span class="material-icons" onclick="closeModal()" style="cursor: pointer; color: #64748b;">close</span>
             </div>
             
-            <div class="info-section">
-                <div class="info-grid">
-                    <div class="info-item">
-                        <label>Supplier</label>
-                        <div id="modalCustomer">-</div>
-                    </div>
-                    <div class="info-item">
-                        <label>PO Number</label>
-                        <div id="modalOrderNo">-</div>
-                    </div>
-                    <div class="info-item">
-                        <label>Receiving ID</label>
-                        <div id="modalRecId">-</div>
-                    </div>
-                    <div class="info-item">
-                        <label>Invoice No</label>
-                        <div id="modalInvNo">-</div>
-                    </div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Supplier</label>
+                    <div id="modalCustomer">-</div>
+                </div>
+                <div class="info-item">
+                    <label>PO Number</label>
+                    <div id="modalOrderNo" style="color:var(--primary)">-</div>
+                </div>
+                <div class="info-item">
+                    <label>Receiving ID</label>
+                    <div id="modalRecId" style="color:var(--primary)">-</div>
+                </div>
+                <div class="info-item">
+                    <label>Invoice Ref</label>
+                    <div id="modalInvNo">-</div>
                 </div>
             </div>
 
@@ -201,13 +226,13 @@
 
             <div class="modal-footer">
                 <div>
-                    <div class="total-label">Grand Total</div>
-                    <div class="total-value" id="modalGrandTotal">Rp 0</div>
+                    <div style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 600;">Grand Total</div>
+                    <div id="modalGrandTotal" style="font-size: 20px; font-weight: 700; color: var(--text-main);">Rp 0</div>
                 </div>
-                <div style="display: flex;">
+                <div style="display: flex; gap: 10px;">
                     <button class="btn-close" onclick="closeModal()">Cancel</button>
                     <button id="syncBtn" class="btn-sync" onclick="processSync()">
-                        <span class="material-icons" style="font-size: 18px;">sync</span> Process & Sync
+                        <span class="material-icons" style="font-size: 18px;">sync</span> Process Sync
                     </button>
                 </div>
             </div>
@@ -230,43 +255,93 @@
                 })
                 .catch(err => {
                     console.error(err);
-                    document.getElementById('loading').innerHTML = "Gagal memuat data.";
+                    document.getElementById('loading').innerHTML = "Failed to load data. Please refresh.";
                 });
         }
 
         function renderList(data) {
             globalData = data;
-            const tbody = document.getElementById('dashboard-list');
-            tbody.innerHTML = "";
+            const container = document.getElementById('list-container');
+            container.innerHTML = "";
 
             if (Object.keys(data).length === 0) {
-                tbody.innerHTML = "<tr><td colspan='7' style='text-align:center; padding:30px; color:#64748b;'>Tidak ada data pending.</td></tr>";
+                container.innerHTML = "<div style='text-align:center; padding:40px; color:#64748b; background:white; border-radius:8px; border:1px solid #e2e8f0;'>No pending purchase orders found.</div>";
                 return;
             }
 
             for (let key in data) {
                 let item = data[key];
                 
-                // Ambil RecID dan PO dari item pertama (asumsi struktur data sama)
+                // Ambil RecID dan PO dari item pertama
                 let firstItem = item.items && item.items.length > 0 ? item.items[0] : {};
                 let recId = firstItem.recId || "-";
                 let poNum = item.poNumber || firstItem.poNum || "-";
 
-                tbody.innerHTML += `
-                <tr>
-                    <td class="col-id">${item.invNumber}</td>
-                    <td>${recId}</td>
-                    <td>${poNum}</td>
-                    <td>${item.supplier}</td>
-                    <td class="col-date">${item.date}</td>
-                    <td class="col-amount" style="text-align: right;">${fmtIDR.format(item.totalAmount)}</td>
-                    <td style="text-align: center;">
-                        <button class="btn-view" onclick="showDetail('${key}')">View Details</button>
-                    </td>
-                </tr>`;
+                // Template String untuk Card Row
+                // Perhatikan struktur: Kiri (Inv & Supplier), Tengah (Rec & PO), Kanan (Harga & Tombol)
+                container.innerHTML += `
+                <div class="po-card" data-search="${item.supplier.toLowerCase()} ${poNum.toLowerCase()} ${item.invNumber.toLowerCase()}">
+                    
+                    <div class="col-main">
+                        <div class="po-inv-row">
+                            <span class="inv-text">${item.invNumber}</span>
+                            <span class="status-pill">Ready</span>
+                        </div>
+                        <div class="supplier-info">
+                            <div class="supplier-name">
+                                <span class="material-icons" style="font-size: 16px; color: #64748b;">store</span>
+                                ${item.supplier}
+                            </div>
+                            <div class="po-date">
+                                <span class="material-icons" style="font-size: 14px;">event</span>
+                                ${item.date}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-details">
+                        <div class="detail-group">
+                            <span class="detail-label">Receiving ID</span>
+                            <div class="detail-value">
+                                <span class="material-icons" style="font-size:14px">receipt_long</span> ${recId}
+                            </div>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">PO Number</span>
+                            <div class="detail-value">
+                                <span class="material-icons" style="font-size:14px">description</span> ${poNum}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-action">
+                        <span class="amount-label">Total Amount</span>
+                        <div class="amount-value">${fmtIDR.format(item.totalAmount)}</div>
+                        <button class="btn-details-link" onclick="showDetail('${key}')">
+                            View Details <span class="material-icons" style="font-size: 16px;">arrow_forward</span>
+                        </button>
+                    </div>
+
+                </div>`;
             }
         }
 
+        // --- FILTER FUNCTION (Search Bar) ---
+        function filterList() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let cards = document.getElementsByClassName('po-card');
+
+            for (let i = 0; i < cards.length; i++) {
+                let searchData = cards[i].getAttribute('data-search');
+                if (searchData.includes(input)) {
+                    cards[i].style.display = "flex";
+                } else {
+                    cards[i].style.display = "none";
+                }
+            }
+        }
+
+        // --- MODAL FUNCTIONS (Sama seperti sebelumnya) ---
         function showDetail(key) {
             let data = globalData[key];
             let firstItem = data.items[0] || {}; 
@@ -304,11 +379,11 @@
             const recId = document.getElementById("modalRecId").innerText.trim();
             const btn = document.getElementById("syncBtn");
 
-            if (!recId || recId === "-") { alert("REC ID tidak valid."); return; }
+            if (!recId || recId === "-") { alert("Invalid Receiving ID."); return; }
 
             const oriText = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = "Processing...";
+            btn.innerHTML = "Syncing...";
 
             fetch(API_URL, {
                 method: "POST",
@@ -318,16 +393,15 @@
             .then(res => res.json())
             .then(result => {
                 if (result.success) {
-                    alert("Berhasil Sync!");
+                    alert("Success! Data synchronized to Xero.");
                     closeModal();
-                    document.getElementById('loading').style.display = 'block';
-                    document.getElementById('dashboard-list').innerHTML = "";
+                    document.getElementById('loading').style.display = 'flex';
                     fetchData(); // Reload list
                 } else {
-                    alert("Gagal: " + result.message);
+                    alert("Sync Failed: " + result.message);
                 }
             })
-            .catch(err => alert("Error koneksi."))
+            .catch(err => alert("Connection Error."))
             .finally(() => {
                 btn.disabled = false;
                 btn.innerHTML = oriText;
