@@ -17,13 +17,34 @@
             margin: 20px auto;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Styling untuk Xero Preview Box */
+        .xero-code-block {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            color: #334155;
+            white-space: pre-wrap; /* Agar wrap text panjang */
+            word-break: break-all;
+            margin-bottom: 10px;
+        }
+        .xero-label {
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: #64748b;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
 
     <div class="max-w-5xl mx-auto px-4 py-8">
         <h1 class="text-2xl font-bold text-slate-800">Xero Import Dashboard</h1>
-        <p class="text-slate-500 mb-6">List order siap sync ke Xero (WE Generated & Xero Empty)</p>
+        <p class="text-slate-500 mb-6">List order siap sync ke Xero (WE Generated)</p>
         
         <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-6 flex gap-4">
             <input type="text" id="searchInput" onkeyup="filterData()" placeholder="Cari Customer atau No Order..." class="border rounded px-3 py-2 w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -38,17 +59,23 @@
     </div>
 
     <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 transition-opacity">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl m-4 overflow-hidden transform transition-all">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl m-4 overflow-hidden transform transition-all flex flex-col max-h-[90vh]">
             
-            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-slate-50">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-start bg-slate-50">
                 <div>
                     <h2 class="text-xl font-bold text-slate-800">INVOICE DETAIL</h2>
                     <p class="text-xs text-blue-600 font-semibold mt-1">Status: Ready to Import</p>
                 </div>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+                
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleXeroView()" id="btn-toggle-view" class="flex items-center gap-2 bg-white border border-gray-300 text-gray-600 px-3 py-1 rounded text-xs font-bold hover:bg-gray-50 hover:text-blue-600 transition shadow-sm">
+                        <span>👁️ Xero View</span>
+                    </button>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+                </div>
             </div>
 
-            <div class="p-6 max-h-[60vh] overflow-y-auto">
+            <div class="p-6 overflow-y-auto">
                 <div class="grid grid-cols-2 gap-6 mb-6">
                     <div>
                         <p class="text-xs text-gray-500 uppercase font-bold">Customer</p>
@@ -68,21 +95,53 @@
                     </div>
                 </div>
 
-                <table class="w-full text-sm text-left border-collapse">
-                    <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
-                        <tr>
-                            <th class="px-4 py-2 border-b">Product</th>
-                            <th class="px-4 py-2 border-b text-center">Qty</th>
-                            <th class="px-4 py-2 border-b text-right">Price</th>
-                            <th class="px-4 py-2 border-b text-right">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody id="modal-items-body" class="divide-y divide-gray-100">
-                        </tbody>
-                </table>
+                <div id="view-normal">
+                    <table class="w-full text-sm text-left border-collapse">
+                        <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
+                            <tr>
+                                <th class="px-4 py-2 border-b">Product</th>
+                                <th class="px-4 py-2 border-b text-center">Qty</th>
+                                <th class="px-4 py-2 border-b text-right">Price</th>
+                                <th class="px-4 py-2 border-b text-right">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modal-items-body" class="divide-y divide-gray-100">
+                            </tbody>
+                    </table>
+                </div>
+
+                <div id="view-xero" class="hidden animate-fade-in">
+                    <div class="bg-blue-50 p-3 rounded mb-4 text-xs text-blue-800 flex gap-2 items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+                        Preview data kolom yang akan dibaca Xero (Multi-line bracket format).
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4">
+                        <div>
+                            <div class="xero-label">*Description (Concatenated)</div>
+                            <div class="xero-code-block" id="xero-desc">Loading...</div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <div class="xero-label">*Quantity</div>
+                                <div class="xero-code-block" id="xero-qty">Loading...</div>
+                            </div>
+                            <div>
+                                <div class="xero-label">*UnitAmount</div>
+                                <div class="xero-code-block" id="xero-price">Loading...</div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="xero-label">Simulation Row (InventoryItemCode + Account + Tax)</div>
+                            <div class="xero-code-block text-gray-400 italic" id="xero-simulation">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
-            <div class="px-6 py-4 border-t border-gray-100 flex justify-between items-center bg-slate-50">
+            <div class="px-6 py-4 border-t border-gray-100 flex justify-between items-center bg-slate-50 mt-auto">
                 <div>
                     <p class="text-xs text-gray-500 uppercase">Grand Total</p>
                     <p class="text-2xl font-bold text-blue-600" id="modal-grandtotal">Rp 0</p>
@@ -98,26 +157,21 @@
     </div>
 
     <script>
-        // URL WEB APP KAMU (SUDAH DI-INPUT)
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz9s1x3jCXEFhh5KTWVaqLk4682FCHsNmVsJGbhjB-F7xVlZOwW0gKSs-CWyrPpaB6S/exec';
+        // GANTI URL INI DENGAN DEPLOYMENT TERBARU KAMU
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzd40wuMzuXsNn0vMKiFbAPJgU6BKbKCyHglsuuz-LRBC_y5QclJDyVwW9bllzJrYeE/exec';
 
-        let allData = []; // Simpan data global
-        let currentOrderNo = null; // Simpan Order ID yang sedang dibuka
+        let allData = [];
+        let currentOrderNo = null;
+        let currentItems = []; // Untuk menyimpan items sementara
 
-        // 1. FETCH DATA SAAT LOAD
         document.addEventListener('DOMContentLoaded', () => {
             fetchData();
         });
 
         function fetchData() {
             const container = document.getElementById('order-container');
-            container.innerHTML = `
-                <div class="text-center py-10">
-                    <div class="loader"></div>
-                    <p class="text-gray-400 text-sm">Sedang mengambil data terbaru...</p>
-                </div>`;
+            container.innerHTML = `<div class="text-center py-10"><div class="loader"></div><p class="text-gray-400 text-sm">Sedang mengambil data terbaru...</p></div>`;
 
-            // Panggil API dengan parameter action=getXeroData
             fetch(`${SCRIPT_URL}?action=getXeroData`)
                 .then(response => response.json())
                 .then(data => {
@@ -125,29 +179,23 @@
                     renderCards(data);
                 })
                 .catch(error => {
-                    container.innerHTML = `<p class="text-red-500 text-center">Gagal memuat data. Coba refresh.<br><small>${error}</small></p>`;
+                    container.innerHTML = `<p class="text-red-500 text-center">Gagal memuat data. <br><small>${error}</small></p>`;
                 });
         }
 
-        // 2. RENDER KARTU ORDER
         function renderCards(data) {
             const container = document.getElementById('order-container');
             container.innerHTML = ''; 
 
             if(data.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-12 bg-white rounded-lg border border-dashed border-gray-300">
-                        <p class="text-gray-500 font-medium">Semua data sudah di-import!</p>
-                        <p class="text-gray-400 text-sm">Tidak ada invoice pending untuk Xero.</p>
-                    </div>`;
+                container.innerHTML = `<div class="text-center py-12 bg-white rounded-lg border border-dashed border-gray-300"><p class="text-gray-500">Tidak ada invoice pending!</p></div>`;
                 return;
             }
 
             data.forEach(order => {
                 let formattedTotal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(order.grand_total);
-
                 const cardHTML = `
-                <div class="bg-white rounded-lg shadow-sm border-l-4 border-l-green-500 border border-gray-200 p-5 hover:shadow-md transition group">
+                <div class="bg-white rounded-lg shadow-sm border-l-4 border-l-green-500 border border-gray-200 p-5 hover:shadow-md transition">
                     <div class="flex justify-between items-start">
                         <div>
                             <div class="flex items-center gap-2">
@@ -155,27 +203,150 @@
                                 <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded border border-gray-200">${order.invoice_no}</span>
                             </div>
                             <div class="text-sm text-gray-500 flex items-center gap-3 mt-2">
-                                <span class="flex items-center gap-1">👤 ${order.customer}</span>
-                                <span class="flex items-center gap-1">📅 ${order.date}</span>
+                                <span>👤 ${order.customer}</span>
+                                <span>📅 ${order.date}</span>
                             </div>
-                            <div class="mt-2 text-xl font-bold text-gray-800">
-                                ${formattedTotal}
-                            </div>
+                            <div class="mt-2 text-xl font-bold text-gray-800">${formattedTotal}</div>
                         </div>
-                        <div class="text-right flex flex-col items-end">
-                            <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded font-medium mb-2">Ready</span>
-                            <button onclick="openDetail('${order.order_no}')" class="text-blue-600 text-sm font-medium hover:text-blue-800 transition flex items-center gap-1 bg-blue-50 px-3 py-1.5 rounded hover:bg-blue-100">
-                                View Details &rightarrow;
-                            </button>
+                        <div class="text-right">
+                            <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded font-medium">Ready</span>
+                            <button onclick="openDetail('${order.order_no}')" class="block mt-2 text-blue-600 text-sm font-medium hover:text-blue-800 transition">View Details &rightarrow;</button>
                         </div>
                     </div>
-                </div>
-                `;
+                </div>`;
                 container.innerHTML += cardHTML;
             });
         }
 
-        // 3. FITUR SEARCH
+        // --- FEATURE: XERO VIEW LOGIC ---
+        function toggleXeroView() {
+            const normalView = document.getElementById('view-normal');
+            const xeroView = document.getElementById('view-xero');
+            const btn = document.getElementById('btn-toggle-view');
+
+            if (normalView.classList.contains('hidden')) {
+                // Switch back to Normal
+                normalView.classList.remove('hidden');
+                xeroView.classList.add('hidden');
+                btn.innerHTML = `<span>👁️ Xero View</span>`;
+                btn.classList.remove('bg-blue-50', 'text-blue-700', 'border-blue-300');
+            } else {
+                // Switch to Xero View
+                normalView.classList.add('hidden');
+                xeroView.classList.remove('hidden');
+                btn.innerHTML = `<span>↩️ Normal View</span>`;
+                btn.classList.add('bg-blue-50', 'text-blue-700', 'border-blue-300');
+                
+                // Generate Xero Data
+                generateXeroData();
+            }
+        }
+
+        function generateXeroData() {
+            let descStr = "";
+            let qtyStr = "";
+            let priceStr = "";
+            
+            // Loop items untuk membuat string [A][B][C]
+            currentItems.forEach(item => {
+                descStr += `[${item.product}]`;
+                qtyStr += `[${item.qty}]`;
+                priceStr += `[${item.price}]`; // Harga raw number tanpa Rp
+            });
+
+            document.getElementById('xero-desc').innerText = descStr;
+            document.getElementById('xero-qty').innerText = qtyStr;
+            document.getElementById('xero-price').innerText = priceStr;
+            
+            // Simulasi field lain yang mungkin statis atau formula di excel
+            document.getElementById('xero-simulation').innerText = 
+                `InventoryItemCode (Est): ${descStr.replace(/ /g, '-')}\n` +
+                `AccountCode (Est): [4-4000][4-4000]...\n` + 
+                `TaxType (Est): [TAX004][TAX004]...`;
+        }
+
+        function openDetail(orderId) {
+            const order = allData.find(o => o.order_no == orderId);
+            if (!order) return;
+
+            currentOrderNo = orderId; 
+            currentItems = order.items; // Simpan items ke variabel global untuk Xero View
+
+            // Reset View ke Normal setiap kali buka modal baru
+            document.getElementById('view-normal').classList.remove('hidden');
+            document.getElementById('view-xero').classList.add('hidden');
+            document.getElementById('btn-toggle-view').innerHTML = `<span>👁️ Xero View</span>`;
+
+            // Isi Info Header
+            document.getElementById('modal-customer').innerText = order.customer;
+            document.getElementById('modal-invoice').innerText = order.invoice_no || "-";
+            document.getElementById('modal-orderno').innerText = order.order_no;
+            document.getElementById('modal-date').innerText = order.date;
+            
+            // Isi Tabel Normal
+            const tbody = document.getElementById('modal-items-body');
+            tbody.innerHTML = '';
+            order.items.forEach(item => {
+                let price = new Intl.NumberFormat('id-ID').format(item.price);
+                let total = new Intl.NumberFormat('id-ID').format(item.total);
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3 font-medium text-gray-800">${item.product}</td>
+                        <td class="px-4 py-3 text-center text-gray-600">${item.qty}</td>
+                        <td class="px-4 py-3 text-right text-gray-600">Rp ${price}</td>
+                        <td class="px-4 py-3 text-right font-bold text-gray-800">Rp ${total}</td>
+                    </tr>`;
+            });
+
+            document.getElementById('modal-grandtotal').innerText = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(order.grand_total);
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+        }
+
+        function syncToXero() {
+            if (!currentOrderNo) return;
+
+            const btn = document.getElementById('btn-sync');
+            btn.innerHTML = `<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> <span>Syncing...</span>`;
+            btn.disabled = true;
+
+            const payload = {
+                action: 'updateXeroStatus',
+                orderNo: currentOrderNo
+            };
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.status === 'success') {
+                    closeModal();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Synced!',
+                        text: 'Berhasil mencentang kolom Import di Sheet Inv to Xero.',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    // Refresh data tidak diperlukan jika kita tidak mengubah status di source, 
+                    // tapi jika ingin memastikan UI fresh:
+                    // fetchData(); 
+                } else {
+                    throw new Error(result.message);
+                }
+            })
+            .catch(error => {
+                Swal.fire({ icon: 'error', title: 'Oops...', text: 'Gagal: ' + error });
+                btn.innerHTML = `<span>Try Again</span>`;
+                btn.disabled = false;
+            });
+        }
+        
         function filterData() {
             const query = document.getElementById('searchInput').value.toLowerCase();
             const filtered = allData.filter(item => 
@@ -186,112 +357,8 @@
             renderCards(filtered);
         }
 
-        // 4. BUKA MODAL DETAIL
-        function openDetail(orderId) {
-            const order = allData.find(o => o.order_no == orderId);
-            if (!order) return;
-
-            currentOrderNo = orderId; // Set ID aktif untuk sync nanti
-
-            document.getElementById('modal-customer').innerText = order.customer;
-            document.getElementById('modal-invoice').innerText = order.invoice_no || "-";
-            document.getElementById('modal-orderno').innerText = order.order_no;
-            document.getElementById('modal-date').innerText = order.date;
-            
-            const tbody = document.getElementById('modal-items-body');
-            tbody.innerHTML = '';
-            
-            order.items.forEach(item => {
-                let price = new Intl.NumberFormat('id-ID').format(item.price);
-                let total = new Intl.NumberFormat('id-ID').format(item.total);
-                
-                tbody.innerHTML += `
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3 font-medium text-gray-800">${item.product}</td>
-                        <td class="px-4 py-3 text-center text-gray-600">${item.qty}</td>
-                        <td class="px-4 py-3 text-right text-gray-600">Rp ${price}</td>
-                        <td class="px-4 py-3 text-right font-bold text-gray-800">Rp ${total}</td>
-                    </tr>
-                `;
-            });
-
-            let grandTotal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(order.grand_total);
-            document.getElementById('modal-grandtotal').innerText = grandTotal;
-
-            // Reset Button State
-            const btn = document.getElementById('btn-sync');
-            btn.innerHTML = `<span>Sync to Xero</span> <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>`;
-            btn.disabled = false;
-            btn.classList.remove('bg-gray-400');
-            btn.classList.add('bg-blue-600');
-
-            document.getElementById('detailModal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            document.getElementById('detailModal').classList.add('hidden');
-        }
-
-        // 5. SYNC LOGIC (KIRIM DATA KE GOOGLE SHEETS)
-        function syncToXero() {
-            if (!currentOrderNo) return;
-
-            // UI Loading State
-            const btn = document.getElementById('btn-sync');
-            btn.innerHTML = `<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> <span>Processing...</span>`;
-            btn.disabled = true;
-            btn.classList.remove('bg-blue-600');
-            btn.classList.add('bg-gray-400');
-
-            // Data yang dikirim ke doPost
-            const payload = {
-                action: 'updateXeroStatus',
-                orderNo: currentOrderNo
-            };
-
-            // Kirim request POST
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify(payload)
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.status === 'success') {
-                    // Sukses!
-                    closeModal();
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Synced!',
-                        text: 'Status berhasil diupdate ke "Imported"',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                    // Refresh data dashboard
-                    fetchData();
-                } else {
-                    throw new Error(result.message);
-                }
-            })
-            .catch(error => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Gagal sync data: ' + error
-                });
-                // Reset Button
-                btn.innerHTML = `<span>Try Again</span>`;
-                btn.disabled = false;
-                btn.classList.add('bg-blue-600');
-                btn.classList.remove('bg-gray-400');
-            });
-        }
-
-        // Tutup modal jika klik luar
         window.onclick = function(event) {
-            const modal = document.getElementById('detailModal');
-            if (event.target == modal) {
-                closeModal();
-            }
+            if (event.target == document.getElementById('detailModal')) closeModal();
         }
     </script>
 </body>
