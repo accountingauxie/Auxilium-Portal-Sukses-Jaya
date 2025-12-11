@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auxilium Portal - Approval Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Roboto', sans-serif; background-color: #f4f6f8; margin: 0; padding: 20px; color: #333; }
+        
+        /* Header */
+        .header-container { max-width: 1000px; margin: 0 auto 20px auto; }
+        .app-title { font-size: 24px; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 10px; }
+        .logo-box { background: #0056b3; color: white; padding: 5px 10px; border-radius: 4px; font-size: 18px; }
+
+        /* Loading */
+        #loading { text-align: center; margin-top: 50px; color: #666; font-style: italic; }
+
+        /* Dashboard Container */
+        #dashboard-container { max-width: 1000px; margin: 0 auto; }
+
+        /* Invoice Card Style */
+        .card {
+            background: white; border-radius: 10px; padding: 20px; margin-bottom: 16px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+            border-left: 5px solid #ffc107; /* Kuning = Pending */
+            display: flex; justify-content: space-between; align-items: center;
+            transition: transform 0.2s;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+        .card-left h3 { margin: 0 0 5px 0; font-size: 18px; color: #1e293b; }
+        .card-left .sub-text { margin: 0; color: #64748b; font-size: 13px; display: flex; align-items: center; gap: 5px; }
+        .card-left .total-price { font-size: 20px; font-weight: 700; color: #0f172a; margin-top: 10px; }
+
+        .card-right { text-align: right; }
+        .badge { background: #fff3cd; color: #856404; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .btn-detail {
+            display: inline-block; margin-top: 15px; color: #2563eb; background: none; border: none; 
+            font-weight: 600; cursor: pointer; text-decoration: none; font-size: 14px;
+        }
+        .btn-detail:hover { text-decoration: underline; }
+
+        /* MODAL (Pop-up) */
+        .modal { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(2px); }
+        .modal-content {
+            background-color: white; margin: 40px auto; padding: 25px; width: 90%; max-width: 1200px;
+            border-radius: 12px; max-height: 85vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            position: relative; animation: slideDown 0.3s ease-out;
+        }
+        @keyframes slideDown { from {opacity: 0; transform: translateY(-20px);} to {opacity: 1; transform: translateY(0);} }
+
+        .close { position: absolute; right: 20px; top: 15px; font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer; }
+        .close:hover { color: #000; }
+
+        .modal-header h2 { margin-top: 0; color: #0f172a; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; }
+
+        /* Detail Table */
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; min-width: 1000px; }
+        th { background-color: #f8fafc; text-align: left; padding: 12px; border-bottom: 2px solid #e2e8f0; color: #475569; font-weight: 600; white-space: nowrap; }
+        td { padding: 12px; border-bottom: 1px solid #e2e8f0; color: #334155; }
+        tr:hover { background-color: #f8fafc; }
+        .text-right { text-align: right; }
+    </style>
+</head>
+<body>
+
+    <div class="header-container">
+        <div class="app-title">
+            <span class="logo-box">AP</span> Auxilium Portal
+        </div>
+        <div style="font-size: 18px; font-weight:bold; margin-top:10px; color:#334155;">Approval Dashboard</div>
+    </div>
+
+    <div id="loading">
+        <span class="material-icons" style="font-size: 48px; animation: spin 1s linear infinite;">sync</span>
+        <br>Sedang mengambil data...
+    </div>
+
+    <div id="dashboard-container"></div>
+
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div class="modal-header">
+                <h2 id="modalTitle">Invoice Detail</h2>
+            </div>
+            
+            <div class="table-responsive">
+                <table id="detailTable">
+                    <thead>
+                        <tr>
+                            <th>Rec ID</th>
+                            <th>Rec Date</th>
+                            <th>Inv Number</th>
+                            <th>PO Number</th>
+                            <th>Supplier</th>
+                            <th>Item Code</th>
+                            <th>KPC</th>
+                            <th>Description</th>
+                            <th class="text-right">Qty</th>
+                            <th>UoM</th>
+                            <th class="text-right">Price</th>
+                            <th class="text-right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // PASTE URL WEB APP APPS SCRIPT DI BAWAH INI
+        // ==========================================
+        const API_URL = "https://script.google.com/macros/s/AKfycbwcEqaH3m2-zeALkrt5-Kx8MtoYn-M-2yWtfuXmcaj0-thgqNOBo4qCpV-POduCghLbNA/exec"; 
+
+        var globalData = {};
+
+        // Format Rupiah
+        const fmtIDR = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+
+        window.onload = function() {
+            fetchData();
+        };
+
+        function fetchData() {
+            fetch(API_URL)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('loading').style.display = 'none';
+                    renderDashboard(data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('loading').innerHTML = "<p style='color:red'>Gagal mengambil data. Pastikan URL benar dan Access = Anyone.</p>";
+                });
+        }
+
+        function renderDashboard(data) {
+            globalData = data;
+            const container = document.getElementById('dashboard-container');
+            container.innerHTML = "";
+
+            if (Object.keys(data).length === 0) {
+                container.innerHTML = "<div style='text-align:center; padding:20px; background:white; border-radius:8px;'>Tidak ada Invoice Pending (Semua sudah dicentang).</div>";
+                return;
+            }
+
+            for (let key in data) {
+                let item = data[key];
+                
+                let cardHtml = `
+                <div class="card">
+                    <div class="card-left">
+                        <h3>${item.invNumber}</h3>
+                        <p class="sub-text">
+                            <span class="material-icons" style="font-size:14px">person</span> ${item.supplier}
+                            &nbsp;|&nbsp; 
+                            <span class="material-icons" style="font-size:14px">calendar_today</span> ${item.date}
+                        </p>
+                        <div class="total-price">${fmtIDR.format(item.totalAmount)}</div>
+                    </div>
+                    <div class="card-right">
+                        <span class="badge">${item.status}</span>
+                        <br>
+                        <button class="btn-detail" onclick="showDetail('${key}')">View Details &rarr;</button>
+                    </div>
+                </div>`;
+                
+                container.innerHTML += cardHtml;
+            }
+        }
+
+        function showDetail(key) {
+            let items = globalData[key].items;
+            let tbody = document.getElementById('tableBody');
+            tbody.innerHTML = "";
+            
+            document.getElementById('modalTitle').innerHTML = `Invoice: <span style="color:#2563eb">${key}</span>`;
+
+            items.forEach(i => {
+                let row = `<tr>
+                    <td>${i.recId}</td>
+                    <td>${i.recDate}</td>
+                    <td>${i.invNum}</td>
+                    <td>${i.poNum}</td>
+                    <td>${i.supplier}</td>
+                    <td>${i.itemCode}</td>
+                    <td>${i.kpc}</td>
+                    <td>${i.desc}</td>
+                    <td class="text-right"><strong>${i.qty}</strong></td>
+                    <td>${i.uom}</td>
+                    <td class="text-right">${fmtIDR.format(i.price).replace('Rp','')}</td>
+                    <td class="text-right">${fmtIDR.format(i.lineTotal).replace('Rp','')}</td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+
+            document.getElementById('detailModal').style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').style.display = "none";
+        }
+
+        // Tutup modal kalau klik background gelap
+        window.onclick = function(event) {
+            let modal = document.getElementById('detailModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+
+    <style>
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</body>
+</html>
