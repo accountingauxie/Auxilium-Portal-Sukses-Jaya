@@ -3,7 +3,7 @@
 
 <head>
 <meta charset="UTF-8">
-<title>Production Entry (Work Effort)</title>
+<title>Production Entry</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
@@ -14,176 +14,176 @@
 <style>
 
 /* ==========================================================
-   GLOBAL RESET & FONTS
+   GLOBAL RESET & FONTS
 ========================================================== */
 :root {
-  --border: #d6dce1;
-  --border-light: #e3e7eb;
-  --header-bg: #f7f8fa;
-  --text-muted: #697386;
-  --blue: #0075c9;
-  --bg: #f5f7fa;
+  --border: #d6dce1;
+  --border-light: #e3e7eb;
+  --header-bg: #f7f8fa;
+  --text-muted: #697386;
+  --blue: #0075c9;
+  --bg: #f5f7fa;
 }
 
 * { box-sizing: border-box; }
 
 body {
-  margin: 0;
-  padding: 0;
-  background: var(--bg);
-  font-family: "Segoe UI", Roboto, "Arial", sans-serif;
-  font-size: 13px;
-  color: #333;
-  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  font-family: "Segoe UI", Roboto, "Arial", sans-serif;
+  font-size: 13px;
+  color: #333;
+  overflow-x: hidden;
 }
 
 html { overflow-x: hidden !important; }
 
 /* ==========================================================
-   TOP BAR / NAVIGATION (NEW STYLE)
+   TOP BAR / NAVIGATION (NEW STYLE)
 ========================================================== */
 .top-bar {
-  padding: 10px 36px;
-  background: #ffffff;
-  border-bottom: 1px solid var(--border-light);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 15px;
-  font-weight: 600;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+  padding: 10px 36px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .logo-section {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #1e1e1e;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #1e1e1e;
 }
 
 .nav-menu {
-    display: flex;
-    gap: 8px;
-    align-items: center;
+    display: flex;
+    gap: 8px;
+    align-items: center;
 }
 
 .nav-item {
-    text-decoration: none;
-    color: #64748b;
-    font-size: 14px;
-    font-weight: 500;
-    padding: 8px 16px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
+    text-decoration: none;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
 }
 
 .nav-item:hover {
-    background-color: #f1f5f9;
-    color: var(--blue);
+    background-color: #f1f5f9;
+    color: var(--blue);
 }
 
 /* Active State (Pill Shape) */
 .nav-item.active {
-    background-color: #eff6ff; 
-    color: var(--blue);
-    font-weight: 600;
+    background-color: #eff6ff; 
+    color: var(--blue);
+    font-weight: 600;
 }
 
 /* ==========================================================
-   PAGE + CARD
+   PAGE + CARD
 ========================================================== */
 .page {
-  max-width: 1120px;
-  margin: 32px auto;
-  padding: 0 16px;
+  max-width: 1120px;
+  margin: 32px auto;
+  padding: 0 16px;
 }
 
 .card {
-  background: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.04),
-              0 14px 30px rgba(15, 23, 42, 0.08);
-  padding: 24px 26px 26px 26px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.04),
+              0 14px 30px rgba(15, 23, 42, 0.08);
+  padding: 24px 26px 26px 26px;
 }
 
 .card-header { margin-bottom: 18px; }
 
 .card-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #1f2933;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2933;
 }
 
 /* ==========================================================
-   FORM ELEMENTS
+   FORM ELEMENTS
 ========================================================== */
 label {
-  font-size: 12.5px;
-  font-weight: 600;
-  margin-bottom: 4px;
-  color: #4a5568;
-  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #4a5568;
+  display: block;
 }
 
 .input-box,
 .table-input,
 .choices__inner {
-  height: 30px !important;
-  min-height: 30px !important;
-  padding: 5px 8px !important;
-  font-size: 12.5px !important;
-  border: 1px solid #d0d7df !important;
-  border-radius: 5px !important;
-  background: #f9fafb !important;
-  box-sizing: border-box;
-  transition: all 0.18s ease;
+  height: 30px !important;
+  min-height: 30px !important;
+  padding: 5px 8px !important;
+  font-size: 12.5px !important;
+  border: 1px solid #d0d7df !important;
+  border-radius: 5px !important;
+  background: #f9fafb !important;
+  box-sizing: border-box;
+  transition: all 0.18s ease;
 }
 
 input:hover, select:hover, textarea:hover, .choices__inner:hover {
-  border-color: #b9c4d0 !important;
+  border-color: #b9c4d0 !important;
 }
 
 input[type="date"] { padding-right: 26px !important; }
 
 .row-flex {
-  display: grid;
-  grid-template-columns: minmax(180px, 1.1fr) minmax(200px, 1.1fr) minmax(210px, 1.1fr);
-  column-gap: 24px;
-  row-gap: 10px;
-  align-items: end;
-  margin-bottom: 18px;
+  display: grid;
+  grid-template-columns: minmax(180px, 1.1fr) minmax(200px, 1.1fr) minmax(210px, 1.1fr);
+  column-gap: 24px;
+  row-gap: 10px;
+  align-items: end;
+  margin-bottom: 18px;
 }
 
 /* ==========================================================
-   TABLE STYLE
+   TABLE STYLE
 ========================================================== */
 table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #ffffff;
-  border-radius: 6px;
-  border: 1px solid #e3e6ea;
-  overflow: visible !important;
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: 6px;
+  border: 1px solid #e3e6ea;
+  overflow: visible !important;
 }
 
 thead tr { height: 32px; }
 
 th {
-  background: #edf0f5;
-  padding: 6px;
-  font-size: 12.5px;
-  font-weight: 600;
-  border-bottom: 1px solid #e1e4e9;
-  color: #313d4f;
-  text-align: left;
+  background: #edf0f5;
+  padding: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  border-bottom: 1px solid #e1e4e9;
+  color: #313d4f;
+  text-align: left;
 }
 
 td {
-  padding: 4px;
-  border-bottom: 1px solid #f3f4f6;
-  vertical-align: middle !important;
+  padding: 4px;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: middle !important;
 }
 
 table tr { height: 34px !important; }
@@ -198,160 +198,160 @@ table tr { height: 34px !important; }
 #tableBody td:nth-child(7), #tableBody th:nth-child(7) { width: 20px; }
 
 .row-handle {
-  font-size: 12px;
-  color: #999;
-  cursor: grab;
-  text-align: center;
+  font-size: 12px;
+  color: #999;
+  cursor: grab;
+  text-align: center;
 }
 
 .delete-btn {
-  font-size: 14px;
-  color: #cc1f2f;
-  cursor: pointer;
-  text-align: center;
+  font-size: 14px;
+  color: #cc1f2f;
+  cursor: pointer;
+  text-align: center;
 }
 
 /* ==========================================================
-   DROPDOWN FIX (CHOICES.JS)
+   DROPDOWN FIX (CHOICES.JS)
 ========================================================== */
 table, tbody, tr, td {
-  overflow: visible !important; 
-  position: relative !important;
+  overflow: visible !important; 
+  position: relative !important;
 }
 
 .choices__list--dropdown,
 .choices__list[aria-expanded] {
-  position: absolute !important;
-  z-index: 99999999 !important;
-  background: #ffffff !important;
-  border: 1px solid #cfd7df !important;
-  border-radius: 5px !important;
-  width: 100% !important;
-  font-size: 12.5px !important;
+  position: absolute !important;
+  z-index: 99999999 !important;
+  background: #ffffff !important;
+  border: 1px solid #cfd7df !important;
+  border-radius: 5px !important;
+  width: 100% !important;
+  font-size: 12.5px !important;
 }
 
 .choices__list--dropdown .choices__list {
-  max-height: 210px !important;
-  overflow-y: auto !important;
+  max-height: 210px !important;
+  overflow-y: auto !important;
 }
 
 .choices__inner {
-  display: flex !important;
-  align-items: center !important;
+  display: flex !important;
+  align-items: center !important;
 }
 
 .choices__placeholder {
-  color: #999 !important;
-  opacity: 1 !important;
+  color: #999 !important;
+  opacity: 1 !important;
 }
 
 /* ==========================================================
-   BUTTONS & FOOTER ACTIONS
+   BUTTONS & FOOTER ACTIONS
 ========================================================== */
 .add-row-btn {
-  margin-top: 10px;
-  padding: 5px 12px;
-  font-size: 12px;
-  border-radius: 5px;
-  background: #eef4ff;
-  border: 1px solid #cfe0ff;
-  color: #1f5ddb;
-  font-weight: 600;
-  cursor: pointer;
+  margin-top: 10px;
+  padding: 5px 12px;
+  font-size: 12px;
+  border-radius: 5px;
+  background: #eef4ff;
+  border: 1px solid #cfe0ff;
+  color: #1f5ddb;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .add-row-btn:hover { background: #e2ebff; }
 
 .notes-label {
-  margin-top: 20px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #4a5568;
+  margin-top: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4a5568;
 }
 
 textarea {
-  width: 100%;
-  height: 110px;
-  padding: 8px;
-  font-size: 12.5px;
-  background: #f9fafb;
-  border: 1px solid #d0d7df;
-  border-radius: 6px;
-  margin-top: 4px;
-  resize: vertical;
+  width: 100%;
+  height: 110px;
+  padding: 8px;
+  font-size: 12.5px;
+  background: #f9fafb;
+  border: 1px solid #d0d7df;
+  border-radius: 6px;
+  margin-top: 4px;
+  resize: vertical;
 }
 
 .actions-row {
-  margin-top: 22px;
-  display: flex;
-  justify-content: flex-end;
+  margin-top: 22px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .submit-btn {
-  padding: 9px 24px;
-  font-size: 13.5px;
-  font-weight: 600;
-  border-radius: 6px;
-  background: #0f80d9;
-  color: #ffffff;
-  border: none;
-  cursor: pointer;
+  padding: 9px 24px;
+  font-size: 13.5px;
+  font-weight: 600;
+  border-radius: 6px;
+  background: #0f80d9;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
 }
 
 .submit-btn:hover { background: #0b66ad; }
 
 /* Google Sheet Button */
 .sheet-bottom-wrapper {
-  margin-top: 16px;
-  margin-bottom: 8px;
+  margin-top: 16px;
+  margin-bottom: 8px;
 }
 
 .sheet-bottom-btn {
-  background: #eef4ff;
-  border: 1px solid #cfe0ff;
-  padding: 7px 14px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #1f5ddb;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  background: #eef4ff;
+  border: 1px solid #cfe0ff;
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f5ddb;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .sheet-bottom-btn:hover { background: #e2ebff; }
 
 .sheet-icon {
-  width: 18px;
-  height: 18px;
+  width: 18px;
+  height: 18px;
 }
 
 /* ==========================================================
-   LOADING OVERLAY
+   LOADING OVERLAY
 ========================================================== */
 #loadingOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.75);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.75);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
 }
 
 .loading-spinner {
-  border: 5px solid #dae6f4;
-  border-top: 5px solid #2b6be8;
-  border-radius: 50%;
-  width: 42px;
-  height: 42px;
-  animation: spin .85s linear infinite;
+  border: 5px solid #dae6f4;
+  border-top: 5px solid #2b6be8;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  animation: spin .85s linear infinite;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 </style>
@@ -360,367 +360,331 @@ textarea {
 <body>
 
 <div id="loadingOverlay">
-  <div class="loading-spinner"></div>
+  <div class="loading-spinner"></div>
 </div>
 
 <div class="top-bar">
-  <div class="logo-section">
-    AUXILIUM <span style="font-weight:300;color:#909090; margin-left: 6px;">Accounting Management Services</span>
-  </div>
-  
-  <nav class="nav-menu">
-    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/index.html" class="nav-item">Home</a>
-    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/" class="nav-item">Receiving</a>
-    
-    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/" class="nav-item active">Production</a>
-    
-        <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/approveinvoice/index.html" class="nav-item">Review Invoice Order</a>
-    
-    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/orderform/" class="nav-item">Sales Order</a>
-  </nav>
+  <div class="logo-section">
+    AUXILIUM <span style="font-weight:300;color:#909090; margin-left: 6px;">Accounting Management Services</span>
+  </div>
+  
+  <nav class="nav-menu">
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/index.html" class="nav-item">Home</a>
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/" class="nav-item">Receiving</a>
+    
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/" class="nav-item active">Production</a>
+    
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/" class="nav-item">Review Invoice Order</a>
+    
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/orderform/" class="nav-item">Sales Order</a>
+  </nav>
 </div>
 
 <div class="page">
-  <div class="card">
+  <div class="card">
 
-    <div class="card-header">
-      <div class="card-title">Production Entry</div>
-    </div>
+    <div class="card-header">
+      <div class="card-title">Production Entry</div>
+    </div>
 
-    <div class="row-flex">
-      <div>
-        <label>Date</label>
-        <input type="date" id="productionDate" class="input-box">
-      </div>
+    <div class="row-flex">
+      <div>
+        <label>Date</label>
+        <input type="date" id="productionDate" class="input-box">
+      </div>
 
-      <div>
-        <label>Production Machine</label>
-        <select id="machineUsed" class="input-box">
-          <option value="">— Select Machine —</option>
-          <option value="RENG__009_MX">RENG__009_MX</option>
-          <option value="TRUSS010">TRUSS010</option>
-          <option value="OTHERS">OTHERS</option>
-        </select>
-      </div>
+      <div>
+        <label>Production Machine</label>
+        <select id="machineUsed" class="input-box">
+          <option value="">— Select Machine —</option>
+          <option value="RENG__009_MX">RENG__009_MX</option>
+          <option value="TRUSS010">TRUSS010</option>
+          <option value="OTHERS">OTHERS</option>
+        </select>
+      </div>
 
-      <div>
-        <label>Production Entry ID</label>
-        <input type="text" id="entryId" class="input-box" readonly>
-      </div>
-    </div>
+      <div>
+        <label>Production Entry ID</label>
+        <input type="text" id="entryId" class="input-box" readonly>
+      </div>
+    </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th></th>
-          <th>Item</th>
-          <th>Meter</th>
-          <th>Qty</th>
-          <th>Total (m)</th>
-          <th>KPC</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="tableBody"></tbody>
-    </table>
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>Item</th>
+          <th>Meter</th>
+          <th>Qty</th>
+          <th>Total (m)</th>
+          <th>KPC</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
 
-    <button class="add-row-btn" onclick="addRow()">+ Add row</button>
+    <button class="add-row-btn" onclick="addRow()">+ Add row</button>
 
-    <div class="notes-label">Additional Notes</div>
-    <textarea id="notes"></textarea>
-    
-    <div class="sheet-bottom-wrapper">
-      <a 
-        href="https://docs.google.com/spreadsheets/d/1KQ4uKabzjyVcw6a-wlqHFha7OWPfgqbghFXS59dZf5Q/edit?gid=1028502721"
-        target="_blank"
-        class="sheet-bottom-btn">
+    <div class="notes-label">Additional Notes</div>
+    <textarea id="notes"></textarea>
+    
+    <div class="sheet-bottom-wrapper">
+      <a 
+        href="https://docs.google.com/spreadsheets/d/1KQ4uKabzjyVcw6a-wlqHFha7OWPfgqbghFXS59dZf5Q/edit?gid=1028502721"
+        target="_blank"
+        class="sheet-bottom-btn">
 
-        <svg class="sheet-icon" viewBox="0 0 24 24">
-          <path fill="#0F9D58" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
-          <path fill="#FFF" d="M7 7h10v2H7zM7 11h10v2H7zM7 15h7v2H7z"/>
-        </svg>
+        <svg class="sheet-icon" viewBox="0 0 24 24">
+          <path fill="#0F9D58" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+          <path fill="#FFF" d="M7 7h10v2H7zM7 11h10v2H7zM7 15h7v2H7z"/>
+        </svg>
 
-        Open Google Sheet
-      </a>
-    </div>
+        Open Google Sheet
+      </a>
+    </div>
 
-    <div class="actions-row">
-      <button class="submit-btn" onclick="submitForm()">Submit</button>
-    </div>
+    <div class="actions-row">
+      <button class="submit-btn" onclick="submitForm()">Submit</button>
+    </div>
 
-  </div>
+  </div>
 </div>
 
 <script>
 const SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycby5iiAvTSJ4AqKe7MbfmilGLLrkiDAoYFG72xn_5ruOssqV9bqVUmZeJeIotXfLc1waVA/exec";
+  "https://script.google.com/macros/s/AKfycby5iiAvTSJ4AqKe7MbfmilGLLrkiDAoYFG72xn_5ruOssqV9bqVUmZeJeIotXfLc1waVA/exec";
 
 let itemList = [];
 let kpcList = [];
 
 /* ======================================================
-   LOADING
+   LOADING
 ====================================================== */
 function showLoading() {
-  document.getElementById("loadingOverlay").style.display = "flex";
+  document.getElementById("loadingOverlay").style.display = "flex";
 }
 function hideLoading() {
-  document.getElementById("loadingOverlay").style.display = "none";
+  document.getElementById("loadingOverlay").style.display = "none";
 }
 
 /* ======================================================
-   GET SERVER LAST ID & CALCULATE NEXT ID
+   GET SERVER LAST ID & CALCULATE NEXT ID
 ====================================================== */
 async function loadNextEntryId() {
-  try {
-    const res = await fetch(`${SCRIPT_URL}?action=getlastid`);
-    const data = await res.json();
+  try {
+    const res = await fetch(`${SCRIPT_URL}?action=getlastid`);
+    const data = await res.json();
 
-    const lastId = data.lastId;
+    const lastId = data.lastId;
 
-    const today = new Date();
-    const yy = String(today.getFullYear()).slice(2);
-    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const today = new Date();
+    const yy = String(today.getFullYear()).slice(2);
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
 
-    const prefix = `FGP-${yy}${mm}-`; // Format baru FGP-YYMM-
+    const prefix = `FGP${yy}${mm}`;
 
-    const entryIdField = document.getElementById("entryId");
+    const entryIdField = document.getElementById("entryId");
 
-    // If no ID exists or different month prefix → start fresh
-    if (!lastId || !lastId.startsWith(prefix)) {
-      entryIdField.value = prefix + "0000001";
-      return;
-    }
+    // If no ID exists or different month prefix → start fresh
+    if (!lastId || !lastId.startsWith(prefix)) {
+      entryIdField.value = prefix + "0000001";
+      return;
+    }
 
-    // Extract sequence, pastikan mengambil dari belakang prefix
-    const seqPart = lastId.substring(lastId.lastIndexOf('-') + 1);
-    const seq = parseInt(seqPart) + 1;
-    entryIdField.value = prefix + String(seq).padStart(7, "0");
+    // Extract sequence
+    const seq = parseInt(lastId.substring(7)) + 1;
+    entryIdField.value = prefix + String(seq).padStart(7, "0");
 
-  } catch (err) {
-    console.error("Error loading last ID:", err);
-    // fallback
-    const today = new Date();
-    const yy = String(today.getFullYear()).slice(2);
-    const mm = String(today.getMonth() + 1).padStart(2, "0");
-    document.getElementById("entryId").value = `FGP-${yy}${mm}-0000001`;
-  }
+  } catch (err) {
+    console.error("Error loading last ID:", err);
+    // fallback
+    const today = new Date();
+    const yy = String(today.getFullYear()).slice(2);
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    document.getElementById("entryId").value = `FGP${yy}${mm}0000001`;
+  }
 }
 
 /* ======================================================
-   ON PAGE LOAD
+   ON PAGE LOAD
 ====================================================== */
 window.addEventListener("DOMContentLoaded", async () => {
-  showLoading();
+  showLoading();
 
-  // Set today's date as default
-  const today = new Date();
-  document.getElementById("productionDate").value = today.toISOString().split('T')[0];
+  await loadNextEntryId(); 
 
-  await loadNextEntryId(); 
+  try {
+    const [itemRes, kpcRes] = await Promise.all([
+      fetch(`${SCRIPT_URL}?action=getitem`),
+      fetch(`${SCRIPT_URL}?action=getkpc`)
+    ]);
 
-  try {
-    const [itemRes, kpcRes] = await Promise.all([
-      fetch(`${SCRIPT_URL}?action=getitem`),
-      fetch(`${SCRIPT_URL}?action=getkpc`)
-    ]);
+    itemList = await itemRes.json();
+    kpcList = await kpcRes.json();
 
-    itemList = await itemRes.json();
-    kpcList = await kpcRes.json();
+    addRow();
+    setupSortable();
+  } catch (e) {
+    console.error("Fetch Error:", e);
+    alert("Error loading data from Google Sheet. Check console.");
+  }
 
-    addRow();
-    setupSortable();
-  } catch (e) {
-    console.error("Fetch Error:", e);
-    alert("Error loading data from Google Sheet. Check console.");
-  }
-
-  hideLoading();
+  hideLoading();
 });
 
 /* ======================================================
-   SORTABLE ROWS
+   SORTABLE ROWS
 ====================================================== */
 function setupSortable() {
-  Sortable.create(document.getElementById("tableBody"), {
-    handle: ".row-handle",
-    animation: 150
-  });
+  Sortable.create(document.getElementById("tableBody"), {
+    handle: ".row-handle",
+    animation: 150
+  });
 }
 
 /* ======================================================
-   ADD ROW
+   ADD ROW
 ====================================================== */
 function addRow() {
-  const row = document.createElement("tr");
-  const tableBody = document.getElementById("tableBody");
+  const row = document.createElement("tr");
+  const tableBody = document.getElementById("tableBody");
 
-  row.innerHTML = `
-    <td class="row-handle">⋮⋮</td>
-    <td><select class="item-select"></select></td>
-    <td><input type="number" class="table-input meter" value="6" step="0.01"></td>
-    <td><input type="number" class="table-input qty" value="1" step="1"></td>
-    <td><input type="number" class="table-input total" readonly></td>
-    <td><select class="kpc-select"></select></td>
-    <td class="delete-btn" onclick="this.closest('tr').remove()">🗑</td>
-  `;
+  row.innerHTML = `
+    <td class="row-handle">⋮⋮</td>
+    <td><select class="item-select"></select></td>
+    <td><input type="number" class="table-input meter" value="6"></td>
+    <td><input type="number" class="table-input qty" value="0"></td>
+    <td><input type="number" class="table-input total" readonly></td>
+    <td><select class="kpc-select"></select></td>
+    <td class="delete-btn" onclick="this.closest('tr').remove()">🗑</td>
+  `;
 
-  tableBody.appendChild(row);
+  tableBody.appendChild(row);
 
-  initChoices(row.querySelector(".item-select"), itemList, "Select Item");
-  initChoices(row.querySelector(".kpc-select"), kpcList, "Select KPC");
+  initChoices(row.querySelector(".item-select"), itemList, "Select Item");
+  initChoices(row.querySelector(".kpc-select"), kpcList, "Select KPC");
 
-  row.querySelector(".meter").addEventListener("input", updateTotals);
-  row.querySelector(".qty").addEventListener("input", updateTotals);
-  
-  // Update totals for the newly added row
-  updateTotals();
+  row.querySelector(".meter").addEventListener("input", updateTotals);
+  row.querySelector(".qty").addEventListener("input", updateTotals);
 }
 
 /* ======================================================
-   INIT CHOICES
+   INIT CHOICES
 ====================================================== */
 function initChoices(selectEl, optionsArray, placeholderText) {
-  if (!Array.isArray(optionsArray)) {
-     console.error("Data bukan array:", optionsArray);
-     return;
-  }
+  if (!Array.isArray(optionsArray)) {
+     console.error("Data bukan array:", optionsArray);
+     return;
+  }
 
-  const ph = document.createElement("option");
-  ph.value = "";
-  ph.disabled = true;
-  ph.selected = true;
-  ph.textContent = placeholderText;
-  selectEl.appendChild(ph);
+  const ph = document.createElement("option");
+  ph.value = "";
+  ph.disabled = true;
+  ph.selected = true;
+  ph.textContent = placeholderText;
+  selectEl.appendChild(ph);
 
-  optionsArray.forEach(v => {
-    const opt = document.createElement("option");
-    opt.value = v;
-    opt.textContent = v;
-    selectEl.appendChild(opt);
-  });
+  optionsArray.forEach(v => {
+    const opt = document.createElement("option");
+    opt.value = v;
+    opt.textContent = v;
+    selectEl.appendChild(opt);
+  });
 
-  new Choices(selectEl, {
-    searchEnabled: true,
-    itemSelectText: "",
-    shouldSort: false,
-    placeholderValue: placeholderText
-  });
+  new Choices(selectEl, {
+    searchEnabled: true,
+    itemSelectText: "",
+    shouldSort: false,
+    placeholderValue: placeholderText
+  });
 }
 
 /* ======================================================
-   UPDATE TOTALS
+   UPDATE TOTALS
 ====================================================== */
 function updateTotals() {
-  document.querySelectorAll("#tableBody tr").forEach(r => {
-    const meterInput = r.querySelector(".meter");
-    const qtyInput = r.querySelector(".qty");
-    const totalInput = r.querySelector(".total");
-    
-    const m = parseFloat(meterInput.value) || 0;
-    const q = parseFloat(qtyInput.value) || 0;
-    
-    // Ensure positive values
-    if (m < 0) { meterInput.value = 0; }
-    if (q < 0) { qtyInput.value = 0; }
-    
-    totalInput.value = (m * q).toFixed(2); // Keep 2 decimal places for better precision
-  });
+  document.querySelectorAll("#tableBody tr").forEach(r => {
+    const m = parseFloat(r.querySelector(".meter").value) || 0;
+    const q = parseFloat(r.querySelector(".qty").value) || 0;
+    r.querySelector(".total").value = m * q;
+  });
 }
 
 /* ======================================================
-   VALIDATION
+   VALIDATION
 ====================================================== */
 function validateForm() {
-  const dateVal = document.getElementById("productionDate").value;
-  const machineVal = document.getElementById("machineUsed").value;
+  const dateVal = document.getElementById("productionDate").value;
+  const machineVal = document.getElementById("machineUsed").value;
 
-  if (!dateVal) return "Date is required.";
-  if (!machineVal) return "Production Machine is required.";
+  if (!dateVal) return "Date is required.";
+  if (!machineVal) return "Machine is required.";
 
-  const rows = document.querySelectorAll("#tableBody tr");
-  if (!rows.length) return "At least 1 item required.";
+  const rows = document.querySelectorAll("#tableBody tr");
+  if (!rows.length) return "At least 1 item required.";
 
-  for (const r of rows) {
-    if (!r.querySelector(".item-select").value) return "Item is required for all rows.";
-    
-    const meterVal = parseFloat(r.querySelector(".meter").value);
-    const qtyVal = parseFloat(r.querySelector(".qty").value);
+  for (const r of rows) {
+    if (!r.querySelector(".item-select").value) return "Item required.";
+    if (!r.querySelector(".meter").value) return "Meter required.";
+    if (!r.querySelector(".qty").value) return "Qty required.";
+    if (!r.querySelector(".kpc-select").value) return "KPC required.";
+  }
 
-    if (isNaN(meterVal) || meterVal <= 0) return "Meter value must be positive.";
-    if (isNaN(qtyVal) || qtyVal <= 0) return "Qty value must be positive.";
-    
-    const kpcSelect = r.querySelector(".kpc-select");
-    if (!kpcSelect || !kpcSelect.value) return "KPC is required for all rows.";
-  }
-
-  return null;
+  return null;
 }
 
 /* ======================================================
-   SUBMIT
+   SUBMIT
 ====================================================== */
 function submitForm() {
-  showLoading();
+  showLoading();
 
-  const err = validateForm();
-  if (err) {
-    hideLoading();
-    alert(err);
-    return;
-  }
+  const err = validateForm();
+  if (err) {
+    hideLoading();
+    alert(err);
+    return;
+  }
 
-  const entryId = document.getElementById("entryId").value;
-  const productionDate = document.getElementById("productionDate").value;
-  const machine = document.getElementById("machineUsed").value;
-  const notes = document.getElementById("notes").value;
+  const entryId = document.getElementById("entryId").value;
+  const productionDate = document.getElementById("productionDate").value;
+  const machine = document.getElementById("machineUsed").value;
+  const notes = document.getElementById("notes").value;
 
-  const payload = {
-    productionEntryId: entryId,
-    productionDate: productionDate,
-    machine: machine,
-    notes: notes,
-    items: Array.from(document.querySelectorAll("#tableBody tr")).map(r => ({
-      item: r.querySelector(".item-select").value,
-      meter: r.querySelector(".meter").value,
-      qty: r.querySelector(".qty").value,
-      total: r.querySelector(".total").value,
-      kpc: r.querySelector(".kpc-select").value
-    }))
-  };
+  const payload = {
+    productionEntryId: entryId,
+    productionDate: productionDate,
+    machine: machine,
+    notes: notes,
+    items: Array.from(document.querySelectorAll("#tableBody tr")).map(r => ({
+      item: r.querySelector(".item-select").value,
+      meter: r.querySelector(".meter").value,
+      qty: r.querySelector(".qty").value,
+      total: r.querySelector(".total").value,
+      kpc: r.querySelector(".kpc-select").value
+    }))
+  };
 
-  fetch(SCRIPT_URL, {
-    method: "POST",
-    body: JSON.stringify(payload)
-  })
-    .then(async res => {
-      const reply = await res.json();
-      hideLoading();
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  })
+    .then(async res => {
+      const reply = await res.json();
+      hideLoading();
 
-      if (reply.status === "success") {
-        // Update ID after successful submission
-        const lastId = reply.entryId;
-        const prefix = lastId.substring(0, lastId.lastIndexOf('-') + 1);
-        const seqPart = lastId.substring(lastId.lastIndexOf('-') + 1);
-        const newSeq = parseInt(seqPart) + 1;
-        document.getElementById("entryId").value = prefix + String(newSeq).padStart(7, "0");
-        
-        alert("Submitted successfully!\nProduction Entry ID: " + reply.entryId);
-        
-        // Clear form data after success (except new ID)
-        document.getElementById("machineUsed").value = "";
-        document.getElementById("notes").value = "";
-        document.getElementById("tableBody").innerHTML = "";
-        addRow(); // Add back one empty row
-
-      } else {
-        alert("Error saving: " + reply.message);
-      }
-    })
-    .catch(err => {
-      hideLoading();
-      alert("Error submitting: " + err);
-    });
+      if (reply.status === "success") {
+        document.getElementById("entryId").value = reply.entryId;
+        alert("Submitted successfully!\nProduction Entry ID: " + reply.entryId);
+      } else {
+        alert("Error saving: " + reply.message);
+      }
+    })
+    .catch(err => {
+      hideLoading();
+      alert("Error submitting: " + err);
+    });
 }
 </script>
 
