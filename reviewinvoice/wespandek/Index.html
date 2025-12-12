@@ -3,23 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Production WE Generator - Split Feature</title>
+    <title>Production WE Generator</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <style>
-        :root { --primary: #0d6efd; --success: #198754; --bg: #f4f6f9; --text: #333; --border: #dee2e6; }
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
-        .container { max-width: 1400px; margin: 0 auto; }
-        .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 20px; }
-        h2 { margin-top: 0; color: #495057; font-size: 1.5rem; }
+        /* CONFIG & VARIABLES */
+        :root { 
+            --primary: #0d6efd; 
+            --success: #28a745; /* Green Auxilium style */
+            --bg: #f8f9fc; 
+            --text: #333; 
+            --border: #e3e6f0;
+            --card-hover: #f1f3f9;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background-color: var(--bg); 
+            color: var(--text); 
+            margin: 0; 
+            padding: 20px; 
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        /* HEADER */
+        .app-header {
+            margin-bottom: 30px;
+        }
+        .app-header h2 {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .app-header p {
+            color: #6c757d;
+            margin: 0;
+        }
+
+        /* DASHBOARD GRID (REPLACEMENT FOR DROPDOWN) */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr; /* Default 1 kolom list */
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--success); /* Green accent left */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .order-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .card-left h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.2rem;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-left .customer-name {
+            font-weight: 600;
+            color: #4e5d6c;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .card-left .order-date {
+            font-size: 0.85rem;
+            color: #858796;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .card-right {
+            text-align: right;
+            min-width: 150px;
+        }
+
+        .total-amount {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .status-badge {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            border: 1px solid rgba(40, 167, 69, 0.2);
+        }
+
+        .btn-select {
+            background: transparent;
+            color: var(--primary);
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .btn-select:hover { text-decoration: underline; }
+
+        /* WORKSPACE STYLES (Existing Table) */
+        .workspace-card { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08); 
+        }
+
+        /* EXISTING STYLES REUSED */
         .sub-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--bg); padding-bottom: 15px; margin-bottom: 20px; }
         .form-control, .form-select { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; box-sizing: border-box; font-size: 13px; }
-        input:disabled, select:disabled { background-color: #e9ecef; cursor: not-allowed; color: #6c757d; }
-        input[readonly] { background-color: #f8f9fa; color: #333; font-weight: 500; }
+        input[readonly] { background-color: #f8f9fa; font-weight: 500; }
         
         .btn { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-success { background: var(--success); color: white; }
         .btn-secondary { background: #6c757d; color: white; }
         .btn-warning { background: #ffc107; color: #000; }
         .btn-danger { background: #dc3545; color: white; }
@@ -32,14 +152,14 @@
         .bg-sp { background-color: var(--success); }
         .bg-np { background-color: #6c757d; }
         
-        /* CSS KHUSUS FITUR SPLIT */
-        .split-row { background-color: #f0f8ff; } /* Warna biru muda untuk anak */
-        .parent-row.has-splits { background-color: #fff3cd; } /* Warna kuning tipis untuk induk yg displit */
+        /* Split Feature Styles */
+        .split-row { background-color: #f0f8ff; }
+        .parent-row.has-splits { background-color: #fff3cd; }
         .split-indicator { border-left: 3px solid var(--primary); padding-left: 8px; margin-left: 10px; }
         .qty-remaining { font-size: 0.8rem; color: #dc3545; font-weight: bold; display: block; margin-top: 4px; }
-        
         .we-result-input { font-family: 'Courier New', monospace; font-weight: bold; color: var(--primary); border: 1px dashed var(--primary); background: #fbfdff; width: 100%; }
-        #loading { text-align: center; padding: 40px; color: #666; font-size: 1.2rem; }
+        
+        #loading { text-align: center; padding: 50px; color: #666; font-size: 1.2rem; }
         .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
         .info-group label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; color: #666; }
     </style>
@@ -48,31 +168,33 @@
 
     <div class="container">
         
-        <div id="menuSection" class="card" style="text-align: center; max-width: 600px; margin: 50px auto;">
-            <h2><i class="fas fa-industry"></i> Production WE Generator</h2>
-            <p style="color:#666;">Pilih Nomor Order untuk mulai memproses data Spandek.</p>
-            <div id="loading"><i class="fas fa-circle-notch fa-spin"></i> Memuat Data Order...</div>
-            <div id="selectorArea" style="display:none; margin-top: 20px;">
-                <select id="orderDropdown" class="form-select" style="font-size: 1.1rem; padding: 15px;">
-                    <option value="">-- Pilih Order Number --</option>
-                </select>
-                <br>
-                <button class="btn btn-primary" onclick="openWorkspace()" style="width: 100%; justify-content: center;">Buka Order <i class="fas fa-arrow-right"></i></button>
+        <div class="app-header">
+            <h2><i class="fas fa-boxes"></i> Xero Import Dashboard</h2>
+            <p>Monitor sales orders ready for Production WE & Synchronization.</p>
+        </div>
+
+        <div id="loading"><i class="fas fa-circle-notch fa-spin"></i> Memuat Data Order...</div>
+        
+        <div id="dashboardSection" style="display:none;">
+            <div id="cardContainer" class="dashboard-grid">
+                </div>
+            <div id="emptyState" style="text-align:center; padding: 30px; display:none;">
+                <p style="color:#aaa;"><i class="fas fa-check-circle" style="font-size:2rem; margin-bottom:10px;"></i><br>Tidak ada order baru (Pending) ditemukan.</p>
             </div>
         </div>
 
         <div id="workSection" style="display:none;">
-            <div class="card">
+            <div class="workspace-card">
                 <div class="sub-header">
                     <div>
-                        <button class="btn btn-secondary" onclick="backToMenu()"><i class="fas fa-arrow-left"></i> Kembali</button>
+                        <button class="btn btn-secondary" onclick="backToDashboard()"><i class="fas fa-arrow-left"></i> Dashboard</button>
                         <span style="margin-left: 15px; font-weight: bold; font-size: 1.1rem;">
                             Order: <span id="dispOrder" style="color:var(--primary)">...</span> | 
                             Customer: <span id="dispCust">...</span>
                         </span>
                     </div>
                     <button class="btn btn-primary" onclick="submitData()" id="btnSubmit">
-                        <i class="fas fa-paper-plane"></i> Submit Data
+                        <i class="fas fa-paper-plane"></i> Submit & Generate
                     </button>
                 </div>
 
@@ -111,8 +233,8 @@
     </div>
 
     <script>
-        // --- URL DEPLOYMENT BARU ANDA ---
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxe9POv3aw60-gc8jYsxPmZPI_ev9hUwchD-rKO434BjAfILUh7v5oApOKJwVDOqV_aJg/exec"; 
+        // --- URL DEPLOYMENT ANDA ---
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx3V74xX1Q2hN2DwJ9qpJanNygSSTq1MvrI0LcaOvmUBoubl342zTM9oR5uWOy9mIrtVg/exec"; 
         
         let globalData = [];
         let currentOrderNo = "";
@@ -129,34 +251,57 @@
             }
         };
 
+        // 2. RENDER DASHBOARD (NEW DESIGN)
         function onDataLoaded(data) {
             globalData = data;
-            const dropdown = document.getElementById('orderDropdown');
+            const container = document.getElementById('cardContainer');
             const uniqueOrders = [...new Set(data.map(item => item.orderNumber))];
             uniqueOrders.sort().reverse();
 
+            container.innerHTML = ''; // Clear
+
             if (uniqueOrders.length === 0) {
-                 let option = document.createElement('option');
-                 option.text = "Semua Order sudah diproses / Data Kosong";
-                 dropdown.appendChild(option);
-                 dropdown.disabled = true;
+                document.getElementById('emptyState').style.display = 'block';
             } else {
                 uniqueOrders.forEach(orderId => {
-                    let row = data.find(d => d.orderNumber === orderId);
-                    let option = document.createElement('option');
-                    option.value = orderId;
-                    option.text = `${orderId} - ${row.customer}`;
-                    dropdown.appendChild(option);
+                    // Filter rows for this order to calculate total
+                    const orderRows = data.filter(d => d.orderNumber === orderId);
+                    const firstRow = orderRows[0];
+                    
+                    // Hitung Total Amount (Sum of totalPrice)
+                    let totalAmount = orderRows.reduce((sum, item) => sum + (parseFloat(item.totalPrice) || 0), 0);
+                    // Format IDR
+                    let formattedTotal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(totalAmount);
+
+                    const card = document.createElement('div');
+                    card.className = 'order-card';
+                    card.onclick = () => openWorkspace(orderId);
+
+                    card.innerHTML = `
+                        <div class="card-left">
+                            <h3>
+                                ${orderId} 
+                                <span class="status-badge"><i class="fas fa-check"></i> READY</span>
+                            </h3>
+                            <span class="customer-name"><i class="fas fa-user-circle"></i> ${firstRow.customer}</span>
+                            <span class="order-date"><i class="far fa-calendar-alt"></i> ${firstRow.date}</span>
+                        </div>
+                        <div class="card-right">
+                            <span style="font-size:0.7rem; color:#888;">TOTAL AMOUNT</span>
+                            <span class="total-amount">${formattedTotal}</span>
+                            <button class="btn-select">View Details &rarr;</button>
+                        </div>
+                    `;
+                    container.appendChild(card);
                 });
             }
+
             document.getElementById('loading').style.display = 'none';
-            document.getElementById('selectorArea').style.display = 'block';
+            document.getElementById('dashboardSection').style.display = 'block';
         }
 
-        // 2. WORKSPACE LOGIC
-        function openWorkspace() {
-            const selectedOrder = document.getElementById('orderDropdown').value;
-            if(!selectedOrder) { alert("Pilih Order Number!"); return; }
+        // 3. WORKSPACE LOGIC
+        function openWorkspace(selectedOrder) {
             currentOrderNo = selectedOrder;
             
             // Generate Invoice Lokal
@@ -166,13 +311,18 @@
             document.getElementById('invNumber').value = `INV-SJ-${year}-${month}-0001`;
 
             renderTable(selectedOrder);
-            document.getElementById('menuSection').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'none';
             document.getElementById('workSection').style.display = 'block';
         }
 
-        function backToMenu() { location.reload(); }
+        function backToDashboard() { 
+            document.getElementById('workSection').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'block';
+            // Optional: Reload data to see changes immediately if status updated?
+            // location.reload(); 
+        }
 
-        // 3. RENDER TABLE (PARENT ROWS)
+        // 4. RENDER TABLE (PARENT ROWS)
         function renderTable(orderId) {
             const filteredData = globalData.filter(d => d.orderNumber == orderId);
             document.getElementById('dispOrder').innerText = orderId;
@@ -187,7 +337,6 @@
                 const rowId = `parent_${index}`;
                 const badgeHtml = isSpandek ? '<span class="badge bg-sp">SP</span>' : '<span class="badge bg-np">NP</span>';
                 
-                // Tombol Split hanya muncul jika Tipe = SP
                 const splitBtn = isSpandek 
                     ? `<button class="btn btn-warning btn-sm" onclick="addSplitRow('${rowId}', ${row.qty})"><i class="fas fa-code-branch"></i> Split</button>` 
                     : '';
@@ -233,21 +382,16 @@
             });
         }
 
-        // 4. ADD SPLIT ROW FUNCTION
+        // 5. ADD SPLIT ROW FUNCTION
         function addSplitRow(parentId, maxQty) {
             const parentTr = document.getElementById(parentId);
-            
-            // Matikan input di parent karena sekarang pakai split
             parentTr.classList.add('has-splits');
             parentTr.querySelector('.machine-input').disabled = true;
             parentTr.querySelector('.kcp-input').disabled = true;
             parentTr.querySelector('.type-input').disabled = true;
             parentTr.querySelector('.we-result-input').value = "--- SPLITTED ---";
 
-            // Generate ID unik untuk anak
             const childId = `${parentId}_split_${Date.now()}`;
-            
-            // Ambil data product dari parent
             const productName = parentTr.getAttribute('data-product');
             const meter = parentTr.getAttribute('data-meter');
 
@@ -287,60 +431,46 @@
                 </td>
             `;
 
-            // Insert baris anak SETELAH baris parent (atau setelah anak terakhir parent tsb)
             const children = document.querySelectorAll(`.child-of-${parentId}`);
             if (children.length > 0) {
                 children[children.length - 1].after(newTr);
             } else {
                 parentTr.after(newTr);
             }
-
             updateRemaining(parentId);
         }
 
-        // 5. REMOVE SPLIT ROW
+        // 6. REMOVE SPLIT ROW
         function removeSplitRow(childId, parentId) {
             document.getElementById(childId).remove();
-            
-            // Cek apakah masih ada anak lain?
             const remainingChildren = document.querySelectorAll(`.child-of-${parentId}`);
             if (remainingChildren.length === 0) {
-                // Jika tidak ada anak, aktifkan kembali parent
                 const parentTr = document.getElementById(parentId);
                 parentTr.classList.remove('has-splits');
                 parentTr.querySelector('.machine-input').disabled = false;
                 parentTr.querySelector('.kcp-input').disabled = false;
                 parentTr.querySelector('.type-input').disabled = false;
-                
-                // Clear display remaining
                 document.getElementById(`rem_disp_${parentId}`).style.display = 'none';
-                
-                // Trigger calcWE ulang parent
                 calcWE(parentId);
             } else {
                 updateRemaining(parentId);
             }
         }
 
-        // 6. UPDATE REMAINING QTY LOGIC
+        // 7. UPDATE REMAINING
         function updateRemaining(parentId) {
             const parentTr = document.getElementById(parentId);
             const originalQty = parseFloat(parentTr.getAttribute('data-original-qty'));
-            
             const children = document.querySelectorAll(`.child-of-${parentId}`);
             let totalSplitQty = 0;
-
             children.forEach(row => {
                 const qtyVal = row.querySelector('.split-qty-input').value;
                 totalSplitQty += qtyVal ? parseFloat(qtyVal) : 0;
             });
-
             const remaining = originalQty - totalSplitQty;
             const remDisplay = document.getElementById(`rem_disp_${parentId}`);
-            
             remDisplay.style.display = 'block';
             remDisplay.innerText = `Sisa: ${remaining}`;
-
             if (remaining < 0) {
                 remDisplay.style.color = 'red';
                 remDisplay.innerText = `Over: ${Math.abs(remaining)}`;
@@ -352,7 +482,7 @@
             }
         }
 
-        // 7. CALC WE NUMBER
+        // 8. CALC WE NUMBER
         function calcWE(rowId) {
             const machVal = document.getElementById(`mach_${rowId}`).value;
             const kcpVal = document.getElementById(`kcp_${rowId}`).value;
@@ -372,12 +502,11 @@
             resultEl.value = `${machVal}_${kcpVal}_${order3}_${inv3}_${typeCode}`;
         }
 
-        // 8. SUBMIT DATA
+        // 9. SUBMIT DATA
         async function submitData() {
             const btn = document.getElementById('btnSubmit');
             const originalText = btn.innerHTML;
             
-            // Ambil semua Parent Row
             const parentRows = document.querySelectorAll('.parent-row');
             let payload = [];
             let isValid = true;
@@ -391,23 +520,19 @@
                 const pId = pRow.id;
                 const productName = pRow.getAttribute('data-product');
                 const meter = pRow.getAttribute('data-meter');
-                const pTypeCell = pRow.querySelectorAll("td")[2].innerText; // Kolom Type (SP/NP)
+                const pTypeCell = pRow.querySelectorAll("td")[2].innerText; 
 
-                // Skip Non-Spandek
                 if (!pTypeCell.includes("SP")) return;
 
-                // Cek apakah punya Split?
                 const children = document.querySelectorAll(`.child-of-${pId}`);
                 
                 if (children.length > 0) {
-                    // --- MODE SPLIT ---
                     const remTxt = document.getElementById(`rem_disp_${pId}`).innerText;
                     if (remTxt.includes("Over") || (remTxt.includes("Sisa") && !remTxt.includes("0"))) {
                         isValid = false;
-                        errorMessage = `Total Qty untuk ${productName} belum pas (Harus 0 sisa).`;
+                        errorMessage = `Total Qty untuk ${productName} belum pas.`;
                         return;
                     }
-
                     children.forEach(cRow => {
                         const cId = cRow.id;
                         const qty = document.getElementById(`qty_${cId}`).value;
@@ -423,15 +548,13 @@
                             document.getElementById(`kcp_${cId}`).style.borderColor = "#dee2e6";
                             payload.push({
                                 orderNo: currentOrderNo, customer: custName, date: dateVal, invoice: invVal,
-                                product: productName, type: 'SP', meter: meter, qty: qty, // Qty Split
+                                product: productName, type: 'SP', meter: meter, qty: qty,
                                 machine: mach, kcp: kcp, prodType: pType, weNumber: weNum
                             });
                         }
                     });
-
                 } else {
-                    // --- MODE NORMAL ---
-                    const qty = document.getElementById(`qty_disp_${pId}`).innerText; // Original Qty
+                    const qty = document.getElementById(`qty_disp_${pId}`).innerText; 
                     const mach = document.getElementById(`mach_${pId}`).value;
                     const kcp = document.getElementById(`kcp_${pId}`).value;
                     const pType = document.getElementById(`ptype_${pId}`).value;
@@ -452,7 +575,7 @@
             });
 
             if (!isValid) {
-                alert(errorMessage || "Mohon lengkapi data yang ditandai merah atau cek perhitungan Qty Split!");
+                alert(errorMessage || "Mohon lengkapi data yang ditandai merah.");
                 return;
             }
 
@@ -460,8 +583,7 @@
                 alert("Tidak ada data Spandek untuk disimpan."); return;
             }
 
-            // Kirim ke Backend
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
             btn.disabled = true;
 
             try {
@@ -471,7 +593,7 @@
                 });
                 const result = await response.json();
                 if(result.status === 'success') {
-                    alert("Sukses! Data tersimpan.");
+                    alert("Sukses! Data Generated & Status Updated.");
                     location.reload();
                 } else {
                     alert("Gagal: " + result.message);
