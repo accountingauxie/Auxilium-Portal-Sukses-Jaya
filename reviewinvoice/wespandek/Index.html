@@ -111,8 +111,8 @@
     </div>
 
     <script>
-        // --- URL DEPLOYMENT ANDA ---
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwGn0r3ZlYWHqxUdcimGv1Gwxosi8SOqCSQYCvgM34tn9mT9KdezyZDPFja2-Y7v9YC/exec"; 
+        // --- URL DEPLOYMENT BARU ANDA ---
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyQcpcvqGOHug2XO48iaANbDpG_AV5cPJbRNxSIYMD_YdMSDZV0OzdKmWI7iggOYpfLUA/exec"; 
         
         let globalData = [];
         let currentOrderNo = "";
@@ -137,7 +137,7 @@
 
             if (uniqueOrders.length === 0) {
                  let option = document.createElement('option');
-                 option.text = "Semua Order sudah diproses";
+                 option.text = "Semua Order sudah diproses / Data Kosong";
                  dropdown.appendChild(option);
                  dropdown.disabled = true;
             } else {
@@ -186,8 +186,7 @@
                 const disabledAttr = isSpandek ? '' : 'disabled';
                 const rowId = `parent_${index}`;
                 const badgeHtml = isSpandek ? '<span class="badge bg-sp">SP</span>' : '<span class="badge bg-np">NP</span>';
-                const rowBg = isSpandek ? '' : 'style="background-color: #fafafa;"';
-
+                
                 // Tombol Split hanya muncul jika Tipe = SP
                 const splitBtn = isSpandek 
                     ? `<button class="btn btn-warning btn-sm" onclick="addSplitRow('${rowId}', ${row.qty})"><i class="fas fa-code-branch"></i> Split</button>` 
@@ -353,7 +352,7 @@
             }
         }
 
-        // 7. CALC WE NUMBER (Bisa dipakai Parent maupun Split Row)
+        // 7. CALC WE NUMBER
         function calcWE(rowId) {
             const machVal = document.getElementById(`mach_${rowId}`).value;
             const kcpVal = document.getElementById(`kcp_${rowId}`).value;
@@ -373,7 +372,7 @@
             resultEl.value = `${machVal}_${kcpVal}_${order3}_${inv3}_${typeCode}`;
         }
 
-        // 8. SUBMIT DATA (Logic Baru untuk Handle Split)
+        // 8. SUBMIT DATA
         async function submitData() {
             const btn = document.getElementById('btnSubmit');
             const originalText = btn.innerHTML;
@@ -401,8 +400,7 @@
                 const children = document.querySelectorAll(`.child-of-${pId}`);
                 
                 if (children.length > 0) {
-                    // --- MODE SPLIT: Ambil data dari anak-anak ---
-                    // Cek Total Qty dulu
+                    // --- MODE SPLIT ---
                     const remTxt = document.getElementById(`rem_disp_${pId}`).innerText;
                     if (remTxt.includes("Over") || (remTxt.includes("Sisa") && !remTxt.includes("0"))) {
                         isValid = false;
@@ -432,7 +430,7 @@
                     });
 
                 } else {
-                    // --- MODE NORMAL (Parent Langsung) ---
+                    // --- MODE NORMAL ---
                     const qty = document.getElementById(`qty_disp_${pId}`).innerText; // Original Qty
                     const mach = document.getElementById(`mach_${pId}`).value;
                     const kcp = document.getElementById(`kcp_${pId}`).value;
