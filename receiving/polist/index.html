@@ -29,9 +29,9 @@
         <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 mb-8">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="flex space-x-1 overflow-x-auto pb-1 w-full md:w-auto">
-                    <button onclick="filterStatus('All')" id="btn-All" class="filter-btn active px-4 py-2 text-sm font-medium text-slate-600 rounded-lg border border-transparent hover:bg-slate-50 transition">All</button>
-                    <button onclick="filterStatus('Pending')" id="btn-Pending" class="filter-btn px-4 py-2 text-sm font-medium text-slate-600 rounded-lg border border-transparent hover:bg-slate-50 transition">Pending</button>
-                    <button onclick="filterStatus('Approved')" id="btn-Approved" class="filter-btn px-4 py-2 text-sm font-medium text-slate-600 rounded-lg border border-transparent hover:bg-slate-50 transition">Approved</button>
+                    <button onclick="filterStatus('All')" id="btn-All" class="filter-btn active px-4 py-2 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-50 transition border border-transparent">All</button>
+                    <button onclick="filterStatus('Pending')" id="btn-Pending" class="filter-btn px-4 py-2 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-50 transition border border-transparent">Pending</button>
+                    <button onclick="filterStatus('Approved')" id="btn-Approved" class="filter-btn px-4 py-2 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-50 transition border border-transparent">Approved</button>
                 </div>
                 <div class="flex flex-wrap gap-3 items-center w-full md:w-auto">
                     <div class="relative w-full md:w-64">
@@ -53,21 +53,23 @@
         <div id="cardContainer" class="space-y-4"></div>
     </div>
 
-    <div id="detailModal" class="modal opacity-0 pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl mx-4 overflow-hidden transform transition-all scale-95 relative" id="modalContent">
+    <div id="detailModal" class="modal opacity-0 pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl mx-4 overflow-hidden transform transition-all scale-95 relative flex flex-col max-h-[90vh]" id="modalContent">
             
-            <div id="approveLoading" class="hidden absolute inset-0 processing-overlay flex flex-col items-center justify-center">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600 mb-4"></div>
-                <p class="text-lg font-bold text-slate-700">Processing Approval...</p>
-                <p class="text-sm text-slate-500">Updating Google Sheets data</p>
+            <div id="approveLoading" class="hidden absolute inset-0 processing-overlay flex items-center justify-center rounded-xl">
+                <div class="text-center">
+                    <div class="animate-spin rounded-full h-12 w-12 border-4 border-slate-200 border-t-blue-600 mx-auto mb-4"></div>
+                    <p class="text-lg font-bold text-slate-800">Processing Approval...</p>
+                    <p class="text-sm text-slate-500">Updating status & copying data</p>
+                </div>
             </div>
 
-            <div class="flex justify-between items-center p-6 border-b border-slate-100 bg-slate-50/50">
+            <div class="flex justify-between items-center p-6 border-b border-slate-100 flex-shrink-0">
                 <h2 class="text-xl font-bold text-slate-800">Purchase Order Detail</h2>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 transition"><i class="fas fa-times text-2xl"></i></button>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times text-2xl"></i></button>
             </div>
 
-            <div class="p-6 md:p-8 overflow-y-auto max-h-[70vh]">
+            <div class="p-6 md:p-8 overflow-y-auto">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
                     <div><p class="text-xs font-bold text-slate-400 uppercase mb-1">VENDOR</p><p class="text-lg font-semibold text-slate-800" id="m-vendor">-</p></div>
                     <div><p class="text-xs font-bold text-slate-400 uppercase mb-1">ORDER NO</p><p class="text-lg font-semibold text-slate-800" id="m-id">-</p></div>
@@ -78,125 +80,151 @@
                 <div class="overflow-hidden rounded-lg border border-slate-200 mb-6">
                     <table class="w-full text-left text-sm">
                         <thead class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
-                            <tr>
-                                <th class="p-4">PRODUCT / DESCRIPTION</th>
-                                <th class="p-4 text-center w-24">QTY</th>
-                                <th class="p-4 text-center w-24">UNIT</th>
-                            </tr>
+                            <tr><th class="p-4">PRODUCT</th><th class="p-4 text-center">QTY</th><th class="p-4 text-center">SATUAN</th></tr>
                         </thead>
-                        <tbody id="m-table-body" class="divide-y divide-slate-100"></tbody>
+                        <tbody id="m-table-body" class="divide-y divide-slate-100 bg-white"></tbody>
                     </table>
                 </div>
 
-                <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 flex gap-3">
-                    <i class="fas fa-info-circle text-blue-500 mt-1"></i>
-                    <div>
-                        <p class="text-xs font-bold text-blue-800 uppercase mb-1">CATATAN TAMBAHAN</p>
-                        <p class="text-sm text-blue-900 leading-relaxed" id="m-notes">Tidak ada catatan.</p>
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-6">
+                    <p class="text-xs font-bold text-blue-800 uppercase mb-1">CATATAN REQUESTER</p>
+                    <p class="text-sm text-blue-900" id="m-notes">-</p>
+                </div>
+
+                <div id="approval-form-section" class="bg-yellow-50 p-5 rounded-xl border border-yellow-200 mt-6">
+                    <h3 class="text-sm font-bold text-yellow-800 uppercase mb-4 border-b border-yellow-200 pb-2">
+                        <i class="fas fa-file-signature mr-2"></i>Admin Approval Form
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Invoice Number <span class="text-red-500">*</span></label>
+                            <input type="text" id="input-invoice" placeholder="Contoh: INV-2024-001" 
+                                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white">
+                            <p class="text-xs text-slate-500 mt-1">Wajib diisi untuk approve.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Admin Note <span class="text-gray-400">(Optional)</span></label>
+                            <div class="relative">
+                                <input type="text" id="input-admin-note" placeholder="Catatan tambahan..." 
+                                    class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white">
+                                <i class="fas fa-sticky-note absolute left-3 top-3 text-slate-400"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div class="bg-slate-50 p-4 flex justify-end gap-3 border-t border-slate-100">
-                <button onclick="closeModal()" class="px-5 py-2.5 rounded-lg border border-slate-300 text-slate-600 hover:bg-white hover:text-slate-800 font-medium transition">
-                    Close
-                </button>
+            <div class="bg-slate-50 p-4 flex justify-end gap-3 border-t border-slate-100 flex-shrink-0">
+                <button onclick="closeModal()" class="px-5 py-2.5 rounded-lg border border-slate-300 text-slate-600 hover:bg-white font-medium transition">Close</button>
                 
-                <button id="btn-approve-action" class="px-5 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 font-medium shadow-md flex items-center gap-2 transition transform active:scale-95">
-                    <i class="fas fa-check-circle"></i> Approve Order
+                <button id="btn-approve-action" class="px-6 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 font-medium shadow-md flex items-center gap-2 transition transform active:scale-95">
+                    <i class="fas fa-check-circle"></i> Approve & Process
                 </button>
             </div>
         </div>
     </div>
 
     <script>
-        // URL Web App kamu
+        // --- PASTE URL APPS SCRIPT DEPLOYMENT TERBARU ANDA DI SINI ---
         const API_URL = "https://script.google.com/macros/s/AKfycbw_k3Y9Z6-ERyq6fqJZR2XF044yM5BFyaP-B_TcLZg2a9NCQ_WrwaLOCNOmkHuwKkg/exec"; 
 
         let allData = [];
         let currentStatus = 'All';
-        let currentOpenId = ''; 
+        let currentOpenId = '';
 
-        // 1. Fetch Data dari Google Sheet (GET)
         async function fetchData() {
             try {
-                // Tambahkan timestamp untuk menghindari cache browser
                 const response = await fetch(`${API_URL}?t=${new Date().getTime()}`);
                 const data = await response.json();
-                
                 allData = data;
                 
-                // Konversi tanggal string ke Object Date untuk sorting
                 allData.forEach(po => { po.dateObj = new Date(po.tanggalInput); });
-                
                 document.getElementById('loading').style.display = 'none';
                 applyFilters();
             } catch (error) {
                 console.error(error);
-                document.getElementById('loading').innerHTML = '<p class="text-red-500">Gagal memuat data.</p>';
-                alert("Gagal load data. Pastikan URL Apps Script benar & Deployment diperbarui.");
+                document.getElementById('loading').innerHTML = '<p class="text-red-500">Gagal memuat data. Periksa koneksi.</p>';
             }
         }
 
-        // 2. Fungsi Approve Order (POST)
+        // FUNGSI UTAMA: APPROVE ORDER
         async function approveOrder() {
             if(!currentOpenId) return;
 
-            // UI Interaction: Show Loading, Disable Button
+            // 1. Ambil Nilai dari Input
+            const invVal = document.getElementById('input-invoice').value.trim();
+            const noteVal = document.getElementById('input-admin-note').value.trim();
+
+            // 2. Validasi: Invoice Wajib Diisi
+            if (!invVal) {
+                alert("Harap isi Invoice Number terlebih dahulu!");
+                document.getElementById('input-invoice').focus();
+                document.getElementById('input-invoice').classList.add('border-red-500', 'bg-red-50');
+                setTimeout(() => {
+                    document.getElementById('input-invoice').classList.remove('border-red-500', 'bg-red-50');
+                }, 2000);
+                return;
+            }
+
+            // 3. Tampilkan Loading
             const btn = document.getElementById('btn-approve-action');
             const loadingOverlay = document.getElementById('approveLoading');
             
             loadingOverlay.classList.remove('hidden');
             btn.disabled = true;
-            btn.classList.add('opacity-50', 'cursor-not-allowed');
 
             try {
-                // Mengirim data POST
-                // Note: Apps Script POST request harus dihandle sebagai text/plain 
-                // untuk menghindari CORS preflight (OPTIONS) request yang rumit.
+                // 4. Kirim Data ke Apps Script
+                const payload = {
+                    action: 'approve',
+                    id: currentOpenId,
+                    inv: invVal,  // Kirim Invoice
+                    note: noteVal // Kirim Note
+                };
+
                 const response = await fetch(API_URL, {
                     method: 'POST',
-                    body: JSON.stringify({ action: 'approve', id: currentOpenId })
+                    body: JSON.stringify(payload)
                 });
                 
                 const result = await response.json();
 
                 if(result.status === 'success') {
-                    // Sukses
                     closeModal();
                     
-                    // Tampilkan ulang loading utama
+                    // Reset Tampilan
                     document.getElementById('loading').style.display = 'flex';
                     document.getElementById('cardContainer').innerHTML = '';
                     
-                    // Refresh data agar status terupdate di tampilan
+                    // Refresh Data
                     await fetchData(); 
                     
+                    // Optional: Tampilkan Toast/Alert sukses
+                    // alert("Berhasil Approved!");
                 } else {
                     alert("Gagal update: " + result.message);
                 }
 
             } catch (error) {
                 console.error(error);
-                alert("Terjadi kesalahan koneksi ke server.");
+                alert("Terjadi kesalahan koneksi.");
             } finally {
-                // Reset UI
                 loadingOverlay.classList.add('hidden');
                 btn.disabled = false;
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
             }
         }
 
-        // 3. Render Kartu PO
         function renderCards(data) {
             const container = document.getElementById('cardContainer');
             container.innerHTML = '';
 
             if(data.length === 0) {
                 container.innerHTML = `
-                    <div class="text-center py-16 bg-white rounded-xl border border-slate-100">
-                        <i class="fas fa-folder-open text-slate-300 text-4xl mb-3"></i>
-                        <p class="text-slate-500">Data tidak ditemukan.</p>
+                    <div class="text-center py-16 bg-white rounded-xl border border-dashed border-slate-300">
+                        <i class="fas fa-inbox text-4xl text-slate-300 mb-3"></i>
+                        <p class="text-slate-500">Tidak ada data ditemukan.</p>
                     </div>`;
                 return;
             }
@@ -206,24 +234,21 @@
                 const displayDate = formatDate(po.tanggalInput);
 
                 const cardHTML = `
-                <div class="bg-white rounded-xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition duration-200 group relative overflow-hidden">
-                    <div class="absolute left-0 top-0 bottom-0 w-1 ${statusColor.bar}"></div>
-                    <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 pl-2">
+                <div class="bg-white rounded-xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition group relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full ${statusColor.bar}"></div>
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pl-3">
                         <div>
-                            <div class="flex items-center gap-3 mb-2">
+                            <div class="flex items-center gap-3 mb-1">
                                 <h3 class="text-lg font-bold text-slate-800 font-mono tracking-tight">${po.id}</h3>
-                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide ${statusColor.badge}">
-                                    ${po.status || 'Pending'}
-                                </span>
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${statusColor.badge}">${po.status}</span>
                             </div>
-                            <div class="text-sm text-slate-500 flex items-center gap-4">
-                                <span class="font-medium text-slate-700"><i class="far fa-building mr-1.5 text-slate-400"></i> ${po.vendor}</span>
-                                <span class="text-slate-400">•</span>
-                                <span><i class="far fa-calendar mr-1.5 text-slate-400"></i> ${displayDate}</span>
+                            <div class="flex items-center text-sm text-slate-500 gap-4">
+                                <span class="flex items-center gap-1"><i class="far fa-building"></i> ${po.vendor}</span>
+                                <span class="flex items-center gap-1"><i class="far fa-calendar-alt"></i> ${displayDate}</span>
                             </div>
                         </div>
-                        <button onclick="openModal('${po.id}')" class="w-full md:w-auto px-5 py-2.5 bg-slate-50 text-slate-600 rounded-lg text-sm font-semibold hover:bg-blue-50 hover:text-blue-600 transition border border-slate-200 hover:border-blue-200">
-                            Details <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                        <button onclick="openModal('${po.id}')" class="w-full md:w-auto px-4 py-2 bg-slate-50 text-slate-600 border border-slate-200 rounded-lg text-sm font-semibold hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition">
+                            View Details
                         </button>
                     </div>
                 </div>`;
@@ -231,7 +256,6 @@
             });
         }
 
-        // 4. Modal Logic
         function openModal(idPO) {
             currentOpenId = idPO;
             const po = allData.find(d => d.id === idPO);
@@ -240,71 +264,87 @@
             // Isi Data Modal
             document.getElementById('m-vendor').innerText = po.vendor;
             document.getElementById('m-id').innerText = po.id;
-            document.getElementById('m-date').innerText = po.tanggalInput ? formatDate(po.tanggalInput) : '-';
-            document.getElementById('m-notes').innerText = po.catatan || 'Tidak ada catatan tambahan.';
+            document.getElementById('m-date').innerText = po.tanggalPO ? formatDate(po.tanggalPO) : '-';
+            document.getElementById('m-notes').innerText = po.catatan || '-';
 
+            // Status Badge Modal
             const sColor = getStatusColor(po.status);
             const sBadge = document.getElementById('m-status');
-            sBadge.className = `px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wide ${sBadgeBase(po.status)}`;
-            sBadge.innerText = po.status || 'Pending';
+            sBadge.className = `px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider ${sColor.badge}`;
+            sBadge.innerText = po.status;
 
+            // Render Table Items
             const tbody = document.getElementById('m-table-body');
             tbody.innerHTML = '';
-            
-            if(po.items && po.items.length > 0) {
-                po.items.forEach(item => {
-                    tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition">
-                        <td class="p-4 font-medium text-slate-700">${item.namaItem}</td>
-                        <td class="p-4 text-center text-slate-600 bg-slate-50/50">${item.qty}</td>
-                        <td class="p-4 text-center text-slate-500 text-xs uppercase font-semibold text-slate-400">${item.satuan}</td>
-                    </tr>`;
-                });
-            } else {
-                tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 italic">Item details not available via API logic yet.</td></tr>`;
-            }
+            po.items.forEach(item => {
+                tbody.innerHTML += `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="p-4 font-medium text-slate-700">${item.namaItem}</td>
+                    <td class="p-4 text-center text-slate-600 bg-slate-50/50 font-mono">${item.qty}</td>
+                    <td class="p-4 text-center text-slate-500 text-xs uppercase font-bold">${item.satuan}</td>
+                </tr>`;
+            });
 
-            // Atur Tombol Approve
+            // LOGIC TAMPILAN FORM APPROVAL
+            const formSection = document.getElementById('approval-form-section');
             const btnApprove = document.getElementById('btn-approve-action');
-            const statusText = (po.status || '').toLowerCase();
-            
-            if(statusText === 'approved') {
+            const inputInv = document.getElementById('input-invoice');
+            const inputNote = document.getElementById('input-admin-note');
+
+            // Reset Input
+            inputInv.value = '';
+            inputNote.value = '';
+            inputInv.classList.remove('border-red-500', 'bg-red-50');
+
+            if(po.status.toLowerCase() === 'approved') {
+                // Jika sudah Approved: Sembunyikan Form & Tombol Approve
+                formSection.style.display = 'none';
                 btnApprove.style.display = 'none';
             } else {
+                // Jika Pending: Tampilkan Form & Tombol Approve
+                formSection.style.display = 'block';
                 btnApprove.style.display = 'flex';
-                btnApprove.onclick = approveOrder; 
+                btnApprove.onclick = approveOrder;
             }
 
+            // Buka Modal dengan Animasi
             const modal = document.getElementById('detailModal');
             const content = document.getElementById('modalContent');
-            
-            document.body.classList.add('modal-active');
             modal.classList.remove('opacity-0', 'pointer-events-none');
-            content.classList.remove('scale-95');
-            content.classList.add('scale-100');
+            document.body.classList.add('modal-active');
+            setTimeout(() => {
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
         }
 
         function closeModal() {
-            document.body.classList.remove('modal-active');
-            document.getElementById('detailModal').classList.add('opacity-0', 'pointer-events-none');
+            const modal = document.getElementById('detailModal');
             const content = document.getElementById('modalContent');
+            
             content.classList.remove('scale-100');
             content.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                document.body.classList.remove('modal-active');
+            }, 150);
         }
 
-        // Helper Styles
         function getStatusColor(status) {
             const s = (status || '').toLowerCase();
-            if (s === 'approved') return { bar: 'bg-green-500', badge: 'bg-green-100 text-green-700' };
-            if (s === 'pending') return { bar: 'bg-yellow-400', badge: 'bg-yellow-100 text-yellow-700' };
-            return { bar: 'bg-slate-300', badge: 'bg-slate-100 text-slate-600' };
-        }
-        
-        function sBadgeBase(status) {
-             const s = (status || '').toLowerCase();
-             if (s === 'approved') return 'bg-green-100 text-green-700';
-             if (s === 'pending') return 'bg-yellow-100 text-yellow-700';
-             return 'bg-slate-100 text-slate-600';
+            if (s === 'approved') return { 
+                bar: 'bg-green-500', 
+                badge: 'bg-green-100 text-green-700 border border-green-200' 
+            };
+            if (s === 'pending') return { 
+                bar: 'bg-yellow-400', 
+                badge: 'bg-yellow-100 text-yellow-800 border border-yellow-200' 
+            };
+            return { 
+                bar: 'bg-gray-300', 
+                badge: 'bg-gray-100 text-gray-600 border border-gray-200' 
+            };
         }
 
         function formatDate(dateStr) {
@@ -312,7 +352,6 @@
             return new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
         }
 
-        // Filtering
         function filterStatus(status) {
             currentStatus = status;
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active', 'bg-blue-50', 'text-blue-600', 'border-blue-200'));
@@ -325,15 +364,15 @@
             
             // Filter Status
             if (currentStatus !== 'All') {
-                filtered = filtered.filter(p => (p.status || 'Pending').toLowerCase() === currentStatus.toLowerCase());
+                filtered = filtered.filter(p => (p.status||'').toLowerCase() === currentStatus.toLowerCase());
             }
             
-            // Search
+            // Filter Search
             const q = document.getElementById('searchInput').value.toLowerCase();
             if (q) {
                 filtered = filtered.filter(p => 
-                    String(p.id).toLowerCase().includes(q) || 
-                    String(p.vendor).toLowerCase().includes(q)
+                    p.id.toLowerCase().includes(q) || 
+                    p.vendor.toLowerCase().includes(q)
                 );
             }
 
@@ -344,7 +383,6 @@
             renderCards(filtered);
         }
 
-        // Init
         fetchData();
     </script>
 </body>
