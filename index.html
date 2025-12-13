@@ -276,7 +276,7 @@
     }
 
     .rings { position: relative; width: 100px; height: 100px; }
-    /* Adjusted rings for cleaner look */
+    
     .ring {
       position: absolute;
       border-radius: 50%;
@@ -394,7 +394,20 @@
           <div class="tile-desc">Approval invoice sebelum Work Effort</div>
         </div>
 
-      </div> </div>
+        <div class="tile" id="tile-inventory" onclick="window.location.href='inventory/'">
+          <div class="tile-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+               <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+               <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+               <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+          </div>
+          <div class="tile-title">Inventory</div>
+          <div class="tile-desc">Cek stok gudang dan mutasi barang</div>
+        </div>
+
+      </div> 
+    </div>
   </div>
 
   <div id="logoutModal" class="modal">
@@ -473,9 +486,9 @@
       setTile("tile-receiving", !!user.access.receiving);
       setTile("tile-finished-goods", !!user.access.finished_goods);
       setTile("tile-order-form", !!user.access.order_form);
-      setTile("tile-review-invoice", !!user.access.review_invoice); // Added check for new tile
+      setTile("tile-review-invoice", !!user.access.review_invoice);
+      setTile("tile-inventory", !!user.access.inventory); // Added Inventory Access Check
     })();
   </script>
 </body>
-
 </html>
