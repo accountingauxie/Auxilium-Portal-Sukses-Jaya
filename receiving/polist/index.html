@@ -25,7 +25,7 @@
         .input-bare:hover { border-color: #E2E8F0; background: white; }
         .input-bare:focus { border-color: #3B82F6; background: white; outline: none; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1); }
         
-        /* Disabled Input Styles (Saat Mode View/Locked) */
+        /* Disabled Input Styles */
         input:disabled, select:disabled, textarea:disabled {
             background-color: #F8FAFC; 
             color: #64748B;
@@ -118,6 +118,7 @@
                         <thead class="bg-slate-100 text-slate-600 font-semibold border-b border-slate-200">
                             <tr>
                                 <th class="p-3 w-1/4">Item / Description</th>
+                                <th class="p-3 w-20 text-center">Satuan</th>
                                 <th class="p-3 w-32 bg-blue-50 text-blue-800 border-l border-r border-blue-100">Spec (Opt)</th>
                                 <th class="p-3 w-24 text-center">Qty</th>
                                 <th class="p-3 w-32">Unit Price</th>
@@ -178,6 +179,7 @@
 
     <script>
         // --- KONFIGURASI ---
+        // PASTIKAN URL INI UPDATE
         const API_URL = "https://script.google.com/macros/s/AKfycby5dTu7SnP-FSc_k0jaI223XsakdAqIEN9U9HucyLhcG2Gf9n5rfN35ulW1nmtZt-zN/exec"; 
         const TAX_RATE = 0.11; 
 
@@ -246,10 +248,8 @@
             document.getElementById('bill-po-id').innerText = po.id;
             document.getElementById('bill-vendor').value = po.vendor;
             
-            // 1. INVOICE NUMBER
             document.getElementById('bill-inv-number').value = po.invNumber || ''; 
             
-            // 2. INVOICE DATE
             if (po.invDate) {
                 const d = new Date(po.invDate);
                 const yyyy = d.getFullYear();
@@ -260,29 +260,24 @@
                 document.getElementById('bill-date').valueAsDate = new Date();
             }
 
-            // 3. TAX MODE & NOTE
             document.getElementById('tax-mode').value = po.taxMode || 'exclusive'; 
             document.getElementById('bill-note').value = po.adminNote || po.catatan || '';
             document.getElementById('bill-adjustment').value = 0;
 
-            // Items Logic (UPDATED: Include optionalSpec)
             currentItems = po.items.map(item => ({
                 ...item,
                 price: item.price || 0,
                 disc: item.disc || 0,
-                optionalSpec: item.optionalSpec || '' // Load spec saved
+                optionalSpec: item.optionalSpec || '' 
             }));
 
-            // --- LOCK / UNLOCK LOGIC ---
             if (isBilled) {
-                // View Mode
                 document.getElementById('modal-title').innerText = "Bill Details";
                 document.getElementById('status-banner').classList.remove('hidden');
                 document.getElementById('btn-edit').classList.remove('hidden');
                 document.getElementById('btn-save').classList.add('hidden');
                 setFormState(false); 
             } else {
-                // Create Mode
                 document.getElementById('modal-title').innerText = "New Bill";
                 document.getElementById('status-banner').classList.add('hidden');
                 document.getElementById('btn-edit').classList.add('hidden');
@@ -326,7 +321,9 @@
                 <tr class="hover:bg-slate-50 group">
                     <td class="p-3 align-top">
                         <div class="font-medium text-slate-800">${item.namaItem}</div>
-                        <div class="text-xs text-slate-400">${item.satuan}</div>
+                        </td>
+                    <td class="p-3 align-top text-center text-sm text-slate-500 pt-3">
+                        ${item.satuan}
                     </td>
                     <td class="p-3 align-top bg-blue-50/30 border-l border-r border-blue-50">
                         <input type="text" placeholder="-" value="${item.optionalSpec || ''}" 
@@ -359,11 +356,10 @@
         }
 
         function updateItem(index, field, value) {
-            // UPDATED: Cek apakah field adalah spec (text) atau harga (number)
             if (field === 'price' || field === 'disc') {
                 currentItems[index][field] = parseFloat(value) || 0;
             } else {
-                currentItems[index][field] = value; // Simpan sebagai text
+                currentItems[index][field] = value; 
             }
             calculateTotal();
         }
@@ -425,7 +421,7 @@
                     ppn: parseFloat(document.getElementById('display-ppn').dataset.value),
                     adjustment: parseFloat(document.getElementById('bill-adjustment').value) || 0,
                     grandTotal: parseFloat(document.getElementById('display-grand-total').dataset.value),
-                    items: currentItems // Item sudah membawa 'optionalSpec'
+                    items: currentItems 
                 }
             };
 
