@@ -1,1 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      body { font-family: sans-serif; padding: 20px; }
+      .form-group { margin-bottom: 15px; }
+      label { display: block; font-weight: bold; margin-bottom: 5px; }
+      select, input { width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box; }
+      .row { display: flex; gap: 10px; }
+      .col { flex: 1; }
+      button { background-color: #007bff; color: white; padding: 10px 20px; border: none; cursor: pointer; }
+      button:disabled { background-color: #ccc; }
+    </style>
+  </head>
+  <body>
 
+    <h2>Buat Purchase Order</h2>
+
+    <div class="form-group">
+      <label for="vendorSelect">Pilih Vendor (Kolom B):</label>
+      <select id="vendorSelect" onchange="onVendorChange()">
+        <option value="" disabled selected>Loading data...</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="itemSelect">Pilih Item (Kolom A):</label>
+      <select id="itemSelect" disabled onchange="onItemChange()">
+        <option value="">-- Pilih Vendor Terlebih Dahulu --</option>
+      </select>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label for="unitInput">Satuan (Kolom D):</label>
+        <input type="text" id="unitInput" readonly style="background-color: #f0f0f0;">
+      </div>
+
+      <div class="col">
+        <label for="qtyInput">Jumlah Order:</label>
+        <input type="number" id="qtyInput" placeholder="0">
+      </div>
+    </div>
+
+    <script>
+      var allData = {}; // Tempat menyimpan data dari Google Sheet
+
+      // 1. Saat halaman dibuka, panggil data dari server
+      window.onload = function() {
+        google.script.run.withSuccessHandler(populateVendors).getDataFromSheet();
+      };
+
+      // 2. Fungsi untuk mengisi Dropdown Vendor
+      function populateVendors(data) {
+        allData = data; // Simpan data ke variable global
+        var vendorSelect = document.getElementById("vendorSelect");
+        
+        // Reset isi dropdown
+        vendorSelect.innerHTML = '<option value="" disabled selected>-- Pilih Vendor --</option>';
+
+        // Ambil semua nama vendor (Keys dari object)
+        var vendors = Object.keys(allData).sort(); // Diurutkan abjad
+
+        vendors.forEach(function(vendorName) {
+          var option = document.createElement("option");
+          option.text = vendorName;
+          option.value = vendorName;
+          vendorSelect.add(option);
+        });
+      }
+
+      // 3. Fungsi saat Vendor berubah (Filter Item)
+      function onVendorChange() {
+        var selectedVendor = document.getElementById("vendorSelect").value;
+        var itemSelect = document.getElementById("itemSelect");
+        var unitInput = document.getElementById("unitInput");
+
+        // Reset Item dropdown
+        itemSelect.innerHTML = '<option value="" disabled selected>-- Pilih Item --</option>';
+        itemSelect.disabled = false;
+        
+        // Reset Satuan
+        unitInput.value = "";
+
+        // Ambil list item milik vendor tersebut
+        var items = allData[selectedVendor];
+
+        if (items) {
+          items.forEach(function(obj, index) {
+            var option = document.createElement("option");
+            option.text = obj.item;
+            option.value = index; // Kita simpan index array-nya sebagai value agar mudah ambil datanya nanti
+            itemSelect.add(option);
+          });
+        }
+      }
+
+      // 4. Fungsi saat Item berubah (Tampilkan Satuan)
+      function onItemChange() {
+        var selectedVendor = document.getElementById("vendorSelect").value;
+        var selectedItemIndex = document.getElementById("itemSelect").value;
+        
+        // Ambil data detail item berdasarkan index
+        var itemData = allData[selectedVendor][selectedItemIndex];
+
+        // Isi kolom satuan
+        document.getElementById("unitInput").value = itemData.unit;
+        
+        // Kamu juga bisa akses itemData.price jika mau menampilkan harga
+        console.log("Harga Item: " + itemData.price);
+      }
+    </script>
+  </body>
+</html>
