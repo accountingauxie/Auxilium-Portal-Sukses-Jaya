@@ -3,283 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Receiving PO Entry</title>
+    <title>Purchase Order Entry - AUXILIUM</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; color: #333; }
-        .navbar { background-color: #ffffff; border-bottom: 1px solid #eef2f6; padding: 0.8rem 1.5rem; }
-        .main-container { max-width: 1200px; margin: 30px auto; padding: 0 15px; }
-        .page-title { font-weight: 700; font-size: 1.5rem; margin-bottom: 25px; color: #1e293b; }
-        
-        /* Input & Labels */
-        .form-label-sm { font-size: 0.85rem; font-weight: 500; color: #64748b; margin-bottom: 5px; display: block; }
-        
-        /* Info Box Biru */
-        .info-box { background-color: #f0f7ff; border: 1px solid #dbeafe; border-radius: 8px; padding: 20px; margin-bottom: 25px; }
-        .info-label { font-size: 0.75rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
-        .info-value { font-size: 0.95rem; font-weight: 600; color: #334155; margin-top: 2px; min-height: 20px; }
-
-        /* Tabel */
-        .table thead th { background-color: #f1f5f9; color: #475569; font-weight: 600; font-size: 0.85rem; border-bottom: 2px solid #e2e8f0; white-space: nowrap; padding: 12px 10px; }
-        .table tbody td { vertical-align: middle; font-size: 0.9rem; border-bottom: 1px solid #f1f5f9; }
-        
-        /* Loader Overlay */
-        #loader-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:9999; display: flex; flex-direction: column; gap: 10px; justify-content:center; align-items:center; backdrop-filter: blur(2px); display: none; }
+        body { font-family: 'Inter', sans-serif; background-color: #f4f6f9; color: #333; }
+        .navbar { background-color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); padding: 0.8rem 1.5rem; }
+        .main-card { border: none; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); background: #ffffff; margin-top: 30px; padding: 40px; }
+        .bg-readonly { background-color: #f8f9fa; color: #6c757d; cursor: not-allowed; }
+        #loader { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: #6c757d; }
     </style>
 </head>
 <body>
 
-    <div id="loader-overlay">
-        <div class="spinner-border text-primary" role="status"></div>
-        <span class="fw-bold text-primary">Memproses Data...</span>
-    </div>
-
-    <nav class="navbar fixed-top">
+    <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container-fluid">
-            <span class="navbar-brand"><i class="bi bi-box-seam me-2"></i>Receiving System</span>
+            <a class="navbar-brand" href="#">AUXILIUM <span>Accounting Management Service</span></a>
         </div>
     </nav>
 
-    <div class="main-container" style="margin-top: 80px;">
-        <h2 class="page-title">Receiving PO Entry</h2>
-
-        <div class="row g-3 mb-4">
-            <div class="col-md-3">
-                <label class="form-label-sm">Receiving Date</label>
-                <input type="date" class="form-control" id="receivingDate">
-            </div>
-            <div class="col-md-3">
-                <label class="form-label-sm">Inv Number (PO ID)</label>
-                <select class="form-select" id="invSelect" onchange="loadInvoiceData()">
-                    <option selected disabled value="">— Loading... —</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label-sm">Receiving ID</label>
-                <input type="text" class="form-control bg-light" value="AUTO-GENERATED" readonly>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label-sm">Mode</label>
-                <input type="text" class="form-control bg-readonly" value="New Entry" disabled>
+    <div class="container" style="margin-top: 100px; max-width: 900px;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="fw-bold m-0">Buat Purchase Order</h3>
+            <div id="loader">
+                <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                <span>Menghubungkan ke Server...</span>
             </div>
         </div>
 
-        <div class="info-box">
+        <div class="main-card">
             <div class="row g-4">
-                <div class="col-md-4"><div class="info-label">SUPPLIER</div><div class="info-value" id="dispSupplier">-</div></div>
-                <div class="col-md-4"><div class="info-label">PO DATE</div><div class="info-value" id="dispInvDate">-</div></div>
-                <div class="col-md-4"><div class="info-label">STATUS</div><div class="info-value" id="dispStatus">-</div></div>
-                <div class="col-md-4"><div class="info-label">TOTAL ORDERED</div><div class="info-value" id="dispTotalOrdered">-</div></div>
-                <div class="col-md-4"><div class="info-label">TOTAL RECEIVED (OLD)</div><div class="info-value" id="dispTotalReceived">-</div></div>
-                <div class="col-md-4"><div class="info-label">TOTAL REMAINING</div><div class="info-value text-danger" id="dispRemaining">-</div></div>
+                <div class="col-12">
+                    <label class="form-label">Pilih Vendor</label>
+                    <select class="form-select" id="vendorSelect" onchange="onVendorChange()">
+                        <option value="" disabled selected>Menunggu data...</option>
+                    </select>
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Pilih Item</label>
+                    <select class="form-select" id="itemSelect" disabled onchange="onItemChange()">
+                        <option value="">-- Pilih Vendor Terlebih Dahulu --</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Satuan</label>
+                    <input type="text" class="form-control bg-readonly" id="unitInput" readonly placeholder="-">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Jumlah Order</label>
+                    <input type="number" class="form-control" id="qtyInput" placeholder="0" min="1">
+                </div>
+                
+                <div class="col-12">
+                    <label class="form-label">Catatan Item <small class="text-muted">(Opsional)</small></label>
+                    <input type="text" class="form-control" id="noteInput" placeholder="Contoh: Kirim sebelum jam 12, Warna Merah, dll">
+                </div>
+
+                <div class="col-12 text-end mt-4">
+                     <button class="btn btn-primary px-4" onclick="addItemToTable()">
+                        <i class="bi bi-plus-lg me-1"></i> Tambahkan ke Daftar
+                    </button>
+                </div>
             </div>
         </div>
 
-        <div class="table-responsive mb-4">
-            <table class="table table-hover" id="itemsTable">
-                <thead>
-                    <tr>
-                        <th>Item Code</th>
-                        <th>Description</th>
-                        <th class="text-center">Ordered</th>
-                        <th class="text-center">Received (Old)</th>
-                        <th class="text-center">Remaining</th>
-                        <th class="text-center" style="width: 150px; background-color: #eef2ff;">Qty This Receipt</th>
-                        <th class="text-center">UoM</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td colspan="7" class="text-center py-5 text-muted">Pilih Invoice Number untuk memuat data...</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="mb-4">
-            <label class="form-label-sm">Additional Notes</label>
-            <textarea class="form-control" id="noteInput" rows="3" placeholder="Masukkan catatan penerimaan (No Surat Jalan, kondisi barang, dll)..."></textarea>
-        </div>
-
-        <div class="d-flex justify-content-end gap-2 mb-5">
-            <button class="btn btn-light border px-4" onclick="location.reload()">Reset</button>
-            <button class="btn btn-primary px-4 fw-bold shadow-sm" onclick="submitReceiving()">Submit Receiving</button>
+        <div class="mt-5 mb-5">
+            <h5 class="fw-bold mb-3">Daftar Item PO</h5>
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0" id="poTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">No</th>
+                                <th>Item</th>
+                                <th>Vendor</th>
+                                <th>Qty</th>
+                                <th>Satuan</th>
+                                <th>Catatan</th> <th>Hapus</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="emptyRow"><td colspan="7" class="text-center py-4 text-muted">Belum ada item</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="d-grid gap-2 mt-4">
+                <button class="btn btn-success p-3 fw-bold shadow-sm" id="btnSubmit" onclick="submitPO()" disabled>SIMPAN PO</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // ==========================================
-        // URL DEPLOY KAMU YANG SUDAH JADI
-        const API_URL = "https://script.google.com/macros/s/AKfycbw7IQtl02Qqpzzk3yiAVu4NnQHBRkFUPne_tyu3rj-GbGgsim4APAsWkWyhAmTah6B9Sw/exec"; 
-        // ==========================================
+      // ==========================================
+      // PASTE URL DEPLOY WEB APP KAMU DI SINI
+      const API_URL = "https://script.google.com/macros/s/AKfycbzKaiXaPxqJ3md0Uq-PFKXbl5-A1o-xoZi5iutn_nPMDPPGD8uI89NQSvT9_lGhmRuuLQ/exec"; 
+      // ==========================================
 
-        document.getElementById('receivingDate').valueAsDate = new Date();
-        var currentItemsData = []; // Untuk menyimpan data sementara
+      var allData = {};
+      var cartItems = [];
 
-        // 1. SAAT LOAD: AMBIL LIST INVOICE (PO)
-        window.onload = function() {
-            toggleLoader(true);
-            fetch(API_URL + "?action=getInvoiceList")
-            .then(res => res.json())
-            .then(response => {
-                const select = document.getElementById('invSelect');
-                select.innerHTML = '<option selected disabled value="">— Select PO ID —</option>';
-                
-                if(response.data.length === 0){
-                    select.innerHTML = '<option disabled>Tidak ada PO ditemukan</option>';
-                } else {
-                    response.data.forEach(inv => {
-                        let opt = document.createElement('option');
-                        opt.value = inv;
-                        opt.innerText = inv;
-                        select.add(opt);
-                    });
-                }
-                toggleLoader(false);
-            })
-            .catch(err => {
-                Swal.fire('Koneksi Gagal', 'Pastikan script sudah dideploy sebagai Web App (Anyone). Error: ' + err, 'error');
-                toggleLoader(false);
-            });
-        };
+      window.onload = function() {
+        fetch(API_URL + "?action=getData")
+          .then(response => response.json())
+          .then(res => {
+             if(res.status === 'success'){
+                 populateVendors(res.data);
+             } else {
+                 throw new Error(res.message);
+             }
+          })
+          .catch(error => {
+             document.getElementById("loader").innerHTML = '<span class="text-danger">Gagal koneksi: ' + error.message + '</span>';
+          });
+      };
 
-        // 2. SAAT PILIH PO: AMBIL DETAIL ITEM
-        function loadInvoiceData() {
-            const invId = document.getElementById('invSelect').value;
-            if(!invId) return;
+      function populateVendors(data) {
+        allData = data;
+        var vendorSelect = document.getElementById("vendorSelect");
+        document.getElementById("loader").style.display = 'none';
 
-            toggleLoader(true);
+        vendorSelect.innerHTML = '<option value="" disabled selected>-- Pilih Vendor --</option>';
+        Object.keys(allData).sort().forEach(function(vendorName) {
+          var option = document.createElement("option");
+          option.text = vendorName;
+          option.value = vendorName;
+          vendorSelect.add(option);
+        });
+      }
 
-            fetch(API_URL + "?action=getInvoiceDetail&inv=" + encodeURIComponent(invId))
-            .then(res => res.json())
-            .then(response => {
-                const data = response.data;
-                currentItemsData = data.items; // Simpan ke variabel global
+      function onVendorChange() {
+        var selectedVendor = document.getElementById("vendorSelect").value;
+        if (cartItems.length > 0 && cartItems[0].vendor !== selectedVendor) {
+            if(!confirm("Ganti vendor akan menghapus item di tabel. Lanjut?")) {
+                document.getElementById("vendorSelect").value = cartItems[0].vendor;
+                return;
+            }
+            cartItems = []; renderTable();
+        }
+        fillItems(selectedVendor);
+      }
 
-                // Isi Info Box
-                document.getElementById('dispSupplier').innerText = data.supplier;
-                document.getElementById('dispInvDate').innerText = data.date;
-                document.getElementById('dispStatus').innerText = data.status;
-                document.getElementById('dispTotalOrdered').innerText = data.totalOrdered;
-                document.getElementById('dispTotalReceived').innerText = data.totalReceived;
-                document.getElementById('dispRemaining').innerText = data.remaining;
+      function fillItems(vendorName) {
+        var itemSelect = document.getElementById("itemSelect");
+        document.getElementById("unitInput").value = "";
+        itemSelect.disabled = false;
+        itemSelect.innerHTML = '<option value="" disabled selected>-- Pilih Item --</option>';
+        
+        allData[vendorName].forEach(function(obj, index) {
+            var option = document.createElement("option");
+            option.text = obj.item;
+            option.value = index; 
+            itemSelect.add(option);
+        });
+      }
 
-                // Render Table
-                const tbody = document.querySelector("#itemsTable tbody");
-                tbody.innerHTML = "";
+      function onItemChange() {
+        var vendor = document.getElementById("vendorSelect").value;
+        var idx = document.getElementById("itemSelect").value;
+        if(vendor && idx) document.getElementById("unitInput").value = allData[vendor][idx].unit;
+      }
 
-                if(data.items.length === 0) {
-                     tbody.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Item tidak ditemukan di sheet Data_PO</td></tr>';
-                }
+      // === FUNGSI MENAMBAHKAN ITEM & CATATAN ===
+      function addItemToTable() {
+        var vendor = document.getElementById("vendorSelect").value;
+        var idx = document.getElementById("itemSelect").value;
+        var qty = document.getElementById("qtyInput").value;
+        var unit = document.getElementById("unitInput").value;
+        var note = document.getElementById("noteInput").value; // Ambil nilai catatan
 
-                data.items.forEach((item, index) => {
-                    // Logic: Input tidak boleh lebih dari sisa
-                    let maxAttr = item.remaining > 0 ? `max="${item.remaining}"` : 'disabled';
-                    let valAttr = item.remaining > 0 ? '0' : '0';
-                    let bgClass = item.remaining <= 0 ? 'bg-light text-muted' : '';
+        if (!vendor || !idx || !qty || qty <= 0) return Swal.fire('Error', 'Lengkapi Vendor, Item, dan Jumlah Order', 'error');
 
-                    tbody.innerHTML += `
-                        <tr class="${bgClass}">
-                            <td><span class="badge bg-light text-dark border">${item.code}</span></td>
-                            <td class="fw-bold">${item.desc}</td>
-                            <td class="text-center">${item.ordered}</td>
-                            <td class="text-center text-muted">${item.received}</td>
-                            <td class="text-center fw-bold text-primary">${item.remaining}</td>
-                            <td class="text-center" style="background-color: #f8faff;">
-                                <input type="number" class="form-control form-control-sm text-center input-receive" 
-                                    id="qty-input-${index}" 
-                                    value="${valAttr}" min="0" ${maxAttr} 
-                                    ${item.remaining <= 0 ? 'disabled' : ''}>
-                            </td>
-                            <td class="text-center small">${item.uom}</td>
-                        </tr>
-                    `;
-                });
-                toggleLoader(false);
-            })
-            .catch(err => {
-                Swal.fire('Error', 'Gagal memuat detail: ' + err, 'error');
-                toggleLoader(false);
-            });
+        // Simpan note ke object
+        cartItems.push({ 
+            vendor: vendor, 
+            itemName: allData[vendor][idx].item, 
+            qty: qty, 
+            unit: unit,
+            note: note 
+        });
+
+        renderTable();
+        
+        // Reset form input setelah tambah (kecuali vendor)
+        document.getElementById("qtyInput").value = "";
+        document.getElementById("noteInput").value = ""; // Reset catatan
+        // Opsional: reset item selection jika ingin input cepat
+        // document.getElementById("itemSelect").value = "";
+      }
+
+      function renderTable() {
+        var tbody = document.querySelector("#poTable tbody");
+        tbody.innerHTML = "";
+        document.getElementById("btnSubmit").disabled = cartItems.length === 0;
+
+        if (cartItems.length === 0) {
+            tbody.innerHTML = '<tr id="emptyRow"><td colspan="7" class="text-center">Belum ada item</td></tr>';
+            return;
         }
 
-        // 3. SAAT KLIK SUBMIT: KIRIM DATA KE GOOGLE SHEET
-        function submitReceiving() {
-            const invId = document.getElementById('invSelect').value;
-            if (!invId) return Swal.fire('Warning', 'Pilih PO dulu', 'warning');
+        cartItems.forEach((item, index) => {
+            // Tampilkan Catatan di tabel, jika kosong beri tanda strip (-)
+            var displayNote = item.note ? item.note : '<span class="text-muted">-</span>';
+            
+            tbody.innerHTML += `<tr>
+                <td class="ps-4">${index + 1}</td>
+                <td class="fw-bold">${item.itemName}</td>
+                <td>${item.vendor}</td>
+                <td>${item.qty}</td>
+                <td>${item.unit}</td>
+                <td class="text-break" style="max-width: 200px;">${displayNote}</td>
+                <td><button class="btn btn-sm btn-danger" onclick="deleteItem(${index})"><i class="bi bi-trash"></i></button></td>
+            </tr>`;
+        });
+      }
 
-            // Kumpulkan Data dari Tabel
-            let itemsToSubmit = [];
-            let inputs = document.querySelectorAll('.input-receive');
-            let hasInput = false;
+      function deleteItem(index) {
+        cartItems.splice(index, 1);
+        renderTable();
+      }
 
-            inputs.forEach((input, index) => {
-                let qty = parseFloat(input.value);
-                if (qty > 0) {
-                    hasInput = true;
-                    // Ambil data asli dari array global berdasarkan index
-                    let originalItem = currentItemsData[index];
-                    
-                    itemsToSubmit.push({
-                        po: invId,
-                        desc: originalItem.desc,
-                        qtyReceive: qty,
-                        uom: originalItem.uom
-                    });
-                }
-            });
+      function submitPO() {
+        Swal.fire({ title: 'Menyimpan...', didOpen: () => Swal.showLoading() });
 
-            if (!hasInput) return Swal.fire('Info', 'Isi jumlah barang yang diterima (Qty This Receipt) minimal 1 item.', 'info');
+        var payload = { vendor: cartItems[0].vendor, items: cartItems };
 
-            const payload = {
-                items: itemsToSubmit,
-                notes: document.getElementById('noteInput').value
-            };
-
-            // Konfirmasi User
-            Swal.fire({
-                title: 'Simpan Penerimaan?',
-                text: `Anda akan menerima ${itemsToSubmit.length} jenis item.`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#0d6efd',
-                confirmButtonText: 'Ya, Submit'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    toggleLoader(true);
-                    
-                    // POST ke Apps Script
-                    fetch(API_URL + "?action=submitReceiving", {
-                        method: "POST",
-                        body: JSON.stringify(payload)
-                    })
-                    .then(response => response.json())
-                    .then(res => {
-                        toggleLoader(false);
-                        if(res.status === 'success') {
-                            Swal.fire('Sukses!', 'Data berhasil disimpan. ID: ' + res.id, 'success')
-                            .then(() => {
-                                // Reload data agar sisa update
-                                loadInvoiceData(); 
-                                document.getElementById('noteInput').value = "";
-                            });
-                        } else {
-                            throw new Error(res.message);
-                        }
-                    })
-                    .catch(error => {
-                        toggleLoader(false);
-                        Swal.fire('Gagal!', error.message, 'error');
-                    });
-                }
-            })
-        }
-
-        function toggleLoader(show) {
-            document.getElementById('loader-overlay').style.display = show ? 'flex' : 'none';
-        }
+        fetch(API_URL + "?action=saveOrder", {
+            method: "POST",
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(res => {
+            if(res.status === 'success') {
+                Swal.fire('Sukses!', 'ID PO: ' + res.id, 'success');
+                cartItems = []; renderTable();
+                document.getElementById("vendorSelect").value = "";
+                document.getElementById("itemSelect").innerHTML = '<option value="">-- Pilih Vendor Terlebih Dahulu --</option>';
+                document.getElementById("itemSelect").disabled = true;
+                document.getElementById("unitInput").value = "";
+            } else {
+                throw new Error(res.message);
+            }
+        })
+        .catch(error => {
+            Swal.fire('Gagal!', error.message, 'error');
+        });
+      }
     </script>
 </body>
 </html>
