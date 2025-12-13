@@ -25,9 +25,22 @@
         .input-bare:hover { border-color: #E2E8F0; background: white; }
         .input-bare:focus { border-color: #3B82F6; background: white; outline: none; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1); }
         
-        /* Summary Box Style (Yellow Border like visual) */
+        /* Disabled Input Styles (Saat Mode View/Locked) */
+        input:disabled, select:disabled, textarea:disabled {
+            background-color: #F8FAFC; 
+            color: #64748B;
+            cursor: not-allowed;
+            border-color: transparent;
+        }
+        /* Khusus input tabel saat disabled */
+        .input-bare:disabled:hover {
+            background-color: #F8FAFC;
+            border-color: transparent;
+        }
+
+        /* Summary Box Style */
         .summary-box {
-            border-top: 4px solid #FCD34D; /* Yellow top border */
+            border-top: 4px solid #FCD34D;
             background: white;
         }
     </style>
@@ -65,7 +78,7 @@
                 <div class="flex items-center gap-3">
                     <div class="bg-blue-100 p-2 rounded-lg text-blue-600"><i class="fas fa-file-invoice-dollar text-xl"></i></div>
                     <div>
-                        <h2 class="text-lg font-bold text-slate-800">New Bill</h2>
+                        <h2 class="text-lg font-bold text-slate-800" id="modal-title">New Bill</h2>
                         <p class="text-xs text-slate-500">From PO: <span id="bill-po-id" class="font-mono font-medium"></span></p>
                     </div>
                 </div>
@@ -74,6 +87,10 @@
 
             <div class="flex-1 overflow-y-auto p-6 bg-slate-50/50">
                 
+                <div id="status-banner" class="hidden mb-4 p-3 bg-green-100 text-green-800 rounded-lg text-sm font-medium flex items-center gap-2 border border-green-200">
+                    <i class="fas fa-lock"></i> Bill has been approved. Switch to edit mode to make changes.
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6 bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
                     <div>
                         <label class="text-xs font-bold text-slate-500 uppercase">Vendor</label>
@@ -81,15 +98,15 @@
                     </div>
                     <div>
                         <label class="text-xs font-bold text-slate-500 uppercase">Invoice Number <span class="text-red-500">*</span></label>
-                        <input type="text" id="bill-inv-number" placeholder="e.g., INV-001" class="w-full mt-1 border border-slate-300 rounded px-2 py-1 text-sm focus:border-blue-500 outline-none">
+                        <input type="text" id="bill-inv-number" class="bill-input w-full mt-1 border border-slate-300 rounded px-2 py-1 text-sm focus:border-blue-500 outline-none">
                     </div>
                     <div>
                         <label class="text-xs font-bold text-slate-500 uppercase">Invoice Date</label>
-                        <input type="date" id="bill-date" class="w-full mt-1 border border-slate-300 rounded px-2 py-1 text-sm focus:border-blue-500 outline-none">
+                        <input type="date" id="bill-date" class="bill-input w-full mt-1 border border-slate-300 rounded px-2 py-1 text-sm focus:border-blue-500 outline-none">
                     </div>
                     <div>
                         <label class="text-xs font-bold text-slate-500 uppercase">Amounts Are</label>
-                        <select id="tax-mode" onchange="calculateTotal()" class="w-full mt-1 border border-slate-300 rounded px-2 py-1 text-sm bg-white focus:border-blue-500 outline-none">
+                        <select id="tax-mode" onchange="calculateTotal()" class="bill-input w-full mt-1 border border-slate-300 rounded px-2 py-1 text-sm bg-white focus:border-blue-500 outline-none">
                             <option value="exclusive">Tax Exclusive (Harga Belum PPN)</option>
                             <option value="inclusive">Tax Inclusive (Harga Termasuk PPN)</option>
                             <option value="no_tax">No Tax</option>
@@ -108,48 +125,47 @@
                                 <th class="p-3 w-40 text-right">Amount</th>
                             </tr>
                         </thead>
-                        <tbody id="bill-items-body" class="divide-y divide-slate-100">
-                            </tbody>
+                        <tbody id="bill-items-body" class="divide-y divide-slate-100"></tbody>
                     </table>
                 </div>
 
                 <div class="flex flex-col md:flex-row gap-8 items-start">
                     <div class="w-full md:w-1/2">
                         <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Notes / Memo</label>
-                        <textarea id="bill-note" rows="4" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:border-blue-500 outline-none" placeholder="Add a note..."></textarea>
+                        <textarea id="bill-note" rows="4" class="bill-input w-full border border-slate-300 rounded-lg p-3 text-sm focus:border-blue-500 outline-none"></textarea>
                     </div>
 
                     <div class="w-full md:w-1/2 summary-box rounded-lg p-6 shadow-sm">
-                        
                         <div class="flex justify-between mb-2 text-slate-600">
                             <span>Subtotal (DPP)</span>
                             <span id="display-subtotal" class="font-medium">0</span>
                         </div>
-
                         <div class="flex justify-between mb-2 text-slate-600 items-center">
-                            <span>PPN (11%)</span> <span id="display-ppn" class="font-medium">0</span>
+                            <span>PPN (11%)</span>
+                            <span id="display-ppn" class="font-medium">0</span>
                         </div>
-
                         <div class="flex justify-between mb-4 items-center">
                             <span class="text-slate-600 text-sm">Adjustment / Rounding</span>
-                            <input type="number" id="bill-adjustment" value="0" oninput="calculateTotal()" class="text-right w-32 border border-slate-300 rounded px-2 py-1 text-sm focus:border-blue-500 outline-none">
+                            <input type="number" id="bill-adjustment" value="0" oninput="calculateTotal()" class="bill-input text-right w-32 border border-slate-300 rounded px-2 py-1 text-sm focus:border-blue-500 outline-none">
                         </div>
-
                         <div class="border-t border-slate-200 my-2"></div>
-
                         <div class="flex justify-between items-center">
                             <span class="text-lg font-bold text-slate-800">GRAND TOTAL</span>
                             <span id="display-grand-total" class="text-2xl font-bold text-blue-600">0</span>
                         </div>
                     </div>
                 </div>
-
             </div>
 
             <div class="p-4 bg-white border-t border-slate-200 flex justify-end gap-3">
-                <button onclick="closeModal()" class="px-6 py-2 border border-slate-300 rounded-lg text-slate-600 font-medium hover:bg-slate-50">Cancel</button>
+                <button onclick="closeModal()" class="px-6 py-2 border border-slate-300 rounded-lg text-slate-600 font-medium hover:bg-slate-50">Close</button>
+                
+                <button onclick="enableEditMode()" id="btn-edit" class="hidden px-6 py-2 bg-yellow-500 text-white rounded-lg font-bold hover:bg-yellow-600 shadow-md flex items-center gap-2">
+                    <i class="fas fa-edit"></i> Edit Bill
+                </button>
+
                 <button onclick="submitBill()" id="btn-save" class="px-6 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 shadow-lg flex items-center gap-2">
-                    <i class="fas fa-check"></i> Approve & Save Bill
+                    <i class="fas fa-check"></i> Approve & Save
                 </button>
             </div>
             
@@ -157,24 +173,18 @@
                 <div class="animate-spin rounded-full h-12 w-12 border-4 border-slate-200 border-t-blue-600 mb-4"></div>
                 <p class="font-bold text-slate-700">Saving Bill Data...</p>
             </div>
-
         </div>
     </div>
 
     <script>
-        // --- KONFIGURASI ---
-        // GANTI DENGAN URL DEPLOYMENT ANDA YANG TERBARU
         const API_URL = "https://script.google.com/macros/s/AKfycby98lSBDcVCppD9ZUrhObnVhGeJeBxddgkPtoU9UnYa1Vp3eQ5N2xrjBNjmU0-TT80t/exec"; 
-        
-        // --- PERUBAHAN DISINI (11%) ---
         const TAX_RATE = 0.11; 
-        // ------------------------------
 
         let allData = [];
-        let currentItems = []; // Menyimpan state item yang sedang diedit
+        let currentItems = [];
         let currentPOId = "";
+        let isEditMode = false; // State untuk mengontrol mode edit
 
-        // --- INIT & FETCH ---
         async function fetchData() {
             try {
                 const response = await fetch(`${API_URL}?t=${new Date().getTime()}`);
@@ -183,13 +193,12 @@
                 document.getElementById('loading').style.display = 'none';
                 applyFilters();
             } catch (error) {
-                alert("Gagal memuat data. Periksa koneksi.");
+                alert("Gagal memuat data.");
             }
         }
         
         window.onload = fetchData;
 
-        // --- RENDER DASHBOARD ---
         function renderCards(data) {
             const container = document.getElementById('cardContainer');
             container.innerHTML = '';
@@ -203,9 +212,9 @@
                 const isBilled = po.status === 'Billed';
                 const statusClass = isBilled ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-800';
                 
-                const btnText = isBilled ? 'View Details' : 'Create Bill';
-                const btnClass = isBilled ? 'text-slate-500 bg-slate-100' : 'text-white bg-blue-600 hover:bg-blue-700 shadow-md';
-                const clickAction = isBilled ? `openBillModal('${po.id}')` : `openBillModal('${po.id}')`;
+                // Text tombol menyesuaikan status
+                const btnText = isBilled ? 'View Bill' : 'Create Bill';
+                const btnClass = isBilled ? 'text-slate-600 bg-slate-100 hover:bg-slate-200' : 'text-white bg-blue-600 hover:bg-blue-700 shadow-md';
 
                 const html = `
                 <div class="bg-white rounded-xl p-5 border border-slate-200 hover:shadow-md transition">
@@ -219,7 +228,7 @@
                     <div class="text-sm text-slate-600 mb-4">
                         <i class="far fa-calendar mr-2"></i> ${formatDate(po.tanggalInput)}
                     </div>
-                    <button onclick="${clickAction}" class="w-full py-2 rounded-lg font-medium text-sm transition ${btnClass}">
+                    <button onclick="openBillModal('${po.id}')" class="w-full py-2 rounded-lg font-medium text-sm transition ${btnClass}">
                         ${btnText}
                     </button>
                 </div>`;
@@ -227,41 +236,93 @@
             });
         }
 
-        // --- BILL MODAL LOGIC (UPDATED WITH SAVED DATA) ---
+        // --- NEW LOGIC: OPEN MODAL & HANDLE STATE ---
         function openBillModal(idPO) {
             const po = allData.find(d => d.id === idPO);
             if (!po) return;
 
             currentPOId = idPO;
-            
+            const isBilled = po.status === 'Billed';
+
             // Set Header Info
             document.getElementById('bill-po-id').innerText = po.id;
             document.getElementById('bill-vendor').value = po.vendor;
             
-            // Reset / Load Values
-            document.getElementById('bill-inv-number').value = ''; 
+            // Populate Values
+            document.getElementById('bill-inv-number').value = po.invNumber || ''; // Ambil dari saved data jika ada (perlu update di GAS jika ingin kirim balik invNumber, saat ini default kosong jika pending)
+            // Note: Script GAS sebelumnya belum mengirim balik Invoice Number di JSON list. 
+            // Jika ingin sempurna, pastikan GAS 'handleRequest' mengirim kolom J, K, L dsb. 
+            // Namun script ini akan tetap jalan (cuma form kosong/default).
+            
             document.getElementById('bill-date').valueAsDate = new Date();
             document.getElementById('bill-adjustment').value = 0;
             document.getElementById('bill-note').value = po.adminNote || po.catatan || '';
             document.getElementById('tax-mode').value = 'exclusive'; 
 
-            // Logic Item: Load harga jika sudah pernah disimpan (dari Apps Script)
+            // Items Logic
             currentItems = po.items.map(item => ({
                 ...item,
                 price: item.price || 0,
                 disc: item.disc || 0
             }));
 
+            // --- LOCK / UNLOCK LOGIC ---
+            if (isBilled) {
+                // Mode View (Locked)
+                document.getElementById('modal-title').innerText = "Bill Details";
+                document.getElementById('status-banner').classList.remove('hidden');
+                document.getElementById('btn-edit').classList.remove('hidden');
+                document.getElementById('btn-save').classList.add('hidden');
+                setFormState(false); // Disable form
+            } else {
+                // Mode Create (Unlocked)
+                document.getElementById('modal-title').innerText = "New Bill";
+                document.getElementById('status-banner').classList.add('hidden');
+                document.getElementById('btn-edit').classList.add('hidden');
+                document.getElementById('btn-save').classList.remove('hidden');
+                document.getElementById('btn-save').innerHTML = '<i class="fas fa-check"></i> Approve & Save';
+                setFormState(true); // Enable form
+            }
+
             renderBillItems();
             calculateTotal();
-
-            // Show Modal
             document.getElementById('billModal').classList.remove('hidden');
+        }
+
+        // --- FUNGSI AKTIFKAN EDIT MODE ---
+        function enableEditMode() {
+            if(confirm("Apakah Anda yakin ingin mengedit data Bill yang sudah diapprove ini?")) {
+                setFormState(true); // Enable inputs
+                
+                // Ubah tampilan tombol
+                document.getElementById('btn-edit').classList.add('hidden');
+                document.getElementById('btn-save').classList.remove('hidden');
+                document.getElementById('btn-save').innerHTML = '<i class="fas fa-save"></i> Update Changes';
+                document.getElementById('status-banner').classList.add('hidden');
+            }
+        }
+
+        // --- HELPER: SET READONLY / EDITABLE ---
+        function setFormState(isEditable) {
+            isEditMode = isEditable;
+            
+            // Disable/Enable semua input dengan class 'bill-input'
+            const inputs = document.querySelectorAll('.bill-input');
+            inputs.forEach(input => {
+                input.disabled = !isEditable;
+            });
+
+            // Disable/Enable input harga di tabel (class 'input-bare')
+            // Kita re-render tabel agar properti disabled diterapkan
+            renderBillItems();
         }
 
         function renderBillItems() {
             const tbody = document.getElementById('bill-items-body');
             tbody.innerHTML = '';
+            
+            // Tentukan apakah input harus disabled
+            const disabledAttr = isEditMode ? '' : 'disabled';
 
             currentItems.forEach((item, index) => {
                 const row = `
@@ -275,11 +336,13 @@
                     </td>
                     <td class="p-3 align-top">
                         <input type="number" placeholder="0" value="${item.price}" 
+                            ${disabledAttr}
                             oninput="updateItem(${index}, 'price', this.value)" 
                             class="input-bare text-right text-sm font-mono">
                     </td>
                     <td class="p-3 align-top">
                         <input type="number" placeholder="0" value="${item.disc}" 
+                            ${disabledAttr}
                             oninput="updateItem(${index}, 'disc', this.value)" 
                             class="input-bare text-right text-sm font-mono text-red-500">
                     </td>
@@ -289,9 +352,10 @@
                 </tr>`;
                 tbody.innerHTML += row;
             });
+            // Re-calc after render untuk memastikan angka tampil benar meski disabled
+            if (!isEditMode) calculateTotal(); 
         }
 
-        // --- CORE MATH LOGIC (UPDATED TAX) ---
         function updateItem(index, field, value) {
             currentItems[index][field] = parseFloat(value) || 0;
             calculateTotal();
@@ -301,25 +365,21 @@
             let totalLineAmount = 0;
             const taxMode = document.getElementById('tax-mode').value;
 
-            // 1. Hitung Total per Baris
             currentItems.forEach((item, index) => {
                 const lineTotal = (item.price - item.disc) * item.qty;
                 totalLineAmount += lineTotal;
-                document.getElementById(`row-total-${index}`).innerText = formatRupiah(lineTotal);
+                const el = document.getElementById(`row-total-${index}`);
+                if(el) el.innerText = formatRupiah(lineTotal);
             });
 
-            // 2. Hitung Tax (11%)
             let dpp = 0;
             let ppn = 0;
             const adj = parseFloat(document.getElementById('bill-adjustment').value) || 0;
 
             if (taxMode === 'exclusive') {
-                // Harga belum termasuk pajak
                 dpp = totalLineAmount;
-                ppn = dpp * TAX_RATE; // 11%
+                ppn = dpp * TAX_RATE;
             } else if (taxMode === 'inclusive') {
-                // Harga sudah termasuk pajak (DPP + PPN 11% = Total)
-                // Total = DPP * (1 + 0.11) => DPP = Total / 1.11
                 dpp = totalLineAmount / (1 + TAX_RATE);
                 ppn = totalLineAmount - dpp;
             } else {
@@ -329,18 +389,15 @@
 
             const grandTotal = dpp + ppn + adj;
 
-            // 3. Update UI
             document.getElementById('display-subtotal').innerText = formatRupiah(dpp);
             document.getElementById('display-ppn').innerText = formatRupiah(ppn);
             document.getElementById('display-grand-total').innerText = formatRupiah(grandTotal);
 
-            // Simpan nilai mentah di dataset untuk submit
             document.getElementById('display-grand-total').dataset.value = grandTotal;
             document.getElementById('display-subtotal').dataset.value = dpp;
             document.getElementById('display-ppn').dataset.value = ppn;
         }
 
-        // --- SUBMIT DATA ---
         async function submitBill() {
             const invNumber = document.getElementById('bill-inv-number').value;
             if (!invNumber) {
@@ -357,16 +414,14 @@
                     invDate: document.getElementById('bill-date').value,
                     taxMode: document.getElementById('tax-mode').value,
                     note: document.getElementById('bill-note').value,
-                    // Ambil nilai numerik hasil hitungan
                     subtotal: parseFloat(document.getElementById('display-subtotal').dataset.value),
                     ppn: parseFloat(document.getElementById('display-ppn').dataset.value),
                     adjustment: parseFloat(document.getElementById('bill-adjustment').value) || 0,
                     grandTotal: parseFloat(document.getElementById('display-grand-total').dataset.value),
-                    items: currentItems // Kirim detail item
+                    items: currentItems
                 }
             };
 
-            // UI Loading
             document.getElementById('modalLoading').classList.remove('hidden');
             
             try {
@@ -389,7 +444,6 @@
             }
         }
 
-        // --- UTILS ---
         function closeModal() {
             document.getElementById('billModal').classList.add('hidden');
         }
