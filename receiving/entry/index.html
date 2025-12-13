@@ -63,7 +63,7 @@
 
     .nav-menu {
         display: flex;
-        gap: 6px;
+        gap: 10px;
         align-items: center;
     }
 
@@ -71,29 +71,38 @@
         text-decoration: none;
         color: #64748b;
         font-size: 14px;
-        font-weight: 500;
+        font-weight: 600;
         padding: 8px 16px;
         border-radius: 6px;
         transition: all 0.2s ease;
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
     }
 
     .nav-item:hover {
-        background-color: #f1f5f9;
-        color: var(--ux-blue);
-    }
-
-    /* Active State for Current Page */
-    .nav-item.active {
         background-color: var(--ux-blue-soft);
         color: var(--ux-blue);
-        font-weight: 600;
+        border-color: #bfdbfe;
+    }
+
+    /* Style khusus untuk Import Xero agar menonjol */
+    .nav-item.highlight {
+        color: #00838f;
+        background-color: #e0f7fa;
+        border-color: #b2ebf2;
+    }
+    .nav-item.highlight:hover {
+        background-color: #b2ebf2;
     }
 
     /* =========================== 
        PAGE & CARD STYLE 
        =========================== */
     .page {
-      max-width: 1280px; /* Sedikit diperlebar agar muat */
+      max-width: 1280px; 
       margin: 32px auto;
       padding: 0 20px 40px;
     }
@@ -113,7 +122,7 @@
       color: var(--ux-text-main);
     }
 
-    /* Top form row (4 kolom) */
+    /* Top form row */
     .row-flex {
       display: grid;
       grid-template-columns: 1.1fr 1.5fr 1.3fr 1.7fr;
@@ -140,10 +149,7 @@
       width: 100%;
     }
 
-    .choices {
-      margin-bottom: 0 !important;
-      width: 100% !important;
-    }
+    .choices { margin-bottom: 0 !important; width: 100% !important; }
     .choices__inner {
       height: 34px !important;
       min-height: 34px !important;
@@ -177,16 +183,8 @@
       flex-direction: column;
     }
 
-    @media (max-width: 900px) {
-      .row-flex {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-    @media (max-width: 640px) {
-      .row-flex {
-        grid-template-columns: 1fr;
-      }
-    }
+    @media (max-width: 900px) { .row-flex { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 640px) { .row-flex { grid-template-columns: 1fr; } }
 
     /* Summary */
     .summary-grid {
@@ -199,9 +197,7 @@
       padding: 14px 18px;
       margin: 16px 0 20px;
     }
-    .summary-item {
-      min-width: 0;
-    }
+    .summary-item { min-width: 0; }
     .summary-label {
       font-size: 11px;
       font-weight: 600;
@@ -218,17 +214,8 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-
-    @media (max-width: 900px) {
-      .summary-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-    @media (max-width: 640px) {
-      .summary-grid {
-        grid-template-columns: 1fr;
-      }
-    }
+    @media (max-width: 900px) { .summary-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px) { .summary-grid { grid-template-columns: 1fr; } }
 
     /* Lock warning */
     .lock-warning {
@@ -242,7 +229,7 @@
       font-size: 12.5px;
     }
 
-    /* Table hybrid Xero style */
+    /* Table */
     .table-wrapper {
       width: 100%;
       overflow-x: auto;
@@ -256,9 +243,7 @@
       background: white;
       table-layout: auto;
     }
-    thead {
-      background: #eef2f7;
-    }
+    thead { background: #eef2f7; }
     th {
       padding: 8px 8px;
       font-size: 12px;
@@ -280,12 +265,8 @@
       vertical-align: middle;
       font-size: 12.5px;
     }
-    tbody tr:nth-child(even) {
-      background: #fafbff;
-    }
-    tbody tr:hover {
-      background: #f2f6ff;
-    }
+    tbody tr:nth-child(even) { background: #fafbff; }
+    tbody tr:hover { background: #f2f6ff; }
 
     .row-handle {
       cursor: grab;
@@ -302,22 +283,9 @@
       border-top: 1px dashed #d6e3ff;
       padding-left: 10px;
     }
-
-    .subline-row td:first-child {
-      padding-left: 22px !important;
-    }
-
-    .subline-row .row-handle {
-      padding-left: 12px;
-      font-size: 14px;
-    }
-
-    .subline-label {
-      font-size: 11px;
-      color: #6b7280;
-      font-style: italic;
-      margin-right: 4px;
-    }
+    .subline-row td:first-child { padding-left: 22px !important; }
+    .subline-row .row-handle { padding-left: 12px; font-size: 14px; }
+    .subline-label { font-size: 11px; color: #6b7280; font-style: italic; margin-right: 4px; }
 
     .table-input {
       width: 100%;
@@ -326,18 +294,12 @@
       border: 1px solid #cfd7e3;
       border-radius: 6px;
     }
-
     .readonly-field {
       background: #f3f4f6 !important;
       border-color: #d3d7e3 !important;
       color: #555 !important;
     }
-
-    .kpc-original {
-      font-weight: 600;
-      color: #273b74;
-      font-size: 12.5px;
-    }
+    .kpc-original { font-weight: 600; color: #273b74; font-size: 12.5px; }
 
     .delete-btn {
       cursor: pointer;
@@ -375,12 +337,8 @@
       border-radius: 999px;
       background: #4b5a7a;
     }
-    .split-btn span.split-icon::before {
-      top: 1px;
-    }
-    .split-btn span.split-icon::after {
-      bottom: 1px;
-    }
+    .split-btn span.split-icon::before { top: 1px; }
+    .split-btn span.split-icon::after { bottom: 1px; }
 
     textarea {
       width: 100%;
@@ -418,10 +376,7 @@
       font-size: 13.5px;
       cursor: pointer;
     }
-    .submit-btn:disabled {
-      opacity: .5;
-      cursor: not-allowed;
-    }
+    .submit-btn:disabled { opacity: .5; cursor: not-allowed; }
 
     #loadingOverlay {
       position: fixed;
@@ -443,19 +398,14 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
       
-    /* =========================================
-       BOTTOM BUTTONS WRAPPER (SHEET & XERO)
-       ========================================= */
+    /* Bottom Wrapper */
     .sheet-bottom-wrapper {
       margin-top: 18px;
       margin-bottom: 10px;
-      /* Update: Flex untuk tombol bersebelahan */
       display: flex;
       gap: 12px;
       align-items: center;
-      flex-wrap: wrap;
     }
-
     .sheet-bottom-btn {
       background: #eef4ff;
       border: 1px solid #cfe0ff;
@@ -470,27 +420,9 @@
       gap: 8px;
       transition: background 0.2s;
     }
+    .sheet-bottom-btn:hover { background: #e2ebff; }
+    .sheet-icon { width: 18px; height: 18px; }
 
-    .sheet-bottom-btn:hover {
-      background: #e2ebff;
-    }
-
-    /* Style Khusus Tombol Xero (Nuansa Cyan/Teal) */
-    .xero-btn {
-      background: #e0f7fa;
-      border: 1px solid #b2ebf2;
-      color: #00838f;
-    }
-     
-    .xero-btn:hover {
-      background: #b2ebf2;
-    }
-
-    /* Icon */
-    .sheet-icon {
-      width: 18px;
-      height: 18px;
-    }
   </style>
 </head>
 
@@ -502,13 +434,23 @@
   <div class="logo-section">
     AUXILIUM <span style="font-weight:300;color:#909090; font-size:13px; margin-left:6px;">Accounting Management Service</span>
   </div>
-    
+  
   <nav class="nav-menu">
-    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/index.html" class="nav-item">Home</a>
-    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/orderform/" class="nav-item">Sales Order</a>
-    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/" class="nav-item active">Receiving</a>
-    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/" class="nav-item">Production</a>
-    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/" class="nav-item">Review Invoice Order</a>
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/index.html" class="nav-item">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      Home Receiving
+    </a>
+    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/ImportXeroPO/index.html" class="nav-item highlight">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="17 8 12 3 7 8"></polyline>
+        <line x1="12" y1="3" x2="12" y2="15"></line>
+      </svg>
+      Import Xero PO
+    </a>
   </nav>
 </div>
 
@@ -600,30 +542,19 @@
 
     <div class="sheet-bottom-wrapper">
       <a 
-        href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/index.html"
+        href="https://docs.google.com/spreadsheets/d/1waLwJDMdKHd7R2BMMtkDobfcTn3B6YRk0P7304nvH7I/edit?gid=1127389013"
+        target="_blank"
         class="sheet-bottom-btn">
         
-        <svg class="sheet-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-           <line x1="19" y1="12" x2="5" y2="12"></line>
-           <polyline points="12 19 5 12 12 5"></polyline>
+        <svg class="sheet-icon" viewBox="0 0 24 24">
+          <path fill="#0F9D58" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+          <path fill="#FFF" d="M7 7h10v2H7zM7 11h10v2H7zM7 15h7v2H7z"/>
         </svg>
 
-        Back to Receiving
+        Open Google Sheet
       </a>
-
-      <a 
-        href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/ImportXeroPO/index.html" 
-        class="sheet-bottom-btn xero-btn">
-        
-        <svg class="sheet-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-           <polyline points="17 8 12 3 7 8"></polyline>
-           <line x1="12" y1="3" x2="12" y2="15"></line>
-        </svg>
-
-        Import to Xero
-      </a>
-    </div>
+      
+      </div>
 
     <div class="actions-row">
       <button class="secondary-btn" type="button" onclick="reloadINV()">Reload INV</button>
@@ -701,7 +632,6 @@
       qtyInput.classList.add("readonly-field");
     }
     if (kpcInput) {
-      // KPC akan pindah ke sub-line
       kpcInput.value = "";
     }
   }
@@ -816,7 +746,6 @@
         if (val > rem) val = rem;
         e.target.value = val || "";
 
-        // Jika sub-line, update total parent
         if (tr.classList.contains("subline-row")) {
           recalcParentTotal(rowIndex);
         }
@@ -830,13 +759,10 @@
         const rowIndex = row.dataset.rowIndex;
 
         if (row.classList.contains("subline-row")) {
-          // hapus sub-line
           row.remove();
           const base = getBaseRowByIndex(rowIndex);
           const subs = getSubRowsByIndex(rowIndex);
-
           if (!subs.length && base) {
-            // kembali jadi normal row (tidak split)
             delete base.dataset.hasSplit;
             const qtyBase = base.querySelector(".qty-receipt");
             if (qtyBase) {
@@ -846,7 +772,6 @@
           }
           recalcParentTotal(rowIndex);
         } else {
-          // base row dihapus → hapus juga semua sub-line
           getSubRowsByIndex(rowIndex).forEach(sr => sr.remove());
           row.remove();
         }
@@ -861,11 +786,10 @@
 
 
   /* ------------ RENDER LINES ------------ */
-    /* ------------ RENDER LINES (NEW: support split) ------------ */
   function renderLines(lines, useExistingQty){
     tableBody.innerHTML = "";
 
-    // NEW MODE (dari getInvDetail) → 1 baris per PO, tanpa split
+    // NEW MODE 
     if (!useExistingQty) {
       lines.forEach(ln => {
         const tr = document.createElement("tr");
@@ -905,8 +829,7 @@
       return;
     }
 
-    // EDIT MODE → lines berasal dari sheet Receiving (setiap row = satu split)
-    // Grouping by rowIndex
+    // EDIT MODE
     const groups = {};
     lines.forEach(ln => {
       const key = String(ln.rowIndex || "");
@@ -922,8 +845,8 @@
             unitAmount: ln.unitAmount ?? "",
             orderedQty: ln.orderedQty,
             uom: ln.uom || "Meter",
-            receivedToDate: ln.receivedToDate, // approx
-            remainingQty: ln.remainingQty      // approx
+            receivedToDate: ln.receivedToDate, 
+            remainingQty: ln.remainingQty      
           },
           splits: []
         };
@@ -935,14 +858,12 @@
       const baseData = group.base;
       const splits   = group.splits;
 
-      // Hitung total qty this receipt (sum of splits)
       let totalQty = 0;
       splits.forEach(s => {
         totalQty += Number(s.qtyThisReceipt) || 0;
       });
       baseData.qtyThisReceipt = totalQty;
 
-      // --- BASE ROW (original) ---
       const baseTr = document.createElement("tr");
       baseTr.dataset.rowIndex = baseData.rowIndex;
 
@@ -973,11 +894,9 @@
       attachRowEvents(baseTr);
 
       if (splits.length > 1) {
-        // ada split beneran → parent jadi container
         ensureParentModeForSplit(baseTr);
       }
 
-      // --- SUBLINES (jika memang ada lebih dari satu atau mau tampilkan tetap) ---
       if (splits.length > 1) {
         splits.forEach(s => {
           const subTr = document.createElement("tr");
@@ -1013,7 +932,6 @@
           tableBody.appendChild(subTr);
           attachRowEvents(subTr);
         });
-
         recalcParentTotal(baseData.rowIndex);
       }
     });
@@ -1022,7 +940,7 @@
     applyLockState(isLocked);
   }
 
-  /* ------------ SPLIT ROW (NEW) ------------ */
+  /* ------------ SPLIT ROW ------------ */
   function addSplitRow(baseTr){
     const rowIndex = baseTr.dataset.rowIndex;
     const existingSubs = getSubRowsByIndex(rowIndex);
@@ -1033,16 +951,12 @@
     let initialQty = "";
     let initialKpc = "";
 
-    // Jika ini split pertama, pindahkan nilai dari parent ke sub-line
     if (existingSubs.length === 0) {
       initialQty = baseQtyInput ? (baseQtyInput.value || "") : "";
       initialKpc = baseKpcInput ? (baseKpcInput.value || "") : "";
-
-      // parent jadi container (qty readonly, kpc kosong)
       ensureParentModeForSplit(baseTr);
     }
 
-    // Buat sub-row
     const subTr = document.createElement("tr");
     subTr.classList.add("subline-row");
     subTr.dataset.rowIndex = rowIndex;
@@ -1079,7 +993,6 @@
       <td class="delete-btn">🗑</td>
     `;
 
-    // Sisipkan setelah parent atau setelah sub terakhir
     if (existingSubs.length === 0) {
       tableBody.insertBefore(subTr, baseTr.nextSibling);
     } else {
@@ -1092,7 +1005,7 @@
   }
 
 
-  /* ------------ LOAD INV LIST (NEW MODE) ------------ */
+  /* ------------ LOAD INV LIST ------------ */
   async function loadInvList(){
     const res = await fetch(`${SCRIPT_URL}?action=getinvlist`);
     const list = await res.json();
@@ -1120,7 +1033,7 @@
     });
   }
 
-  /* ------------ LOAD EDITABLE RECEIVING LIST ------------ */
+  /* ------------ LOAD EDITABLE LIST ------------ */
   async function loadEditableReceivingList(){
     const res = await fetch(`${SCRIPT_URL}?action=geteditablelist`);
     const list = await res.json();
@@ -1165,7 +1078,7 @@
     });
   }
 
-  /* ------------ LOAD INV DETAIL (NEW MODE) ------------ */
+  /* ------------ LOAD DETAIL ------------ */
   async function loadInvDetail(inv){
     if (!inv) return;
     showLoading();
@@ -1173,7 +1086,6 @@
       const res = await fetch(`${SCRIPT_URL}?action=getinvdetail&invNumber=${encodeURIComponent(inv)}`);
       const data = await res.json();
       currentINV = inv;
-
       renderSummary(data.header);
       renderLines(data.lines, false);
       applyLockState(false);
@@ -1182,7 +1094,7 @@
     }
   }
 
-  /* ------------ LOAD EXISTING RECEIVING (EDIT MODE) ------------ */
+  /* ------------ LOAD EXISTING ------------ */
   async function loadReceivingEntry(rcvId){
     if(!rcvId) return;
     showLoading();
@@ -1192,12 +1104,10 @@
 
       enterEditMode();
       currentINV = data.invNumber || "";
-
       receivingId.value   = data.receivingId;
       if (data.receivingDate) receivingDate.value = data.receivingDate;
       notes.value         = data.notes || "";
 
-      // ⬇️ PENTING: summary ambil dari originalPOHeader (Apps Script baru)
       if (data.originalPOHeader) {
         renderSummary(data.originalPOHeader);
       } else {
@@ -1224,89 +1134,73 @@
     }
   }
 
-  /* ------------ VALIDATION & SUBMIT (FINAL FIX V2) ------------ */
-   function validateForm() {
+  /* ------------ VALIDATION & SUBMIT ------------ */
+  function validateForm() {
+    if (isLocked) return "This Receiving Entry is locked and cannot be edited.";
+    if (!receivingDate.value) return "Receiving Date required.";
 
-  if (isLocked) return "This Receiving Entry is locked and cannot be edited.";
-  if (!receivingDate.value) return "Receiving Date required.";
+    if (!isEditMode && !invSelect.value) {
+      return "Inv Number required.";
+    }
 
-  if (!isEditMode && !invSelect.value) {
-    return "Inv Number required.";
+    const rows = [...document.querySelectorAll("#tableBody tr")];
+    if (rows.length === 0) return "No line items found.";
+
+    const groups = {};
+    rows.forEach(r => {
+      const rowIndex = r.dataset.rowIndex;
+      if (!rowIndex) return;
+
+      if (!groups[rowIndex]) {
+        groups[rowIndex] = {
+          remaining: Number(r.querySelector(".remaining")?.value || 0),
+          totalQty: 0,         
+          parentQty: 0,
+          hasSplit: false
+        };
+      }
+
+      const isSub = r.classList.contains("subline-row");
+      const qty   = Number(r.querySelector(".qty-receipt")?.value || 0);
+      const kpc   = (r.querySelector(".kpc-new")?.value || "").trim();
+
+      if (qty > 0 && !kpc) {
+        return "Every line with Qty > 0 must have KPC filled.";
+      }
+
+      if (isSub) {
+        groups[rowIndex].hasSplit = true;
+        groups[rowIndex].totalQty += qty; 
+      } else {
+        groups[rowIndex].parentQty = qty;
+      }
+    });
+
+    let anyQty = false;
+    for (const key in groups) {
+      const g = groups[key];
+      const effectiveTotal = g.hasSplit ? g.totalQty : g.parentQty;
+      if (effectiveTotal > 0) anyQty = true;
+      if (effectiveTotal > g.remaining) {
+        return `Total Qty for one PO line exceeds Remaining (${effectiveTotal} > ${g.remaining}).`;
+      }
+    }
+
+    if (!anyQty) return "At least one line must have Qty > 0.";
+    return null;
   }
 
-  const rows = [...document.querySelectorAll("#tableBody tr")];
-  if (rows.length === 0) return "No line items found.";
-
-  // Group by rowIndex
-  const groups = {};
-  rows.forEach(r => {
-    const rowIndex = r.dataset.rowIndex;
-    if (!rowIndex) return;
-
-    if (!groups[rowIndex]) {
-      groups[rowIndex] = {
-        remaining: Number(r.querySelector(".remaining")?.value || 0),
-        totalQty: 0,         // total qty sublines atau parent (jika tidak split)
-        parentQty: 0,
-        hasSplit: false
-      };
-    }
-
-    const isSub = r.classList.contains("subline-row");
-    const qty   = Number(r.querySelector(".qty-receipt")?.value || 0);
-    const kpc   = (r.querySelector(".kpc-new")?.value || "").trim();
-
-    // KPC wajib jika QTY > 0
-    if (qty > 0 && !kpc) {
-      return "Every line with Qty > 0 must have KPC filled.";
-    }
-
-    if (isSub) {
-      // SUB-LINE
-      groups[rowIndex].hasSplit = true;
-      groups[rowIndex].totalQty += qty;   // hitung sub-line saja
-    } else {
-      // PARENT LINE (non-split)
-      groups[rowIndex].parentQty = qty;
-    }
-  });
-
-  let anyQty = false;
-
-  // Validasi per-group
-  for (const key in groups) {
-    const g = groups[key];
-
-    const effectiveTotal = g.hasSplit ? g.totalQty : g.parentQty;
-
-    if (effectiveTotal > 0) anyQty = true;
-
-    if (effectiveTotal > g.remaining) {
-      return `Total Qty for one PO line exceeds Remaining (${effectiveTotal} > ${g.remaining}).`;
-    }
-  }
-
-  if (!anyQty) return "At least one line must have Qty > 0.";
-
-  return null;
-}
-
-
-    function submitReceiving(){
+  function submitReceiving(){
     const err = validateForm();
     if(err) return alert(err);
 
     showLoading();
-
     const allRows = [...document.querySelectorAll("#tableBody tr")];
-
-    // Group rows by rowIndex
     const groupMap = {};
     allRows.forEach(r => {
       const idx = r.dataset.rowIndex;
       if (!idx) return;
       if (!groupMap[idx]) groupMap[idx] = { base: null, subs: [] };
-
       if (r.classList.contains("subline-row")) {
         groupMap[idx].subs.push(r);
       } else {
@@ -1315,7 +1209,6 @@
     });
 
     const lines = [];
-
     Object.keys(groupMap).forEach(idx => {
       const g = groupMap[idx];
       const base = g.base;
@@ -1332,10 +1225,8 @@
       const rowIndex       = base.dataset.rowIndex;
 
       if (g.subs.length === 0) {
-        // NO SPLIT: gunakan parent row seperti biasa
         const kpcVal = base.querySelector(".kpc-new").value.trim();
         const qtyVal = base.querySelector(".qty-receipt").value;
-
         if ((Number(qtyVal) || 0) > 0) {
           lines.push({
             rowIndex,
@@ -1352,14 +1243,11 @@
           });
         }
       } else {
-        // WITH SPLIT: tiap sub-line dikirim sebagai row sendiri.
         g.subs.forEach(sr => {
           const kpcVal = sr.querySelector(".kpc-new").value.trim();
           const qtyVal = sr.querySelector(".qty-receipt").value;
           const remSub = sr.querySelector(".remaining").value;
-
           if ((Number(qtyVal) || 0) <= 0) return;
-
           lines.push({
             rowIndex,
             poNumber,
@@ -1395,11 +1283,7 @@
       hideLoading();
       if(res.status==="success"){
         alert("Receiving saved.\nReceiving ID: "+payload.receivingId);
-
-        // refresh editable list
         await loadEditableReceivingList();
-
-        // back to NEW MODE
         enterNewMode();
         if (invSelect.value) {
           currentINV = invSelect.value;
@@ -1429,16 +1313,13 @@
   /* ------------ INIT ------------ */
   window.addEventListener("DOMContentLoaded", async ()=>{
     showLoading();
-
     const t = new Date();
     receivingDate.value = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")}`;
-
     await Promise.all([
       loadNextReceivingId(),
       loadInvList(),
       loadEditableReceivingList()
     ]);
-
     hideLoading();
   });
 </script>
