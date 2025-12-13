@@ -4,7 +4,6 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Inventory Stok - Auxilium</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
@@ -45,7 +44,7 @@ body {
 .nav-link { 
     text-decoration: none; color: var(--text-muted); font-weight: 500; margin-left: 20px; transition: 0.2s; 
 }
-.nav-link:hover, .nav-link.active { color: var(--primary); }
+.nav-link:hover { color: var(--primary); }
 
 /* LAYOUT */
 .container {
@@ -64,6 +63,51 @@ body {
 }
 .btn-refresh:hover { background: #f0f9ff; border-color: var(--primary); }
 
+/* ================= TABS DESIGN ================= */
+.tabs-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tab-btn {
+  padding: 12px 24px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  color: var(--primary);
+  background: #f8fafc;
+}
+
+.tab-btn.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+/* Hide content by default, show if active */
+.tab-content {
+  display: none;
+  animation: fadeIn 0.3s ease-in-out;
+}
+.tab-content.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* =============================================== */
+
 /* CARDS */
 .card {
   background: var(--card-bg); border-radius: 12px;
@@ -73,7 +117,7 @@ body {
 
 .card-header {
   padding: 16px 24px; border-bottom: 1px solid var(--border);
-  display: flex; justify-content: space-between; align-items: center; bg-color: #fafafa;
+  display: flex; justify-content: space-between; align-items: center; background: #fafafa;
 }
 .card-title { font-size: 16px; font-weight: 600; margin: 0; color: var(--text-main); }
 
@@ -113,7 +157,6 @@ tr:hover td { background-color: #f1f5f9; }
   border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-
 </style>
 </head>
 <body>
@@ -123,8 +166,8 @@ tr:hover td { background-color: #f1f5f9; }
     AUXILIUM <span>Warehouse Monitor</span>
   </div>
   <nav>
-    <a href="index.html" class="nav-link">Kembali ke Order Form</a>
-    <a href="#" class="nav-link active">Stok Gudang</a>
+    <a href="../index.html" class="nav-link">Kembali ke Order Form</a>
+    <a href="#" class="nav-link" style="color:var(--primary); font-weight:600;">Stok Gudang</a>
   </nav>
 </div>
 
@@ -137,49 +180,58 @@ tr:hover td { background-color: #f1f5f9; }
     </button>
   </div>
 
-  <div class="card">
-    <div class="card-header">
-      <h3 class="card-title">Stok Spandek (Kolom C-G)</h3>
-      <input type="text" class="search-input" placeholder="Cari Spandek..." onkeyup="searchTable(this, 'tableSpandek')">
-    </div>
-    <div class="table-wrap">
-      <table id="tableSpandek">
-        <thead>
-          <tr>
-            <th>Nama Barang</th>
-            <th>Spesifikasi</th>
-            <th>Warna</th>
-            <th>Satuan</th>
-            <th style="text-align:right">Sisa Stok</th>
-          </tr>
-        </thead>
-        <tbody id="bodySpandek"></tbody>
-      </table>
-      <div id="loadingSpandek" class="loader-box">
-        <div class="spinner"></div> Mengambil data...
+  <div class="tabs-container">
+    <button class="tab-btn active" onclick="switchTab('spandek')">Stok Spandek</button>
+    <button class="tab-btn" onclick="switchTab('nonspandek')">Stok Non-Spandek</button>
+  </div>
+
+  <div id="view-spandek" class="tab-content active">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Database Spandek (Kolom C-G)</h3>
+        <input type="text" class="search-input" placeholder="Cari Spandek..." onkeyup="searchTable(this, 'tableSpandek')">
+      </div>
+      <div class="table-wrap">
+        <table id="tableSpandek">
+          <thead>
+            <tr>
+              <th>Nama Barang</th>
+              <th>Spesifikasi</th>
+              <th>Warna</th>
+              <th>Satuan</th>
+              <th style="text-align:right">Sisa Stok</th>
+            </tr>
+          </thead>
+          <tbody id="bodySpandek"></tbody>
+        </table>
+        <div id="loadingSpandek" class="loader-box">
+          <div class="spinner"></div> Mengambil data...
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-header">
-      <h3 class="card-title">Stok Non-Spandek (Kolom C-F)</h3>
-      <input type="text" class="search-input" placeholder="Cari Item..." onkeyup="searchTable(this, 'tableNon')">
-    </div>
-    <div class="table-wrap">
-      <table id="tableNon">
-        <thead>
-          <tr>
-            <th>Nama Barang</th>
-            <th>Kategori</th>
-            <th>Satuan</th>
-            <th style="text-align:right">Sisa Stok</th>
-          </tr>
-        </thead>
-        <tbody id="bodyNon"></tbody>
-      </table>
-      <div id="loadingNon" class="loader-box">
-        <div class="spinner"></div> Mengambil data...
+  <div id="view-nonspandek" class="tab-content">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Database Non-Spandek (Kolom C-F)</h3>
+        <input type="text" class="search-input" placeholder="Cari Item..." onkeyup="searchTable(this, 'tableNon')">
+      </div>
+      <div class="table-wrap">
+        <table id="tableNon">
+          <thead>
+            <tr>
+              <th>Nama Barang</th>
+              <th>Kategori</th>
+              <th>Satuan</th>
+              <th style="text-align:right">Sisa Stok</th>
+            </tr>
+          </thead>
+          <tbody id="bodyNon"></tbody>
+        </table>
+        <div id="loadingNon" class="loader-box">
+          <div class="spinner"></div> Mengambil data...
+        </div>
       </div>
     </div>
   </div>
@@ -190,12 +242,30 @@ tr:hover td { background-color: #f1f5f9; }
   // =========================================================
   // GANTI URL DI BAWAH INI DENGAN HASIL DEPLOY APPS SCRIPT
   // =========================================================
-  const API_URL = "https://script.google.com/macros/s/AKfycbxnHjQCw44ypDNWwU8Ie8MMZZcvGOme72wTe5_0znBFRICSd0PjuhzWbRWlLStQkluw/exec"; 
+  const API_URL = "https://script.google.com/macros/s/AKfycbxDLvQ-of3TrOnLdXac9Iv2YbwwFPjFyh7ufUd4PBFda6_V7CCzuVIpwPT8dpG0_dZb3A/exec"; 
 
   window.onload = loadData;
 
+  // --- TAB FUNCTION ---
+  function switchTab(tabName) {
+    // 1. Hide all contents
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    // 2. Remove active class from buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+    // 3. Show selected content
+    if(tabName === 'spandek') {
+      document.getElementById('view-spandek').classList.add('active');
+      document.querySelector('button[onclick="switchTab(\'spandek\')"]').classList.add('active');
+    } else {
+      document.getElementById('view-nonspandek').classList.add('active');
+      document.querySelector('button[onclick="switchTab(\'nonspandek\')"]').classList.add('active');
+    }
+  }
+  // --------------------
+
   async function loadData() {
-    // Reset UI
+    // Reset UI Loaders
     document.getElementById("bodySpandek").innerHTML = "";
     document.getElementById("bodyNon").innerHTML = "";
     document.getElementById("loadingSpandek").style.display = "block";
@@ -230,18 +300,17 @@ tr:hover td { background-color: #f1f5f9; }
     }
 
     rows.forEach(row => {
-      // Lewati baris jika Nama Barang (index 0) kosong
+      // Validasi kolom pertama (Nama Barang)
       if (!row[0]) return;
 
       const tr = document.createElement("tr");
       let html = "";
       
-      // Loop tiap cell
       row.forEach((cell, idx) => {
         let content = cell;
         let className = "";
 
-        // Logika untuk kolom terakhir (Stok)
+        // Logika warna untuk kolom terakhir (Stok)
         if (idx === expectedCols - 1) {
           className = "stock-val ";
           let num = parseFloat(cell);
@@ -260,24 +329,20 @@ tr:hover td { background-color: #f1f5f9; }
     });
   }
 
-  // Fungsi Search Simple
+  // Fungsi Search
   function searchTable(input, tableId) {
     const filter = input.value.toUpperCase();
     const table = document.getElementById(tableId);
     const tr = table.getElementsByTagName("tr");
 
-    // Loop semua baris (skip index 0 = header)
     for (let i = 1; i < tr.length; i++) {
       let tds = tr[i].getElementsByTagName("td");
       let found = false;
-      
-      // Cek Nama Barang (kolom ke-1 / index 0)
       if (tds[0]) {
         if (tds[0].textContent.toUpperCase().indexOf(filter) > -1) {
           found = true;
         }
       }
-      
       tr[i].style.display = found ? "" : "none";
     }
   }
