@@ -32,7 +32,6 @@
             cursor: not-allowed;
             border-color: transparent;
         }
-        /* Khusus input tabel saat disabled */
         .input-bare:disabled:hover {
             background-color: #F8FAFC;
             border-color: transparent;
@@ -177,13 +176,14 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycby98lSBDcVCppD9ZUrhObnVhGeJeBxddgkPtoU9UnYa1Vp3eQ5N2xrjBNjmU0-TT80t/exec"; 
+        // --- KONFIGURASI ---
+        const API_URL = "https://script.google.com/macros/s/AKfycbx12FkBq_BeVxmAmaDtLAi_49Dirv2cGDnxJQq9gXP5ijpKHy-jcnrWoIQEbr_3zQ8/exec"; 
         const TAX_RATE = 0.11; 
 
         let allData = [];
         let currentItems = [];
         let currentPOId = "";
-        let isEditMode = false; // State untuk mengontrol mode edit
+        let isEditMode = false;
 
         async function fetchData() {
             try {
@@ -193,7 +193,7 @@
                 document.getElementById('loading').style.display = 'none';
                 applyFilters();
             } catch (error) {
-                alert("Gagal memuat data.");
+                alert("Gagal memuat data. Periksa koneksi.");
             }
         }
         
@@ -211,8 +211,6 @@
             data.forEach(po => {
                 const isBilled = po.status === 'Billed';
                 const statusClass = isBilled ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-800';
-                
-                // Text tombol menyesuaikan status
                 const btnText = isBilled ? 'View Bill' : 'Create Bill';
                 const btnClass = isBilled ? 'text-slate-600 bg-slate-100 hover:bg-slate-200' : 'text-white bg-blue-600 hover:bg-blue-700 shadow-md';
 
@@ -236,7 +234,7 @@
             });
         }
 
-        // --- NEW LOGIC: OPEN MODAL & HANDLE STATE ---
+        // --- OPEN MODAL & POPULATE DATA ---
         function openBillModal(idPO) {
             const po = allData.find(d => d.id === idPO);
             if (!po) return;
@@ -244,20 +242,27 @@
             currentPOId = idPO;
             const isBilled = po.status === 'Billed';
 
-            // Set Header Info
             document.getElementById('bill-po-id').innerText = po.id;
             document.getElementById('bill-vendor').value = po.vendor;
             
-            // Populate Values
-            document.getElementById('bill-inv-number').value = po.invNumber || ''; // Ambil dari saved data jika ada (perlu update di GAS jika ingin kirim balik invNumber, saat ini default kosong jika pending)
-            // Note: Script GAS sebelumnya belum mengirim balik Invoice Number di JSON list. 
-            // Jika ingin sempurna, pastikan GAS 'handleRequest' mengirim kolom J, K, L dsb. 
-            // Namun script ini akan tetap jalan (cuma form kosong/default).
+            // 1. INVOICE NUMBER (Fix: Mengisi nilai dari data server)
+            document.getElementById('bill-inv-number').value = po.invNumber || ''; 
             
-            document.getElementById('bill-date').valueAsDate = new Date();
-            document.getElementById('bill-adjustment').value = 0;
+            // 2. INVOICE DATE (Fix: Format Date ke YYYY-MM-DD untuk input date)
+            if (po.invDate) {
+                const d = new Date(po.invDate);
+                const yyyy = d.getFullYear();
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const dd = String(d.getDate()).padStart(2, '0');
+                document.getElementById('bill-date').value = `${yyyy}-${mm}-${dd}`;
+            } else {
+                document.getElementById('bill-date').valueAsDate = new Date();
+            }
+
+            // 3. TAX MODE & NOTE
+            document.getElementById('tax-mode').value = po.taxMode || 'exclusive'; 
             document.getElementById('bill-note').value = po.adminNote || po.catatan || '';
-            document.getElementById('tax-mode').value = 'exclusive'; 
+            document.getElementById('bill-adjustment').value = 0;
 
             // Items Logic
             currentItems = po.items.map(item => ({
@@ -268,20 +273,20 @@
 
             // --- LOCK / UNLOCK LOGIC ---
             if (isBilled) {
-                // Mode View (Locked)
+                // View Mode
                 document.getElementById('modal-title').innerText = "Bill Details";
                 document.getElementById('status-banner').classList.remove('hidden');
                 document.getElementById('btn-edit').classList.remove('hidden');
                 document.getElementById('btn-save').classList.add('hidden');
-                setFormState(false); // Disable form
+                setFormState(false); 
             } else {
-                // Mode Create (Unlocked)
+                // Create Mode
                 document.getElementById('modal-title').innerText = "New Bill";
                 document.getElementById('status-banner').classList.add('hidden');
                 document.getElementById('btn-edit').classList.add('hidden');
                 document.getElementById('btn-save').classList.remove('hidden');
                 document.getElementById('btn-save').innerHTML = '<i class="fas fa-check"></i> Approve & Save';
-                setFormState(true); // Enable form
+                setFormState(true); 
             }
 
             renderBillItems();
@@ -289,12 +294,9 @@
             document.getElementById('billModal').classList.remove('hidden');
         }
 
-        // --- FUNGSI AKTIFKAN EDIT MODE ---
         function enableEditMode() {
             if(confirm("Apakah Anda yakin ingin mengedit data Bill yang sudah diapprove ini?")) {
-                setFormState(true); // Enable inputs
-                
-                // Ubah tampilan tombol
+                setFormState(true); 
                 document.getElementById('btn-edit').classList.add('hidden');
                 document.getElementById('btn-save').classList.remove('hidden');
                 document.getElementById('btn-save').innerHTML = '<i class="fas fa-save"></i> Update Changes';
@@ -302,18 +304,12 @@
             }
         }
 
-        // --- HELPER: SET READONLY / EDITABLE ---
         function setFormState(isEditable) {
             isEditMode = isEditable;
-            
-            // Disable/Enable semua input dengan class 'bill-input'
             const inputs = document.querySelectorAll('.bill-input');
             inputs.forEach(input => {
                 input.disabled = !isEditable;
             });
-
-            // Disable/Enable input harga di tabel (class 'input-bare')
-            // Kita re-render tabel agar properti disabled diterapkan
             renderBillItems();
         }
 
@@ -321,7 +317,6 @@
             const tbody = document.getElementById('bill-items-body');
             tbody.innerHTML = '';
             
-            // Tentukan apakah input harus disabled
             const disabledAttr = isEditMode ? '' : 'disabled';
 
             currentItems.forEach((item, index) => {
@@ -352,7 +347,6 @@
                 </tr>`;
                 tbody.innerHTML += row;
             });
-            // Re-calc after render untuk memastikan angka tampil benar meski disabled
             if (!isEditMode) calculateTotal(); 
         }
 
