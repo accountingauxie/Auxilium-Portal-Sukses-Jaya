@@ -295,7 +295,7 @@
       user-select: none;
       width: 26px;
     }
-     
+      
     /* Sub-line indent style */
     .subline-row td {
       background: #f7faff;
@@ -442,7 +442,7 @@
       animation: spin .85s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-     
+      
     /* =========================================
        BOTTOM BUTTONS WRAPPER (SHEET & XERO)
        ========================================= */
@@ -481,7 +481,7 @@
       border: 1px solid #b2ebf2;
       color: #00838f;
     }
-    
+     
     .xero-btn:hover {
       background: #b2ebf2;
     }
@@ -502,7 +502,7 @@
   <div class="logo-section">
     AUXILIUM <span style="font-weight:300;color:#909090; font-size:13px; margin-left:6px;">Accounting Management Service</span>
   </div>
-   
+    
   <nav class="nav-menu">
     <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/index.html" class="nav-item">Home</a>
     <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/orderform/" class="nav-item">Sales Order</a>
@@ -600,16 +600,15 @@
 
     <div class="sheet-bottom-wrapper">
       <a 
-        href="https://docs.google.com/spreadsheets/d/1waLwJDMdKHd7R2BMMtkDobfcTn3B6YRk0P7304nvH7I/edit?gid=1127389013"
-        target="_blank"
+        href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/index.html"
         class="sheet-bottom-btn">
         
-        <svg class="sheet-icon" viewBox="0 0 24 24">
-          <path fill="#0F9D58" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
-          <path fill="#FFF" d="M7 7h10v2H7zM7 11h10v2H7zM7 15h7v2H7z"/>
+        <svg class="sheet-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+           <line x1="19" y1="12" x2="5" y2="12"></line>
+           <polyline points="12 19 5 12 12 5"></polyline>
         </svg>
 
-        Open Google Sheet
+        Back to Receiving
       </a>
 
       <a 
@@ -660,7 +659,7 @@
   const summaryTotalOrdered = document.getElementById("summaryTotalOrdered");
   const summaryTotalReceived = document.getElementById("summaryTotalReceived");
   const summaryTotalRemaining = document.getElementById("summaryTotalRemaining");
-   
+    
   // --- GROUP HELPERS (by rowIndex) ---
   function getAllRows() {
     return [...document.querySelectorAll("#tableBody tr")];
