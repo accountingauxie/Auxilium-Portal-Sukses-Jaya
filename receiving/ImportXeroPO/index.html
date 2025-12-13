@@ -31,20 +31,37 @@
             max-width: 1000px; margin: 0 auto 30px; 
         }
 
-        .header-top { display: flex; align-items: center; gap: 15px; margin-bottom: 8px; }
-
-        .btn-back {
-            background: white; border: 1px solid var(--border-color);
-            color: var(--text-sub); border-radius: 8px;
-            width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.2s;
+        /* Navigasi Back Style Baru */
+        .nav-top-row {
+            margin-bottom: 15px;
         }
-        .btn-back:hover { border-color: var(--primary); color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        
+        .btn-back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-sub);
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 12px 8px 0;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
 
-        .page-title { font-size: 24px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px; }
+        .btn-back-link:hover {
+            color: var(--primary);
+            transform: translateX(-3px); /* Efek gerak sedikit ke kiri */
+        }
+        
+        .btn-back-link .material-icons {
+            font-size: 18px;
+        }
+
+        .header-content { display: flex; flex-direction: column; gap: 4px; }
+        .page-title { font-size: 26px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px; }
         
         .page-desc { 
-            font-size: 14px; color: var(--text-sub); margin-left: 52px; 
+            font-size: 15px; color: var(--text-sub); 
             max-width: 600px; line-height: 1.5;
         }
 
@@ -129,7 +146,7 @@
             .page-desc { margin-left: 0; margin-top: 10px; }
         }
 
-        /* --- MODAL STYLES (Sama seperti sebelumnya, disesuaikan sedikit) --- */
+        /* --- MODAL STYLES --- */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(2px); }
         .modal-content { background: white; margin: 3vh auto; width: 95%; max-width: 900px; border-radius: 12px; display: flex; flex-direction: column; max-height: 90vh; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from {opacity: 0; transform: translateY(20px);} to {opacity: 1; transform: translateY(0);} }
@@ -157,14 +174,18 @@
 <body>
 
     <div class="app-header">
-        <div class="header-top">
-            <button class="btn-back" onclick="window.history.back()" title="Go Back">
+        <div class="nav-top-row">
+            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/index.html" class="btn-back-link">
                 <span class="material-icons">arrow_back</span>
-            </button>
-            <div class="page-title">Import Receiving PO to Xero</div>
+                Back to Receiving
+            </a>
         </div>
-        <div class="page-desc">
-            Import Purchasing Order Received to Xero.
+
+        <div class="header-content">
+            <div class="page-title">Import Receiving PO to Xero</div>
+            <div class="page-desc">
+                Import Purchasing Order Received to Xero.
+            </div>
         </div>
     </div>
 
