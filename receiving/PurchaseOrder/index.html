@@ -10,7 +10,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        /* Style sama persis seperti sebelumnya */
         body { font-family: 'Inter', sans-serif; background-color: #f4f6f9; color: #333; }
         .navbar { background-color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); padding: 0.8rem 1.5rem; }
         .main-card { border: none; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); background: #ffffff; margin-top: 30px; padding: 40px; }
@@ -57,8 +56,16 @@
                     <label class="form-label">Jumlah Order</label>
                     <input type="number" class="form-control" id="qtyInput" placeholder="0" min="1">
                 </div>
+                
+                <div class="col-12">
+                    <label class="form-label">Catatan Item <small class="text-muted">(Opsional)</small></label>
+                    <input type="text" class="form-control" id="noteInput" placeholder="Contoh: Kirim sebelum jam 12, Warna Merah, dll">
+                </div>
+
                 <div class="col-12 text-end mt-4">
-                     <button class="btn btn-primary px-4" onclick="addItemToTable()">Tambahkan ke Daftar</button>
+                     <button class="btn btn-primary px-4" onclick="addItemToTable()">
+                        <i class="bi bi-plus-lg me-1"></i> Tambahkan ke Daftar
+                    </button>
                 </div>
             </div>
         </div>
@@ -70,11 +77,16 @@
                     <table class="table table-hover mb-0" id="poTable">
                         <thead class="table-light">
                             <tr>
-                                <th class="ps-4">No</th><th>Item</th><th>Vendor</th><th>Qty</th><th>Satuan</th><th>Hapus</th>
+                                <th class="ps-4">No</th>
+                                <th>Item</th>
+                                <th>Vendor</th>
+                                <th>Qty</th>
+                                <th>Satuan</th>
+                                <th>Catatan</th> <th>Hapus</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr id="emptyRow"><td colspan="6" class="text-center py-4 text-muted">Belum ada item</td></tr>
+                            <tr id="emptyRow"><td colspan="7" class="text-center py-4 text-muted">Belum ada item</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -89,13 +101,11 @@
       // ==========================================
       // PASTE URL DEPLOY WEB APP KAMU DI SINI
       const API_URL = "https://script.google.com/macros/s/AKfycbyvMV9llZfYhqa6Kd8kihxgdILQpPPuoq3uoTFo-tCTRNH7MVTyLqZQjygrRSS67Q4g3Q/exec"; 
-      // Contoh: https://script.google.com/macros/s/AKfy.../exec
       // ==========================================
 
       var allData = {};
       var cartItems = [];
 
-      // 1. Fetch Data saat Load (Pengganti google.script.run)
       window.onload = function() {
         fetch(API_URL + "?action=getData")
           .then(response => response.json())
@@ -157,17 +167,32 @@
         if(vendor && idx) document.getElementById("unitInput").value = allData[vendor][idx].unit;
       }
 
+      // === FUNGSI MENAMBAHKAN ITEM & CATATAN ===
       function addItemToTable() {
         var vendor = document.getElementById("vendorSelect").value;
         var idx = document.getElementById("itemSelect").value;
         var qty = document.getElementById("qtyInput").value;
         var unit = document.getElementById("unitInput").value;
+        var note = document.getElementById("noteInput").value; // Ambil nilai catatan
 
-        if (!vendor || !idx || !qty || qty <= 0) return Swal.fire('Error', 'Lengkapi data', 'error');
+        if (!vendor || !idx || !qty || qty <= 0) return Swal.fire('Error', 'Lengkapi Vendor, Item, dan Jumlah Order', 'error');
 
-        cartItems.push({ vendor: vendor, itemName: allData[vendor][idx].item, qty: qty, unit: unit });
+        // Simpan note ke object
+        cartItems.push({ 
+            vendor: vendor, 
+            itemName: allData[vendor][idx].item, 
+            qty: qty, 
+            unit: unit,
+            note: note 
+        });
+
         renderTable();
+        
+        // Reset form input setelah tambah (kecuali vendor)
         document.getElementById("qtyInput").value = "";
+        document.getElementById("noteInput").value = ""; // Reset catatan
+        // Opsional: reset item selection jika ingin input cepat
+        // document.getElementById("itemSelect").value = "";
       }
 
       function renderTable() {
@@ -176,18 +201,22 @@
         document.getElementById("btnSubmit").disabled = cartItems.length === 0;
 
         if (cartItems.length === 0) {
-            tbody.innerHTML = '<tr id="emptyRow"><td colspan="6" class="text-center">Belum ada item</td></tr>';
+            tbody.innerHTML = '<tr id="emptyRow"><td colspan="7" class="text-center">Belum ada item</td></tr>';
             return;
         }
 
         cartItems.forEach((item, index) => {
+            // Tampilkan Catatan di tabel, jika kosong beri tanda strip (-)
+            var displayNote = item.note ? item.note : '<span class="text-muted">-</span>';
+            
             tbody.innerHTML += `<tr>
                 <td class="ps-4">${index + 1}</td>
                 <td class="fw-bold">${item.itemName}</td>
                 <td>${item.vendor}</td>
                 <td>${item.qty}</td>
                 <td>${item.unit}</td>
-                <td><button class="btn btn-sm btn-danger" onclick="deleteItem(${index})">X</button></td>
+                <td class="text-break" style="max-width: 200px;">${displayNote}</td>
+                <td><button class="btn btn-sm btn-danger" onclick="deleteItem(${index})"><i class="bi bi-trash"></i></button></td>
             </tr>`;
         });
       }
@@ -197,15 +226,11 @@
         renderTable();
       }
 
-      // 2. Kirim Data dengan Fetch POST
       function submitPO() {
         Swal.fire({ title: 'Menyimpan...', didOpen: () => Swal.showLoading() });
 
         var payload = { vendor: cartItems[0].vendor, items: cartItems };
 
-        // Gunakan 'no-cors' tidak disarankan karena kita butuh response JSON, 
-        // tapi Apps Script redirect membuat fetch agak tricky.
-        // Cara paling stabil untuk GitHub Pages -> Apps Script:
         fetch(API_URL + "?action=saveOrder", {
             method: "POST",
             body: JSON.stringify(payload)
@@ -216,6 +241,9 @@
                 Swal.fire('Sukses!', 'ID PO: ' + res.id, 'success');
                 cartItems = []; renderTable();
                 document.getElementById("vendorSelect").value = "";
+                document.getElementById("itemSelect").innerHTML = '<option value="">-- Pilih Vendor Terlebih Dahulu --</option>';
+                document.getElementById("itemSelect").disabled = true;
+                document.getElementById("unitInput").value = "";
             } else {
                 throw new Error(res.message);
             }
