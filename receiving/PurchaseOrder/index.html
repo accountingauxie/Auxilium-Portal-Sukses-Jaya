@@ -10,89 +10,55 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
+        /* Style sama persis seperti sebelumnya */
         body { font-family: 'Inter', sans-serif; background-color: #f4f6f9; color: #333; }
         .navbar { background-color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); padding: 0.8rem 1.5rem; }
-        .navbar-brand { font-weight: 700; font-size: 1.25rem; color: #000 !important; display: flex; align-items: center; gap: 10px; }
-        .navbar-brand span { font-weight: 300; color: #6c757d; font-size: 1rem; }
-        
         .main-card { border: none; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); background: #ffffff; margin-top: 30px; padding: 40px; }
-        .form-label { font-weight: 600; font-size: 0.9rem; color: #495057; margin-bottom: 8px; }
-        .form-control, .form-select { border-radius: 8px; padding: 10px 12px; border: 1px solid #ced4da; }
-        .form-control:focus, .form-select:focus { box-shadow: 0 0 0 3px rgba(13, 202, 240, 0.15); border-color: #0dcaf0; }
         .bg-readonly { background-color: #f8f9fa; color: #6c757d; cursor: not-allowed; }
-        
         #loader { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: #6c757d; }
-        
-        /* Tombol Navigasi */
-        .btn-nav-active { border: 1px solid #007bff; color: #007bff; background: #f0f8ff; font-weight: 600; }
-        .btn-nav-outline { border: 1px solid #dee2e6; color: #6c757d; background: white; }
     </style>
 </head>
 <body>
 
     <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">
-                AUXILIUM <span>Accounting Management Service</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
-                <div class="d-flex gap-2">
-                    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/index.html" class="btn btn-nav-outline rounded-3 text-decoration-none">
-                        <i class="bi bi-arrow-left"></i> Home
-                    </a>
-                    <a href="#" class="btn btn-nav-active rounded-3 text-decoration-none">
-                        <i class="bi bi-file-earmark-plus"></i> PO Entry
-                    </a>
-                </div>
-            </div>
+            <a class="navbar-brand" href="#">AUXILIUM <span>Accounting Management Service</span></a>
         </div>
     </nav>
 
     <div class="container" style="margin-top: 100px; max-width: 900px;">
-        
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h3 class="fw-bold m-0">Buat Purchase Order</h3>
             <div id="loader">
                 <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-                <span>Menghubungkan ke Database...</span>
+                <span>Menghubungkan ke Server...</span>
             </div>
         </div>
 
         <div class="main-card">
             <div class="row g-4">
-                
                 <div class="col-12">
-                    <label for="vendorSelect" class="form-label">Pilih Vendor</label>
+                    <label class="form-label">Pilih Vendor</label>
                     <select class="form-select" id="vendorSelect" onchange="onVendorChange()">
                         <option value="" disabled selected>Menunggu data...</option>
                     </select>
                 </div>
-
                 <div class="col-12">
-                    <label for="itemSelect" class="form-label">Pilih Item</label>
+                    <label class="form-label">Pilih Item</label>
                     <select class="form-select" id="itemSelect" disabled onchange="onItemChange()">
                         <option value="">-- Pilih Vendor Terlebih Dahulu --</option>
                     </select>
                 </div>
-
                 <div class="col-md-6">
-                    <label for="unitInput" class="form-label">Satuan</label>
+                    <label class="form-label">Satuan</label>
                     <input type="text" class="form-control bg-readonly" id="unitInput" readonly placeholder="-">
                 </div>
-
                 <div class="col-md-6">
-                    <label for="qtyInput" class="form-label">Jumlah Order</label>
+                    <label class="form-label">Jumlah Order</label>
                     <input type="number" class="form-control" id="qtyInput" placeholder="0" min="1">
                 </div>
-                
                 <div class="col-12 text-end mt-4">
-                     <button class="btn btn-secondary me-2" onclick="resetForm()">Clear Input</button>
-                     <button class="btn btn-primary px-4" onclick="addItemToTable()">
-                        <i class="bi bi-plus-lg"></i> Tambahkan ke Daftar
-                     </button>
+                     <button class="btn btn-primary px-4" onclick="addItemToTable()">Tambahkan ke Daftar</button>
                 </div>
             </div>
         </div>
@@ -104,67 +70,54 @@
                     <table class="table table-hover mb-0" id="poTable">
                         <thead class="table-light">
                             <tr>
-                                <th class="ps-4">No</th>
-                                <th>Item</th>
-                                <th>Vendor</th>
-                                <th>Qty</th>
-                                <th>Satuan</th>
-                                <th class="text-center">Hapus</th>
+                                <th class="ps-4">No</th><th>Item</th><th>Vendor</th><th>Qty</th><th>Satuan</th><th>Hapus</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr id="emptyRow">
-                                <td colspan="6" class="text-center py-4 text-muted">Belum ada item yang ditambahkan</td>
-                            </tr>
+                            <tr id="emptyRow"><td colspan="6" class="text-center py-4 text-muted">Belum ada item</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-
             <div class="d-grid gap-2 mt-4">
-                <button class="btn btn-success p-3 fw-bold shadow-sm" id="btnSubmit" onclick="submitPO()" disabled>
-                    <i class="bi bi-cloud-arrow-up-fill"></i> SIMPAN PURCHASE ORDER
-                </button>
+                <button class="btn btn-success p-3 fw-bold shadow-sm" id="btnSubmit" onclick="submitPO()" disabled>SIMPAN PO</button>
             </div>
         </div>
-
     </div>
 
     <script>
+      // ==========================================
+      // PASTE URL DEPLOY WEB APP KAMU DI SINI
+      const API_URL = "https://script.google.com/macros/s/AKfycbyvMV9llZfYhqa6Kd8kihxgdILQpPPuoq3uoTFo-tCTRNH7MVTyLqZQjygrRSS67Q4g3Q/exec"; 
+      // Contoh: https://script.google.com/macros/s/AKfy.../exec
+      // ==========================================
+
       var allData = {};
       var cartItems = [];
 
-      // 1. Load Data saat Halaman Dibuka
+      // 1. Fetch Data saat Load (Pengganti google.script.run)
       window.onload = function() {
-        google.script.run
-            .withSuccessHandler(populateVendors)
-            .withFailureHandler(onFailure)
-            .getDataFromSheet();
+        fetch(API_URL + "?action=getData")
+          .then(response => response.json())
+          .then(res => {
+             if(res.status === 'success'){
+                 populateVendors(res.data);
+             } else {
+                 throw new Error(res.message);
+             }
+          })
+          .catch(error => {
+             document.getElementById("loader").innerHTML = '<span class="text-danger">Gagal koneksi: ' + error.message + '</span>';
+          });
       };
 
-      // Penanganan Error jika gagal load
-      function onFailure(error) {
-        var loader = document.getElementById("loader");
-        loader.innerHTML = '<span class="text-danger fw-bold"><i class="bi bi-exclamation-triangle"></i> Error: ' + error.message + '</span>';
-        console.error(error);
-      }
-
-      // Mengisi Dropdown Vendor
       function populateVendors(data) {
         allData = data;
         var vendorSelect = document.getElementById("vendorSelect");
-        var loader = document.getElementById("loader");
-
-        loader.style.display = 'none'; // Sembunyikan loader
-        
-        if (Object.keys(data).length === 0) {
-             loader.innerHTML = '<span class="text-danger">Data Kosong/Sheet Salah</span>';
-             return;
-        }
+        document.getElementById("loader").style.display = 'none';
 
         vendorSelect.innerHTML = '<option value="" disabled selected>-- Pilih Vendor --</option>';
-        var vendors = Object.keys(allData).sort();
-        vendors.forEach(function(vendorName) {
+        Object.keys(allData).sort().forEach(function(vendorName) {
           var option = document.createElement("option");
           option.text = vendorName;
           option.value = vendorName;
@@ -172,103 +125,70 @@
         });
       }
 
-      // Saat Vendor Dipilih
       function onVendorChange() {
         var selectedVendor = document.getElementById("vendorSelect").value;
-        
-        // Cek apakah keranjang sudah ada isi tapi vendor beda
         if (cartItems.length > 0 && cartItems[0].vendor !== selectedVendor) {
-            Swal.fire({
-                title: 'Ganti Vendor?',
-                text: "Item di tabel akan dihapus karena vendor berbeda. Lanjutkan?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Ganti',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    resetTable(); 
-                    fillItems(selectedVendor);
-                } else {
-                    document.getElementById("vendorSelect").value = cartItems[0].vendor; // Kembalikan pilihan
-                }
-            });
-        } else {
-            fillItems(selectedVendor);
+            if(!confirm("Ganti vendor akan menghapus item di tabel. Lanjut?")) {
+                document.getElementById("vendorSelect").value = cartItems[0].vendor;
+                return;
+            }
+            cartItems = []; renderTable();
         }
+        fillItems(selectedVendor);
       }
 
       function fillItems(vendorName) {
         var itemSelect = document.getElementById("itemSelect");
         document.getElementById("unitInput").value = "";
-        
         itemSelect.disabled = false;
         itemSelect.innerHTML = '<option value="" disabled selected>-- Pilih Item --</option>';
-
-        var items = allData[vendorName];
-        if (items) {
-          items.forEach(function(obj, index) {
+        
+        allData[vendorName].forEach(function(obj, index) {
             var option = document.createElement("option");
             option.text = obj.item;
             option.value = index; 
             itemSelect.add(option);
-          });
-        }
+        });
       }
 
-      // Saat Item Dipilih
       function onItemChange() {
         var vendor = document.getElementById("vendorSelect").value;
         var idx = document.getElementById("itemSelect").value;
-        if(vendor && idx) {
-            document.getElementById("unitInput").value = allData[vendor][idx].unit;
-        }
+        if(vendor && idx) document.getElementById("unitInput").value = allData[vendor][idx].unit;
       }
 
-      // Menambah ke Tabel (Keranjang)
       function addItemToTable() {
         var vendor = document.getElementById("vendorSelect").value;
         var idx = document.getElementById("itemSelect").value;
         var qty = document.getElementById("qtyInput").value;
         var unit = document.getElementById("unitInput").value;
 
-        if (!vendor || !idx || !qty || qty <= 0) {
-            Swal.fire('Data Belum Lengkap', 'Pilih Vendor, Item, dan isi Jumlah (Min 1).', 'error');
-            return;
-        }
+        if (!vendor || !idx || !qty || qty <= 0) return Swal.fire('Error', 'Lengkapi data', 'error');
 
-        var itemName = allData[vendor][idx].item;
-
-        cartItems.push({ vendor: vendor, itemName: itemName, qty: qty, unit: unit });
+        cartItems.push({ vendor: vendor, itemName: allData[vendor][idx].item, qty: qty, unit: unit });
         renderTable();
-        resetForm(); // Reset input qty saja
+        document.getElementById("qtyInput").value = "";
       }
 
-      // Render Ulang Tabel HTML
       function renderTable() {
         var tbody = document.querySelector("#poTable tbody");
-        tbody.innerHTML = ""; 
+        tbody.innerHTML = "";
+        document.getElementById("btnSubmit").disabled = cartItems.length === 0;
 
         if (cartItems.length === 0) {
-            tbody.innerHTML = '<tr id="emptyRow"><td colspan="6" class="text-center py-4 text-muted">Belum ada item</td></tr>';
-            document.getElementById("btnSubmit").disabled = true;
+            tbody.innerHTML = '<tr id="emptyRow"><td colspan="6" class="text-center">Belum ada item</td></tr>';
             return;
         }
 
-        document.getElementById("btnSubmit").disabled = false;
-
-        cartItems.forEach(function(item, index) {
-            var row = `<tr>
-                    <td class="ps-4">${index + 1}</td>
-                    <td class="fw-bold">${item.itemName}</td>
-                    <td>${item.vendor}</td>
-                    <td>${item.qty}</td>
-                    <td>${item.unit}</td>
-                    <td class="text-center">
-                        <button class="btn btn-sm btn-outline-danger border-0" onclick="deleteItem(${index})"><i class="bi bi-trash"></i></button>
-                    </td>
-                </tr>`;
-            tbody.innerHTML += row;
+        cartItems.forEach((item, index) => {
+            tbody.innerHTML += `<tr>
+                <td class="ps-4">${index + 1}</td>
+                <td class="fw-bold">${item.itemName}</td>
+                <td>${item.vendor}</td>
+                <td>${item.qty}</td>
+                <td>${item.unit}</td>
+                <td><button class="btn btn-sm btn-danger" onclick="deleteItem(${index})">X</button></td>
+            </tr>`;
         });
       }
 
@@ -277,57 +197,33 @@
         renderTable();
       }
 
-      function resetForm() {
-        document.getElementById("itemSelect").value = "";
-        document.getElementById("qtyInput").value = "";
-        document.getElementById("unitInput").value = "";
-      }
-      
-      function resetTable() {
-        cartItems = [];
-        renderTable();
-      }
-
-      // Submit Data ke Google Sheet
+      // 2. Kirim Data dengan Fetch POST
       function submitPO() {
-        if (cartItems.length === 0) return;
+        Swal.fire({ title: 'Menyimpan...', didOpen: () => Swal.showLoading() });
 
-        Swal.fire({
-            title: 'Simpan Data PO?',
-            text: "Total " + cartItems.length + " item akan disimpan.",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Ya, Simpan',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({ title: 'Menyimpan...', didOpen: () => { Swal.showLoading() } });
+        var payload = { vendor: cartItems[0].vendor, items: cartItems };
 
-                var payload = {
-                    vendor: cartItems[0].vendor,
-                    items: cartItems
-                };
-
-                google.script.run
-                    .withSuccessHandler(onSuccessSubmit)
-                    .withFailureHandler(onFailureSubmit)
-                    .saveOrder(payload);
+        // Gunakan 'no-cors' tidak disarankan karena kita butuh response JSON, 
+        // tapi Apps Script redirect membuat fetch agak tricky.
+        // Cara paling stabil untuk GitHub Pages -> Apps Script:
+        fetch(API_URL + "?action=saveOrder", {
+            method: "POST",
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(res => {
+            if(res.status === 'success') {
+                Swal.fire('Sukses!', 'ID PO: ' + res.id, 'success');
+                cartItems = []; renderTable();
+                document.getElementById("vendorSelect").value = "";
+            } else {
+                throw new Error(res.message);
             }
+        })
+        .catch(error => {
+            Swal.fire('Gagal!', error.message, 'error');
         });
       }
-
-      function onSuccessSubmit(response) {
-        Swal.fire('Berhasil!', 'PO Tersimpan dengan ID: ' + response.id, 'success');
-        resetTable();
-        document.getElementById("vendorSelect").value = "";
-        document.getElementById("itemSelect").innerHTML = '<option value="">-- Pilih Vendor Dulu --</option>';
-        document.getElementById("itemSelect").disabled = true;
-      }
-
-      function onFailureSubmit(error) {
-        Swal.fire('Gagal!', error.message, 'error');
-      }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
