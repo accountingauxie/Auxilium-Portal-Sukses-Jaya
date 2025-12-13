@@ -35,8 +35,7 @@
         <div class="container-fluid px-4">
             <span class="navbar-brand fw-bold mb-0 h1">AUXILIUM <span class="fw-light fs-6">PO Entry System</span></span>
             <div id="connectionStatus" class="text-secondary small">
-                <div class="spinner-border spinner-border-sm" role="status"></div> Loading Data...
-            </div>
+                </div>
         </div>
     </nav>
 
@@ -46,7 +45,7 @@
                 <div class="col-md-5">
                     <label class="fw-bold mb-1">Pilih Vendor</label>
                     <select class="form-select" id="vendorSelect" onchange="onVendorChange()">
-                        <option value="" disabled selected>-- Pilih Vendor Dahulu --</option>
+                        <option value="" disabled selected>-- Tunggu Sebentar... --</option>
                     </select>
                 </div>
                 
@@ -56,7 +55,7 @@
                 </div>
 
                 <div class="col-md-4 text-end">
-                    <button class="btn btn-success fw-bold px-4 w-100" onclick="submitPO()">
+                    <button class="btn btn-success fw-bold px-4 w-100" id="btnSimpan" onclick="submitPO()">
                         <i class="bi bi-save2 me-2"></i> SIMPAN PO
                     </button>
                 </div>
@@ -94,31 +93,44 @@
 
     <script>
         // ==========================================
-        // UPDATE URL DEPLOY APP SCRIPT KAMU DI SINI
+        // PASTIKAN URL DEPLOY APP SCRIPT KAMU SUDAH BENAR
         const API_URL = "https://script.google.com/macros/s/AKfycbzkmpSWFcdOtGydQcyLFZSmDZmIj4dl9wGPXV5pqixYhBVWKzzjDGlwdNs4Q_eMZFclzw/exec"; 
         // ==========================================
 
         var allData = {};
 
         window.onload = function() {
-            setDefaultDate(); // Set tanggal hari ini saat load
+            setDefaultDate();
             
+            // FITUR LOADING 1: Tampilkan Loading Full Screen saat awal buka
+            Swal.fire({
+                title: 'Memuat Data Vendor',
+                text: 'Mohon tunggu sebentar...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
             fetch(API_URL + "?action=getData")
             .then(res => res.json())
             .then(res => {
+                // Tutup Loading Full Screen
+                Swal.close();
+
                 if(res.status === 'success'){
                     populateVendors(res.data);
-                    document.getElementById("connectionStatus").innerHTML = '<span class="text-success fw-bold">Online</span>';
+                    document.getElementById("connectionStatus").innerHTML = '<span class="text-success fw-bold"><i class="bi bi-wifi"></i> Online</span>';
                 }
             })
             .catch(e => {
+                Swal.close();
+                Swal.fire("Gagal Koneksi", "Tidak dapat mengambil data vendor.", "error");
                 document.getElementById("connectionStatus").innerHTML = '<span class="text-danger">Offline/Error</span>';
             });
         };
 
-        // FUNGSI BARU: Set Default Date (Waktu Jakarta)
         function setDefaultDate() {
-            // Mengambil tanggal hari ini dengan format YYYY-MM-DD sesuai zona waktu Jakarta
             const date = new Date();
             const jakartaDate = date.toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' });
             document.getElementById("poDate").value = jakartaDate;
@@ -137,9 +149,6 @@
 
         function onVendorChange() {
             var tbody = document.getElementById("tableBody");
-            if(tbody.children.length > 0){
-                // Opsional: Confirm user
-            }
             tbody.innerHTML = ""; 
             addNewRow(); 
         }
@@ -147,7 +156,8 @@
         function addNewRow() {
             var vendor = document.getElementById("vendorSelect").value;
             if(!vendor) {
-                Swal.fire("Pilih Vendor", "Silakan pilih vendor terlebih dahulu di bagian atas.", "warning");
+                // Tidak perlu alert jika baru load awal (kosong), hanya return
+                if(Object.keys(allData).length > 0) Swal.fire("Pilih Vendor", "Silakan pilih vendor terlebih dahulu.", "warning");
                 return;
             }
 
@@ -163,23 +173,14 @@
             tr.innerHTML = `
                 <td class="text-center bg-light row-number">${rowIdx + 1}</td>
                 <td>
-                    <select class="form-select item-select" onchange="updateUnit(this)">
-                        ${itemOptions}
-                    </select>
+                    <select class="form-select item-select" onchange="updateUnit(this)">${itemOptions}</select>
                 </td>
                 <td>
-                    <input type="number" class="form-control qty-input" placeholder="0" min="0" 
-                           oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null">
+                    <input type="number" class="form-control qty-input" placeholder="0" min="0" oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null">
                 </td>
-                <td>
-                    <input type="text" class="form-control bg-readonly unit-input" readonly tabindex="-1">
-                </td>
-                <td>
-                    <input type="text" class="form-control note-input" placeholder="Keterangan...">
-                </td>
-                <td class="text-center">
-                    <button class="btn btn-sm btn-danger" onclick="removeRow(this)"><i class="bi bi-x-lg"></i></button>
-                </td>
+                <td><input type="text" class="form-control bg-readonly unit-input" readonly tabindex="-1"></td>
+                <td><input type="text" class="form-control note-input" placeholder="Keterangan..."></td>
+                <td class="text-center"><button class="btn btn-sm btn-danger" onclick="removeRow(this)"><i class="bi bi-x-lg"></i></button></td>
             `;
             tbody.appendChild(tr);
         }
@@ -189,28 +190,23 @@
             var idx = selectElement.value; 
             var row = selectElement.closest("tr");
             var unitInput = row.querySelector(".unit-input");
-
             if(allData[vendor] && allData[vendor][idx]){
                 unitInput.value = allData[vendor][idx].unit;
             }
         }
 
         function removeRow(btn) {
-            var row = btn.closest("tr");
-            row.remove();
+            btn.closest("tr").remove();
             renumberRows(); 
         }
 
         function renumberRows() {
-            var rows = document.querySelectorAll("#tableBody tr .row-number");
-            rows.forEach((td, index) => {
-                td.innerText = index + 1;
-            });
+            document.querySelectorAll("#tableBody tr .row-number").forEach((td, index) => td.innerText = index + 1);
         }
 
         function submitPO() {
             var vendor = document.getElementById("vendorSelect").value;
-            var poDate = document.getElementById("poDate").value; // Ambil nilai tanggal
+            var poDate = document.getElementById("poDate").value;
 
             if(!vendor) return Swal.fire("Error", "Pilih Vendor!", "error");
             if(!poDate) return Swal.fire("Error", "Tanggal PO harus diisi!", "error");
@@ -221,41 +217,35 @@
             var itemsToSave = [];
             var isValid = true;
 
-            rows.forEach((row, index) => {
+            rows.forEach((row) => {
                 var itemIdx = row.querySelector(".item-select").value;
                 var qty = row.querySelector(".qty-input").value;
                 var unit = row.querySelector(".unit-input").value;
                 var note = row.querySelector(".note-input").value;
 
-                // FIX: Validasi memastikan Qty lebih besar dari 0
                 if(!itemIdx || !qty || qty <= 0) {
                     isValid = false;
                     row.classList.add("table-danger"); 
                 } else {
                     row.classList.remove("table-danger");
                     var realItemName = allData[vendor][itemIdx].item;
-                    
-                    itemsToSave.push({
-                        itemName: realItemName,
-                        qty: qty,
-                        unit: unit,
-                        note: note
-                    });
+                    itemsToSave.push({ itemName: realItemName, qty: qty, unit: unit, note: note });
                 }
             });
 
             if(!isValid) return Swal.fire("Data Belum Lengkap", "Cek baris yang merah (Qty wajib > 0).", "error");
 
-            Swal.fire({ title: 'Menyimpan PO...', didOpen: () => Swal.showLoading() });
+            // --- FITUR LOADING 2: UBAH TAMPILAN TOMBOL ---
+            var btn = document.getElementById("btnSimpan");
+            var originalText = btn.innerHTML; // Simpan teks asli tombol
+            
+            // Matikan tombol & tampilkan spinner
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Menyimpan...';
 
-            // Kirim data Vendor, Tanggal PO, dan Item ke Backend
             fetch(API_URL + "?action=saveOrder", {
                 method: "POST",
-                body: JSON.stringify({ 
-                    vendor: vendor, 
-                    poDate: poDate,  // Kirim tanggal
-                    items: itemsToSave 
-                })
+                body: JSON.stringify({ vendor: vendor, poDate: poDate, items: itemsToSave })
             })
             .then(res => res.json())
             .then(res => {
@@ -263,13 +253,18 @@
                     Swal.fire('Berhasil!', 'PO ID: ' + res.id, 'success').then(() => {
                         document.getElementById("vendorSelect").value = "";
                         document.getElementById("tableBody").innerHTML = "";
-                        setDefaultDate(); // Reset tanggal ke hari ini
+                        setDefaultDate();
                     });
                 } else {
                     throw new Error(res.message);
                 }
             })
-            .catch(err => Swal.fire('Gagal', err.message, 'error'));
+            .catch(err => Swal.fire('Gagal', err.message, 'error'))
+            .finally(() => {
+                // --- KEMBALIKAN TAMPILAN TOMBOL ---
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            });
         }
     </script>
 </body>
