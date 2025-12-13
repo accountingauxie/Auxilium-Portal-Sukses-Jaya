@@ -10,7 +10,7 @@
 
     <style>
         body { background-color: #f4f6f9; font-family: sans-serif; }
-        .container { max-width: 1200px; margin-top: 90px; } /* Margin top disesuaikan agar tidak tertutup navbar */
+        .container { max-width: 1200px; margin-top: 90px; }
         .card { border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         
         .table-input { 
@@ -41,42 +41,22 @@
             <a class="navbar-brand fw-bold mb-0 h1" href="#">
                 AUXILIUM <span class="fw-light fs-6">PO Entry System</span>
             </a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav align-items-center gap-1">
-                    
-                    <li class="nav-item">
-                        <a class="nav-link px-3" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/">Home PO</a>
-                    </li>
-                    
-                    <li class="nav-item">
-                        <a class="nav-link px-3" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/polist/index.html">PO List</a>
-                    </li>
-                    
-                    <li class="nav-item">
-                        <a class="nav-link px-3" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/entry/index.html">Receiving PO</a>
-                    </li>
-                    
-                    <li class="nav-item">
-                        <a class="nav-link px-3" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/ImportXeroPO/index.html">Import Xero</a>
-                    </li>
-                    
-                    <li class="nav-item">
-                        <a class="nav-link px-3 active-menu" href="#">Make PO</a>
-                    </li>
-
+                    <li class="nav-item"><a class="nav-link px-3" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/">Home PO</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/polist/index.html">PO List</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/entry/index.html">Receiving PO</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/ImportXeroPO/index.html">Import Xero</a></li>
+                    <li class="nav-item"><a class="nav-link px-3 active-menu" href="#">Make PO</a></li>
                     <li class="nav-item d-none d-lg-block mx-2 border-start" style="height: 24px;"></li>
-
                     <li class="nav-item">
                         <div id="connectionStatus" class="text-secondary small d-flex align-items-center ps-2">
                             <div class="spinner-border spinner-border-sm me-1" role="status"></div> Loading...
                         </div>
                     </li>
-
                 </ul>
             </div>
         </div>
@@ -91,12 +71,10 @@
                         <option value="" disabled selected>-- Tunggu Sebentar... --</option>
                     </select>
                 </div>
-                
                 <div class="col-md-3">
                     <label class="fw-bold mb-1">Tanggal PO</label>
                     <input type="date" class="form-control" id="poDate">
                 </div>
-
                 <div class="col-md-4 text-end">
                     <button class="btn btn-success fw-bold px-4 w-100" id="btnSimpan" onclick="submitPO()">
                         <i class="bi bi-save2 me-2"></i> SIMPAN PO
@@ -122,10 +100,9 @@
                         </tr>
                     </thead>
                     <tbody id="tableBody">
-                        </tbody>
+                    </tbody>
                 </table>
             </div>
-            
             <div class="p-3 bg-light border-top text-center">
                 <button class="btn btn-outline-primary fw-bold w-100 dashed-border" onclick="addNewRow()">
                     <i class="bi bi-plus-circle me-1"></i> Tambah Baris Item
@@ -138,29 +115,25 @@
 
     <script>
         // ==========================================
-        // PASTIKAN URL DEPLOY APP SCRIPT KAMU BENAR
+        // URL APP SCRIPT KAMU
         const API_URL = "https://script.google.com/macros/s/AKfycbzkmpSWFcdOtGydQcyLFZSmDZmIj4dl9wGPXV5pqixYhBVWKzzjDGlwdNs4Q_eMZFclzw/exec"; 
         // ==========================================
 
         var allData = {};
 
         window.onload = function() {
-            setDefaultDate(); // Set tanggal hari ini
-            
-            // Loading Screen Awal
+            setDefaultDate();
             Swal.fire({
                 title: 'Memuat Data Vendor',
                 text: 'Mohon tunggu sebentar...',
                 allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
+                didOpen: () => Swal.showLoading()
             });
 
             fetch(API_URL + "?action=getData")
             .then(res => res.json())
             .then(res => {
-                Swal.close(); // Tutup loading
+                Swal.close();
                 if(res.status === 'success'){
                     populateVendors(res.data);
                     document.getElementById("connectionStatus").innerHTML = '<span class="text-success fw-bold"><i class="bi bi-wifi"></i> Online</span>';
@@ -228,6 +201,36 @@
         }
 
         function updateUnit(selectElement) {
+            // --- LOGIKA BARU: CEK DUPLIKAT ---
+            var selectedValue = selectElement.value;
+            
+            // Ambil semua dropdown item yang ada di tabel
+            var allSelects = document.querySelectorAll(".item-select");
+            var duplicateCount = 0;
+
+            // Hitung berapa kali item ini muncul di tabel
+            allSelects.forEach(el => {
+                // value tidak boleh kosong dan harus sama
+                if(el.value === selectedValue && selectedValue !== "") {
+                    duplicateCount++;
+                }
+            });
+
+            // Jika muncul lebih dari 1 kali (berarti duplikat)
+            if(duplicateCount > 1) {
+                Swal.fire("Item Duplikat", "Item ini sudah dipilih di baris lain. Silakan edit Qty di baris yang sudah ada jika ingin menambah jumlah.", "warning");
+                
+                // Reset Pilihan Dropdown
+                selectElement.value = ""; 
+                
+                // Reset Kolom Satuan
+                var row = selectElement.closest("tr");
+                row.querySelector(".unit-input").value = "";
+                
+                return; // Berhenti disini, jangan lanjut update unit
+            }
+            // ---------------------------------
+
             var vendor = document.getElementById("vendorSelect").value;
             var idx = selectElement.value; 
             var row = selectElement.closest("tr");
@@ -275,9 +278,8 @@
                 }
             });
 
-            if(!isValid) return Swal.fire("Data Belum Lengkap", "Cek baris yang merah (Qty wajib > 0).", "error");
+            if(!isValid) return Swal.fire("Data Belum Lengkap", "Cek baris yang merah (Item kosong atau Qty harus > 0).", "error");
 
-            // --- LOADING STATE BUTTON ---
             var btn = document.getElementById("btnSimpan");
             var originalText = btn.innerHTML;
             
@@ -302,7 +304,6 @@
             })
             .catch(err => Swal.fire('Gagal', err.message, 'error'))
             .finally(() => {
-                // RESET BUTTON STATE
                 btn.disabled = false;
                 btn.innerHTML = originalText;
             });
