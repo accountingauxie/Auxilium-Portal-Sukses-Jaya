@@ -3,300 +3,512 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Purchase Order Entry - AUXILIUM</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    <title>Import Receiving PO to Xero</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/segoe-ui-4" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f4f6f9; color: #333; }
-        .navbar { background-color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); padding: 0.8rem 1.5rem; }
-        .navbar-brand span { font-size: 0.85rem; color: #6c757d; font-weight: 400; margin-left: 5px; }
-        
-        .main-card { 
-            border: none; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03); 
-            background: #ffffff; 
-            padding: 30px; 
-        }
-        
-        .bg-readonly { background-color: #f8f9fa; color: #6c757d; cursor: not-allowed; }
-        
-        /* Table Styling Enhancement */
-        .table thead th {
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
-            background-color: #f8f9fa;
-            border-bottom: 2px solid #e9ecef;
-        }
-        .table tbody td {
-            vertical-align: middle; /* Agar teks di tengah vertikal */
-            font-size: 0.95rem;
+        /* --- GLOBAL VARIABLES & RESET --- */
+        :root {
+            /* Variables for Top Bar Consistency */
+            --ux-blue: #0077e4;
+            --ux-blue-soft: #ecf4ff;
+            --ux-border: #d3d7e3;
+            --ux-text-main: #1f2933;
+
+            /* Existing Variables */
+            --primary: #2563eb;       /* Corporate Blue */
+            --primary-bg: #eff6ff;
+            --accent: #3b82f6;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #64748b;
+            --border-color: #e2e8f0;
+            --success: #10b981;
+            --po-accent: #f59e0b;     /* Orange/Amber for Purchasing Context */
         }
 
-        #loader { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: #6c757d; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-body); 
+            margin: 0; 
+            padding: 0; /* Reset padding karena ada top bar */
+            color: var(--text-main); 
+            -webkit-font-smoothing: antialiased; 
+        }
+
+        * { box-sizing: border-box; outline: none; }
+        a { text-decoration: none; }
+
+        /* =========================== 
+           TOP BAR / NAVIGATION STYLE (COPIED FROM RECEIVING ENTRY)
+           =========================== */
+        .top-bar {
+            padding: 10px 40px;
+            background: #ffffff;
+            border-bottom: 1px solid #e3e6ea;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: "Segoe UI", "Inter", sans-serif; /* Match Receiving Entry Font */
+            font-size: 15px;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1e1e1e;
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-item:hover {
+            background-color: #f1f5f9;
+            color: var(--ux-blue);
+        }
+
+        /* Active State for Current Page */
+        .nav-item.active {
+            background-color: var(--ux-blue-soft);
+            color: var(--ux-blue);
+            font-weight: 600;
+        }
+
+        /* --- PAGE CONTENT WRAPPER --- */
+        .page-content {
+            padding: 30px 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* --- HEADER SECTION (UPDATED) --- */
+        .app-header { 
+            margin-bottom: 30px; 
+        }
+
+        .header-top { display: flex; align-items: center; gap: 15px; margin-bottom: 8px; }
+
+        .page-title { font-size: 24px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px; }
+        
+        .page-desc { 
+            font-size: 14px; color: var(--text-sub); 
+            max-width: 600px; line-height: 1.5;
+        }
+
+        /* --- SEARCH BAR --- */
+        .search-container {
+            width: 100%;
+            margin-bottom: 20px;
+            background: white; border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 12px 16px;
+            display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            transition: 0.2s;
+        }
+        .search-container:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-bg); }
+        .search-input { border: none; width: 100%; font-size: 14px; color: var(--text-main); font-family: 'Inter', sans-serif; }
+        .search-input::placeholder { color: #94a3b8; }
+
+        /* --- LIST CONTAINER --- */
+        #list-container { display: flex; flex-direction: column; gap: 12px; }
+
+        /* --- THE ROW CARD (PO ITEM) --- */
+        .po-card {
+            background: white; border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 20px 24px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: relative; overflow: hidden;
+            transition: all 0.2s ease;
+            cursor: default;
+        }
+        
+        /* Left Colored Border Accent */
+        .po-card::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+            width: 4px; background: var(--po-accent);
+            border-top-left-radius: 8px; border-bottom-left-radius: 8px;
+        }
+
+        .po-card:hover { transform: translateY(-2px); box-shadow: 0 8px 16px -4px rgba(0,0,0,0.08); border-color: #cbd5e1; }
+
+        /* Section 1: Main ID & Supplier */
+        .col-main { flex: 1.5; min-width: 200px; }
+        .po-inv-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+        .inv-text { font-size: 16px; font-weight: 700; color: var(--text-main); }
+        .status-pill { 
+            background: #ecfdf5; color: #059669; 
+            font-size: 10px; font-weight: 700; padding: 2px 8px; 
+            border-radius: 4px; letter-spacing: 0.5px; text-transform: uppercase; border: 1px solid #d1fae5;
+        }
+        
+        .supplier-info { display: flex; flex-direction: column; gap: 2px; }
+        .supplier-name { font-size: 13px; font-weight: 600; color: #334155; display: flex; align-items: center; gap: 6px; }
+        .po-date { font-size: 12px; color: #94a3b8; display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+
+        /* Section 2: Middle Details (RecID & PO) */
+        .col-details { flex: 2; display: flex; gap: 24px; align-items: center; border-left: 1px solid #f1f5f9; border-right: 1px solid #f1f5f9; padding: 0 24px; }
+        
+        .detail-group { display: flex; flex-direction: column; gap: 4px; }
+        .detail-label { font-size: 10px; text-transform: uppercase; color: #94a3b8; font-weight: 600; letter-spacing: 0.5px; }
+        .detail-value { font-size: 13px; font-weight: 500; color: var(--primary); display: flex; align-items: center; gap: 6px; background: #eff6ff; padding: 4px 8px; border-radius: 6px; width: fit-content; }
+        .detail-value i { font-size: 14px; }
+
+        /* Section 3: Financials & Action */
+        .col-action { flex: 1; text-align: right; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
+        
+        .amount-label { font-size: 10px; text-transform: uppercase; color: #94a3b8; font-weight: 600; margin-bottom: 2px; }
+        .amount-value { font-size: 18px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
+        
+        .btn-details-link {
+            font-size: 13px; font-weight: 600; color: var(--primary);
+            display: flex; align-items: center; gap: 4px; cursor: pointer;
+            transition: 0.2s; background: none; border: none; padding: 0;
+        }
+        .btn-details-link:hover { color: var(--accent); gap: 6px; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .top-bar { padding: 10px 20px; font-size: 14px; }
+            .logo-section span { display: none; }
+            .po-card { flex-direction: column; align-items: flex-start; gap: 16px; padding: 16px; }
+            .po-card::before { width: 100%; height: 4px; bottom: auto; border-radius: 8px 8px 0 0; }
+            .col-details { border: none; padding: 0; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; padding: 12px 0; width: 100%; }
+            .col-action { width: 100%; align-items: flex-start; flex-direction: row; justify-content: space-between; align-items: center; }
+            .amount-value { margin-bottom: 0; }
+        }
+
+        /* --- MODAL STYLES --- */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(2px); }
+        .modal-content { background: white; margin: 3vh auto; width: 95%; max-width: 900px; border-radius: 12px; display: flex; flex-direction: column; max-height: 90vh; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from {opacity: 0; transform: translateY(20px);} to {opacity: 1; transform: translateY(0);} }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { overflow-y: auto; padding: 0; }
+        .modal-footer { padding: 20px 24px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; }
+        
+        .detail-table { width: 100%; border-collapse: collapse; }
+        .detail-table th { position: sticky; top: 0; background: #f8fafc; text-align: left; padding: 12px 24px; font-size: 11px; color: var(--text-sub); border-bottom: 1px solid #e2e8f0; text-transform: uppercase; }
+        .detail-table td { padding: 14px 24px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: var(--text-main); }
+        
+        .info-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 20px 24px; background: #fff; }
+        .info-item label { display: block; font-size: 11px; color: var(--text-sub); font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
+        .info-item div { font-size: 14px; font-weight: 600; color: var(--text-main); }
+
+        .btn-sync { background: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .btn-sync:hover { background: #059669; }
+        .btn-close { background: white; border: 1px solid #e2e8f0; color: var(--text-main); padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .btn-close:hover { background: #f1f5f9; }
+
+        /* Loading */
+        #loading { text-align: center; margin-top: 60px; color: var(--text-sub); display: flex; flex-direction: column; align-items: center; gap: 10px; }
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="#">AUXILIUM <span>Accounting Management Service</span></a>
+    <div class="top-bar">
+        <div class="logo-section">
+          AUXILIUM <span style="font-weight:300;color:#909090; font-size:13px; margin-left:6px;">Accounting Management Service</span>
         </div>
-    </nav>
+         
+        <nav class="nav-menu">
+            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/index.html" class="nav-item">
+                <span class="material-icons" style="font-size:18px;">home</span>
+                Home Receiving
+            </a>
+            
+            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/entry/index.html" class="nav-item">
+                <span class="material-icons" style="font-size:18px;">input</span>
+                Receiving PO Entry
+            </a>
+            
+            <a href="#" class="nav-item active">
+                <span class="material-icons" style="font-size:18px;">cloud_upload</span>
+                Import Receiving PO to Xero
+            </a>
+        </nav>
+    </div>
 
-    <div class="container" style="margin-top: 100px; max-width: 900px;">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="fw-bold m-0 text-dark">Buat Purchase Order</h3>
-            <div id="loader">
-                <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-                <span>Menghubungkan ke Server...</span>
+    <div class="page-content">
+
+        <div class="app-header">
+            <div class="header-top">
+                <div class="page-title">Import Receiving PO to Xero</div>
+            </div>
+            <div class="page-desc">
+                Import Purchasing Order Received to Xero.
             </div>
         </div>
 
-        <div class="main-card mb-5">
-            <div class="row g-3">
-                <div class="col-12">
-                    <label class="form-label fw-semibold">Pilih Vendor</label>
-                    <select class="form-select form-select-lg" id="vendorSelect" onchange="onVendorChange()">
-                        <option value="" disabled selected>Menunggu data...</option>
-                    </select>
-                </div>
-                
-                <div class="col-12">
-                    <label class="form-label fw-semibold">Pilih Item</label>
-                    <select class="form-select" id="itemSelect" disabled onchange="onItemChange()">
-                        <option value="">-- Pilih Vendor Terlebih Dahulu --</option>
-                    </select>
-                </div>
-
-                <div class="col-md-5">
-                    <label class="form-label text-muted">Satuan</label>
-                    <input type="text" class="form-control bg-readonly" id="unitInput" readonly placeholder="-">
-                </div>
-                <div class="col-md-7">
-                    <label class="form-label fw-semibold">Jumlah Order</label>
-                    <input type="number" class="form-control" id="qtyInput" placeholder="0" min="1">
-                </div>
-                
-                <div class="col-12">
-                    <label class="form-label">Catatan Item <small class="text-muted">(Opsional)</small></label>
-                    <input type="text" class="form-control" id="noteInput" placeholder="Contoh: Kirim sebelum jam 12, Warna Merah, dll">
-                </div>
-
-                <div class="col-12 text-end mt-4">
-                     <button class="btn btn-primary px-4 py-2 fw-semibold" onclick="addItemToTable()">
-                        <i class="bi bi-plus-lg me-1"></i> Tambahkan ke Daftar
-                    </button>
-                </div>
-            </div>
+        <div class="search-container">
+            <span class="material-icons" style="color: #94a3b8;">search</span>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search Supplier, PO Number, or Invoice Ref..." onkeyup="filterList()">
         </div>
 
-        <div class="mb-5">
-            <h5 class="fw-bold mb-3 text-secondary">Daftar Item PO</h5>
-            <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
-                <div class="card-body p-0">
-                    <table class="table table-hover table-striped mb-0" id="poTable">
-                        <thead>
-                            <tr>
-                                <th class="ps-4" width="5%">No</th>
-                                <th width="25%">Item</th>
-                                <th width="20%">Vendor</th>
-                                <th width="10%">Qty</th>
-                                <th width="10%">Satuan</th>
-                                <th width="25%">Catatan</th>
-                                <th width="5%">Hapus</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr id="emptyRow"><td colspan="7" class="text-center py-5 text-muted fst-italic">Belum ada item yang ditambahkan</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+        <div id="loading">
+            <span class="material-icons" style="animation: spin 1s linear infinite; font-size: 24px;">autorenew</span>
+            <span>Loading Purchase Orders...</span>
+        </div>
+
+        <div id="list-container">
+            </div>
+
+    </div>
+
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="font-size: 18px; font-weight: 700;">Transaction Details</div>
+                <span class="material-icons" onclick="closeModal()" style="cursor: pointer; color: #64748b;">close</span>
             </div>
             
-            <div class="d-grid gap-2 mt-4">
-                <button class="btn btn-success p-3 fw-bold shadow-sm text-uppercase" id="btnSubmit" onclick="submitPO()" disabled>
-                    <i class="bi bi-save2 me-2"></i> Simpan Purchase Order
-                </button>
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Supplier</label>
+                    <div id="modalCustomer">-</div>
+                </div>
+                <div class="info-item">
+                    <label>PO Number</label>
+                    <div id="modalOrderNo" style="color:var(--primary)">-</div>
+                </div>
+                <div class="info-item">
+                    <label>Receiving ID</label>
+                    <div id="modalRecId" style="color:var(--primary)">-</div>
+                </div>
+                <div class="info-item">
+                    <label>Invoice Ref</label>
+                    <div id="modalInvNo">-</div>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <table class="detail-table">
+                    <thead>
+                        <tr>
+                            <th>Item Code</th>
+                            <th>Description</th>
+                            <th style="text-align: right;">Ord</th>
+                            <th style="text-align: right;">Rec</th>
+                            <th style="text-align: center;">UoM</th>
+                            <th style="text-align: right;">Price</th>
+                            <th style="text-align: right;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalTableBody"></tbody>
+                </table>
+            </div>
+
+            <div class="modal-footer">
+                <div>
+                    <div style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 600;">Grand Total</div>
+                    <div id="modalGrandTotal" style="font-size: 20px; font-weight: 700; color: var(--text-main);">Rp 0</div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-close" onclick="closeModal()">Cancel</button>
+                    <button id="syncBtn" class="btn-sync" onclick="processSync()">
+                        <span class="material-icons" style="font-size: 18px;">sync</span> Process Sync
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-      // ==========================================
-      // GANTI DENGAN URL DEPLOY APP SCRIPT BARU KAMU
-      const API_URL = "https://script.google.com/macros/s/AKfycbyzh45lQKzmyFORCRSnDZ6stoIWrIwKzI3X7eouEYXVe1P3E1obGj4qXkyxw0lgzX3a9w/exec"; 
-      // ==========================================
+        const API_URL = "https://script.google.com/macros/s/AKfycbx5ZwzUMOWxPkcA6z7sBnBSPvBXftuPIwxiHzgV838OC5Hl46J6eVsfGsQrq8UBPGTfmQ/exec";
+        var globalData = {};
+        const fmtIDR = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
 
-      var allData = {};
-      var cartItems = [];
+        window.onload = fetchData;
 
-      window.onload = function() {
-        fetch(API_URL + "?action=getData")
-          .then(response => response.json())
-          .then(res => {
-             if(res.status === 'success'){
-                 populateVendors(res.data);
-             } else {
-                 throw new Error(res.message);
-             }
-          })
-          .catch(error => {
-             document.getElementById("loader").innerHTML = '<span class="text-danger fw-bold">Gagal koneksi: ' + error.message + '</span>';
-          });
-      };
+        function fetchData() {
+            fetch(API_URL)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('loading').style.display = 'none';
+                    renderList(data);
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById('loading').innerHTML = "Failed to load data. Please refresh.";
+                });
+        }
 
-      function populateVendors(data) {
-        allData = data;
-        var vendorSelect = document.getElementById("vendorSelect");
-        document.getElementById("loader").style.display = 'none';
+        function renderList(data) {
+            globalData = data;
+            const container = document.getElementById('list-container');
+            container.innerHTML = "";
 
-        vendorSelect.innerHTML = '<option value="" disabled selected>-- Pilih Vendor --</option>';
-        Object.keys(allData).sort().forEach(function(vendorName) {
-          var option = document.createElement("option");
-          option.text = vendorName;
-          option.value = vendorName;
-          vendorSelect.add(option);
-        });
-      }
-
-      function onVendorChange() {
-        var selectedVendor = document.getElementById("vendorSelect").value;
-        if (cartItems.length > 0 && cartItems[0].vendor !== selectedVendor) {
-            if(!confirm("Mengganti vendor akan menghapus semua item di daftar. Lanjutkan?")) {
-                document.getElementById("vendorSelect").value = cartItems[0].vendor;
+            if (Object.keys(data).length === 0) {
+                container.innerHTML = "<div style='text-align:center; padding:40px; color:#64748b; background:white; border-radius:8px; border:1px solid #e2e8f0;'>No pending purchase orders found.</div>";
                 return;
             }
-            cartItems = []; renderTable();
-        }
-        fillItems(selectedVendor);
-      }
 
-      function fillItems(vendorName) {
-        var itemSelect = document.getElementById("itemSelect");
-        document.getElementById("unitInput").value = "";
-        itemSelect.disabled = false;
-        itemSelect.innerHTML = '<option value="" disabled selected>-- Pilih Item --</option>';
-        
-        allData[vendorName].forEach(function(obj, index) {
-            var option = document.createElement("option");
-            option.text = obj.item;
-            option.value = index; 
-            itemSelect.add(option);
-        });
-      }
-
-      function onItemChange() {
-        var vendor = document.getElementById("vendorSelect").value;
-        var idx = document.getElementById("itemSelect").value;
-        if(vendor && idx) document.getElementById("unitInput").value = allData[vendor][idx].unit;
-      }
-
-      function addItemToTable() {
-        var vendor = document.getElementById("vendorSelect").value;
-        var idx = document.getElementById("itemSelect").value;
-        var qty = document.getElementById("qtyInput").value;
-        var unit = document.getElementById("unitInput").value;
-        var note = document.getElementById("noteInput").value;
-
-        if (!vendor || !idx || !qty || qty <= 0) return Swal.fire('Data Tidak Lengkap', 'Mohon lengkapi Vendor, Item, dan Jumlah Order (min 1)', 'warning');
-
-        cartItems.push({ 
-            vendor: vendor, 
-            itemName: allData[vendor][idx].item, 
-            qty: qty, 
-            unit: unit,
-            note: note 
-        });
-
-        renderTable();
-        
-        // Reset Input Fields
-        document.getElementById("qtyInput").value = "";
-        document.getElementById("noteInput").value = "";
-        document.getElementById("itemSelect").focus();
-      }
-
-      function renderTable() {
-        var tbody = document.querySelector("#poTable tbody");
-        tbody.innerHTML = "";
-        document.getElementById("btnSubmit").disabled = cartItems.length === 0;
-
-        if (cartItems.length === 0) {
-            tbody.innerHTML = '<tr id="emptyRow"><td colspan="7" class="text-center py-5 text-muted fst-italic">Belum ada item yang ditambahkan</td></tr>';
-            return;
-        }
-
-        cartItems.forEach((item, index) => {
-            var displayNote = item.note ? item.note : '<span class="text-muted small fst-italic">-</span>';
-            
-            tbody.innerHTML += `<tr>
-                <td class="ps-4 fw-bold text-secondary">${index + 1}</td>
-                <td class="fw-semibold text-primary">${item.itemName}</td>
-                <td class="text-secondary small">${item.vendor}</td>
-                <td class="fw-bold">${item.qty}</td>
-                <td class="text-muted small">${item.unit}</td>
-                <td class="text-break small">${displayNote}</td>
-                <td>
-                    <button class="btn btn-sm btn-outline-danger border-0" onclick="deleteItem(${index})" title="Hapus Item">
-                        <i class="bi bi-trash-fill"></i>
-                    </button>
-                </td>
-            </tr>`;
-        });
-      }
-
-      function deleteItem(index) {
-        cartItems.splice(index, 1);
-        renderTable();
-      }
-
-      function submitPO() {
-        Swal.fire({ 
-            title: 'Menyimpan PO...', 
-            text: 'Mohon tunggu sebentar',
-            allowOutsideClick: false,
-            didOpen: () => Swal.showLoading() 
-        });
-
-        var payload = { vendor: cartItems[0].vendor, items: cartItems };
-
-        fetch(API_URL + "?action=saveOrder", {
-            method: "POST",
-            body: JSON.stringify(payload)
-        })
-        .then(response => response.json())
-        .then(res => {
-            if(res.status === 'success') {
-                Swal.fire({
-                    title: 'Berhasil!',
-                    text: 'PO berhasil disimpan dengan ID: ' + res.id,
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                });
+            for (let key in data) {
+                let item = data[key];
                 
-                // Reset Total
-                cartItems = []; 
-                renderTable();
-                document.getElementById("vendorSelect").value = "";
-                document.getElementById("itemSelect").innerHTML = '<option value="">-- Pilih Vendor Terlebih Dahulu --</option>';
-                document.getElementById("itemSelect").disabled = true;
-                document.getElementById("unitInput").value = "";
-                document.getElementById("qtyInput").value = "";
-                document.getElementById("noteInput").value = "";
-            } else {
-                throw new Error(res.message);
+                // Ambil RecID dan PO dari item pertama
+                let firstItem = item.items && item.items.length > 0 ? item.items[0] : {};
+                let recId = firstItem.recId || "-";
+                let poNum = item.poNumber || firstItem.poNum || "-";
+
+                // Template String untuk Card Row
+                container.innerHTML += `
+                <div class="po-card" data-search="${item.supplier.toLowerCase()} ${poNum.toLowerCase()} ${item.invNumber.toLowerCase()}">
+                    
+                    <div class="col-main">
+                        <div class="po-inv-row">
+                            <span class="inv-text">${item.invNumber}</span>
+                            <span class="status-pill">Ready</span>
+                        </div>
+                        <div class="supplier-info">
+                            <div class="supplier-name">
+                                <span class="material-icons" style="font-size: 16px; color: #64748b;">store</span>
+                                ${item.supplier}
+                            </div>
+                            <div class="po-date">
+                                <span class="material-icons" style="font-size: 14px;">event</span>
+                                ${item.date}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-details">
+                        <div class="detail-group">
+                            <span class="detail-label">Receiving ID</span>
+                            <div class="detail-value">
+                                <span class="material-icons" style="font-size:14px">receipt_long</span> ${recId}
+                            </div>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">PO Number</span>
+                            <div class="detail-value">
+                                <span class="material-icons" style="font-size:14px">description</span> ${poNum}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-action">
+                        <span class="amount-label">Total Amount</span>
+                        <div class="amount-value">${fmtIDR.format(item.totalAmount)}</div>
+                        <button class="btn-details-link" onclick="showDetail('${key}')">
+                            View Details <span class="material-icons" style="font-size: 16px;">arrow_forward</span>
+                        </button>
+                    </div>
+
+                </div>`;
             }
-        })
-        .catch(error => {
-            Swal.fire('Gagal!', error.message, 'error');
-        });
-      }
+        }
+
+        // --- FILTER FUNCTION (Search Bar) ---
+        function filterList() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let cards = document.getElementsByClassName('po-card');
+
+            for (let i = 0; i < cards.length; i++) {
+                let searchData = cards[i].getAttribute('data-search');
+                if (searchData.includes(input)) {
+                    cards[i].style.display = "flex";
+                } else {
+                    cards[i].style.display = "none";
+                }
+            }
+        }
+
+        // --- MODAL FUNCTIONS ---
+        function showDetail(key) {
+            let data = globalData[key];
+            let firstItem = data.items[0] || {}; 
+
+            document.getElementById('modalCustomer').innerText = data.supplier;
+            document.getElementById('modalOrderNo').innerText = data.poNumber || firstItem.poNum || "-";
+            document.getElementById('modalRecId').innerText = firstItem.recId || "-";
+            document.getElementById('modalInvNo').innerText = data.invNumber || "-";
+            document.getElementById('modalGrandTotal').innerText = fmtIDR.format(data.totalAmount);
+
+            let tbody = document.getElementById('modalTableBody');
+            tbody.innerHTML = "";
+            
+            data.items.forEach(i => {
+                tbody.innerHTML += `
+                <tr>
+                    <td><b>${i.itemCode}</b><br><small style="color:#64748b">${i.kpc}</small></td>
+                    <td>${i.desc}</td>
+                    <td style="text-align: right;">${i.ordered}</td>
+                    <td style="text-align: right; font-weight:bold;">${i.qty}</td>
+                    <td style="text-align: center;">${i.uom}</td>
+                    <td style="text-align: right;">${i.price}</td>
+                    <td style="text-align: right; font-weight:bold;">${i.lineTotalFormatted}</td>
+                </tr>`;
+            });
+
+            document.getElementById('detailModal').style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').style.display = "none";
+        }
+
+        function processSync() {
+            const recId = document.getElementById("modalRecId").innerText.trim();
+            const btn = document.getElementById("syncBtn");
+
+            if (!recId || recId === "-") { alert("Invalid Receiving ID."); return; }
+
+            const oriText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = "Syncing...";
+
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+                body: new URLSearchParams({ recId: recId })
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    alert("Success! Data synchronized to Xero.");
+                    closeModal();
+                    document.getElementById('loading').style.display = 'flex';
+                    fetchData(); // Reload list
+                } else {
+                    alert("Sync Failed: " + result.message);
+                }
+            })
+            .catch(err => alert("Connection Error."))
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = oriText;
+            });
+        }
+
+        window.onclick = function(e) {
+            if (e.target == document.getElementById('detailModal')) closeModal();
+        }
     </script>
 </body>
 </html>
