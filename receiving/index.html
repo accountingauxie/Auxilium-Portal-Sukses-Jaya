@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* Reset Dasar */
+        /* --- CSS Reset & Dasar --- */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -16,18 +16,84 @@
         }
 
         body {
-            background-color: #f8f9fa; /* Warna background abu-abu terang */
+            background-color: #f8f9fa;
             color: #333;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: 60px;
+            /* Tambah padding top supaya konten tidak ketutup menu bar */
+            padding-top: 100px; 
         }
 
-        /* Header Styles */
+        /* --- STYLE NAVIGATION BAR --- */
+        .navbar {
+            background-color: white;
+            width: 100%;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            position: fixed; /* Menu nempel di atas */
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-text {
+            color: #000;
+            font-weight: 800;
+            font-size: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-sub {
+            color: #888;
+            font-size: 14px;
+            margin-left: 15px;
+            padding-left: 15px;
+            border-left: 1px solid #ddd;
+            font-weight: 400;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 10px; /* Jarak antar menu */
+        }
+
+        .nav-links li a {
+            text-decoration: none;
+            color: #555;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 10px 15px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-links li a:hover {
+            color: #0d6efd;
+            background-color: #f1f3f5;
+        }
+
+        /* Style khusus untuk menu yang sedang aktif (Receiving) */
+        .nav-links li a.active {
+            background-color: #e7f1ff; /* Background biru muda */
+            color: #0d6efd; /* Teks biru */
+            font-weight: 600;
+        }
+
+        /* --- STYLE KONTEN WORKFLOW --- */
         .workflow-header {
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
         }
 
         .workflow-header h1 {
@@ -39,10 +105,9 @@
 
         .workflow-header p {
             color: #6c757d;
-            font-size: 16px;
+            font-size: 15px;
         }
 
-        /* Container Kartu */
         .card-container {
             display: flex;
             gap: 30px;
@@ -53,14 +118,13 @@
             padding: 0 20px;
         }
 
-        /* Style Kartu */
         .card {
             background: white;
             border: 1px solid #e9ecef;
             border-radius: 12px;
             padding: 40px 30px;
             width: 350px;
-            text-decoration: none; /* Hilangkan garis bawah link */
+            text-decoration: none;
             color: inherit;
             transition: all 0.3s ease;
             display: flex;
@@ -69,17 +133,15 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
 
-        /* Efek Hover (Saat mouse di atas kartu) */
         .card:hover {
-            transform: translateY(-5px); /* Kartu naik sedikit */
+            transform: translateY(-5px);
             box-shadow: 0 12px 20px rgba(0,0,0,0.08);
             border-color: #dbe2e8;
         }
 
-        /* Icon di dalam kartu */
         .card-icon {
-            background-color: #e7f1ff; /* Biru sangat muda */
-            color: #0d6efd; /* Biru utama */
+            background-color: #e7f1ff;
+            color: #0d6efd;
             width: 50px;
             height: 50px;
             border-radius: 10px;
@@ -90,10 +152,9 @@
             margin-bottom: 20px;
         }
         
-        /* Icon untuk Import beda warna dikit biar variatif */
         .card-icon.import-style {
-            background-color: #e6f8f0; /* Hijau muda */
-            color: #0ca678; /* Hijau */
+            background-color: #e6f8f0; 
+            color: #0ca678; 
         }
 
         .card h3 {
@@ -107,10 +168,9 @@
             color: #6c757d;
             line-height: 1.5;
             margin-bottom: 30px;
-            flex-grow: 1; /* Supaya tombol link selalu di bawah rata */
+            flex-grow: 1; 
         }
 
-        /* Link Action di bawah */
         .card-action {
             color: #0d6efd;
             font-weight: 600;
@@ -128,6 +188,24 @@
 </head>
 <body>
 
+    <nav class="navbar">
+        <div class="logo-section">
+            <span class="logo-text">AUXILIUM</span>
+            <span class="logo-sub">Accounting Management Service</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="../index.html">Home</a></li>
+            
+            <li><a href="../SalesOrder/index.html">Sales Order</a></li>
+            
+            <li><a href="#" class="active">Receiving</a></li>
+            
+            <li><a href="../Production/index.html">Production</a></li>
+            
+            <li><a href="../ReviewInvoice/index.html">Review Invoice Order</a></li>
+        </ul>
+    </nav>
+
     <div class="workflow-header">
         <h1>Receiving Workflow</h1>
         <p>Select a module below to manage inbound deliveries and accounting synchronization.</p>
@@ -137,7 +215,8 @@
         
         <a href="./entry/index.html" class="card">
             <div class="card-icon">
-                <i class="fa-regular fa-file-lines"></i> </div>
+                <i class="fa-regular fa-file-lines"></i>
+            </div>
             <h3>Receiving PO Entry</h3>
             <p>Input penerimaan barang, verifikasi invoice supplier, dan submit data receiving harian.</p>
             <span class="card-action">
@@ -147,7 +226,8 @@
 
         <a href="./ImportXeroPO/index.html" class="card">
             <div class="card-icon import-style">
-                <i class="fa-solid fa-cloud-arrow-up"></i> </div>
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+            </div>
             <h3>Import to Xero</h3>
             <p>Sinkronisasi data receiving yang sudah final ke Xero Accounting dan lihat log status.</p>
             <span class="card-action">
