@@ -1,1 +1,213 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approval Dashboard PO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background-color: #F3F4F6; font-family: 'Inter', sans-serif; }
+        .filter-btn.active { background-color: #E0E7FF; color: #4338CA; border-color: #4338CA; }
+        .loader { border-top-color: #3498db; -webkit-animation: spinner 1.5s linear infinite; animation: spinner 1.5s linear infinite; }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="p-6">
 
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">Approval Dashboard</h1>
+
+        <div class="bg-white p-4 rounded-xl shadow-sm mb-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
+                
+                <div class="flex space-x-2 overflow-x-auto pb-2 w-full md:w-auto">
+                    <button onclick="filterStatus('All')" id="btn-All" class="filter-btn active px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 whitespace-nowrap">All</button>
+                    <button onclick="filterStatus('Pending')" id="btn-Pending" class="filter-btn px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 whitespace-nowrap">Pending</button>
+                    <button onclick="filterStatus('Approved')" id="btn-Approved" class="filter-btn px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 whitespace-nowrap">Approved</button>
+                    <button onclick="filterStatus('Partial')" id="btn-Partial" class="filter-btn px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 whitespace-nowrap">Partial</button>
+                    <button onclick="filterStatus('Canceled')" id="btn-Canceled" class="filter-btn px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 whitespace-nowrap">Canceled</button>
+                </div>
+
+                <div class="flex flex-wrap gap-2 items-center">
+                    <input type="date" id="dateStart" class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <span class="text-gray-400">to</span>
+                    <input type="date" id="dateEnd" class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    
+                    <select id="sortOrder" onchange="applyFilters()" class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-600 focus:outline-none">
+                        <option value="desc">Order No (Desc)</option>
+                        <option value="asc" selected>Order No (Asc)</option> </select>
+                </div>
+            </div>
+
+            <div class="relative w-full">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                    <i class="fas fa-search text-gray-400"></i>
+                </span>
+                <input type="text" id="searchInput" onkeyup="applyFilters()" placeholder="Search Vendor, PO ID..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+            </div>
+        </div>
+
+        <div id="loading" class="flex justify-center py-10">
+            <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
+        </div>
+
+        <div id="cardContainer" class="space-y-4">
+            </div>
+    </div>
+
+    <script>
+        // GANTI URL INI DENGAN URL DEPLOYMENT APPS SCRIPT KAMU
+        const API_URL = "https://script.google.com/macros/s/AKfycbwrds40Bw8v9fcs3XidNx2eWzePavAK8wH-s9iq3Fy3TkKx9jMofWsor7yKEM0T-2z-/exec"; 
+
+        let allData = [];
+        let currentStatus = 'All';
+
+        async function fetchData() {
+            try {
+                // Karena Apps Script perlu redirect untuk post/get, kita gunakan fetch biasa
+                // Note: Apps Script Web App harus set "Anyone" access
+                const response = await fetch(API_URL, {
+                    method: 'POST', // Menggunakan POST agar menghindari cache browser agresif
+                });
+                const data = await response.json();
+                allData = data;
+                
+                // Format Date string agar bisa di sort
+                allData.forEach(po => {
+                    po.dateObj = new Date(po.tanggalInput);
+                });
+
+                document.getElementById('loading').style.display = 'none';
+                applyFilters();
+
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                document.getElementById('cardContainer').innerHTML = `<div class="text-red-500 text-center">Gagal mengambil data. Pastikan URL benar.</div>`;
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        function renderCards(data) {
+            const container = document.getElementById('cardContainer');
+            container.innerHTML = '';
+
+            if(data.length === 0) {
+                container.innerHTML = '<div class="text-center text-gray-500 py-10">Tidak ada data ditemukan.</div>';
+                return;
+            }
+
+            data.forEach(po => {
+                // Warna badge berdasarkan status
+                let badgeClass = "bg-gray-100 text-gray-600";
+                if(po.status.toLowerCase() === 'approved') badgeClass = "bg-green-100 text-green-700";
+                if(po.status.toLowerCase() === 'pending') badgeClass = "bg-yellow-100 text-yellow-700";
+                if(po.status.toLowerCase() === 'canceled') badgeClass = "bg-red-100 text-red-700";
+                if(po.status.toLowerCase() === 'partial') badgeClass = "bg-purple-100 text-purple-700";
+
+                // Format Rupiah
+                const formattedPrice = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(po.totalAmount);
+                
+                // Format Tanggal Tampilan
+                const displayDate = po.dateObj ? po.dateObj.toLocaleDateString('id-ID', {day: 'numeric', month: 'numeric', year: 'numeric'}) : '-';
+
+                const cardHTML = `
+                <div class="bg-white rounded-xl p-5 border-l-4 ${po.status.toLowerCase() === 'approved' ? 'border-green-500' : 'border-gray-300'} shadow-sm hover:shadow-md transition duration-200">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <h3 class="text-lg font-bold text-gray-800">${po.id}</h3>
+                                <span class="px-2 py-0.5 rounded text-xs font-semibold ${badgeClass}">${po.status}</span>
+                            </div>
+                            <div class="flex items-center text-sm text-gray-500 mb-3">
+                                <i class="far fa-user mr-2"></i> ${po.vendor}
+                                <span class="mx-2">•</span>
+                                <i class="far fa-calendar mr-2"></i> ${displayDate}
+                            </div>
+                            <div class="text-xl font-bold text-gray-900 mb-1">
+                                ${formattedPrice}
+                            </div>
+                            <div class="text-xs text-gray-400">
+                                ${po.items.length} Items (Hover details)
+                            </div>
+                        </div>
+                        
+                        <button onclick="alert('Detail item: ${po.items.map(i => i.namaItem + ' (' + i.qty + ')').join(', ')}')" class="text-blue-600 text-sm font-semibold hover:underline bg-blue-50 px-3 py-2 rounded-lg">
+                            View Details <i class="fas fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+                `;
+                container.innerHTML += cardHTML;
+            });
+        }
+
+        function filterStatus(status) {
+            currentStatus = status;
+            
+            // Update UI Button Active State
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-blue-50', 'text-blue-700', 'border-blue-500');
+                btn.classList.add('bg-white', 'text-gray-600');
+            });
+            const activeBtn = document.getElementById(`btn-${status}`);
+            activeBtn.classList.add('active'); // CSS class active handles the style
+
+            applyFilters();
+        }
+
+        function applyFilters() {
+            let filtered = allData;
+
+            // 1. Filter Status
+            if (currentStatus !== 'All') {
+                filtered = filtered.filter(po => po.status.toLowerCase() === currentStatus.toLowerCase());
+            }
+
+            // 2. Filter Search
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            if (query) {
+                filtered = filtered.filter(po => 
+                    po.id.toLowerCase().includes(query) || 
+                    po.vendor.toLowerCase().includes(query)
+                );
+            }
+
+            // 3. Filter Date Range
+            const startStr = document.getElementById('dateStart').value;
+            const endStr = document.getElementById('dateEnd').value;
+            
+            if (startStr) {
+                const startDate = new Date(startStr);
+                filtered = filtered.filter(po => po.dateObj >= startDate);
+            }
+            if (endStr) {
+                const endDate = new Date(endStr);
+                // Set endDate to end of day
+                endDate.setHours(23, 59, 59);
+                filtered = filtered.filter(po => po.dateObj <= endDate);
+            }
+
+            // 4. Sorting
+            const sortOrder = document.getElementById('sortOrder').value;
+            filtered.sort((a, b) => {
+                if (sortOrder === 'asc') {
+                    return a.dateObj - b.dateObj; // Oldest first
+                } else {
+                    return b.dateObj - a.dateObj; // Newest first
+                }
+            });
+
+            renderCards(filtered);
+        }
+
+        // Initialize events
+        document.getElementById('dateStart').addEventListener('change', applyFilters);
+        document.getElementById('dateEnd').addEventListener('change', applyFilters);
+
+        // Load data on start
+        fetchData();
+
+    </script>
+</body>
+</html>
