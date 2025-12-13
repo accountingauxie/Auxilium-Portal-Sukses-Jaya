@@ -15,8 +15,9 @@
         
         /* Loading Overlay saat Approve */
         .processing-overlay {
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.85);
             z-index: 60;
+            backdrop-filter: blur(2px);
         }
     </style>
 </head>
@@ -58,7 +59,8 @@
             <div id="approveLoading" class="hidden absolute inset-0 processing-overlay flex items-center justify-center">
                 <div class="text-center">
                     <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                    <p class="text-sm font-bold text-blue-600">Updating Google Sheets...</p>
+                    <p class="text-sm font-bold text-blue-600">Memproses Data...</p>
+                    <p class="text-xs text-slate-500 mt-1">Mohon tunggu sebentar</p>
                 </div>
             </div>
 
@@ -84,33 +86,51 @@
                     </table>
                 </div>
 
-                <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
-                    <p class="text-xs font-bold text-blue-800 uppercase mb-1">CATATAN</p>
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-6">
+                    <p class="text-xs font-bold text-blue-800 uppercase mb-1">CATATAN LAMA (SHEET)</p>
                     <p class="text-sm text-blue-900" id="m-notes">-</p>
                 </div>
-            </div>
+
+                <div id="approval-form-container" class="hidden bg-yellow-50 p-5 rounded-lg border border-yellow-200">
+                    <h3 class="text-sm font-bold text-yellow-800 uppercase mb-3 border-b border-yellow-200 pb-2">
+                        <i class="fas fa-edit mr-2"></i>Form Approval (Wajib Diisi)
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">NO. INVOICE <span class="text-red-500">*</span></label>
+                            <input type="text" id="inp-invoice" placeholder="Contoh: INV-2023-001" 
+                                class="w-full border border-slate-300 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">NOTE TAMBAHAN <i class="far fa-sticky-note ml-1"></i></label>
+                            <input type="text" id="inp-note" placeholder="Catatan baru..." 
+                                class="w-full border border-slate-300 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white">
+                        </div>
+                    </div>
+                </div>
+                </div>
             
             <div class="bg-slate-50 p-4 flex justify-end gap-3 border-t border-slate-100">
                 <button onclick="closeModal()" class="px-5 py-2 rounded-lg border border-slate-300 text-slate-600 hover:bg-white font-medium">Close</button>
                 
-                <button id="btn-approve-action" class="px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 font-medium shadow-md flex items-center gap-2">
-                    <i class="fas fa-check"></i> Approve Order
+                <button id="btn-approve-action" onclick="approveOrder()" class="px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 font-medium shadow-md flex items-center gap-2">
+                    <i class="fas fa-check"></i> Submit & Approve
                 </button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- GANTI DENGAN URL APPS SCRIPT YANG SUDAH DI-UPDATE VERSIONNYA ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbyFDXsXTKAFCne2i0H6dlGbAk1fDBKJ8FtDZ_FPTm6utIAS26lQTR7f8t9KWbEBdOu9/exec"; 
+        // --- 🔴 PENTING: GANTI URL DI BAWAH INI DENGAN URL DEPLOY TERBARU ANDA ---
+        const API_URL = "https://script.google.com/macros/s/AKfycbxc641Jsn0AJDxec2fscRLshf9oYUpnPRW5YthCB-e5Nqzn9zMQzIfKZFvHcd8dhT3q/exec"; 
 
         let allData = [];
         let currentStatus = 'All';
-        let currentOpenId = ''; // Menyimpan ID PO yang sedang dibuka
+        let currentOpenId = ''; 
 
+        // Load Data
         async function fetchData() {
             try {
-                // Tambahkan timestamp agar tidak cache
                 const response = await fetch(`${API_URL}?t=${new Date().getTime()}`);
                 const data = await response.json();
                 allData = data;
@@ -120,15 +140,29 @@
                 applyFilters();
             } catch (error) {
                 console.error(error);
-                alert("Gagal load data. Cek koneksi atau URL Apps Script.");
+                alert("Gagal load data. Pastikan URL Apps Script benar dan dideploy sebagai Web App (Anyone).");
             }
         }
 
-        // FUNGSI BARU: APPROVE ORDER
+        // --- FUNGSI APPROVE BARU ---
         async function approveOrder() {
             if(!currentOpenId) return;
 
-            // Tampilkan Loading
+            // 1. Ambil Nilai Input
+            const invVal = document.getElementById('inp-invoice').value.trim();
+            const noteVal = document.getElementById('inp-note').value.trim();
+
+            // 2. Validasi: Invoice Wajib Diisi
+            if (!invVal) {
+                alert("⚠️ Harap isi Nomor Invoice sebelum melakukan Approval.");
+                document.getElementById('inp-invoice').focus();
+                return;
+            }
+
+            // 3. Konfirmasi
+            if (!confirm(`Yakin approve order ${currentOpenId} dengan Invoice: ${invVal}?`)) return;
+
+            // 4. UI Loading
             const btn = document.getElementById('btn-approve-action');
             const loadingOverlay = document.getElementById('approveLoading');
             
@@ -136,42 +170,48 @@
             btn.disabled = true;
 
             try {
-                // Kirim data POST ke Apps Script
-                // Menggunakan 'no-cors' tidak disarankan untuk JSON response, 
-                // tapi Apps Script redirect kadang tricky. 
-                // Kita gunakan text/plain agar tidak preflight OPTIONS error.
+                // 5. Kirim ke Backend
+                const payload = {
+                    action: 'approve',
+                    id: currentOpenId,
+                    invNumber: invVal,  // Kirim Invoice
+                    note: noteVal       // Kirim Note
+                };
+
                 const response = await fetch(API_URL, {
                     method: 'POST',
-                    body: JSON.stringify({ action: 'approve', id: currentOpenId })
+                    body: JSON.stringify(payload)
                 });
                 
                 const result = await response.json();
 
                 if(result.status === 'success') {
-                    // Tutup Modal & Refresh Data
+                    // Reset Form
+                    document.getElementById('inp-invoice').value = '';
+                    document.getElementById('inp-note').value = '';
+
                     closeModal();
+                    
+                    // Refresh tampilan loading utama
                     document.getElementById('loading').style.display = 'flex';
                     document.getElementById('cardContainer').innerHTML = '';
                     
-                    // Refresh data dari sheet untuk melihat perubahan
-                    await fetchData(); 
-                    
-                    // Notifikasi simpel
-                    // alert("Order " + currentOpenId + " berhasil di-approve!");
+                    await fetchData(); // Reload data terbaru
+                    alert("✅ Sukses! Data berhasil diupdate.");
                 } else {
-                    alert("Gagal update: " + result.message);
+                    alert("❌ Gagal: " + result.message);
                 }
 
             } catch (error) {
                 console.error(error);
-                alert("Terjadi kesalahan saat menghubungi server.");
+                alert("Terjadi kesalahan jaringan.");
             } finally {
                 loadingOverlay.classList.add('hidden');
                 btn.disabled = false;
             }
         }
 
-        // --- Render Logic (Sama seperti sebelumnya) ---
+        // --- Render UI ---
         function renderCards(data) {
             const container = document.getElementById('cardContainer');
             container.innerHTML = '';
@@ -207,20 +247,23 @@
         }
 
         function openModal(idPO) {
-            currentOpenId = idPO; // Simpan ID untuk fungsi Approve
+            currentOpenId = idPO;
             const po = allData.find(d => d.id === idPO);
             if (!po) return;
 
+            // Isi Data Dasar
             document.getElementById('m-vendor').innerText = po.vendor;
             document.getElementById('m-id').innerText = po.id;
-            document.getElementById('m-date').innerText = po.tanggalPO ? formatDate(po.tanggalPO) : '-';
+            document.getElementById('m-date').innerText = po.tanggalInput ? formatDate(po.tanggalInput) : '-';
             document.getElementById('m-notes').innerText = po.catatan || '-';
 
+            // Status Badge
             const sColor = getStatusColor(po.status);
             const sBadge = document.getElementById('m-status');
             sBadge.className = `px-3 py-1 rounded-full text-sm font-bold ${sColor.badge}`;
             sBadge.innerText = po.status;
 
+            // Render Table Items
             const tbody = document.getElementById('m-table-body');
             tbody.innerHTML = '';
             po.items.forEach(item => {
@@ -232,16 +275,25 @@
                 </tr>`;
             });
 
-            // LOGIK TOMBOL APPROVE: 
-            // Jika sudah approved, sembunyikan tombol Approve
+            // LOGIKA TAMPILAN FORM APPROVAL
+            const formContainer = document.getElementById('approval-form-container');
             const btnApprove = document.getElementById('btn-approve-action');
-            if(po.status.toLowerCase() === 'approved') {
+            
+            // Reset input field setiap kali buka modal
+            document.getElementById('inp-invoice').value = '';
+            document.getElementById('inp-note').value = '';
+
+            if(po.status && po.status.toLowerCase() === 'approved') {
+                // Jika sudah approved: Sembunyikan Form & Tombol Submit
+                formContainer.classList.add('hidden');
                 btnApprove.style.display = 'none';
             } else {
+                // Jika Pending: Tampilkan Form & Tombol Submit
+                formContainer.classList.remove('hidden');
                 btnApprove.style.display = 'flex';
-                btnApprove.onclick = approveOrder; // Pasang event handler
             }
 
+            // Buka Modal
             const modal = document.getElementById('detailModal');
             const content = document.getElementById('modalContent');
             modal.classList.remove('opacity-0', 'pointer-events-none');
