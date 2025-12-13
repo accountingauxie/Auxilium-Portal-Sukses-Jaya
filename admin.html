@@ -6,7 +6,7 @@
 <title>Admin Panel – AUXILIUM Portal</title>
 
 <style>
-/* STYLE TETAP SAMA SEPERTI SEBELUMNYA */
+/* STYLE TETAP SAMA */
 * { margin:0; padding:0; box-sizing:border-box; font-family:Inter,sans-serif; }
 body { background:#f5f6fa; min-height:100vh; }
 
@@ -28,7 +28,7 @@ body { background:#f5f6fa; min-height:100vh; }
 }
 
 .container {
-  max-width:1080px; /* Lebar ditambah sedikit agar muat kolom baru */
+  max-width:1150px; /* Lebar diperbesar sedikit untuk kolom baru */
   margin:32px auto;
   background:white;
   padding:24px;
@@ -56,7 +56,7 @@ th { background:#f9fafb; font-weight:600; }
 .btn-approve { background:#22c55e; color:white; }
 .btn-pending { background:#fca5a5; color:#991b1b; }
 
-/* LOADER CSS (SAMA) */
+/* LOADER CSS */
 .auxie-loader { position: fixed; inset: 0; background: radial-gradient(circle at center, rgba(255,255,255,1) 0%, rgba(245,245,255,0.95) 40%, rgba(235,240,255,0.92) 100%); display: flex; justify-content: center; align-items: center; backdrop-filter: blur(12px); z-index: 99999; transition: opacity .55s ease; }
 .auxie-loader.hide { opacity: 0; pointer-events: none; }
 .rings { position: relative; width: 160px; height: 160px; }
@@ -108,7 +108,7 @@ th { background:#f9fafb; font-weight:600; }
           <th>Finished Goods</th>
           <th>Order Form</th>
           <th>Review Invoice</th>
-          <th>Aksi</th>
+          <th>Inventory</th> <th>Aksi</th>
         </tr>
       </thead>
       <tbody id="user-list"></tbody>
@@ -124,7 +124,7 @@ window.addEventListener("load", () => {
   setTimeout(() => loader.classList.add("hide"), 300);
 });
 
-const API = "https://script.google.com/macros/s/AKfycbygk1uluv75pTZp-FZnTbUDuYMHN8wIXajuMiP4fNTGuF92Eh_aq1XAzuq2rpzoWaS4ZQ/exec";
+const API = "https://script.google.com/macros/s/AKfycbyLknBVwQXq_PK9eLU4hu8aQNEBUIcKJLWMT-HpsgaH8emLKYzrdjgaGtzFUnUftonpZg/exec";
 const current = JSON.parse(localStorage.getItem("uxilium_current_user") || "null");
 
 if (!current || current.role !== "admin") {
@@ -135,8 +135,8 @@ if (!current || current.role !== "admin") {
 async function loadUsers() {
   loader.classList.remove("hide");
   const list = document.getElementById("user-list");
-  // Update colspan jadi 8 karena ada kolom baru
-  list.innerHTML = "<tr><td colspan='8'>Loading...</td></tr>";
+  // Update colspan jadi 9 karena ada kolom baru Inventory
+  list.innerHTML = "<tr><td colspan='9'>Loading...</td></tr>";
 
   try {
     const res = await fetch(`${API}?action=list`);
@@ -144,14 +144,14 @@ async function loadUsers() {
     loader.classList.add("hide");
 
     if (!json.ok) {
-      list.innerHTML = "<tr><td colspan='8'>Gagal memuat data user.</td></tr>";
+      list.innerHTML = "<tr><td colspan='9'>Gagal memuat data user.</td></tr>";
       return;
     }
 
     renderUsers(json.data);
   } catch (err) {
     loader.classList.add("hide");
-    list.innerHTML = "<tr><td colspan='8'>Error koneksi ke server.</td></tr>";
+    list.innerHTML = "<tr><td colspan='9'>Error koneksi ke server.</td></tr>";
   }
 }
 
@@ -162,7 +162,7 @@ function renderUsers(users) {
   users.forEach((u) => {
     const tr = document.createElement("tr");
 
-    // Menambahkan kolom kosong untuk Review Invoice di urutan ke-6 (setelah Order Form)
+    // Menambahkan kolom kosong untuk Inventory
     tr.innerHTML = `
       <td>${u.email}</td>
       <td><span class="badge ${u.approved ? "approved" : "pending"}">
@@ -174,14 +174,16 @@ function renderUsers(users) {
       <td></td>
       <td></td>
       <td></td>
+      <td></td>
     `;
 
     const cells = tr.querySelectorAll("td");
     const cellRec = cells[3]; // Receiving
     const cellFG  = cells[4]; // Finished Goods
     const cellOF  = cells[5]; // Order Form
-    const cellInv = cells[6]; // Review Invoice (Baru)
-    const cellAct = cells[7]; // Aksi (Geser ke index 7)
+    const cellInv = cells[6]; // Review Invoice
+    const cellInventory = cells[7]; // Inventory (Baru)
+    const cellAct = cells[8]; // Aksi (Geser ke index 8)
 
     function makeBtn(key, label, target) {
       const btn = document.createElement("button");
@@ -196,8 +198,9 @@ function renderUsers(users) {
     makeBtn("receiving", "Receiving", cellRec);
     makeBtn("finished_goods", "FG", cellFG);
     makeBtn("order_form", "Order", cellOF);
-    // Tambahkan tombol baru
     makeBtn("review_invoice", "Review", cellInv);
+    // Tombol baru untuk inventory
+    makeBtn("inventory", "Inventory", cellInventory); 
 
     if (u.role !== "admin") {
       const b = document.createElement("button");
