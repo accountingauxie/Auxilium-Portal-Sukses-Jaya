@@ -71,7 +71,7 @@
     </div>
 
     <div id="billModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-6xl h-[95vh] rounded-xl shadow-2xl flex flex-col overflow-hidden relative animate-fade-in-up">
+        <div class="bg-white w-full max-w-7xl h-[95vh] rounded-xl shadow-2xl flex flex-col overflow-hidden relative animate-fade-in-up">
             
             <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
                 <div class="flex items-center gap-3">
@@ -117,7 +117,8 @@
                     <table class="w-full text-sm text-left">
                         <thead class="bg-slate-100 text-slate-600 font-semibold border-b border-slate-200">
                             <tr>
-                                <th class="p-3 w-1/3">Item / Description</th>
+                                <th class="p-3 w-1/4">Item / Description</th>
+                                <th class="p-3 w-32 bg-blue-50 text-blue-800 border-l border-r border-blue-100">Spec (Opt)</th>
                                 <th class="p-3 w-24 text-center">Qty</th>
                                 <th class="p-3 w-32">Unit Price</th>
                                 <th class="p-3 w-32">Disc</th>
@@ -177,7 +178,7 @@
 
     <script>
         // --- KONFIGURASI ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbx12FkBq_BeVxmAmaDtLAi_49Dirv2cGDnxJQq9gXP5ijpKHy-jcnrWoIQEbr_3zQ8/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycby5dTu7SnP-FSc_k0jaI223XsakdAqIEN9U9HucyLhcG2Gf9n5rfN35ulW1nmtZt-zN/exec"; 
         const TAX_RATE = 0.11; 
 
         let allData = [];
@@ -245,10 +246,10 @@
             document.getElementById('bill-po-id').innerText = po.id;
             document.getElementById('bill-vendor').value = po.vendor;
             
-            // 1. INVOICE NUMBER (Fix: Mengisi nilai dari data server)
+            // 1. INVOICE NUMBER
             document.getElementById('bill-inv-number').value = po.invNumber || ''; 
             
-            // 2. INVOICE DATE (Fix: Format Date ke YYYY-MM-DD untuk input date)
+            // 2. INVOICE DATE
             if (po.invDate) {
                 const d = new Date(po.invDate);
                 const yyyy = d.getFullYear();
@@ -264,11 +265,12 @@
             document.getElementById('bill-note').value = po.adminNote || po.catatan || '';
             document.getElementById('bill-adjustment').value = 0;
 
-            // Items Logic
+            // Items Logic (UPDATED: Include optionalSpec)
             currentItems = po.items.map(item => ({
                 ...item,
                 price: item.price || 0,
-                disc: item.disc || 0
+                disc: item.disc || 0,
+                optionalSpec: item.optionalSpec || '' // Load spec saved
             }));
 
             // --- LOCK / UNLOCK LOGIC ---
@@ -326,6 +328,12 @@
                         <div class="font-medium text-slate-800">${item.namaItem}</div>
                         <div class="text-xs text-slate-400">${item.satuan}</div>
                     </td>
+                    <td class="p-3 align-top bg-blue-50/30 border-l border-r border-blue-50">
+                        <input type="text" placeholder="-" value="${item.optionalSpec || ''}" 
+                            ${disabledAttr}
+                            oninput="updateItem(${index}, 'optionalSpec', this.value)" 
+                            class="input-bare text-sm text-blue-800 font-medium">
+                    </td>
                     <td class="p-3 align-top">
                         <input type="number" value="${item.qty}" readonly class="w-full text-center bg-slate-100 text-slate-500 rounded py-1 border-none text-sm">
                     </td>
@@ -351,7 +359,12 @@
         }
 
         function updateItem(index, field, value) {
-            currentItems[index][field] = parseFloat(value) || 0;
+            // UPDATED: Cek apakah field adalah spec (text) atau harga (number)
+            if (field === 'price' || field === 'disc') {
+                currentItems[index][field] = parseFloat(value) || 0;
+            } else {
+                currentItems[index][field] = value; // Simpan sebagai text
+            }
             calculateTotal();
         }
 
@@ -412,7 +425,7 @@
                     ppn: parseFloat(document.getElementById('display-ppn').dataset.value),
                     adjustment: parseFloat(document.getElementById('bill-adjustment').value) || 0,
                     grandTotal: parseFloat(document.getElementById('display-grand-total').dataset.value),
-                    items: currentItems
+                    items: currentItems // Item sudah membawa 'optionalSpec'
                 }
             };
 
