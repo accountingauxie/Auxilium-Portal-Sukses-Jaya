@@ -3,348 +3,403 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Purchase Order Dashboard</title>
+    <title>Bill Entry System</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
-        .filter-btn.active { background-color: #EFF6FF; color: #2563EB; border-color: #2563EB; }
-        .modal { transition: opacity 0.25s ease; }
-        body.modal-active { overflow-y: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: #F1F5F9; }
         
-        /* Loading Overlay saat Approve */
-        .processing-overlay {
-            background: rgba(255, 255, 255, 0.85);
-            z-index: 60;
-            backdrop-filter: blur(2px);
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+        
+        .input-bare {
+            background: transparent;
+            border: 1px solid transparent;
+            width: 100%;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .input-bare:hover { border-color: #E2E8F0; background: white; }
+        .input-bare:focus { border-color: #3B82F6; background: white; outline: none; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1); }
+        
+        /* Summary Box Style (Yellow Border like visual) */
+        .summary-box {
+            border-top: 4px solid #FCD34D; /* Yellow top border */
+            background: white;
         }
     </style>
 </head>
-<body class="p-4 md:p-8 text-slate-800">
+<body class="text-slate-800">
 
-    <div class="max-w-7xl mx-auto">
-        <h1 class="text-3xl font-bold text-slate-900 mb-8">Approval Dashboard</h1>
-
-        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 mb-8">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="flex space-x-1 overflow-x-auto pb-1 w-full md:w-auto">
-                    <button onclick="filterStatus('All')" id="btn-All" class="filter-btn active px-4 py-2 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-50 transition border border-transparent">All</button>
-                    <button onclick="filterStatus('Pending')" id="btn-Pending" class="filter-btn px-4 py-2 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-50 transition border border-transparent">Pending</button>
-                    <button onclick="filterStatus('Approved')" id="btn-Approved" class="filter-btn px-4 py-2 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-50 transition border border-transparent">Approved</button>
-                </div>
-                <div class="flex flex-wrap gap-3 items-center w-full md:w-auto">
-                    <div class="relative w-full md:w-64">
-                        <input type="text" id="searchInput" onkeyup="applyFilters()" placeholder="Search PO or Vendor..." class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-                        <i class="fas fa-search absolute left-3 top-3 text-slate-400"></i>
-                    </div>
-                    <select id="sortOrder" onchange="applyFilters()" class="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-600 focus:outline-none">
-                        <option value="desc">Newest First</option>
-                        <option value="asc">Oldest First</option>
-                    </select>
-                </div>
+    <div class="max-w-7xl mx-auto p-4 md:p-6">
+        
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900">Purchase Orders</h1>
+                <p class="text-sm text-slate-500">Manage and convert PO to Bills</p>
+            </div>
+            <div class="flex gap-3">
+                <input type="text" id="searchInput" onkeyup="applyFilters()" placeholder="Search PO..." class="pl-4 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <select id="filterStatus" onchange="applyFilters()" class="border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none">
+                    <option value="All">All Status</option>
+                    <option value="Pending" selected>Pending</option>
+                    <option value="Billed">Billed</option>
+                </select>
             </div>
         </div>
 
         <div id="loading" class="flex justify-center py-20">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
         </div>
 
-        <div id="cardContainer" class="space-y-4"></div>
+        <div id="cardContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
     </div>
 
-    <div id="detailModal" class="modal opacity-0 pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl mx-4 overflow-hidden transform transition-all scale-95 relative flex flex-col max-h-[90vh]" id="modalContent">
+    <div id="billModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-6xl h-[95vh] rounded-xl shadow-2xl flex flex-col overflow-hidden relative animate-fade-in-up">
             
-            <div id="approveLoading" class="hidden absolute inset-0 processing-overlay flex items-center justify-center rounded-xl">
-                <div class="text-center">
-                    <div class="animate-spin rounded-full h-12 w-12 border-4 border-slate-200 border-t-blue-600 mx-auto mb-4"></div>
-                    <p class="text-lg font-bold text-slate-800">Processing Approval...</p>
-                    <p class="text-sm text-slate-500">Updating status & copying data</p>
+            <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                <div class="flex items-center gap-3">
+                    <div class="bg-blue-100 p-2 rounded-lg text-blue-600"><i class="fas fa-file-invoice-dollar text-xl"></i></div>
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800">New Bill</h2>
+                        <p class="text-xs text-slate-500">From PO: <span id="bill-po-id" class="font-mono font-medium"></span></p>
+                    </div>
                 </div>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-red-500 transition"><i class="fas fa-times text-2xl"></i></button>
             </div>
 
-            <div class="flex justify-between items-center p-6 border-b border-slate-100 flex-shrink-0">
-                <h2 class="text-xl font-bold text-slate-800">Purchase Order Detail</h2>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times text-2xl"></i></button>
-            </div>
-
-            <div class="p-6 md:p-8 overflow-y-auto">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-                    <div><p class="text-xs font-bold text-slate-400 uppercase mb-1">VENDOR</p><p class="text-lg font-semibold text-slate-800" id="m-vendor">-</p></div>
-                    <div><p class="text-xs font-bold text-slate-400 uppercase mb-1">ORDER NO</p><p class="text-lg font-semibold text-slate-800" id="m-id">-</p></div>
-                    <div><p class="text-xs font-bold text-slate-400 uppercase mb-1">DATE</p><p class="text-lg font-semibold text-slate-800" id="m-date">-</p></div>
-                    <div><p class="text-xs font-bold text-slate-400 uppercase mb-1">STATUS</p><span id="m-status" class="px-3 py-1 rounded-full text-sm font-bold">-</span></div>
+            <div class="flex-1 overflow-y-auto p-6 bg-slate-50/50">
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6 bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase">Vendor</label>
+                        <input type="text" id="bill-vendor" readonly class="w-full mt-1 font-semibold text-slate-800 bg-transparent border-none p-0 focus:ring-0">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase">Invoice Number <span class="text-red-500">*</span></label>
+                        <input type="text" id="bill-inv-number" placeholder="e.g., INV-001" class="w-full mt-1 border border-slate-300 rounded px-2 py-1 text-sm focus:border-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase">Invoice Date</label>
+                        <input type="date" id="bill-date" class="w-full mt-1 border border-slate-300 rounded px-2 py-1 text-sm focus:border-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase">Amounts Are</label>
+                        <select id="tax-mode" onchange="calculateTotal()" class="w-full mt-1 border border-slate-300 rounded px-2 py-1 text-sm bg-white focus:border-blue-500 outline-none">
+                            <option value="exclusive">Tax Exclusive (Harga Belum PPN)</option>
+                            <option value="inclusive">Tax Inclusive (Harga Termasuk PPN)</option>
+                            <option value="no_tax">No Tax</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="overflow-hidden rounded-lg border border-slate-200 mb-6">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
-                            <tr><th class="p-4">PRODUCT</th><th class="p-4 text-center">QTY</th><th class="p-4 text-center">SATUAN</th></tr>
+                <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden mb-6">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-slate-100 text-slate-600 font-semibold border-b border-slate-200">
+                            <tr>
+                                <th class="p-3 w-1/3">Item / Description</th>
+                                <th class="p-3 w-24 text-center">Qty</th>
+                                <th class="p-3 w-32">Unit Price</th>
+                                <th class="p-3 w-32">Disc</th>
+                                <th class="p-3 w-40 text-right">Amount</th>
+                            </tr>
                         </thead>
-                        <tbody id="m-table-body" class="divide-y divide-slate-100 bg-white"></tbody>
+                        <tbody id="bill-items-body" class="divide-y divide-slate-100">
+                            </tbody>
                     </table>
                 </div>
 
-                <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-6">
-                    <p class="text-xs font-bold text-blue-800 uppercase mb-1">CATATAN REQUESTER</p>
-                    <p class="text-sm text-blue-900" id="m-notes">-</p>
-                </div>
+                <div class="flex flex-col md:flex-row gap-8 items-start">
+                    <div class="w-full md:w-1/2">
+                        <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Notes / Memo</label>
+                        <textarea id="bill-note" rows="4" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:border-blue-500 outline-none" placeholder="Add a note..."></textarea>
+                    </div>
 
-                <div id="approval-form-section" class="bg-yellow-50 p-5 rounded-xl border border-yellow-200 mt-6">
-                    <h3 class="text-sm font-bold text-yellow-800 uppercase mb-4 border-b border-yellow-200 pb-2">
-                        <i class="fas fa-file-signature mr-2"></i>Admin Approval Form
-                    </h3>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Invoice Number <span class="text-red-500">*</span></label>
-                            <input type="text" id="input-invoice" placeholder="Contoh: INV-2024-001" 
-                                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white">
-                            <p class="text-xs text-slate-500 mt-1">Wajib diisi untuk approve.</p>
+                    <div class="w-full md:w-1/2 summary-box rounded-lg p-6 shadow-sm">
+                        
+                        <div class="flex justify-between mb-2 text-slate-600">
+                            <span>Subtotal (DPP)</span>
+                            <span id="display-subtotal" class="font-medium">0</span>
                         </div>
 
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Admin Note <span class="text-gray-400">(Optional)</span></label>
-                            <div class="relative">
-                                <input type="text" id="input-admin-note" placeholder="Catatan tambahan..." 
-                                    class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white">
-                                <i class="fas fa-sticky-note absolute left-3 top-3 text-slate-400"></i>
-                            </div>
+                        <div class="flex justify-between mb-2 text-slate-600 items-center">
+                            <span>PPN (12%)</span>
+                            <span id="display-ppn" class="font-medium">0</span>
+                        </div>
+
+                        <div class="flex justify-between mb-4 items-center">
+                            <span class="text-slate-600 text-sm">Adjustment / Rounding</span>
+                            <input type="number" id="bill-adjustment" value="0" oninput="calculateTotal()" class="text-right w-32 border border-slate-300 rounded px-2 py-1 text-sm focus:border-blue-500 outline-none">
+                        </div>
+
+                        <div class="border-t border-slate-200 my-2"></div>
+
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg font-bold text-slate-800">GRAND TOTAL</span>
+                            <span id="display-grand-total" class="text-2xl font-bold text-blue-600">0</span>
                         </div>
                     </div>
                 </div>
+
             </div>
-            
-            <div class="bg-slate-50 p-4 flex justify-end gap-3 border-t border-slate-100 flex-shrink-0">
-                <button onclick="closeModal()" class="px-5 py-2.5 rounded-lg border border-slate-300 text-slate-600 hover:bg-white font-medium transition">Close</button>
-                
-                <button id="btn-approve-action" class="px-6 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 font-medium shadow-md flex items-center gap-2 transition transform active:scale-95">
-                    <i class="fas fa-check-circle"></i> Approve & Process
+
+            <div class="p-4 bg-white border-t border-slate-200 flex justify-end gap-3">
+                <button onclick="closeModal()" class="px-6 py-2 border border-slate-300 rounded-lg text-slate-600 font-medium hover:bg-slate-50">Cancel</button>
+                <button onclick="submitBill()" id="btn-save" class="px-6 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 shadow-lg flex items-center gap-2">
+                    <i class="fas fa-check"></i> Approve & Save Bill
                 </button>
             </div>
+            
+            <div id="modalLoading" class="hidden absolute inset-0 bg-white bg-opacity-90 flex flex-col items-center justify-center z-50">
+                <div class="animate-spin rounded-full h-12 w-12 border-4 border-slate-200 border-t-blue-600 mb-4"></div>
+                <p class="font-bold text-slate-700">Saving Bill Data...</p>
+            </div>
+
         </div>
     </div>
 
     <script>
-        // --- PASTE URL APPS SCRIPT DEPLOYMENT TERBARU ANDA DI SINI ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbw_k3Y9Z6-ERyq6fqJZR2XF044yM5BFyaP-B_TcLZg2a9NCQ_WrwaLOCNOmkHuwKkg/exec"; 
+        // --- KONFIGURASI ---
+        const API_URL = "https://script.google.com/macros/s/AKfycbyFDXsXTKAFCne2i0H6dlGbAk1fDBKJ8FtDZ_FPTm6utIAS26lQTR7f8t9KWbEBdOu9/exec"; 
+        const TAX_RATE = 0.12;
 
         let allData = [];
-        let currentStatus = 'All';
-        let currentOpenId = '';
+        let currentItems = []; // Menyimpan state item yang sedang diedit
+        let currentPOId = "";
 
+        // --- INIT & FETCH ---
         async function fetchData() {
             try {
                 const response = await fetch(`${API_URL}?t=${new Date().getTime()}`);
                 const data = await response.json();
                 allData = data;
-                
-                allData.forEach(po => { po.dateObj = new Date(po.tanggalInput); });
                 document.getElementById('loading').style.display = 'none';
                 applyFilters();
             } catch (error) {
-                console.error(error);
-                document.getElementById('loading').innerHTML = '<p class="text-red-500">Gagal memuat data. Periksa koneksi.</p>';
+                alert("Gagal memuat data.");
             }
         }
+        
+        window.onload = fetchData;
 
-        // FUNGSI UTAMA: APPROVE ORDER
-        async function approveOrder() {
-            if(!currentOpenId) return;
-
-            // 1. Ambil Nilai dari Input
-            const invVal = document.getElementById('input-invoice').value.trim();
-            const noteVal = document.getElementById('input-admin-note').value.trim();
-
-            // 2. Validasi: Invoice Wajib Diisi
-            if (!invVal) {
-                alert("Harap isi Invoice Number terlebih dahulu!");
-                document.getElementById('input-invoice').focus();
-                document.getElementById('input-invoice').classList.add('border-red-500', 'bg-red-50');
-                setTimeout(() => {
-                    document.getElementById('input-invoice').classList.remove('border-red-500', 'bg-red-50');
-                }, 2000);
-                return;
-            }
-
-            // 3. Tampilkan Loading
-            const btn = document.getElementById('btn-approve-action');
-            const loadingOverlay = document.getElementById('approveLoading');
-            
-            loadingOverlay.classList.remove('hidden');
-            btn.disabled = true;
-
-            try {
-                // 4. Kirim Data ke Apps Script
-                const payload = {
-                    action: 'approve',
-                    id: currentOpenId,
-                    inv: invVal,  // Kirim Invoice
-                    note: noteVal // Kirim Note
-                };
-
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                });
-                
-                const result = await response.json();
-
-                if(result.status === 'success') {
-                    closeModal();
-                    
-                    // Reset Tampilan
-                    document.getElementById('loading').style.display = 'flex';
-                    document.getElementById('cardContainer').innerHTML = '';
-                    
-                    // Refresh Data
-                    await fetchData(); 
-                    
-                    // Optional: Tampilkan Toast/Alert sukses
-                    // alert("Berhasil Approved!");
-                } else {
-                    alert("Gagal update: " + result.message);
-                }
-
-            } catch (error) {
-                console.error(error);
-                alert("Terjadi kesalahan koneksi.");
-            } finally {
-                loadingOverlay.classList.add('hidden');
-                btn.disabled = false;
-            }
-        }
-
+        // --- RENDER DASHBOARD ---
         function renderCards(data) {
             const container = document.getElementById('cardContainer');
             container.innerHTML = '';
-
-            if(data.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-16 bg-white rounded-xl border border-dashed border-slate-300">
-                        <i class="fas fa-inbox text-4xl text-slate-300 mb-3"></i>
-                        <p class="text-slate-500">Tidak ada data ditemukan.</p>
-                    </div>`;
+            
+            if (data.length === 0) {
+                container.innerHTML = '<div class="col-span-3 text-center text-slate-400 py-10">No data found.</div>';
                 return;
             }
 
             data.forEach(po => {
-                const statusColor = getStatusColor(po.status);
-                const displayDate = formatDate(po.tanggalInput);
+                const isBilled = po.status === 'Billed';
+                const statusClass = isBilled ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-800';
+                
+                // Button Text & Action
+                const btnText = isBilled ? 'View Details' : 'Create Bill';
+                const btnClass = isBilled ? 'text-slate-500 bg-slate-100' : 'text-white bg-blue-600 hover:bg-blue-700 shadow-md';
+                const clickAction = isBilled ? `alert('PO ini sudah di-bill.')` : `openBillModal('${po.id}')`;
 
-                const cardHTML = `
-                <div class="bg-white rounded-xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition group relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-1 h-full ${statusColor.bar}"></div>
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pl-3">
+                const html = `
+                <div class="bg-white rounded-xl p-5 border border-slate-200 hover:shadow-md transition">
+                    <div class="flex justify-between items-start mb-3">
                         <div>
-                            <div class="flex items-center gap-3 mb-1">
-                                <h3 class="text-lg font-bold text-slate-800 font-mono tracking-tight">${po.id}</h3>
-                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${statusColor.badge}">${po.status}</span>
-                            </div>
-                            <div class="flex items-center text-sm text-slate-500 gap-4">
-                                <span class="flex items-center gap-1"><i class="far fa-building"></i> ${po.vendor}</span>
-                                <span class="flex items-center gap-1"><i class="far fa-calendar-alt"></i> ${displayDate}</span>
-                            </div>
+                            <h3 class="font-bold text-slate-800">${po.id}</h3>
+                            <p class="text-xs text-slate-500">${po.vendor}</p>
                         </div>
-                        <button onclick="openModal('${po.id}')" class="w-full md:w-auto px-4 py-2 bg-slate-50 text-slate-600 border border-slate-200 rounded-lg text-sm font-semibold hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition">
-                            View Details
-                        </button>
+                        <span class="px-2 py-1 rounded text-xs font-bold ${statusClass}">${po.status}</span>
                     </div>
+                    <div class="text-sm text-slate-600 mb-4">
+                        <i class="far fa-calendar mr-2"></i> ${formatDate(po.tanggalInput)}
+                    </div>
+                    <button onclick="${clickAction}" class="w-full py-2 rounded-lg font-medium text-sm transition ${btnClass}">
+                        ${btnText}
+                    </button>
                 </div>`;
-                container.innerHTML += cardHTML;
+                container.innerHTML += html;
             });
         }
 
-        function openModal(idPO) {
-            currentOpenId = idPO;
+        // --- BILL MODAL LOGIC ---
+function openBillModal(idPO) {
             const po = allData.find(d => d.id === idPO);
             if (!po) return;
 
-            // Isi Data Modal
-            document.getElementById('m-vendor').innerText = po.vendor;
-            document.getElementById('m-id').innerText = po.id;
-            document.getElementById('m-date').innerText = po.tanggalPO ? formatDate(po.tanggalPO) : '-';
-            document.getElementById('m-notes').innerText = po.catatan || '-';
+            currentPOId = idPO;
+            
+            // Set Header Info
+            document.getElementById('bill-po-id').innerText = po.id;
+            document.getElementById('bill-vendor').value = po.vendor;
+            
+            // Kosongkan inputan form setiap buka modal baru
+            document.getElementById('bill-inv-number').value = ''; 
+            document.getElementById('bill-date').valueAsDate = new Date();
+            document.getElementById('bill-adjustment').value = 0;
+            document.getElementById('bill-note').value = po.adminNote || po.catatan || ''; // Prioritas Admin Note
+            document.getElementById('tax-mode').value = 'exclusive'; 
 
-            // Status Badge Modal
-            const sColor = getStatusColor(po.status);
-            const sBadge = document.getElementById('m-status');
-            sBadge.className = `px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider ${sColor.badge}`;
-            sBadge.innerText = po.status;
+            // -- UPDATE LOGIC ITEM (Agar membaca harga yang tersimpan) --
+            currentItems = po.items.map(item => ({
+                ...item,
+                // Jika sudah ada harga tersimpan (dari GAS), pakai itu. Jika tidak, 0.
+                price: item.price || 0,
+                disc: item.disc || 0
+            }));
+            // ------------------------------------------------------------
 
-            // Render Table Items
-            const tbody = document.getElementById('m-table-body');
+            renderBillItems();
+            calculateTotal();
+
+            // Show Modal
+            document.getElementById('billModal').classList.remove('hidden');
+        }
+
+        function renderBillItems() {
+            const tbody = document.getElementById('bill-items-body');
             tbody.innerHTML = '';
-            po.items.forEach(item => {
-                tbody.innerHTML += `
-                <tr class="hover:bg-slate-50 transition">
-                    <td class="p-4 font-medium text-slate-700">${item.namaItem}</td>
-                    <td class="p-4 text-center text-slate-600 bg-slate-50/50 font-mono">${item.qty}</td>
-                    <td class="p-4 text-center text-slate-500 text-xs uppercase font-bold">${item.satuan}</td>
+
+            currentItems.forEach((item, index) => {
+                const row = `
+                <tr class="hover:bg-slate-50 group">
+                    <td class="p-3 align-top">
+                        <div class="font-medium text-slate-800">${item.namaItem}</div>
+                        <div class="text-xs text-slate-400">${item.satuan}</div>
+                    </td>
+                    <td class="p-3 align-top">
+                        <input type="number" value="${item.qty}" readonly class="w-full text-center bg-slate-100 text-slate-500 rounded py-1 border-none text-sm">
+                    </td>
+                    <td class="p-3 align-top">
+                        <input type="number" placeholder="0" value="${item.price}" 
+                            oninput="updateItem(${index}, 'price', this.value)" 
+                            class="input-bare text-right text-sm font-mono">
+                    </td>
+                    <td class="p-3 align-top">
+                        <input type="number" placeholder="0" value="${item.disc}" 
+                            oninput="updateItem(${index}, 'disc', this.value)" 
+                            class="input-bare text-right text-sm font-mono text-red-500">
+                    </td>
+                    <td class="p-3 align-top text-right font-bold text-slate-700 font-mono" id="row-total-${index}">
+                        0
+                    </td>
                 </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // --- CORE MATH LOGIC (XERO STYLE) ---
+        function updateItem(index, field, value) {
+            currentItems[index][field] = parseFloat(value) || 0;
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            let totalLineAmount = 0;
+            const taxMode = document.getElementById('tax-mode').value;
+
+            // 1. Hitung Total per Baris
+            currentItems.forEach((item, index) => {
+                const lineTotal = (item.price - item.disc) * item.qty;
+                totalLineAmount += lineTotal;
+                
+                // Update tampilan per baris
+                document.getElementById(`row-total-${index}`).innerText = formatRupiah(lineTotal);
             });
 
-            // LOGIC TAMPILAN FORM APPROVAL
-            const formSection = document.getElementById('approval-form-section');
-            const btnApprove = document.getElementById('btn-approve-action');
-            const inputInv = document.getElementById('input-invoice');
-            const inputNote = document.getElementById('input-admin-note');
+            // 2. Hitung Tax & Grand Total berdasarkan Mode
+            let dpp = 0;
+            let ppn = 0;
+            const adj = parseFloat(document.getElementById('bill-adjustment').value) || 0;
 
-            // Reset Input
-            inputInv.value = '';
-            inputNote.value = '';
-            inputInv.classList.remove('border-red-500', 'bg-red-50');
-
-            if(po.status.toLowerCase() === 'approved') {
-                // Jika sudah Approved: Sembunyikan Form & Tombol Approve
-                formSection.style.display = 'none';
-                btnApprove.style.display = 'none';
+            if (taxMode === 'exclusive') {
+                // Harga belum termasuk pajak
+                dpp = totalLineAmount;
+                ppn = dpp * TAX_RATE;
+            } else if (taxMode === 'inclusive') {
+                // Harga sudah termasuk pajak
+                // Rumus: Total = DPP + (DPP * 12%) => Total = DPP * 1.12 => DPP = Total / 1.12
+                dpp = totalLineAmount / (1 + TAX_RATE);
+                ppn = totalLineAmount - dpp;
             } else {
-                // Jika Pending: Tampilkan Form & Tombol Approve
-                formSection.style.display = 'block';
-                btnApprove.style.display = 'flex';
-                btnApprove.onclick = approveOrder;
+                // No Tax
+                dpp = totalLineAmount;
+                ppn = 0;
             }
 
-            // Buka Modal dengan Animasi
-            const modal = document.getElementById('detailModal');
-            const content = document.getElementById('modalContent');
-            modal.classList.remove('opacity-0', 'pointer-events-none');
-            document.body.classList.add('modal-active');
-            setTimeout(() => {
-                content.classList.remove('scale-95');
-                content.classList.add('scale-100');
-            }, 10);
+            const grandTotal = dpp + ppn + adj;
+
+            // 3. Update Summary Box UI
+            document.getElementById('display-subtotal').innerText = formatRupiah(dpp);
+            document.getElementById('display-ppn').innerText = formatRupiah(ppn);
+            document.getElementById('display-grand-total').innerText = formatRupiah(grandTotal);
+
+            // Simpan nilai mentah di elemen agar mudah diambil saat submit
+            document.getElementById('display-grand-total').dataset.value = grandTotal;
+            document.getElementById('display-subtotal').dataset.value = dpp;
+            document.getElementById('display-ppn').dataset.value = ppn;
         }
 
+        // --- SUBMIT DATA ---
+        async function submitBill() {
+            const invNumber = document.getElementById('bill-inv-number').value;
+            if (!invNumber) {
+                alert("Please enter Invoice Number!");
+                return;
+            }
+
+            const payload = {
+                action: 'save_bill',
+                data: {
+                    idPO: currentPOId,
+                    vendor: document.getElementById('bill-vendor').value,
+                    invNumber: invNumber,
+                    invDate: document.getElementById('bill-date').value,
+                    taxMode: document.getElementById('tax-mode').value,
+                    note: document.getElementById('bill-note').value,
+                    // Ambil nilai numerik hasil hitungan
+                    subtotal: parseFloat(document.getElementById('display-subtotal').dataset.value),
+                    ppn: parseFloat(document.getElementById('display-ppn').dataset.value),
+                    adjustment: parseFloat(document.getElementById('bill-adjustment').value) || 0,
+                    grandTotal: parseFloat(document.getElementById('display-grand-total').dataset.value),
+                    items: currentItems // Kirim detail item lengkap dengan harga
+                }
+            };
+
+            // UI Loading
+            document.getElementById('modalLoading').classList.remove('hidden');
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    closeModal();
+                    fetchData(); // Refresh list PO
+                    // alert("Bill Saved Successfully!");
+                } else {
+                    alert("Error: " + result.message);
+                }
+            } catch (err) {
+                alert("Connection Error");
+            } finally {
+                document.getElementById('modalLoading').classList.add('hidden');
+            }
+        }
+
+        // --- UTILS ---
         function closeModal() {
-            const modal = document.getElementById('detailModal');
-            const content = document.getElementById('modalContent');
-            
-            content.classList.remove('scale-100');
-            content.classList.add('scale-95');
-            
-            setTimeout(() => {
-                modal.classList.add('opacity-0', 'pointer-events-none');
-                document.body.classList.remove('modal-active');
-            }, 150);
+            document.getElementById('billModal').classList.add('hidden');
         }
 
-        function getStatusColor(status) {
-            const s = (status || '').toLowerCase();
-            if (s === 'approved') return { 
-                bar: 'bg-green-500', 
-                badge: 'bg-green-100 text-green-700 border border-green-200' 
-            };
-            if (s === 'pending') return { 
-                bar: 'bg-yellow-400', 
-                badge: 'bg-yellow-100 text-yellow-800 border border-yellow-200' 
-            };
-            return { 
-                bar: 'bg-gray-300', 
-                badge: 'bg-gray-100 text-gray-600 border border-gray-200' 
-            };
+        function formatRupiah(amount) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount);
         }
 
         function formatDate(dateStr) {
@@ -352,38 +407,16 @@
             return new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
         }
 
-        function filterStatus(status) {
-            currentStatus = status;
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active', 'bg-blue-50', 'text-blue-600', 'border-blue-200'));
-            document.getElementById(`btn-${status}`).classList.add('active');
-            applyFilters();
-        }
-
         function applyFilters() {
+            const status = document.getElementById('filterStatus').value;
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            
             let filtered = allData;
-            
-            // Filter Status
-            if (currentStatus !== 'All') {
-                filtered = filtered.filter(p => (p.status||'').toLowerCase() === currentStatus.toLowerCase());
-            }
-            
-            // Filter Search
-            const q = document.getElementById('searchInput').value.toLowerCase();
-            if (q) {
-                filtered = filtered.filter(p => 
-                    p.id.toLowerCase().includes(q) || 
-                    p.vendor.toLowerCase().includes(q)
-                );
-            }
-
-            // Sort
-            const sort = document.getElementById('sortOrder').value;
-            filtered.sort((a, b) => sort === 'asc' ? a.dateObj - b.dateObj : b.dateObj - a.dateObj);
+            if (status !== 'All') filtered = filtered.filter(p => p.status === status);
+            if (search) filtered = filtered.filter(p => p.id.toLowerCase().includes(search) || p.vendor.toLowerCase().includes(search));
             
             renderCards(filtered);
         }
-
-        fetchData();
     </script>
 </body>
 </html>
