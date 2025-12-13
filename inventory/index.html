@@ -51,10 +51,24 @@ body {
   max-width: 1400px; margin: 30px auto; padding: 0 20px;
 }
 
+/* HEADER & SELECTOR */
 .header-action {
-  display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  margin-bottom: 24px;
+  
+  display: flex; 
+  flex-direction: column;
+  gap: 15px;
 }
-.page-title { font-size: 22px; font-weight: 700; color: var(--text-main); margin: 0; }
+
+.header-top {
+  display: flex; justify-content: space-between; align-items: center;
+}
+.page-title { font-size: 20px; font-weight: 700; color: var(--text-main); margin: 0; }
 
 .btn-refresh {
   background: white; border: 1px solid var(--border); padding: 8px 16px;
@@ -63,56 +77,33 @@ body {
 }
 .btn-refresh:hover { background: #f0f9ff; border-color: var(--primary); }
 
-/* ================= TABS DESIGN ================= */
-.tabs-container {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid var(--border);
+/* DROPDOWN SELECTOR STYLE */
+.selector-area {
+  display: flex; align-items: center; gap: 10px;
+  background: #f8fafc; padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border);
 }
+.selector-label { font-weight: 600; color: var(--text-muted); font-size: 13px; }
+.type-select {
+  padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: 600; color: var(--text-main);
+  font-size: 14px; min-width: 200px; outline: none; cursor: pointer;
+}
+.type-select:focus { border-color: var(--primary); ring: 2px solid #bae6fd; }
 
-.tab-btn {
-  padding: 12px 24px;
-  background: transparent;
-  border: none;
-  border-bottom: 3px solid transparent;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
+/* UTILITY CLASSES UNTUK SHOW/HIDE */
+.d-none { display: none !important; }
+.d-block { display: block !important; }
 
-.tab-btn:hover {
-  color: var(--primary);
-  background: #f8fafc;
-}
-
-.tab-btn.active {
-  color: var(--primary);
-  border-bottom-color: var(--primary);
-}
-
-/* Hide content by default, show if active */
-.tab-content {
-  display: none;
-  animation: fadeIn 0.3s ease-in-out;
-}
-.tab-content.active {
-  display: block;
+/* TABLE CARD */
+.card {
+  background: var(--card-bg); border-radius: 12px;
+  border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  margin-bottom: 30px; overflow: hidden;
+  animation: fadeIn 0.3s ease;
 }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(5px); }
   to { opacity: 1; transform: translateY(0); }
-}
-/* =============================================== */
-
-/* CARDS */
-.card {
-  background: var(--card-bg); border-radius: 12px;
-  border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  margin-bottom: 30px; overflow: hidden;
 }
 
 .card-header {
@@ -125,9 +116,8 @@ body {
   padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px;
   font-size: 13px; width: 250px; outline: none;
 }
-.search-input:focus { border-color: var(--primary); }
 
-/* TABLE */
+/* TABLE STYLE */
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; min-width: 600px; }
 
@@ -144,19 +134,20 @@ td {
 tr:last-child td { border-bottom: none; }
 tr:hover td { background-color: #f1f5f9; }
 
-/* STOK STYLING */
+/* STOK INDICATORS */
 .stock-val { font-weight: 700; text-align: right; }
 .stock-safe { color: var(--success); }
 .stock-low { color: var(--warning); }
 .stock-empty { color: var(--danger); background: #fef2f2; }
 
-/* LOADING */
+/* LOADERS */
 .loader-box { padding: 40px; text-align: center; color: var(--text-muted); }
 .spinner {
   width: 24px; height: 24px; border: 3px solid #e2e8f0; border-top-color: var(--primary);
   border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
 </style>
 </head>
 <body>
@@ -174,18 +165,23 @@ tr:hover td { background-color: #f1f5f9; }
 <div class="container">
   
   <div class="header-action">
-    <h1 class="page-title">Laporan Stok Barang</h1>
-    <button class="btn-refresh" onclick="loadData()">
-      <span>↻</span> Refresh Data
-    </button>
+    <div class="header-top">
+      <h1 class="page-title">Laporan Stok Barang</h1>
+      <button class="btn-refresh" onclick="loadData()">
+        <span>↻</span> Refresh Data
+      </button>
+    </div>
+
+    <div class="selector-area">
+      <span class="selector-label">Tampilkan Laporan:</span>
+      <select id="viewSelector" class="type-select" onchange="toggleView()">
+        <option value="spandek">📦 Stok Spandek</option>
+        <option value="nonspandek">📄 Stok Non-Spandek</option>
+      </select>
+    </div>
   </div>
 
-  <div class="tabs-container">
-    <button class="tab-btn active" onclick="switchTab('spandek')">Stok Spandek</button>
-    <button class="tab-btn" onclick="switchTab('nonspandek')">Stok Non-Spandek</button>
-  </div>
-
-  <div id="view-spandek" class="tab-content active">
+  <div id="container-spandek">
     <div class="card">
       <div class="card-header">
         <h3 class="card-title">Database Spandek (Kolom C-G)</h3>
@@ -205,17 +201,17 @@ tr:hover td { background-color: #f1f5f9; }
           <tbody id="bodySpandek"></tbody>
         </table>
         <div id="loadingSpandek" class="loader-box">
-          <div class="spinner"></div> Mengambil data...
+          <div class="spinner"></div> Mengambil data Spandek...
         </div>
       </div>
     </div>
   </div>
 
-  <div id="view-nonspandek" class="tab-content">
+  <div id="container-nonspandek" class="d-none">
     <div class="card">
       <div class="card-header">
         <h3 class="card-title">Database Non-Spandek (Kolom C-F)</h3>
-        <input type="text" class="search-input" placeholder="Cari Item..." onkeyup="searchTable(this, 'tableNon')">
+        <input type="text" class="search-input" placeholder="Cari Item Non-Spandek..." onkeyup="searchTable(this, 'tableNon')">
       </div>
       <div class="table-wrap">
         <table id="tableNon">
@@ -230,7 +226,7 @@ tr:hover td { background-color: #f1f5f9; }
           <tbody id="bodyNon"></tbody>
         </table>
         <div id="loadingNon" class="loader-box">
-          <div class="spinner"></div> Mengambil data...
+          <div class="spinner"></div> Mengambil data Non Spandek...
         </div>
       </div>
     </div>
@@ -246,47 +242,45 @@ tr:hover td { background-color: #f1f5f9; }
 
   window.onload = loadData;
 
-  // --- TAB FUNCTION ---
-  function switchTab(tabName) {
-    // 1. Hide all contents
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-    // 2. Remove active class from buttons
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  // --- FUNGSI GANTI TAMPILAN ---
+  function toggleView() {
+    const selector = document.getElementById("viewSelector");
+    const val = selector.value;
+    
+    const divSpandek = document.getElementById("container-spandek");
+    const divNon = document.getElementById("container-nonspandek");
 
-    // 3. Show selected content
-    if(tabName === 'spandek') {
-      document.getElementById('view-spandek').classList.add('active');
-      document.querySelector('button[onclick="switchTab(\'spandek\')"]').classList.add('active');
+    if (val === "spandek") {
+      // Tampilkan Spandek, Sembunyikan Non
+      divSpandek.classList.remove("d-none");
+      divNon.classList.add("d-none");
     } else {
-      document.getElementById('view-nonspandek').classList.add('active');
-      document.querySelector('button[onclick="switchTab(\'nonspandek\')"]').classList.add('active');
+      // Tampilkan Non, Sembunyikan Spandek
+      divSpandek.classList.add("d-none");
+      divNon.classList.remove("d-none");
     }
   }
-  // --------------------
 
+  // --- LOAD DATA ---
   async function loadData() {
-    // Reset UI Loaders
+    // Reset Loader
     document.getElementById("bodySpandek").innerHTML = "";
     document.getElementById("bodyNon").innerHTML = "";
     document.getElementById("loadingSpandek").style.display = "block";
     document.getElementById("loadingNon").style.display = "block";
 
     try {
-      // Fetch Data
       const response = await fetch(API_URL + "?action=getInventoryData");
       const data = await response.json();
 
-      // Render Spandek (Kolom C, D, E, F, G -> index 0,1,2,3,4)
       renderTable("bodySpandek", "loadingSpandek", data.spandek, 5);
-
-      // Render Non Spandek (Kolom C, D, E, F -> index 0,1,2,3)
       renderTable("bodyNon", "loadingNon", data.nonSpandek, 4);
 
     } catch (err) {
       console.error(err);
-      alert("Gagal koneksi ke database. Cek URL Script atau Internet.");
-      document.getElementById("loadingSpandek").innerHTML = "Gagal memuat data.";
-      document.getElementById("loadingNon").innerHTML = "Gagal memuat data.";
+      alert("Gagal koneksi. Periksa internet atau URL Script.");
+      document.getElementById("loadingSpandek").innerText = "Error";
+      document.getElementById("loadingNon").innerText = "Error";
     }
   }
 
@@ -300,8 +294,7 @@ tr:hover td { background-color: #f1f5f9; }
     }
 
     rows.forEach(row => {
-      // Validasi kolom pertama (Nama Barang)
-      if (!row[0]) return;
+      if (!row[0]) return; // Skip baris kosong
 
       const tr = document.createElement("tr");
       let html = "";
@@ -310,7 +303,7 @@ tr:hover td { background-color: #f1f5f9; }
         let content = cell;
         let className = "";
 
-        // Logika warna untuk kolom terakhir (Stok)
+        // Logic warna Stok (Kolom Terakhir)
         if (idx === expectedCols - 1) {
           className = "stock-val ";
           let num = parseFloat(cell);
@@ -329,7 +322,6 @@ tr:hover td { background-color: #f1f5f9; }
     });
   }
 
-  // Fungsi Search
   function searchTable(input, tableId) {
     const filter = input.value.toUpperCase();
     const table = document.getElementById(tableId);
