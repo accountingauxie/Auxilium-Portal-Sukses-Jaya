@@ -3,310 +3,463 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auxilium - Make PO</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    <title>Bill Entry System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #f4f6f9; font-family: sans-serif; }
-        .container { max-width: 1200px; margin-top: 90px; }
-        .card { border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        body { font-family: 'Inter', sans-serif; background-color: #F1F5F9; }
         
-        .table-input { 
-            border: 1px solid #ced4da; 
-            border-radius: 4px; 
-            width: 100%; 
-            padding: 6px; 
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+        
+        .input-bare {
+            background: transparent;
+            border: 1px solid transparent;
+            width: 100%;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
         }
-        .table-input:focus { outline: 2px solid #80bdff; border-color: #80bdff; }
-        .bg-readonly { background-color: #e9ecef; cursor: not-allowed; }
+        .input-bare:hover { border-color: #E2E8F0; background: white; }
+        .input-bare:focus { border-color: #3B82F6; background: white; outline: none; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1); }
         
-        td { vertical-align: middle; }
-        .col-no { width: 50px; text-align: center; }
-        .col-action { width: 50px; text-align: center; }
-        .col-qty { width: 100px; }
-        .col-unit { width: 100px; }
-        
-        /* Navbar Tweaks */
-        .nav-link { font-size: 0.95rem; color: #555; }
-        .nav-link:hover { color: #198754; }
-        .active-menu { background-color: #e9f7ef; color: #198754 !important; font-weight: 600; border-radius: 5px; }
+        /* Disabled Input Styles (Saat Mode View/Locked) */
+        input:disabled, select:disabled, textarea:disabled {
+            background-color: #F8FAFC; 
+            color: #64748B;
+            cursor: not-allowed;
+            border-color: transparent;
+        }
+        .input-bare:disabled:hover {
+            background-color: #F8FAFC;
+            border-color: transparent;
+        }
+
+        /* Summary Box Style */
+        .summary-box {
+            border-top: 4px solid #FCD34D;
+            background: white;
+        }
     </style>
 </head>
-<body>
+<body class="text-slate-800">
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand fw-bold mb-0 h1" href="#">
-                AUXILIUM <span class="fw-light fs-6">PO Entry System</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav align-items-center gap-1">
-                    <li class="nav-item"><a class="nav-link px-3" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/">Home PO</a></li>
-                    <li class="nav-item"><a class="nav-link px-3" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/polist/index.html">PO List</a></li>
-                    <li class="nav-item"><a class="nav-link px-3" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/entry/index.html">Receiving PO</a></li>
-                    <li class="nav-item"><a class="nav-link px-3" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/ImportXeroPO/index.html">Import Xero</a></li>
-                    <li class="nav-item"><a class="nav-link px-3 active-menu" href="#">Make PO</a></li>
-                    <li class="nav-item d-none d-lg-block mx-2 border-start" style="height: 24px;"></li>
-                    <li class="nav-item">
-                        <div id="connectionStatus" class="text-secondary small d-flex align-items-center ps-2">
-                            <div class="spinner-border spinner-border-sm me-1" role="status"></div> Loading...
+    <div class="max-w-7xl mx-auto p-4 md:p-6">
+        
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900">Purchase Orders</h1>
+                <p class="text-sm text-slate-500">Manage and convert PO to Bills</p>
+            </div>
+            <div class="flex gap-3">
+                <input type="text" id="searchInput" onkeyup="applyFilters()" placeholder="Search PO..." class="pl-4 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <select id="filterStatus" onchange="applyFilters()" class="border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none">
+                    <option value="All">All Status</option>
+                    <option value="Pending" selected>Pending</option>
+                    <option value="Billed">Billed</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="loading" class="flex justify-center py-20">
+            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
+        </div>
+
+        <div id="cardContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </div>
+
+    <div id="billModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-6xl h-[95vh] rounded-xl shadow-2xl flex flex-col overflow-hidden relative animate-fade-in-up">
+            
+            <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                <div class="flex items-center gap-3">
+                    <div class="bg-blue-100 p-2 rounded-lg text-blue-600"><i class="fas fa-file-invoice-dollar text-xl"></i></div>
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800" id="modal-title">New Bill</h2>
+                        <p class="text-xs text-slate-500">From PO: <span id="bill-po-id" class="font-mono font-medium"></span></p>
+                    </div>
+                </div>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-red-500 transition"><i class="fas fa-times text-2xl"></i></button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 bg-slate-50/50">
+                
+                <div id="status-banner" class="hidden mb-4 p-3 bg-green-100 text-green-800 rounded-lg text-sm font-medium flex items-center gap-2 border border-green-200">
+                    <i class="fas fa-lock"></i> Bill has been approved. Switch to edit mode to make changes.
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6 bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase">Vendor</label>
+                        <input type="text" id="bill-vendor" readonly class="w-full mt-1 font-semibold text-slate-800 bg-transparent border-none p-0 focus:ring-0">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase">Invoice Number <span class="text-red-500">*</span></label>
+                        <input type="text" id="bill-inv-number" class="bill-input w-full mt-1 border border-slate-300 rounded px-2 py-1 text-sm focus:border-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase">Invoice Date</label>
+                        <input type="date" id="bill-date" class="bill-input w-full mt-1 border border-slate-300 rounded px-2 py-1 text-sm focus:border-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase">Amounts Are</label>
+                        <select id="tax-mode" onchange="calculateTotal()" class="bill-input w-full mt-1 border border-slate-300 rounded px-2 py-1 text-sm bg-white focus:border-blue-500 outline-none">
+                            <option value="exclusive">Tax Exclusive (Harga Belum PPN)</option>
+                            <option value="inclusive">Tax Inclusive (Harga Termasuk PPN)</option>
+                            <option value="no_tax">No Tax</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden mb-6">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-slate-100 text-slate-600 font-semibold border-b border-slate-200">
+                            <tr>
+                                <th class="p-3 w-1/3">Item / Description</th>
+                                <th class="p-3 w-24 text-center">Qty</th>
+                                <th class="p-3 w-32">Unit Price</th>
+                                <th class="p-3 w-32">Disc</th>
+                                <th class="p-3 w-40 text-right">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bill-items-body" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-8 items-start">
+                    <div class="w-full md:w-1/2">
+                        <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Notes / Memo</label>
+                        <textarea id="bill-note" rows="4" class="bill-input w-full border border-slate-300 rounded-lg p-3 text-sm focus:border-blue-500 outline-none"></textarea>
+                    </div>
+
+                    <div class="w-full md:w-1/2 summary-box rounded-lg p-6 shadow-sm">
+                        <div class="flex justify-between mb-2 text-slate-600">
+                            <span>Subtotal (DPP)</span>
+                            <span id="display-subtotal" class="font-medium">0</span>
                         </div>
-                    </li>
-                </ul>
+                        <div class="flex justify-between mb-2 text-slate-600 items-center">
+                            <span>PPN (11%)</span>
+                            <span id="display-ppn" class="font-medium">0</span>
+                        </div>
+                        <div class="flex justify-between mb-4 items-center">
+                            <span class="text-slate-600 text-sm">Adjustment / Rounding</span>
+                            <input type="number" id="bill-adjustment" value="0" oninput="calculateTotal()" class="bill-input text-right w-32 border border-slate-300 rounded px-2 py-1 text-sm focus:border-blue-500 outline-none">
+                        </div>
+                        <div class="border-t border-slate-200 my-2"></div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg font-bold text-slate-800">GRAND TOTAL</span>
+                            <span id="display-grand-total" class="text-2xl font-bold text-blue-600">0</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </nav>
 
-    <div class="container mb-5">
-        <div class="card p-4 mb-3">
-            <div class="row align-items-end g-3">
-                <div class="col-md-5">
-                    <label class="fw-bold mb-1">Pilih Vendor</label>
-                    <select class="form-select" id="vendorSelect" onchange="onVendorChange()">
-                        <option value="" disabled selected>-- Tunggu Sebentar... --</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="fw-bold mb-1">Tanggal PO</label>
-                    <input type="date" class="form-control" id="poDate">
-                </div>
-                <div class="col-md-4 text-end">
-                    <button class="btn btn-success fw-bold px-4 w-100" id="btnSimpan" onclick="submitPO()">
-                        <i class="bi bi-save2 me-2"></i> SIMPAN PO
-                    </button>
-                </div>
-            </div>
-            <div class="form-text text-danger mt-2" id="vendorWarning" style="display:none;">
-                *Mengganti vendor akan menghapus semua baris item.
-            </div>
-        </div>
-
-        <div class="card p-0 overflow-hidden">
-            <div class="table-responsive">
-                <table class="table table-bordered mb-0" id="itemTable">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="col-no">#</th>
-                            <th>Nama Item</th>
-                            <th class="col-qty">Qty</th>
-                            <th class="col-unit">Satuan</th>
-                            <th>Catatan (Opsional)</th>
-                            <th class="col-action"><i class="bi bi-trash"></i></th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                    </tbody>
-                </table>
-            </div>
-            <div class="p-3 bg-light border-top text-center">
-                <button class="btn btn-outline-primary fw-bold w-100 dashed-border" onclick="addNewRow()">
-                    <i class="bi bi-plus-circle me-1"></i> Tambah Baris Item
+            <div class="p-4 bg-white border-t border-slate-200 flex justify-end gap-3">
+                <button onclick="closeModal()" class="px-6 py-2 border border-slate-300 rounded-lg text-slate-600 font-medium hover:bg-slate-50">Close</button>
+                
+                <button onclick="enableEditMode()" id="btn-edit" class="hidden px-6 py-2 bg-yellow-500 text-white rounded-lg font-bold hover:bg-yellow-600 shadow-md flex items-center gap-2">
+                    <i class="fas fa-edit"></i> Edit Bill
                 </button>
+
+                <button onclick="submitBill()" id="btn-save" class="px-6 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 shadow-lg flex items-center gap-2">
+                    <i class="fas fa-check"></i> Approve & Save
+                </button>
+            </div>
+            
+            <div id="modalLoading" class="hidden absolute inset-0 bg-white bg-opacity-90 flex flex-col items-center justify-center z-50">
+                <div class="animate-spin rounded-full h-12 w-12 border-4 border-slate-200 border-t-blue-600 mb-4"></div>
+                <p class="font-bold text-slate-700">Saving Bill Data...</p>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
-        // ==========================================
-        // URL APP SCRIPT KAMU
-        const API_URL = "https://script.google.com/macros/s/AKfycbzkmpSWFcdOtGydQcyLFZSmDZmIj4dl9wGPXV5pqixYhBVWKzzjDGlwdNs4Q_eMZFclzw/exec"; 
-        // ==========================================
+        // --- KONFIGURASI ---
+        const API_URL = "https://script.google.com/macros/s/AKfycbx12FkBq_BeVxmAmaDtLAi_49Dirv2cGDnxJQq9gXP5ijpKHy-jcnrWoIQEbr_3zQ8/exec"; 
+        const TAX_RATE = 0.11; 
 
-        var allData = {};
+        let allData = [];
+        let currentItems = [];
+        let currentPOId = "";
+        let isEditMode = false;
 
-        window.onload = function() {
-            setDefaultDate();
-            Swal.fire({
-                title: 'Memuat Data Vendor',
-                text: 'Mohon tunggu sebentar...',
-                allowOutsideClick: false,
-                didOpen: () => Swal.showLoading()
-            });
-
-            fetch(API_URL + "?action=getData")
-            .then(res => res.json())
-            .then(res => {
-                Swal.close();
-                if(res.status === 'success'){
-                    populateVendors(res.data);
-                    document.getElementById("connectionStatus").innerHTML = '<span class="text-success fw-bold"><i class="bi bi-wifi"></i> Online</span>';
-                }
-            })
-            .catch(e => {
-                Swal.close();
-                Swal.fire("Gagal Koneksi", "Tidak dapat mengambil data vendor.", "error");
-                document.getElementById("connectionStatus").innerHTML = '<span class="text-danger">Offline/Error</span>';
-            });
-        };
-
-        function setDefaultDate() {
-            const date = new Date();
-            const jakartaDate = date.toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' });
-            document.getElementById("poDate").value = jakartaDate;
+        async function fetchData() {
+            try {
+                const response = await fetch(`${API_URL}?t=${new Date().getTime()}`);
+                const data = await response.json();
+                allData = data;
+                document.getElementById('loading').style.display = 'none';
+                applyFilters();
+            } catch (error) {
+                alert("Gagal memuat data. Periksa koneksi.");
+            }
         }
+        
+        window.onload = fetchData;
 
-        function populateVendors(data) {
-            allData = data;
-            var select = document.getElementById("vendorSelect");
-            select.innerHTML = '<option value="" disabled selected>-- Pilih Vendor --</option>';
-            Object.keys(data).sort().forEach(v => {
-                let opt = document.createElement("option");
-                opt.value = v; opt.text = v;
-                select.add(opt);
-            });
-        }
-
-        function onVendorChange() {
-            var tbody = document.getElementById("tableBody");
-            tbody.innerHTML = ""; 
-            addNewRow(); 
-        }
-
-        function addNewRow() {
-            var vendor = document.getElementById("vendorSelect").value;
-            if(!vendor) {
-                if(Object.keys(allData).length > 0) Swal.fire("Pilih Vendor", "Silakan pilih vendor terlebih dahulu.", "warning");
+        function renderCards(data) {
+            const container = document.getElementById('cardContainer');
+            container.innerHTML = '';
+            
+            if (data.length === 0) {
+                container.innerHTML = '<div class="col-span-3 text-center text-slate-400 py-10">No data found.</div>';
                 return;
             }
 
-            var tbody = document.getElementById("tableBody");
-            var rowIdx = tbody.children.length; 
+            data.forEach(po => {
+                const isBilled = po.status === 'Billed';
+                const statusClass = isBilled ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-800';
+                const btnText = isBilled ? 'View Bill' : 'Create Bill';
+                const btnClass = isBilled ? 'text-slate-600 bg-slate-100 hover:bg-slate-200' : 'text-white bg-blue-600 hover:bg-blue-700 shadow-md';
 
-            var itemOptions = '<option value="" disabled selected>-- Cari Item --</option>';
-            allData[vendor].forEach((obj, index) => {
-                itemOptions += `<option value="${index}">${obj.item}</option>`;
+                const html = `
+                <div class="bg-white rounded-xl p-5 border border-slate-200 hover:shadow-md transition">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h3 class="font-bold text-slate-800">${po.id}</h3>
+                            <p class="text-xs text-slate-500">${po.vendor}</p>
+                        </div>
+                        <span class="px-2 py-1 rounded text-xs font-bold ${statusClass}">${po.status}</span>
+                    </div>
+                    <div class="text-sm text-slate-600 mb-4">
+                        <i class="far fa-calendar mr-2"></i> ${formatDate(po.tanggalInput)}
+                    </div>
+                    <button onclick="openBillModal('${po.id}')" class="w-full py-2 rounded-lg font-medium text-sm transition ${btnClass}">
+                        ${btnText}
+                    </button>
+                </div>`;
+                container.innerHTML += html;
             });
-
-            var tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td class="text-center bg-light row-number">${rowIdx + 1}</td>
-                <td>
-                    <select class="form-select item-select" onchange="updateUnit(this)">${itemOptions}</select>
-                </td>
-                <td>
-                    <input type="number" class="form-control qty-input" placeholder="0" min="0" oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null">
-                </td>
-                <td><input type="text" class="form-control bg-readonly unit-input" readonly tabindex="-1"></td>
-                <td><input type="text" class="form-control note-input" placeholder="Keterangan..."></td>
-                <td class="text-center"><button class="btn btn-sm btn-danger" onclick="removeRow(this)"><i class="bi bi-x-lg"></i></button></td>
-            `;
-            tbody.appendChild(tr);
         }
 
-        function updateUnit(selectElement) {
-            // --- LOGIKA BARU: CEK DUPLIKAT ---
-            var selectedValue = selectElement.value;
+        // --- OPEN MODAL & POPULATE DATA ---
+        function openBillModal(idPO) {
+            const po = allData.find(d => d.id === idPO);
+            if (!po) return;
+
+            currentPOId = idPO;
+            const isBilled = po.status === 'Billed';
+
+            document.getElementById('bill-po-id').innerText = po.id;
+            document.getElementById('bill-vendor').value = po.vendor;
             
-            // Ambil semua dropdown item yang ada di tabel
-            var allSelects = document.querySelectorAll(".item-select");
-            var duplicateCount = 0;
-
-            // Hitung berapa kali item ini muncul di tabel
-            allSelects.forEach(el => {
-                // value tidak boleh kosong dan harus sama
-                if(el.value === selectedValue && selectedValue !== "") {
-                    duplicateCount++;
-                }
-            });
-
-            // Jika muncul lebih dari 1 kali (berarti duplikat)
-            if(duplicateCount > 1) {
-                Swal.fire("Item Duplikat", "Item ini sudah dipilih di baris lain. Silakan edit Qty di baris yang sudah ada jika ingin menambah jumlah.", "warning");
-                
-                // Reset Pilihan Dropdown
-                selectElement.value = ""; 
-                
-                // Reset Kolom Satuan
-                var row = selectElement.closest("tr");
-                row.querySelector(".unit-input").value = "";
-                
-                return; // Berhenti disini, jangan lanjut update unit
-            }
-            // ---------------------------------
-
-            var vendor = document.getElementById("vendorSelect").value;
-            var idx = selectElement.value; 
-            var row = selectElement.closest("tr");
-            var unitInput = row.querySelector(".unit-input");
-            if(allData[vendor] && allData[vendor][idx]){
-                unitInput.value = allData[vendor][idx].unit;
-            }
-        }
-
-        function removeRow(btn) {
-            btn.closest("tr").remove();
-            renumberRows(); 
-        }
-
-        function renumberRows() {
-            document.querySelectorAll("#tableBody tr .row-number").forEach((td, index) => td.innerText = index + 1);
-        }
-
-        function submitPO() {
-            var vendor = document.getElementById("vendorSelect").value;
-            var poDate = document.getElementById("poDate").value;
-
-            if(!vendor) return Swal.fire("Error", "Pilih Vendor!", "error");
-            if(!poDate) return Swal.fire("Error", "Tanggal PO harus diisi!", "error");
-
-            var rows = document.querySelectorAll("#tableBody tr");
-            if(rows.length === 0) return Swal.fire("Kosong", "Tambahkan item minimal satu.", "warning");
-
-            var itemsToSave = [];
-            var isValid = true;
-
-            rows.forEach((row) => {
-                var itemIdx = row.querySelector(".item-select").value;
-                var qty = row.querySelector(".qty-input").value;
-                var unit = row.querySelector(".unit-input").value;
-                var note = row.querySelector(".note-input").value;
-
-                if(!itemIdx || !qty || qty <= 0) {
-                    isValid = false;
-                    row.classList.add("table-danger"); 
-                } else {
-                    row.classList.remove("table-danger");
-                    var realItemName = allData[vendor][itemIdx].item;
-                    itemsToSave.push({ itemName: realItemName, qty: qty, unit: unit, note: note });
-                }
-            });
-
-            if(!isValid) return Swal.fire("Data Belum Lengkap", "Cek baris yang merah (Item kosong atau Qty harus > 0).", "error");
-
-            var btn = document.getElementById("btnSimpan");
-            var originalText = btn.innerHTML;
+            // 1. INVOICE NUMBER (Fix: Mengisi nilai dari data server)
+            document.getElementById('bill-inv-number').value = po.invNumber || ''; 
             
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Menyimpan...';
+            // 2. INVOICE DATE (Fix: Format Date ke YYYY-MM-DD untuk input date)
+            if (po.invDate) {
+                const d = new Date(po.invDate);
+                const yyyy = d.getFullYear();
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const dd = String(d.getDate()).padStart(2, '0');
+                document.getElementById('bill-date').value = `${yyyy}-${mm}-${dd}`;
+            } else {
+                document.getElementById('bill-date').valueAsDate = new Date();
+            }
 
-            fetch(API_URL + "?action=saveOrder", {
-                method: "POST",
-                body: JSON.stringify({ vendor: vendor, poDate: poDate, items: itemsToSave })
-            })
-            .then(res => res.json())
-            .then(res => {
-                if(res.status === 'success') {
-                    Swal.fire('Berhasil!', 'PO ID: ' + res.id, 'success').then(() => {
-                        document.getElementById("vendorSelect").value = "";
-                        document.getElementById("tableBody").innerHTML = "";
-                        setDefaultDate();
-                    });
-                } else {
-                    throw new Error(res.message);
-                }
-            })
-            .catch(err => Swal.fire('Gagal', err.message, 'error'))
-            .finally(() => {
-                btn.disabled = false;
-                btn.innerHTML = originalText;
+            // 3. TAX MODE & NOTE
+            document.getElementById('tax-mode').value = po.taxMode || 'exclusive'; 
+            document.getElementById('bill-note').value = po.adminNote || po.catatan || '';
+            document.getElementById('bill-adjustment').value = 0;
+
+            // Items Logic
+            currentItems = po.items.map(item => ({
+                ...item,
+                price: item.price || 0,
+                disc: item.disc || 0
+            }));
+
+            // --- LOCK / UNLOCK LOGIC ---
+            if (isBilled) {
+                // View Mode
+                document.getElementById('modal-title').innerText = "Bill Details";
+                document.getElementById('status-banner').classList.remove('hidden');
+                document.getElementById('btn-edit').classList.remove('hidden');
+                document.getElementById('btn-save').classList.add('hidden');
+                setFormState(false); 
+            } else {
+                // Create Mode
+                document.getElementById('modal-title').innerText = "New Bill";
+                document.getElementById('status-banner').classList.add('hidden');
+                document.getElementById('btn-edit').classList.add('hidden');
+                document.getElementById('btn-save').classList.remove('hidden');
+                document.getElementById('btn-save').innerHTML = '<i class="fas fa-check"></i> Approve & Save';
+                setFormState(true); 
+            }
+
+            renderBillItems();
+            calculateTotal();
+            document.getElementById('billModal').classList.remove('hidden');
+        }
+
+        function enableEditMode() {
+            if(confirm("Apakah Anda yakin ingin mengedit data Bill yang sudah diapprove ini?")) {
+                setFormState(true); 
+                document.getElementById('btn-edit').classList.add('hidden');
+                document.getElementById('btn-save').classList.remove('hidden');
+                document.getElementById('btn-save').innerHTML = '<i class="fas fa-save"></i> Update Changes';
+                document.getElementById('status-banner').classList.add('hidden');
+            }
+        }
+
+        function setFormState(isEditable) {
+            isEditMode = isEditable;
+            const inputs = document.querySelectorAll('.bill-input');
+            inputs.forEach(input => {
+                input.disabled = !isEditable;
             });
+            renderBillItems();
+        }
+
+        function renderBillItems() {
+            const tbody = document.getElementById('bill-items-body');
+            tbody.innerHTML = '';
+            
+            const disabledAttr = isEditMode ? '' : 'disabled';
+
+            currentItems.forEach((item, index) => {
+                const row = `
+                <tr class="hover:bg-slate-50 group">
+                    <td class="p-3 align-top">
+                        <div class="font-medium text-slate-800">${item.namaItem}</div>
+                        <div class="text-xs text-slate-400">${item.satuan}</div>
+                    </td>
+                    <td class="p-3 align-top">
+                        <input type="number" value="${item.qty}" readonly class="w-full text-center bg-slate-100 text-slate-500 rounded py-1 border-none text-sm">
+                    </td>
+                    <td class="p-3 align-top">
+                        <input type="number" placeholder="0" value="${item.price}" 
+                            ${disabledAttr}
+                            oninput="updateItem(${index}, 'price', this.value)" 
+                            class="input-bare text-right text-sm font-mono">
+                    </td>
+                    <td class="p-3 align-top">
+                        <input type="number" placeholder="0" value="${item.disc}" 
+                            ${disabledAttr}
+                            oninput="updateItem(${index}, 'disc', this.value)" 
+                            class="input-bare text-right text-sm font-mono text-red-500">
+                    </td>
+                    <td class="p-3 align-top text-right font-bold text-slate-700 font-mono" id="row-total-${index}">
+                        0
+                    </td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+            if (!isEditMode) calculateTotal(); 
+        }
+
+        function updateItem(index, field, value) {
+            currentItems[index][field] = parseFloat(value) || 0;
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            let totalLineAmount = 0;
+            const taxMode = document.getElementById('tax-mode').value;
+
+            currentItems.forEach((item, index) => {
+                const lineTotal = (item.price - item.disc) * item.qty;
+                totalLineAmount += lineTotal;
+                const el = document.getElementById(`row-total-${index}`);
+                if(el) el.innerText = formatRupiah(lineTotal);
+            });
+
+            let dpp = 0;
+            let ppn = 0;
+            const adj = parseFloat(document.getElementById('bill-adjustment').value) || 0;
+
+            if (taxMode === 'exclusive') {
+                dpp = totalLineAmount;
+                ppn = dpp * TAX_RATE;
+            } else if (taxMode === 'inclusive') {
+                dpp = totalLineAmount / (1 + TAX_RATE);
+                ppn = totalLineAmount - dpp;
+            } else {
+                dpp = totalLineAmount;
+                ppn = 0;
+            }
+
+            const grandTotal = dpp + ppn + adj;
+
+            document.getElementById('display-subtotal').innerText = formatRupiah(dpp);
+            document.getElementById('display-ppn').innerText = formatRupiah(ppn);
+            document.getElementById('display-grand-total').innerText = formatRupiah(grandTotal);
+
+            document.getElementById('display-grand-total').dataset.value = grandTotal;
+            document.getElementById('display-subtotal').dataset.value = dpp;
+            document.getElementById('display-ppn').dataset.value = ppn;
+        }
+
+        async function submitBill() {
+            const invNumber = document.getElementById('bill-inv-number').value;
+            if (!invNumber) {
+                alert("Please enter Invoice Number!");
+                return;
+            }
+
+            const payload = {
+                action: 'save_bill',
+                data: {
+                    idPO: currentPOId,
+                    vendor: document.getElementById('bill-vendor').value,
+                    invNumber: invNumber,
+                    invDate: document.getElementById('bill-date').value,
+                    taxMode: document.getElementById('tax-mode').value,
+                    note: document.getElementById('bill-note').value,
+                    subtotal: parseFloat(document.getElementById('display-subtotal').dataset.value),
+                    ppn: parseFloat(document.getElementById('display-ppn').dataset.value),
+                    adjustment: parseFloat(document.getElementById('bill-adjustment').value) || 0,
+                    grandTotal: parseFloat(document.getElementById('display-grand-total').dataset.value),
+                    items: currentItems
+                }
+            };
+
+            document.getElementById('modalLoading').classList.remove('hidden');
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    closeModal();
+                    fetchData(); 
+                } else {
+                    alert("Error: " + result.message);
+                }
+            } catch (err) {
+                alert("Connection Error");
+            } finally {
+                document.getElementById('modalLoading').classList.add('hidden');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('billModal').classList.add('hidden');
+        }
+
+        function formatRupiah(amount) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount);
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            return new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+
+        function applyFilters() {
+            const status = document.getElementById('filterStatus').value;
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            
+            let filtered = allData;
+            if (status !== 'All') filtered = filtered.filter(p => p.status === status);
+            if (search) filtered = filtered.filter(p => p.id.toLowerCase().includes(search) || p.vendor.toLowerCase().includes(search));
+            
+            renderCards(filtered);
         }
     </script>
 </body>
