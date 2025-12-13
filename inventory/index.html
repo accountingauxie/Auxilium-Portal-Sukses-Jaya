@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inventory Stok - Auxilium</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --primary: #0075c9;
+  --bg: #f5f7fa;
+  --card-bg: #ffffff;
+  --border: #e2e8f0;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --danger: #ef4444;
+  --success: #10b981;
+  --warning: #f59e0b;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg);
+  color: var(--text-main);
+  font-size: 14px;
+}
+
+/* NAVBAR */
+.top-bar {
+  background: white;
+  border-bottom: 1px solid var(--border);
+  padding: 12px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
+}
+.brand { font-weight: 700; font-size: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;}
+.brand span { font-weight: 400; color: var(--text-muted); font-size: 14px; }
+.nav-link { 
+    text-decoration: none; color: var(--text-muted); font-weight: 500; margin-left: 20px; transition: 0.2s; 
+}
+.nav-link:hover, .nav-link.active { color: var(--primary); }
+
+/* LAYOUT */
+.container {
+  max-width: 1400px; margin: 30px auto; padding: 0 20px;
+}
+
+.header-action {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;
+}
+.page-title { font-size: 22px; font-weight: 700; color: var(--text-main); margin: 0; }
+
+.btn-refresh {
+  background: white; border: 1px solid var(--border); padding: 8px 16px;
+  border-radius: 6px; cursor: pointer; color: var(--primary); font-weight: 600;
+  display: flex; align-items: center; gap: 6px; transition: 0.2s;
+}
+.btn-refresh:hover { background: #f0f9ff; border-color: var(--primary); }
+
+/* CARDS */
+.card {
+  background: var(--card-bg); border-radius: 12px;
+  border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  margin-bottom: 30px; overflow: hidden;
+}
+
+.card-header {
+  padding: 16px 24px; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center; bg-color: #fafafa;
+}
+.card-title { font-size: 16px; font-weight: 600; margin: 0; color: var(--text-main); }
+
+.search-input {
+  padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px;
+  font-size: 13px; width: 250px; outline: none;
+}
+.search-input:focus { border-color: var(--primary); }
+
+/* TABLE */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 600px; }
+
+th {
+  text-align: left; padding: 12px 24px; background: #f8fafc;
+  color: var(--text-muted); font-size: 12px; font-weight: 600; text-transform: uppercase;
+  border-bottom: 1px solid var(--border); white-space: nowrap;
+}
+
+td {
+  padding: 12px 24px; border-bottom: 1px solid var(--border);
+  color: #334155;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background-color: #f1f5f9; }
+
+/* STOK STYLING */
+.stock-val { font-weight: 700; text-align: right; }
+.stock-safe { color: var(--success); }
+.stock-low { color: var(--warning); }
+.stock-empty { color: var(--danger); background: #fef2f2; }
+
+/* LOADING */
+.loader-box { padding: 40px; text-align: center; color: var(--text-muted); }
+.spinner {
+  width: 24px; height: 24px; border: 3px solid #e2e8f0; border-top-color: var(--primary);
+  border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="brand">
+    AUXILIUM <span>Warehouse Monitor</span>
+  </div>
+  <nav>
+    <a href="index.html" class="nav-link">Kembali ke Order Form</a>
+    <a href="#" class="nav-link active">Stok Gudang</a>
+  </nav>
+</div>
+
+<div class="container">
+  
+  <div class="header-action">
+    <h1 class="page-title">Laporan Stok Barang</h1>
+    <button class="btn-refresh" onclick="loadData()">
+      <span>↻</span> Refresh Data
+    </button>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Stok Spandek (Kolom C-G)</h3>
+      <input type="text" class="search-input" placeholder="Cari Spandek..." onkeyup="searchTable(this, 'tableSpandek')">
+    </div>
+    <div class="table-wrap">
+      <table id="tableSpandek">
+        <thead>
+          <tr>
+            <th>Nama Barang</th>
+            <th>Spesifikasi</th>
+            <th>Warna</th>
+            <th>Satuan</th>
+            <th style="text-align:right">Sisa Stok</th>
+          </tr>
+        </thead>
+        <tbody id="bodySpandek"></tbody>
+      </table>
+      <div id="loadingSpandek" class="loader-box">
+        <div class="spinner"></div> Mengambil data...
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Stok Non-Spandek (Kolom C-F)</h3>
+      <input type="text" class="search-input" placeholder="Cari Item..." onkeyup="searchTable(this, 'tableNon')">
+    </div>
+    <div class="table-wrap">
+      <table id="tableNon">
+        <thead>
+          <tr>
+            <th>Nama Barang</th>
+            <th>Kategori</th>
+            <th>Satuan</th>
+            <th style="text-align:right">Sisa Stok</th>
+          </tr>
+        </thead>
+        <tbody id="bodyNon"></tbody>
+      </table>
+      <div id="loadingNon" class="loader-box">
+        <div class="spinner"></div> Mengambil data...
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // =========================================================
+  // GANTI URL DI BAWAH INI DENGAN HASIL DEPLOY APPS SCRIPT
+  // =========================================================
+  const API_URL = "https://script.google.com/macros/s/AKfycbxnHjQCw44ypDNWwU8Ie8MMZZcvGOme72wTe5_0znBFRICSd0PjuhzWbRWlLStQkluw/exec"; 
+
+  window.onload = loadData;
+
+  async function loadData() {
+    // Reset UI
+    document.getElementById("bodySpandek").innerHTML = "";
+    document.getElementById("bodyNon").innerHTML = "";
+    document.getElementById("loadingSpandek").style.display = "block";
+    document.getElementById("loadingNon").style.display = "block";
+
+    try {
+      // Fetch Data
+      const response = await fetch(API_URL + "?action=getInventoryData");
+      const data = await response.json();
+
+      // Render Spandek (Kolom C, D, E, F, G -> index 0,1,2,3,4)
+      renderTable("bodySpandek", "loadingSpandek", data.spandek, 5);
+
+      // Render Non Spandek (Kolom C, D, E, F -> index 0,1,2,3)
+      renderTable("bodyNon", "loadingNon", data.nonSpandek, 4);
+
+    } catch (err) {
+      console.error(err);
+      alert("Gagal koneksi ke database. Cek URL Script atau Internet.");
+      document.getElementById("loadingSpandek").innerHTML = "Gagal memuat data.";
+      document.getElementById("loadingNon").innerHTML = "Gagal memuat data.";
+    }
+  }
+
+  function renderTable(tbodyId, loaderId, rows, expectedCols) {
+    const tbody = document.getElementById(tbodyId);
+    document.getElementById(loaderId).style.display = "none";
+
+    if (!rows || rows.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="${expectedCols}" style="text-align:center; padding: 20px;">Data Kosong</td></tr>`;
+      return;
+    }
+
+    rows.forEach(row => {
+      // Lewati baris jika Nama Barang (index 0) kosong
+      if (!row[0]) return;
+
+      const tr = document.createElement("tr");
+      let html = "";
+      
+      // Loop tiap cell
+      row.forEach((cell, idx) => {
+        let content = cell;
+        let className = "";
+
+        // Logika untuk kolom terakhir (Stok)
+        if (idx === expectedCols - 1) {
+          className = "stock-val ";
+          let num = parseFloat(cell);
+          if (isNaN(num)) num = 0;
+
+          if (num <= 0) className += "stock-empty";
+          else if (num < 10) className += "stock-low";
+          else className += "stock-safe";
+        }
+
+        html += `<td class="${className}">${content}</td>`;
+      });
+
+      tr.innerHTML = html;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Fungsi Search Simple
+  function searchTable(input, tableId) {
+    const filter = input.value.toUpperCase();
+    const table = document.getElementById(tableId);
+    const tr = table.getElementsByTagName("tr");
+
+    // Loop semua baris (skip index 0 = header)
+    for (let i = 1; i < tr.length; i++) {
+      let tds = tr[i].getElementsByTagName("td");
+      let found = false;
+      
+      // Cek Nama Barang (kolom ke-1 / index 0)
+      if (tds[0]) {
+        if (tds[0].textContent.toUpperCase().indexOf(filter) > -1) {
+          found = true;
+        }
+      }
+      
+      tr[i].style.display = found ? "" : "none";
+    }
+  }
+</script>
+
+</body>
+</html>
