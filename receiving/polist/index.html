@@ -127,8 +127,7 @@
                         </div>
 
                         <div class="flex justify-between mb-2 text-slate-600 items-center">
-                            <span>PPN (12%)</span>
-                            <span id="display-ppn" class="font-medium">0</span>
+                            <span>PPN (11%)</span> <span id="display-ppn" class="font-medium">0</span>
                         </div>
 
                         <div class="flex justify-between mb-4 items-center">
@@ -164,8 +163,12 @@
 
     <script>
         // --- KONFIGURASI ---
+        // GANTI DENGAN URL DEPLOYMENT ANDA YANG TERBARU
         const API_URL = "https://script.google.com/macros/s/AKfycby98lSBDcVCppD9ZUrhObnVhGeJeBxddgkPtoU9UnYa1Vp3eQ5N2xrjBNjmU0-TT80t/exec"; 
-        const TAX_RATE = 0.12;
+        
+        // --- PERUBAHAN DISINI (11%) ---
+        const TAX_RATE = 0.11; 
+        // ------------------------------
 
         let allData = [];
         let currentItems = []; // Menyimpan state item yang sedang diedit
@@ -180,7 +183,7 @@
                 document.getElementById('loading').style.display = 'none';
                 applyFilters();
             } catch (error) {
-                alert("Gagal memuat data.");
+                alert("Gagal memuat data. Periksa koneksi.");
             }
         }
         
@@ -200,10 +203,9 @@
                 const isBilled = po.status === 'Billed';
                 const statusClass = isBilled ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-800';
                 
-                // Button Text & Action
                 const btnText = isBilled ? 'View Details' : 'Create Bill';
                 const btnClass = isBilled ? 'text-slate-500 bg-slate-100' : 'text-white bg-blue-600 hover:bg-blue-700 shadow-md';
-                const clickAction = isBilled ? `alert('PO ini sudah di-bill.')` : `openBillModal('${po.id}')`;
+                const clickAction = isBilled ? `openBillModal('${po.id}')` : `openBillModal('${po.id}')`;
 
                 const html = `
                 <div class="bg-white rounded-xl p-5 border border-slate-200 hover:shadow-md transition">
@@ -225,8 +227,8 @@
             });
         }
 
-        // --- BILL MODAL LOGIC ---
-function openBillModal(idPO) {
+        // --- BILL MODAL LOGIC (UPDATED WITH SAVED DATA) ---
+        function openBillModal(idPO) {
             const po = allData.find(d => d.id === idPO);
             if (!po) return;
 
@@ -236,21 +238,19 @@ function openBillModal(idPO) {
             document.getElementById('bill-po-id').innerText = po.id;
             document.getElementById('bill-vendor').value = po.vendor;
             
-            // Kosongkan inputan form setiap buka modal baru
+            // Reset / Load Values
             document.getElementById('bill-inv-number').value = ''; 
             document.getElementById('bill-date').valueAsDate = new Date();
             document.getElementById('bill-adjustment').value = 0;
-            document.getElementById('bill-note').value = po.adminNote || po.catatan || ''; // Prioritas Admin Note
+            document.getElementById('bill-note').value = po.adminNote || po.catatan || '';
             document.getElementById('tax-mode').value = 'exclusive'; 
 
-            // -- UPDATE LOGIC ITEM (Agar membaca harga yang tersimpan) --
+            // Logic Item: Load harga jika sudah pernah disimpan (dari Apps Script)
             currentItems = po.items.map(item => ({
                 ...item,
-                // Jika sudah ada harga tersimpan (dari GAS), pakai itu. Jika tidak, 0.
                 price: item.price || 0,
                 disc: item.disc || 0
             }));
-            // ------------------------------------------------------------
 
             renderBillItems();
             calculateTotal();
@@ -291,7 +291,7 @@ function openBillModal(idPO) {
             });
         }
 
-        // --- CORE MATH LOGIC (XERO STYLE) ---
+        // --- CORE MATH LOGIC (UPDATED TAX) ---
         function updateItem(index, field, value) {
             currentItems[index][field] = parseFloat(value) || 0;
             calculateTotal();
@@ -305,12 +305,10 @@ function openBillModal(idPO) {
             currentItems.forEach((item, index) => {
                 const lineTotal = (item.price - item.disc) * item.qty;
                 totalLineAmount += lineTotal;
-                
-                // Update tampilan per baris
                 document.getElementById(`row-total-${index}`).innerText = formatRupiah(lineTotal);
             });
 
-            // 2. Hitung Tax & Grand Total berdasarkan Mode
+            // 2. Hitung Tax (11%)
             let dpp = 0;
             let ppn = 0;
             const adj = parseFloat(document.getElementById('bill-adjustment').value) || 0;
@@ -318,26 +316,25 @@ function openBillModal(idPO) {
             if (taxMode === 'exclusive') {
                 // Harga belum termasuk pajak
                 dpp = totalLineAmount;
-                ppn = dpp * TAX_RATE;
+                ppn = dpp * TAX_RATE; // 11%
             } else if (taxMode === 'inclusive') {
-                // Harga sudah termasuk pajak
-                // Rumus: Total = DPP + (DPP * 12%) => Total = DPP * 1.12 => DPP = Total / 1.12
+                // Harga sudah termasuk pajak (DPP + PPN 11% = Total)
+                // Total = DPP * (1 + 0.11) => DPP = Total / 1.11
                 dpp = totalLineAmount / (1 + TAX_RATE);
                 ppn = totalLineAmount - dpp;
             } else {
-                // No Tax
                 dpp = totalLineAmount;
                 ppn = 0;
             }
 
             const grandTotal = dpp + ppn + adj;
 
-            // 3. Update Summary Box UI
+            // 3. Update UI
             document.getElementById('display-subtotal').innerText = formatRupiah(dpp);
             document.getElementById('display-ppn').innerText = formatRupiah(ppn);
             document.getElementById('display-grand-total').innerText = formatRupiah(grandTotal);
 
-            // Simpan nilai mentah di elemen agar mudah diambil saat submit
+            // Simpan nilai mentah di dataset untuk submit
             document.getElementById('display-grand-total').dataset.value = grandTotal;
             document.getElementById('display-subtotal').dataset.value = dpp;
             document.getElementById('display-ppn').dataset.value = ppn;
@@ -365,7 +362,7 @@ function openBillModal(idPO) {
                     ppn: parseFloat(document.getElementById('display-ppn').dataset.value),
                     adjustment: parseFloat(document.getElementById('bill-adjustment').value) || 0,
                     grandTotal: parseFloat(document.getElementById('display-grand-total').dataset.value),
-                    items: currentItems // Kirim detail item lengkap dengan harga
+                    items: currentItems // Kirim detail item
                 }
             };
 
@@ -381,8 +378,7 @@ function openBillModal(idPO) {
                 
                 if (result.status === 'success') {
                     closeModal();
-                    fetchData(); // Refresh list PO
-                    // alert("Bill Saved Successfully!");
+                    fetchData(); 
                 } else {
                     alert("Error: " + result.message);
                 }
