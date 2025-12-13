@@ -13,7 +13,6 @@
         .container { max-width: 1200px; margin-top: 80px; }
         .card { border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         
-        /* Table Styling agar input terlihat menyatu */
         .table-input { 
             border: 1px solid #ced4da; 
             border-radius: 4px; 
@@ -23,7 +22,6 @@
         .table-input:focus { outline: 2px solid #80bdff; border-color: #80bdff; }
         .bg-readonly { background-color: #e9ecef; cursor: not-allowed; }
         
-        /* Agar kolom tabel fit content */
         td { vertical-align: middle; }
         .col-no { width: 50px; text-align: center; }
         .col-action { width: 50px; text-align: center; }
@@ -44,21 +42,27 @@
 
     <div class="container mb-5">
         <div class="card p-4 mb-3">
-            <div class="row align-items-center">
-                <div class="col-md-6">
+            <div class="row align-items-end g-3">
+                <div class="col-md-5">
                     <label class="fw-bold mb-1">Pilih Vendor</label>
-                    <select class="form-select form-select-lg" id="vendorSelect" onchange="onVendorChange()">
+                    <select class="form-select" id="vendorSelect" onchange="onVendorChange()">
                         <option value="" disabled selected>-- Pilih Vendor Dahulu --</option>
                     </select>
-                    <div class="form-text text-danger" id="vendorWarning" style="display:none;">
-                        *Mengganti vendor akan menghapus semua baris item.
-                    </div>
                 </div>
-                <div class="col-md-6 text-end">
-                    <button class="btn btn-success fw-bold px-4 py-2" onclick="submitPO()">
+                
+                <div class="col-md-3">
+                    <label class="fw-bold mb-1">Tanggal PO</label>
+                    <input type="date" class="form-control" id="poDate">
+                </div>
+
+                <div class="col-md-4 text-end">
+                    <button class="btn btn-success fw-bold px-4 w-100" onclick="submitPO()">
                         <i class="bi bi-save2 me-2"></i> SIMPAN PO
                     </button>
                 </div>
+            </div>
+            <div class="form-text text-danger mt-2" id="vendorWarning" style="display:none;">
+                *Mengganti vendor akan menghapus semua baris item.
             </div>
         </div>
 
@@ -90,13 +94,15 @@
 
     <script>
         // ==========================================
-        // PASTE URL DEPLOY APP SCRIPT KAMU DI SINI
-        const API_URL = "https://script.google.com/macros/s/AKfycbyzh45lQKzmyFORCRSnDZ6stoIWrIwKzI3X7eouEYXVe1P3E1obGj4qXkyxw0lgzX3a9w/exec"; 
+        // UPDATE URL DEPLOY APP SCRIPT KAMU DI SINI
+        const API_URL = "https://script.google.com/macros/s/AKfycbzkmpSWFcdOtGydQcyLFZSmDZmIj4dl9wGPXV5pqixYhBVWKzzjDGlwdNs4Q_eMZFclzw/exec"; 
         // ==========================================
 
         var allData = {};
 
         window.onload = function() {
+            setDefaultDate(); // Set tanggal hari ini saat load
+            
             fetch(API_URL + "?action=getData")
             .then(res => res.json())
             .then(res => {
@@ -110,6 +116,14 @@
             });
         };
 
+        // FUNGSI BARU: Set Default Date (Waktu Jakarta)
+        function setDefaultDate() {
+            // Mengambil tanggal hari ini dengan format YYYY-MM-DD sesuai zona waktu Jakarta
+            const date = new Date();
+            const jakartaDate = date.toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' });
+            document.getElementById("poDate").value = jakartaDate;
+        }
+
         function populateVendors(data) {
             allData = data;
             var select = document.getElementById("vendorSelect");
@@ -121,20 +135,15 @@
             });
         }
 
-        // Jika Vendor Berubah, Reset Tabel
         function onVendorChange() {
             var tbody = document.getElementById("tableBody");
             if(tbody.children.length > 0){
-                if(!confirm("Ganti vendor akan menghapus item yang sudah diinput. Lanjut?")){
-                    // Balikkan ke vendor sebelumnya (opsional logic kompleks), 
-                    // disini kita clear saja untuk keamanan data
-                }
+                // Opsional: Confirm user
             }
-            tbody.innerHTML = ""; // Bersihkan tabel
-            addNewRow(); // Tambah 1 baris kosong otomatis
+            tbody.innerHTML = ""; 
+            addNewRow(); 
         }
 
-        // FUNGSI UTAMA: MENAMBAH BARIS TABLE (ROW)
         function addNewRow() {
             var vendor = document.getElementById("vendorSelect").value;
             if(!vendor) {
@@ -143,12 +152,10 @@
             }
 
             var tbody = document.getElementById("tableBody");
-            var rowIdx = tbody.children.length; // Index untuk array helper
+            var rowIdx = tbody.children.length; 
 
-            // Buat Options untuk Dropdown Item berdasarkan Vendor yang dipilih
             var itemOptions = '<option value="" disabled selected>-- Cari Item --</option>';
             allData[vendor].forEach((obj, index) => {
-                // Kita simpan index array sebagai value agar mudah ambil data satuan nanti
                 itemOptions += `<option value="${index}">${obj.item}</option>`;
             });
 
@@ -161,7 +168,8 @@
                     </select>
                 </td>
                 <td>
-                    <input type="number" class="form-control qty-input" placeholder="0" min="1">
+                    <input type="number" class="form-control qty-input" placeholder="0" min="0" 
+                           oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null">
                 </td>
                 <td>
                     <input type="text" class="form-control bg-readonly unit-input" readonly tabindex="-1">
@@ -176,12 +184,9 @@
             tbody.appendChild(tr);
         }
 
-        // Update Satuan saat Item dipilih
         function updateUnit(selectElement) {
             var vendor = document.getElementById("vendorSelect").value;
-            var idx = selectElement.value; // Ini adalah index array dari data vendor
-            
-            // Cari elemen input satuan di baris (row) yang sama
+            var idx = selectElement.value; 
             var row = selectElement.closest("tr");
             var unitInput = row.querySelector(".unit-input");
 
@@ -193,7 +198,7 @@
         function removeRow(btn) {
             var row = btn.closest("tr");
             row.remove();
-            renumberRows(); // Rapikan nomor urut
+            renumberRows(); 
         }
 
         function renumberRows() {
@@ -203,10 +208,12 @@
             });
         }
 
-        // FUNGSI SIMPAN DATA (LOOPING DARI TABEL HTML)
         function submitPO() {
             var vendor = document.getElementById("vendorSelect").value;
+            var poDate = document.getElementById("poDate").value; // Ambil nilai tanggal
+
             if(!vendor) return Swal.fire("Error", "Pilih Vendor!", "error");
+            if(!poDate) return Swal.fire("Error", "Tanggal PO harus diisi!", "error");
 
             var rows = document.querySelectorAll("#tableBody tr");
             if(rows.length === 0) return Swal.fire("Kosong", "Tambahkan item minimal satu.", "warning");
@@ -214,24 +221,21 @@
             var itemsToSave = [];
             var isValid = true;
 
-            // Loop setiap baris tabel untuk ambil value
             rows.forEach((row, index) => {
                 var itemIdx = row.querySelector(".item-select").value;
                 var qty = row.querySelector(".qty-input").value;
                 var unit = row.querySelector(".unit-input").value;
                 var note = row.querySelector(".note-input").value;
 
-                // Validasi sederhana per baris
+                // FIX: Validasi memastikan Qty lebih besar dari 0
                 if(!itemIdx || !qty || qty <= 0) {
                     isValid = false;
-                    row.classList.add("table-danger"); // Beri warna merah jika error
+                    row.classList.add("table-danger"); 
                 } else {
                     row.classList.remove("table-danger");
-                    // Ambil nama item asli dari data master
                     var realItemName = allData[vendor][itemIdx].item;
                     
                     itemsToSave.push({
-                        vendor: vendor,
                         itemName: realItemName,
                         qty: qty,
                         unit: unit,
@@ -240,22 +244,26 @@
                 }
             });
 
-            if(!isValid) return Swal.fire("Data Belum Lengkap", "Cek baris yang berwarna merah (Item/Qty kosong).", "error");
+            if(!isValid) return Swal.fire("Data Belum Lengkap", "Cek baris yang merah (Qty wajib > 0).", "error");
 
-            // Kirim ke Server
             Swal.fire({ title: 'Menyimpan PO...', didOpen: () => Swal.showLoading() });
 
+            // Kirim data Vendor, Tanggal PO, dan Item ke Backend
             fetch(API_URL + "?action=saveOrder", {
                 method: "POST",
-                body: JSON.stringify({ vendor: vendor, items: itemsToSave })
+                body: JSON.stringify({ 
+                    vendor: vendor, 
+                    poDate: poDate,  // Kirim tanggal
+                    items: itemsToSave 
+                })
             })
             .then(res => res.json())
             .then(res => {
                 if(res.status === 'success') {
                     Swal.fire('Berhasil!', 'PO ID: ' + res.id, 'success').then(() => {
-                        // Reset form
                         document.getElementById("vendorSelect").value = "";
                         document.getElementById("tableBody").innerHTML = "";
+                        setDefaultDate(); // Reset tanggal ke hari ini
                     });
                 } else {
                     throw new Error(res.message);
