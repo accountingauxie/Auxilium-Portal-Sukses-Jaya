@@ -173,7 +173,7 @@
 
     <script>
         // --- PENTING: GANTI URL DI BAWAH DENGAN URL DEPLOYMENT TERBARU ANDA ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbxArmxcTt62wfLwK_6rRBt8l1Q2JQO-C0yESXPYoctQViWqLmRlkjz-8mmG-_wj-0Rf/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbzo_TyhG9mxDO9yN_ydPus-sI3obE2cE-WA3XXs5Zf0ZvalNwpHgpRh5ygcKc_B953C/exec"; 
         const TAX_RATE = 0.11; 
 
         let allData = [];
@@ -196,53 +196,70 @@
         window.onload = fetchData;
 
 function renderCards(data) {
-            const container = document.getElementById('cardContainer');
-            container.innerHTML = '';
-            if (data.length === 0) {
-                container.innerHTML = '<div class="col-span-3 text-center text-slate-400 py-10">No data found.</div>';
-                return;
-            }
-            data.forEach(po => {
-                const isBilled = po.status === 'Billed';
-                
-                // --- LOGIKA STATUS BARU BERDASARKAN KOLOM P ---
-                let badgeText = po.status; // Default Pending
-                let badgeClass = 'bg-yellow-100 text-yellow-800 border border-yellow-200'; // Default warna Pending
+    const container = document.getElementById('cardContainer');
+    container.innerHTML = '';
+    
+    if (data.length === 0) {
+        container.innerHTML = '<div class="col-span-3 text-center text-slate-400 py-10">No data found.</div>';
+        return;
+    }
 
-                if (isBilled) {
-                    // Jika Kolom P ada isinya "SUCCESS IMPORT"
-                    if (po.importStatusText === "SUCCESS IMPORT") {
-                        badgeText = "Sudah Terimport";
-                        badgeClass = "bg-green-100 text-green-700 border border-green-200";
-                    } else {
-                        // Jika Kolom P masih Processing atau kosong, tapi sudah Billed
-                        badgeText = "Process to Import";
-                        badgeClass = "bg-blue-100 text-blue-700 border border-blue-200";
-                    }
+    data.forEach(po => {
+        // --- LOGIKA STATUS BARU (HIERARKI) ---
+        let badgeText = po.status; // Default: Pending / Billed
+        let badgeClass = 'bg-yellow-100 text-yellow-800 border border-yellow-200'; // Default Pending
+        let btnText = 'Create Bill';
+        let btnClass = 'text-white bg-blue-600 hover:bg-blue-700 shadow-md';
+        let isBilled = false;
+
+        if (po.status === 'Billed') {
+            isBilled = true;
+            btnText = 'View Bill';
+            btnClass = 'text-slate-600 bg-slate-100 hover:bg-slate-200';
+
+            // Cek 1: Apakah Kolom M (Request Import) sudah tercentang?
+            if (!po.isImportRequested) {
+                // KASUS A: Belum klik Import (Kolom M False)
+                badgeText = "Billed";
+                badgeClass = "bg-slate-100 text-slate-700 border border-slate-300"; 
+            } else {
+                // KASUS B: Sudah klik Import (Kolom M True), sekarang cek Kolom P
+                const pStatus = po.importResultStatus; // Ini teks dari kolom P (sudah uppercase)
+
+                if (pStatus.includes("SUCCESS")) {
+                    // Jika mengandung kata SUCCESS
+                    badgeText = "Success Import";
+                    badgeClass = "bg-green-100 text-green-700 border border-green-200";
+                } else if (pStatus.includes("FAILED")) {
+                    // Jika mengandung kata FAILED
+                    badgeText = "Failed to Import";
+                    badgeClass = "bg-red-100 text-red-700 border border-red-200";
+                } else {
+                    // Jika PROCESSING, Kosong, atau kata lain
+                    badgeText = "Process to Import";
+                    badgeClass = "bg-blue-100 text-blue-700 border border-blue-200 animate-pulse"; // Tambah animasi kedip dikit biar keren
                 }
-                // ----------------------------------------------
-
-                const btnText = isBilled ? 'View Bill' : 'Create Bill';
-                // Tombol tetap aktif meskipun sudah terimport agar bisa dilihat detailnya
-                const btnClass = isBilled ? 'text-slate-600 bg-slate-100 hover:bg-slate-200' : 'text-white bg-blue-600 hover:bg-blue-700 shadow-md';
-                
-                const html = `
-                <div class="bg-white rounded-xl p-5 border border-slate-200 hover:shadow-md transition">
-                    <div class="flex justify-between items-start mb-3">
-                        <div>
-                            <h3 class="font-bold text-slate-800">${po.id}</h3>
-                            <p class="text-xs text-slate-500">${po.vendor}</p>
-                        </div>
-                        <span class="px-2 py-1 rounded text-xs font-bold ${badgeClass}">
-                            ${badgeText}
-                        </span>
-                    </div>
-                    <div class="text-sm text-slate-600 mb-4"><i class="far fa-calendar mr-2"></i> ${formatDate(po.tanggalInput)}</div>
-                    <button onclick="openBillModal('${po.id}')" class="w-full py-2 rounded-lg font-medium text-sm transition ${btnClass}">${btnText}</button>
-                </div>`;
-                container.innerHTML += html;
-            });
+            }
         }
+        // -------------------------------------
+
+        const html = `
+        <div class="bg-white rounded-xl p-5 border border-slate-200 hover:shadow-md transition">
+            <div class="flex justify-between items-start mb-3">
+                <div>
+                    <h3 class="font-bold text-slate-800">${po.id}</h3>
+                    <p class="text-xs text-slate-500">${po.vendor}</p>
+                </div>
+                <span class="px-2 py-1 rounded text-xs font-bold ${badgeClass} whitespace-nowrap">
+                    ${badgeText}
+                </span>
+            </div>
+            <div class="text-sm text-slate-600 mb-4"><i class="far fa-calendar mr-2"></i> ${formatDate(po.tanggalInput)}</div>
+            <button onclick="openBillModal('${po.id}')" class="w-full py-2 rounded-lg font-medium text-sm transition ${btnClass}">${btnText}</button>
+        </div>`;
+        container.innerHTML += html;
+    });
+}
         function openBillModal(idPO) {
             const po = allData.find(d => d.id === idPO);
             if (!po) return;
