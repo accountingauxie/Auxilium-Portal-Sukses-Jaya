@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Receiving PO Entry V2 (Fixed Discount)</title>
+  <title>Receiving PO Entry V2 (Final Revision)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
@@ -57,7 +57,7 @@
     .nav-item.highlight:hover { background-color: #b2ebf2; }
 
     /* PAGE */
-    .page { max-width: 1400px; margin: 32px auto; padding: 0 20px 40px; } /* Lebar diperbesar sedikit */
+    .page { max-width: 1400px; margin: 32px auto; padding: 0 20px 40px; }
     .card {
       background: white; border-radius: 12px;
       padding: 28px 32px 30px;
@@ -309,32 +309,54 @@
     return Number(num).toLocaleString('id-ID');
   }
 
-  // --- MERGE LOGIC ---
+  // --- MERGE LOGIC (FIXED) ---
   function mergeDiscountLines(rawLines) {
     const mainItems = [];
     const discountMap = {}; 
 
+    // Pass 1: Pisahkan Item Utama dan Baris Diskon (Jika masih ada raw row dari backend)
+    // Walaupun backend biasanya sudah menghapusnya, ini safety check.
     rawLines.forEach(ln => {
       const desc = (ln.description || "").trim();
       if (desc.toLowerCase().startsWith("discount -")) {
-        const parentName = desc.substring(11).trim(); 
+        // Hapus prefix "Discount - " untuk dapat nama asli
+        const parentName = desc.replace(/^discount\s*-\s*/i, "").trim(); 
         discountMap[parentName] = Math.abs(Number(ln.unitAmount) || 0);
       } else {
         mainItems.push(ln);
       }
     });
 
+    // Pass 2: Gabungkan ke item utama
     return mainItems.map(item => {
       const desc = (item.description || "").trim();
-      const discVal = discountMap[desc] || 0;
+      
+      // LOGIKA BARU:
+      // Ambil nilai dari Map (jika ada baris terpisah) 
+      // ATAU gunakan nilai dari Server (karena server sudah mengirim nilai discount)
+      const mapVal = discountMap[desc];
+      const serverVal = Number(item.discount) || 0;
+      
+      // Prioritas: Jika ada di Map pakai Map, jika tidak pakai data Server
+      const finalDisc = (mapVal !== undefined) ? mapVal : serverVal;
+
+      // Ambil Harga Awal (Price Before)
+      // Jika server mengirim unitAmountBefore, pakai itu. Jika tidak, pakai unitAmount sementara.
       let priceBefore = item.unitAmountBefore !== undefined ? item.unitAmountBefore : item.unitAmount;
-      const priceNet = priceBefore - discVal;
+      
+      // Jika priceBefore masih 0/null, coba ambil dari unitAmount (Net) + Discount
+      if (!priceBefore && item.unitAmount) {
+         priceBefore = Number(item.unitAmount) + finalDisc;
+      }
+      
+      // Hitung Net Price baru
+      const priceNet = priceBefore - finalDisc;
 
       return {
         ...item,
         unitAmountBefore: priceBefore,
-        discount: discVal,
-        unitAmount: priceNet 
+        discount: finalDisc,      // Nilai diskon yang benar (tidak lagi 0)
+        unitAmount: priceNet      // Harga Net (masuk ke database)
       };
     });
   }
@@ -415,7 +437,7 @@
   function renderLines(rawLines, useExistingQty) {
     tableBody.innerHTML = "";
     
-    // Merge Logic
+    // Merge Logic (Sekarang sudah benar)
     const lines = mergeDiscountLines(rawLines);
 
     if (!useExistingQty) {
