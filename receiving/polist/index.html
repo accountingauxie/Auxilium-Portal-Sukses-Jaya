@@ -61,11 +61,12 @@
                 <div id="status-banner" class="hidden mb-4 p-3 bg-green-100 text-green-800 rounded-lg text-sm font-medium flex items-center gap-2 border border-green-200">
                     <i class="fas fa-check-circle"></i> <span>Bill has been approved.</span>
                 </div>
+                
                 <div id="xero-banner" class="hidden mb-4 p-3 bg-red-100 text-red-800 rounded-lg text-sm font-medium flex items-center gap-2 border border-red-200">
                     <i class="fas fa-lock"></i> <span>Locked: This bill has been imported to Xero.</span>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4 bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6 bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
                     <div>
                         <label class="text-xs font-bold text-slate-500 uppercase">Vendor</label>
                         <input type="text" id="bill-vendor" readonly class="w-full mt-1 font-semibold text-slate-800 bg-transparent border-none p-0 focus:ring-0">
@@ -89,20 +90,6 @@
                             <option value="inclusive">Tax Inclusive</option>
                             <option value="no_tax">No Tax</option>
                         </select>
-                    </div>
-                </div>
-
-                <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-100 flex justify-between items-center">
-                    <div class="flex-1">
-                        <label class="text-xs font-bold text-blue-800 uppercase mb-1 block">Attachment (PDF/Image)</label>
-                        <input type="file" id="bill-file" class="bill-input text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200">
-                        <p class="text-xs text-slate-400 mt-1">Max size 5MB.</p>
-                    </div>
-                    <div id="existing-file-container" class="hidden text-right">
-                        <p class="text-xs text-slate-500 mb-1">Current Attachment:</p>
-                        <a id="btn-view-file" href="#" target="_blank" class="text-sm font-bold text-blue-600 hover:underline flex items-center gap-1">
-                            <i class="fas fa-paperclip"></i> View File
-                        </a>
                     </div>
                 </div>
 
@@ -150,9 +137,18 @@
 
             <div class="p-4 bg-white border-t border-slate-200 flex justify-end gap-3">
                 <button onclick="closeModal()" class="px-6 py-2 border border-slate-300 rounded-lg text-slate-600 font-medium hover:bg-slate-50">Close</button>
-                <button onclick="requestXeroImport()" id="btn-xero" class="hidden px-6 py-2 bg-emerald-600 text-white rounded-lg font-bold hover:bg-emerald-700 shadow-md flex items-center gap-2"><i class="fas fa-file-export"></i> Import to Xero</button>
-                <button onclick="enableEditMode()" id="btn-edit" class="hidden px-6 py-2 bg-yellow-500 text-white rounded-lg font-bold hover:bg-yellow-600 shadow-md flex items-center gap-2"><i class="fas fa-edit"></i> Edit Bill</button>
-                <button onclick="submitBill()" id="btn-save" class="px-6 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 shadow-lg flex items-center gap-2"><i class="fas fa-check"></i> Approve & Save</button>
+                
+                <button onclick="requestXeroImport()" id="btn-xero" class="hidden px-6 py-2 bg-emerald-600 text-white rounded-lg font-bold hover:bg-emerald-700 shadow-md flex items-center gap-2">
+                    <i class="fas fa-file-export"></i> Import to Xero
+                </button>
+
+                <button onclick="enableEditMode()" id="btn-edit" class="hidden px-6 py-2 bg-yellow-500 text-white rounded-lg font-bold hover:bg-yellow-600 shadow-md flex items-center gap-2">
+                    <i class="fas fa-edit"></i> Edit Bill
+                </button>
+
+                <button onclick="submitBill()" id="btn-save" class="px-6 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 shadow-lg flex items-center gap-2">
+                    <i class="fas fa-check"></i> Approve & Save
+                </button>
             </div>
             
             <div id="modalLoading" class="hidden absolute inset-0 bg-white bg-opacity-90 flex flex-col items-center justify-center z-50">
@@ -164,13 +160,12 @@
 
     <script>
         // --- KONFIGURASI ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbyDYL6qSMTXrwPIxZnwbxaJ-TwMvJJhMy30-IlNsd8hRmz7z3h0YF7oumiNTM1G376e/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbxOWUGxDXquOh4zvqIJKXzoUPzPzIaBct7GtAOvc3kYAUfGAIOkDfCqOhqqiMfyowkq/exec"; 
         const TAX_RATE = 0.11; 
 
         let allData = [];
         let currentItems = [];
         let currentPOId = "";
-        let currentFileUrl = ""; // Simpan URL file yang ada
         let isEditMode = false;
 
         async function fetchData() {
@@ -214,28 +209,20 @@
             });
         }
 
+        // --- OPEN MODAL ---
         function openBillModal(idPO) {
             const po = allData.find(d => d.id === idPO);
             if (!po) return;
 
             currentPOId = idPO;
-            currentFileUrl = po.fileUrl || ""; // Simpan URL
             const isBilled = po.status === 'Billed';
-            const isImported = po.isImported === true;
+            const isImported = po.isImported === true; // Ambil status import dari server
 
             document.getElementById('bill-po-id').innerText = po.id;
             document.getElementById('bill-vendor').value = po.vendor;
             document.getElementById('bill-inv-number').value = po.invNumber || ''; 
-            document.getElementById('bill-file').value = ''; // Reset input file
-
-            // File Attachment Logic
-            if(currentFileUrl) {
-                document.getElementById('existing-file-container').classList.remove('hidden');
-                document.getElementById('btn-view-file').href = currentFileUrl;
-            } else {
-                document.getElementById('existing-file-container').classList.add('hidden');
-            }
             
+            // Set Date Helpers
             const setDateInput = (elemId, dateStr) => {
                 if (dateStr) {
                     const d = new Date(dateStr);
@@ -270,18 +257,23 @@
             document.getElementById('btn-xero').classList.add('hidden');
             document.getElementById('btn-save').classList.add('hidden');
 
+            // --- LOGIC TAMPILAN ---
             if (isBilled) {
                 document.getElementById('modal-title').innerText = "Bill Details";
-                setFormState(false); 
+                setFormState(false); // Disable all inputs
 
                 if (isImported) {
+                    // KASUS 1: SUDAH IMPORT XERO (TERKUNCI TOTAL)
                     document.getElementById('xero-banner').classList.remove('hidden');
+                    // Tidak ada tombol edit atau save
                 } else {
+                    // KASUS 2: BILLED TAPI BELUM IMPORT (BISA EDIT & IMPORT)
                     document.getElementById('status-banner').classList.remove('hidden');
                     document.getElementById('btn-edit').classList.remove('hidden');
                     document.getElementById('btn-xero').classList.remove('hidden');
                 }
             } else {
+                // KASUS 3: PENDING (NEW BILL)
                 document.getElementById('modal-title').innerText = "New Bill";
                 document.getElementById('btn-save').classList.remove('hidden');
                 document.getElementById('btn-save').innerHTML = '<i class="fas fa-check"></i> Approve & Save';
@@ -293,27 +285,32 @@
             document.getElementById('billModal').classList.remove('hidden');
         }
 
+        // --- IMPORT TO XERO ACTION ---
         async function requestXeroImport() {
             if(!confirm("Anda yakin ingin import data ini ke Xero? Data akan terkunci setelah ini.")) return;
+
             document.getElementById('loadingText').innerText = "Processing Xero Import...";
             document.getElementById('modalLoading').classList.remove('hidden');
+
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     body: JSON.stringify({ action: 'import_xero', idPO: currentPOId })
                 });
                 const result = await response.json();
+
                 if (result.status === 'success') {
                     alert("Berhasil ditandai untuk Import Xero!");
                     closeModal();
-                    fetchData(); 
+                    fetchData(); // Refresh data agar status import terupdate
                 } else {
                     alert("Gagal: " + result.message);
                 }
-            } catch (err) { alert("Koneksi Error"); } 
-            finally { 
+            } catch (err) {
+                alert("Koneksi Error");
+            } finally {
                 document.getElementById('modalLoading').classList.add('hidden');
-                document.getElementById('loadingText').innerText = "Saving Bill Data...";
+                document.getElementById('loadingText').innerText = "Saving Bill Data..."; // Reset text
             }
         }
 
@@ -321,7 +318,7 @@
             if(confirm("Edit data Bill ini?")) {
                 setFormState(true); 
                 document.getElementById('btn-edit').classList.add('hidden');
-                document.getElementById('btn-xero').classList.add('hidden'); 
+                document.getElementById('btn-xero').classList.add('hidden'); // Sembunyikan import saat edit
                 document.getElementById('btn-save').classList.remove('hidden');
                 document.getElementById('btn-save').innerHTML = '<i class="fas fa-save"></i> Update Changes';
                 document.getElementById('status-banner').classList.add('hidden');
@@ -406,39 +403,6 @@
         async function submitBill() {
             const invNumber = document.getElementById('bill-inv-number').value;
             if (!invNumber) { alert("Please enter Invoice Number!"); return; }
-
-            const fileInput = document.getElementById('bill-file');
-            let fileData = null;
-            let fileName = null;
-            let mimeType = null;
-
-            // HANDLE FILE UPLOAD (BASE64)
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                if (file.size > 5 * 1024 * 1024) { // 5MB Limit
-                    alert("File too large! Max 5MB.");
-                    return;
-                }
-                document.getElementById('loadingText').innerText = "Uploading File & Saving...";
-                
-                try {
-                    const base64 = await new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.readAsDataURL(file);
-                        reader.onload = () => resolve(reader.result.split(',')[1]);
-                        reader.onerror = error => reject(error);
-                    });
-                    fileData = base64;
-                    fileName = file.name;
-                    mimeType = file.type;
-                } catch (e) {
-                    alert("Error processing file");
-                    return;
-                }
-            } else {
-                document.getElementById('loadingText').innerText = "Saving Bill Data...";
-            }
-
             const payload = {
                 action: 'save_bill',
                 data: {
@@ -453,15 +417,9 @@
                     ppn: parseFloat(document.getElementById('display-ppn').dataset.value),
                     adjustment: parseFloat(document.getElementById('bill-adjustment').value) || 0,
                     grandTotal: parseFloat(document.getElementById('display-grand-total').dataset.value),
-                    items: currentItems,
-                    // File Data
-                    fileData: fileData,
-                    fileName: fileName,
-                    mimeType: mimeType,
-                    existingFileUrl: currentFileUrl 
+                    items: currentItems 
                 }
             };
-
             document.getElementById('modalLoading').classList.remove('hidden');
             try {
                 const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
