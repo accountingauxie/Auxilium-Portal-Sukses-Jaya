@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
     <style>
-        /* --- GLOBAL VARIABLES & RESET --- */
+        /* --- CSS VARIABLES --- */
         :root {
             --ux-blue: #0077e4;
             --ux-blue-soft: #ecf4ff;
@@ -23,95 +23,56 @@
             --po-accent: #f59e0b; 
             --danger: #ef4444; 
             --danger-bg: #fef2f2;
-            --process-color: #3b82f6; /* Biru untuk processing */
+            --process-color: #3b82f6;
             --process-bg: #dbeafe;
         }
 
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: var(--bg-body); 
-            margin: 0; padding: 0; 
-            color: var(--text-main); 
-            -webkit-font-smoothing: antialiased; 
-        }
-
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); margin: 0; padding: 0; color: var(--text-main); }
         * { box-sizing: border-box; outline: none; }
         a { text-decoration: none; }
 
-        /* --- TOP BAR --- */
-        .top-bar {
-            padding: 10px 40px; background: #ffffff; border-bottom: 1px solid #e3e6ea;
-            display: flex; align-items: center; justify-content: space-between;
-            font-family: "Segoe UI", "Inter", sans-serif; font-size: 15px; font-weight: 600;
-            position: sticky; top: 0; z-index: 100;
-        }
+        /* Top Bar */
+        .top-bar { padding: 10px 40px; background: #ffffff; border-bottom: 1px solid #e3e6ea; display: flex; align-items: center; justify-content: space-between; font-family: "Segoe UI", "Inter", sans-serif; font-size: 15px; font-weight: 600; position: sticky; top: 0; z-index: 100; }
         .logo-section { display: flex; align-items: center; gap: 8px; color: #1e1e1e; font-size: 19px; font-weight: 700; }
         .nav-menu { display: flex; gap: 6px; align-items: center; }
-        .nav-item {
-            text-decoration: none; color: #64748b; font-size: 14px; font-weight: 500;
-            padding: 8px 16px; border-radius: 6px; transition: all 0.2s ease;
-            display: flex; align-items: center; gap: 6px;
-        }
+        .nav-item { text-decoration: none; color: #64748b; font-size: 14px; font-weight: 500; padding: 8px 16px; border-radius: 6px; transition: all 0.2s ease; display: flex; align-items: center; gap: 6px; }
         .nav-item:hover { background-color: #f1f5f9; color: var(--ux-blue); }
         .nav-item.active { background-color: var(--ux-blue-soft); color: var(--ux-blue); font-weight: 600; }
 
-        /* --- PAGE CONTENT --- */
+        /* Content */
         .page-content { padding: 30px 20px; max-width: 1000px; margin: 0 auto; }
         .app-header { margin-bottom: 30px; }
         .header-top { display: flex; align-items: center; gap: 15px; margin-bottom: 8px; }
         .page-title { font-size: 24px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px; }
         .page-desc { font-size: 14px; color: var(--text-sub); max-width: 600px; line-height: 1.5; }
 
-        /* --- SEARCH BAR --- */
-        .search-container {
-            width: 100%; margin-bottom: 20px; background: white; border: 1px solid var(--border-color);
-            border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; gap: 10px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.02); transition: 0.2s;
-        }
-        .search-container:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-bg); }
+        .search-container { width: 100%; margin-bottom: 20px; background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
         .search-input { border: none; width: 100%; font-size: 14px; color: var(--text-main); font-family: 'Inter', sans-serif; }
         
-        /* --- LIST & CARD --- */
         #list-container { display: flex; flex-direction: column; gap: 12px; }
 
-        .po-card {
-            background: white; border-radius: 8px; border: 1px solid var(--border-color);
-            padding: 20px 24px; display: flex; align-items: center; justify-content: space-between;
-            position: relative; overflow: hidden; transition: all 0.2s ease; cursor: default;
-        }
+        /* Card Styles */
+        .po-card { background: white; border-radius: 8px; border: 1px solid var(--border-color); padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; position: relative; overflow: hidden; transition: all 0.2s ease; cursor: default; }
+        .po-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--po-accent); border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
         
-        /* CARD STATE COLORS (Border Left) */
-        .po-card::before {
-            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
-            background: var(--po-accent); /* Default Orange (Ready) */
-            border-top-left-radius: 8px; border-bottom-left-radius: 8px;
-        }
-
+        /* FAILED STATE */
         .po-card.failed::before { background: var(--danger); }
         .po-card.failed { border-color: #fecaca; background: #fffbfb; }
 
+        /* PROCESSING STATE */
         .po-card.processing::before { background: var(--process-color); }
         .po-card.processing { border-color: #bfdbfe; background: #f8fafc; }
 
         .po-card:hover { transform: translateY(-2px); box-shadow: 0 8px 16px -4px rgba(0,0,0,0.08); }
 
-        /* Sections */
         .col-main { flex: 1.5; min-width: 200px; }
         .po-inv-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
         .inv-text { font-size: 16px; font-weight: 700; color: var(--text-main); }
         
-        /* STATUS PILLS */
-        .status-pill {
-            background: #ecfdf5; color: #059669; font-size: 10px; font-weight: 700;
-            padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px;
-            text-transform: uppercase; border: 1px solid #d1fae5;
-        }
-        .status-pill.failed {
-            background: var(--danger-bg); color: var(--danger); border-color: #fecaca;
-        }
-        .status-pill.processing {
-            background: var(--process-bg); color: var(--process-color); border-color: #bfdbfe;
-        }
+        /* Status Pills */
+        .status-pill { background: #ecfdf5; color: #059669; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px; text-transform: uppercase; border: 1px solid #d1fae5; }
+        .status-pill.failed { background: var(--danger-bg); color: var(--danger); border-color: #fecaca; }
+        .status-pill.processing { background: var(--process-bg); color: var(--process-color); border-color: #bfdbfe; }
 
         .supplier-info { display: flex; flex-direction: column; gap: 2px; }
         .supplier-name { font-size: 13px; font-weight: 600; color: #334155; display: flex; align-items: center; gap: 6px; }
@@ -128,18 +89,7 @@
         .btn-details-link { font-size: 13px; font-weight: 600; color: var(--primary); display: flex; align-items: center; gap: 4px; cursor: pointer; background: none; border: none; padding: 0; transition: 0.2s; }
         .btn-details-link:hover { color: var(--accent); gap: 6px; }
 
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            .top-bar { padding: 10px 20px; }
-            .logo-section span { display: none; }
-            .po-card { flex-direction: column; align-items: flex-start; gap: 16px; padding: 16px; }
-            .po-card::before { width: 100%; height: 4px; bottom: auto; border-radius: 8px 8px 0 0; }
-            .col-details { border: none; padding: 12px 0; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; width: 100%; }
-            .col-action { width: 100%; align-items: center; flex-direction: row; justify-content: space-between; }
-            .amount-value { margin-bottom: 0; }
-        }
-
-        /* --- MODAL --- */
+        /* Modal */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(2px); }
         .modal-content { background: white; margin: 3vh auto; width: 95%; max-width: 900px; border-radius: 12px; display: flex; flex-direction: column; max-height: 90vh; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from {opacity: 0; transform: translateY(20px);} to {opacity: 1; transform: translateY(0);} }
@@ -157,8 +107,6 @@
 
         .btn-sync { background: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
         .btn-sync:hover { background: #059669; }
-        
-        /* Tombol Disable untuk Processing */
         .btn-sync:disabled { background: #94a3b8; cursor: not-allowed; }
 
         .btn-close { background: white; border: 1px solid #e2e8f0; color: var(--text-main); padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; }
@@ -173,7 +121,6 @@
         <div class="logo-section">
             AUXILIUM <span style="font-weight:300;color:#909090; font-size:13px; margin-left:6px;">Accounting Management Service</span>
         </div>
-         
         <nav class="nav-menu">
             <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/index.html" class="nav-item">
                 <span class="material-icons" style="font-size:18px;">home</span> Home Receiving
@@ -188,14 +135,11 @@
     </div>
 
     <div class="page-content">
-
         <div class="app-header">
             <div class="header-top">
                 <div class="page-title">Import Receiving PO to Xero</div>
             </div>
-            <div class="page-desc">
-                Import Purchasing Order Received to Xero.
-            </div>
+            <div class="page-desc">Import Purchasing Order Received to Xero.</div>
         </div>
 
         <div class="search-container">
@@ -209,7 +153,6 @@
         </div>
 
         <div id="list-container"></div>
-
     </div>
 
     <div id="detailModal" class="modal">
@@ -218,26 +161,12 @@
                 <div style="font-size: 18px; font-weight: 700;">Transaction Details</div>
                 <span class="material-icons" onclick="closeModal()" style="cursor: pointer; color: #64748b;">close</span>
             </div>
-            
             <div class="info-grid">
-                <div class="info-item">
-                    <label>Supplier</label>
-                    <div id="modalCustomer">-</div>
-                </div>
-                <div class="info-item">
-                    <label>PO Number</label>
-                    <div id="modalOrderNo" style="color:var(--primary)">-</div>
-                </div>
-                <div class="info-item">
-                    <label>Receiving ID</label>
-                    <div id="modalRecId" style="color:var(--primary)">-</div>
-                </div>
-                <div class="info-item">
-                    <label>Invoice Ref</label>
-                    <div id="modalInvNo">-</div>
-                </div>
+                <div class="info-item"><label>Supplier</label><div id="modalCustomer">-</div></div>
+                <div class="info-item"><label>PO Number</label><div id="modalOrderNo" style="color:var(--primary)">-</div></div>
+                <div class="info-item"><label>Receiving ID</label><div id="modalRecId" style="color:var(--primary)">-</div></div>
+                <div class="info-item"><label>Invoice Ref</label><div id="modalInvNo">-</div></div>
             </div>
-
             <div class="modal-body">
                 <table class="detail-table">
                     <thead>
@@ -254,7 +183,6 @@
                     <tbody id="modalTableBody"></tbody>
                 </table>
             </div>
-
             <div class="modal-footer">
                 <div>
                     <div style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 600;">Grand Total</div>
@@ -271,8 +199,8 @@
     </div>
 
     <script>
-        // GANTI URL INI DENGAN URL DEPLOYMENT TERBARU ANDA
-        const API_URL = "https://script.google.com/macros/s/AKfycbzDnQMiM4hFbIYUmN0PbyBGzsVndRKSUIJeFY_5DruiosTR1sxCwWmpbYKMWeNFpCryHw/exec";
+        // PENTING: GANTI URL DI BAWAH INI DENGAN URL DEPLOY TERBARU ANDA
+        const API_URL = "https://script.google.com/macros/s/AKfycbxY6JARSYEgT2XfIfLnumlFF9epMqLTXbyW8mk_k1tXn1WpquAqfC92pof1zQB0tR5d1g/exec";
         
         var globalData = {};
         const fmtIDR = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
@@ -304,15 +232,12 @@
 
             for (let key in data) {
                 let item = data[key];
-                
-                // Variabel Data Header
                 let recId = item.recId || "-";
                 let poNum = item.poNumber || "-";
                 let invNum = item.invNumber || "-";
                 
-                // --- LOGIKA STATUS TAMPILAN ---
-                // Backend mengirim syncStatus: "PENDING", "PROCESSING", atau "FAILED"
-                let status = item.syncStatus;
+                // INI LOGIKA VISUALISASI BERDASARKAN STATUS DARI LOG
+                let status = item.syncStatus; // PENDING, PROCESSING, FAILED
                 
                 let badgeClass = "status-pill"; // Default Hijau (Ready)
                 let badgeText = "Ready";
@@ -328,50 +253,27 @@
                     cardClass = "po-card processing";
                 }
 
-                // Template HTML
                 container.innerHTML += `
                 <div class="${cardClass}" data-search="${item.supplier.toLowerCase()} ${poNum.toLowerCase()} ${invNum.toLowerCase()}">
-                    
                     <div class="col-main">
                         <div class="po-inv-row">
                             <span class="inv-text">${invNum}</span>
                             <span class="${badgeClass}">${badgeText}</span>
                         </div>
                         <div class="supplier-info">
-                            <div class="supplier-name">
-                                <span class="material-icons" style="font-size: 16px; color: #64748b;">store</span>
-                                ${item.supplier}
-                            </div>
-                            <div class="po-date">
-                                <span class="material-icons" style="font-size: 14px;">event</span>
-                                ${item.date}
-                            </div>
+                            <div class="supplier-name"><span class="material-icons" style="font-size: 16px; color: #64748b;">store</span>${item.supplier}</div>
+                            <div class="po-date"><span class="material-icons" style="font-size: 14px;">event</span>${item.date}</div>
                         </div>
                     </div>
-
                     <div class="col-details">
-                        <div class="detail-group">
-                            <span class="detail-label">Receiving ID</span>
-                            <div class="detail-value">
-                                <span class="material-icons" style="font-size:14px">receipt_long</span> ${recId}
-                            </div>
-                        </div>
-                        <div class="detail-group">
-                            <span class="detail-label">PO Number</span>
-                            <div class="detail-value">
-                                <span class="material-icons" style="font-size:14px">description</span> ${poNum}
-                            </div>
-                        </div>
+                        <div class="detail-group"><span class="detail-label">Receiving ID</span><div class="detail-value"><span class="material-icons" style="font-size:14px">receipt_long</span> ${recId}</div></div>
+                        <div class="detail-group"><span class="detail-label">PO Number</span><div class="detail-value"><span class="material-icons" style="font-size:14px">description</span> ${poNum}</div></div>
                     </div>
-
                     <div class="col-action">
                         <span class="amount-label">Total Amount</span>
                         <div class="amount-value">${fmtIDR.format(item.totalAmount)}</div>
-                        <button class="btn-details-link" onclick="showDetail('${key}')">
-                            View Details <span class="material-icons" style="font-size: 16px;">arrow_forward</span>
-                        </button>
+                        <button class="btn-details-link" onclick="showDetail('${key}')">View Details <span class="material-icons" style="font-size: 16px;">arrow_forward</span></button>
                     </div>
-
                 </div>`;
             }
         }
@@ -379,20 +281,14 @@
         function filterList() {
             let input = document.getElementById('searchInput').value.toLowerCase();
             let cards = document.getElementsByClassName('po-card');
-
             for (let i = 0; i < cards.length; i++) {
                 let searchData = cards[i].getAttribute('data-search');
-                if (searchData.includes(input)) {
-                    cards[i].style.display = "flex";
-                } else {
-                    cards[i].style.display = "none";
-                }
+                cards[i].style.display = searchData.includes(input) ? "flex" : "none";
             }
         }
 
         function showDetail(key) {
             let data = globalData[key];
-
             document.getElementById('modalCustomer').innerText = data.supplier;
             document.getElementById('modalOrderNo').innerText = data.poNumber;
             document.getElementById('modalRecId').innerText = data.recId;
@@ -401,32 +297,27 @@
 
             let tbody = document.getElementById('modalTableBody');
             tbody.innerHTML = "";
-            
             data.items.forEach(i => {
                 tbody.innerHTML += `
                 <tr>
-                    <td><b>${i.itemCode}</b></td>
-                    <td>${i.desc}</td>
-                    <td style="text-align: right;">${i.ordered}</td>
-                    <td style="text-align: right; font-weight:bold;">${i.qty}</td>
-                    <td style="text-align: center;">${i.uom}</td>
-                    <td style="text-align: right;">${i.price}</td>
-                    <td style="text-align: right; font-weight:bold;">${i.lineTotalFormatted}</td>
+                    <td><b>${i.itemCode}</b></td><td>${i.desc}</td><td style="text-align: right;">${i.ordered}</td><td style="text-align: right; font-weight:bold;">${i.qty}</td><td style="text-align: center;">${i.uom}</td><td style="text-align: right;">${i.price}</td><td style="text-align: right; font-weight:bold;">${i.lineTotalFormatted}</td>
                 </tr>`;
             });
 
             // LOGIKA TOMBOL SYNC DI MODAL
             let btnSync = document.getElementById('syncBtn');
+            
+            // Jika status processing, disable tombol
             if (data.syncStatus === "PROCESSING") {
                 btnSync.disabled = true;
                 btnSync.innerHTML = "Processing...";
-                btnSync.style.backgroundColor = "#94a3b8";
+                btnSync.style.backgroundColor = "#94a3b8"; // Abu-abu
             } else {
                 btnSync.disabled = false;
                 btnSync.innerHTML = '<span class="material-icons" style="font-size: 18px;">sync</span> Process Sync';
-                btnSync.style.backgroundColor = "var(--success)";
+                btnSync.style.backgroundColor = "var(--success)"; // Hijau
             }
-
+            
             document.getElementById('detailModal').style.display = "flex";
         }
 
@@ -437,15 +328,13 @@
         function processSync() {
             const recId = document.getElementById("modalRecId").innerText.trim();
             const btn = document.getElementById("syncBtn");
-
             if (!recId || recId === "-") { alert("Invalid Receiving ID."); return; }
 
             const oriText = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = "Starting...";
+            btn.innerHTML = "Requesting...";
 
-            // HANYA MENGIRIM TRIGGER REC ID SAJA (Tanpa parameter Status)
-            // Biarkan backend set status jadi PROCESSING
+            // HANYA KIRIM REC ID (Tanpa status). Biarkan Backend mencentang checkbox.
             const payload = new URLSearchParams({ recId: recId });
 
             fetch(API_URL, {
@@ -456,14 +345,13 @@
             .then(res => res.json())
             .then(result => {
                 if (result.success) {
-                    alert("Sync Started! Status set to Processing.");
+                    alert("Sync Request Sent! Waiting for system processing...");
                     closeModal();
-                    
-                    // Reload data untuk melihat perubahan status menjadi PROCESSING
+                    // RELOAD DATA: Untuk melihat apakah checkbox sudah tercentang / system sudah merespon
                     document.getElementById('loading').style.display = 'flex';
                     fetchData(); 
                 } else {
-                    alert("Failed to Start: " + result.message);
+                    alert("Failed: " + result.message);
                 }
             })
             .catch(err => {
