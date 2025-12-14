@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Receiving PO Entry V2 (Final Revision)</title>
+  <title>Receiving PO Entry V2 (Price Hidden)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
@@ -27,6 +27,12 @@
       background: var(--ux-bg);
       font-family: "Segoe UI", Roboto, sans-serif;
       font-size: 13px; color: #333;
+    }
+
+    /* --- CLASS UNTUK MENYEMBUNYIKAN HARGA --- */
+    /* Ubah menjadi display: table-cell; jika ingin menampilkan kembali */
+    .confidential-col {
+      display: none !important; 
     }
 
     /* TOP BAR */
@@ -92,6 +98,7 @@
       background: #f7f8ff; border: 1px solid #dbe2ff;
       border-radius: 9px; padding: 14px 18px; margin: 16px 0 20px;
     }
+    .summary-item { min-width: 0; }
     .summary-label { font-size: 11px; font-weight: 600; color: var(--ux-text-sub); text-transform: uppercase; margin-bottom: 2px; }
     .summary-value { font-size: 13px; font-weight: 500; color: var(--ux-text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
@@ -248,10 +255,9 @@
             <th>Description</th>
             <th style="width:70px">Ordered</th>
             
-            <th style="width:100px; background:#fffbeb; color:#92400e; text-align:right;">Price (Ori)</th>
-            <th style="width:90px; background:#fef2f2; color:#b91c1c; text-align:right;">Disc</th>
-            <th style="width:100px; background:#f0fdf4; color:#15803d; text-align:right;">Net Price</th>
-            
+            <th class="confidential-col" style="width:100px; background:#fffbeb; color:#92400e; text-align:right;">Price (Ori)</th>
+            <th class="confidential-col" style="width:90px; background:#fef2f2; color:#b91c1c; text-align:right;">Disc</th>
+            <th class="confidential-col" style="width:100px; background:#f0fdf4; color:#15803d; text-align:right;">Net Price</th>
             <th style="width:70px">Received</th>
             <th style="width:70px">Remaining</th>
             <th style="width:80px">Qty Receipt</th>
@@ -314,12 +320,9 @@
     const mainItems = [];
     const discountMap = {}; 
 
-    // Pass 1: Pisahkan Item Utama dan Baris Diskon (Jika masih ada raw row dari backend)
-    // Walaupun backend biasanya sudah menghapusnya, ini safety check.
     rawLines.forEach(ln => {
       const desc = (ln.description || "").trim();
       if (desc.toLowerCase().startsWith("discount -")) {
-        // Hapus prefix "Discount - " untuk dapat nama asli
         const parentName = desc.replace(/^discount\s*-\s*/i, "").trim(); 
         discountMap[parentName] = Math.abs(Number(ln.unitAmount) || 0);
       } else {
@@ -327,36 +330,23 @@
       }
     });
 
-    // Pass 2: Gabungkan ke item utama
     return mainItems.map(item => {
       const desc = (item.description || "").trim();
-      
-      // LOGIKA BARU:
-      // Ambil nilai dari Map (jika ada baris terpisah) 
-      // ATAU gunakan nilai dari Server (karena server sudah mengirim nilai discount)
       const mapVal = discountMap[desc];
       const serverVal = Number(item.discount) || 0;
-      
-      // Prioritas: Jika ada di Map pakai Map, jika tidak pakai data Server
       const finalDisc = (mapVal !== undefined) ? mapVal : serverVal;
 
-      // Ambil Harga Awal (Price Before)
-      // Jika server mengirim unitAmountBefore, pakai itu. Jika tidak, pakai unitAmount sementara.
       let priceBefore = item.unitAmountBefore !== undefined ? item.unitAmountBefore : item.unitAmount;
-      
-      // Jika priceBefore masih 0/null, coba ambil dari unitAmount (Net) + Discount
       if (!priceBefore && item.unitAmount) {
          priceBefore = Number(item.unitAmount) + finalDisc;
       }
-      
-      // Hitung Net Price baru
       const priceNet = priceBefore - finalDisc;
 
       return {
         ...item,
         unitAmountBefore: priceBefore,
-        discount: finalDisc,      // Nilai diskon yang benar (tidak lagi 0)
-        unitAmount: priceNet      // Harga Net (masuk ke database)
+        discount: finalDisc,
+        unitAmount: priceNet
       };
     });
   }
@@ -376,7 +366,6 @@
     if (parentQty) parentQty.value = total > 0 ? total : "";
   }
 
-  // KPC Readonly Helper
   function ensureParentModeForSplit(baseTr) {
     const qtyInput = baseTr.querySelector(".qty-receipt");
     const kpcInput = baseTr.querySelector(".kpc-new");
@@ -385,7 +374,6 @@
         qtyInput.readOnly = true; 
         qtyInput.classList.add("readonly-field"); 
     }
-    // KPC di parent sudah readonly by default
     if (kpcInput) { 
         kpcInput.value = ""; 
         kpcInput.readOnly = true; 
@@ -433,15 +421,12 @@
     }
   }
 
-  // --- RENDER ---
+  // --- RENDER (UPDATED WITH HIDDEN COLS) ---
   function renderLines(rawLines, useExistingQty) {
     tableBody.innerHTML = "";
-    
-    // Merge Logic (Sekarang sudah benar)
     const lines = mergeDiscountLines(rawLines);
 
     if (!useExistingQty) {
-      // --- NEW MODE ---
       lines.forEach(ln => {
         const tr = document.createElement("tr");
         tr.dataset.rowIndex = ln.rowIndex;
@@ -449,6 +434,7 @@
         const defaultQty = remaining;
         const itemCode = ln.itemCode || ln.kpc || "";
         
+        // Perhatikan class="confidential-col" pada 3 baris harga
         tr.innerHTML = `
           <td class="row-handle">⋮⋮</td>
           <td>${ln.poNumber}</td>
@@ -457,9 +443,9 @@
           <td>${ln.description}</td>
           <td><input class="table-input readonly-field ordered" value="${ln.orderedQty}" readonly></td>
           
-          <td style="background:#fffbeb;"><input type="text" class="input-transparent price-before" value="${formatNumber(ln.unitAmountBefore)}" data-val="${ln.unitAmountBefore}" readonly></td>
-          <td style="background:#fef2f2;"><input type="text" class="input-transparent discount-val" value="${formatNumber(ln.discount)}" data-val="${ln.discount}" readonly></td>
-          <td style="background:#f0fdf4;"><input type="text" class="input-transparent price-net" value="${formatNumber(ln.unitAmount)}" data-val="${ln.unitAmount}" readonly></td>
+          <td class="confidential-col" style="background:#fffbeb;"><input type="text" class="input-transparent price-before" value="${formatNumber(ln.unitAmountBefore)}" data-val="${ln.unitAmountBefore}" readonly></td>
+          <td class="confidential-col" style="background:#fef2f2;"><input type="text" class="input-transparent discount-val" value="${formatNumber(ln.discount)}" data-val="${ln.discount}" readonly></td>
+          <td class="confidential-col" style="background:#f0fdf4;"><input type="text" class="input-transparent price-net" value="${formatNumber(ln.unitAmount)}" data-val="${ln.unitAmount}" readonly></td>
           
           <td><input class="table-input readonly-field received" value="${ln.receivedToDate}" readonly></td>
           <td><input class="table-input readonly-field remaining" value="${remaining}" readonly></td>
@@ -472,7 +458,6 @@
         attachRowEvents(tr);
       });
     } else {
-      // --- EDIT MODE ---
       const groups = {};
       lines.forEach(ln => {
         const k = String(ln.rowIndex||"");
@@ -499,9 +484,9 @@
           <td>${baseData.description}</td>
           <td><input class="table-input readonly-field ordered" value="${baseData.orderedQty}" readonly></td>
           
-          <td style="background:#fffbeb;"><input type="text" class="input-transparent price-before" value="${formatNumber(baseData.unitAmountBefore)}" data-val="${baseData.unitAmountBefore}" readonly></td>
-          <td style="background:#fef2f2;"><input type="text" class="input-transparent discount-val" value="${formatNumber(baseData.discount)}" data-val="${baseData.discount}" readonly></td>
-          <td style="background:#f0fdf4;"><input type="text" class="input-transparent price-net" value="${formatNumber(baseData.unitAmount)}" data-val="${baseData.unitAmount}" readonly></td>
+          <td class="confidential-col" style="background:#fffbeb;"><input type="text" class="input-transparent price-before" value="${formatNumber(baseData.unitAmountBefore)}" data-val="${baseData.unitAmountBefore}" readonly></td>
+          <td class="confidential-col" style="background:#fef2f2;"><input type="text" class="input-transparent discount-val" value="${formatNumber(baseData.discount)}" data-val="${baseData.discount}" readonly></td>
+          <td class="confidential-col" style="background:#f0fdf4;"><input type="text" class="input-transparent price-net" value="${formatNumber(baseData.unitAmount)}" data-val="${baseData.unitAmount}" readonly></td>
 
           <td><input class="table-input readonly-field received" value="${baseData.receivedToDate}" readonly></td>
           <td><input class="table-input readonly-field remaining" value="${remaining}" readonly></td>
@@ -527,9 +512,9 @@
                <td>${baseData.description}</td>
                <td><input class="table-input readonly-field ordered" value="${baseData.orderedQty}" readonly></td>
                
-               <td style="background:#fffbeb;"><input type="text" class="input-transparent" value="${formatNumber(baseData.unitAmountBefore)}" readonly></td>
-               <td style="background:#fef2f2;"><input type="text" class="input-transparent" value="${formatNumber(baseData.discount)}" readonly></td>
-               <td style="background:#f0fdf4;"><input type="text" class="input-transparent" value="${formatNumber(baseData.unitAmount)}" readonly></td>
+               <td class="confidential-col" style="background:#fffbeb;"><input type="text" class="input-transparent" value="${formatNumber(baseData.unitAmountBefore)}" readonly></td>
+               <td class="confidential-col" style="background:#fef2f2;"><input type="text" class="input-transparent" value="${formatNumber(baseData.discount)}" readonly></td>
+               <td class="confidential-col" style="background:#f0fdf4;"><input type="text" class="input-transparent" value="${formatNumber(baseData.unitAmount)}" readonly></td>
 
                <td><input class="table-input readonly-field received" value="${baseData.receivedToDate}" readonly></td>
                <td><input class="table-input readonly-field remaining" value="${Number(s.remainingQty)||remaining}" readonly></td>
@@ -553,7 +538,7 @@
     const idx = baseTr.dataset.rowIndex;
     const subs = getSubRowsByIndex(idx);
     
-    // Grab data from parent
+    // Grab data
     const po = baseTr.children[1].textContent;
     const ic = baseTr.querySelector(".kpc-original").textContent;
     const desc = baseTr.children[4].textContent;
@@ -585,9 +570,9 @@
       <td>${desc}</td>
       <td><input class="table-input readonly-field ordered" value="${ord}" readonly></td>
       
-      <td style="background:#fffbeb;"><input type="text" class="input-transparent" value="${formatNumber(pBefore)}" readonly></td>
-      <td style="background:#fef2f2;"><input type="text" class="input-transparent" value="${formatNumber(pDisc)}" readonly></td>
-      <td style="background:#f0fdf4;"><input type="text" class="input-transparent" value="${formatNumber(pNet)}" readonly></td>
+      <td class="confidential-col" style="background:#fffbeb;"><input type="text" class="input-transparent" value="${formatNumber(pBefore)}" readonly></td>
+      <td class="confidential-col" style="background:#fef2f2;"><input type="text" class="input-transparent" value="${formatNumber(pDisc)}" readonly></td>
+      <td class="confidential-col" style="background:#f0fdf4;"><input type="text" class="input-transparent" value="${formatNumber(pNet)}" readonly></td>
 
       <td><input class="table-input readonly-field received" value="${rec}" readonly></td>
       <td><input class="table-input readonly-field remaining" value="${rem}" readonly></td>
