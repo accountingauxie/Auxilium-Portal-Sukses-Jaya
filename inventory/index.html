@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
+/* CSS SAMA SEPERTI SEBELUMNYA */
 :root {
   --primary: #0075c9;
   --bg: #f5f7fa;
@@ -18,144 +19,64 @@
   --success: #10b981;
   --warning: #f59e0b;
 }
-
 * { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  font-family: 'Inter', sans-serif;
-  background-color: var(--bg);
-  color: var(--text-main);
-  font-size: 14px;
-}
+body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); font-size: 14px; }
 
 /* NAVBAR */
-.top-bar {
-  background: white;
-  border-bottom: 1px solid var(--border);
-  padding: 12px 30px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky; top: 0; z-index: 50;
-}
+.top-bar { background: white; border-bottom: 1px solid var(--border); padding: 12px 30px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
 .brand { font-weight: 700; font-size: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;}
 .brand span { font-weight: 400; color: var(--text-muted); font-size: 14px; }
-.nav-link { 
-    text-decoration: none; color: var(--text-muted); font-weight: 500; margin-left: 20px; transition: 0.2s; 
-}
+.nav-link { text-decoration: none; color: var(--text-muted); font-weight: 500; margin-left: 20px; transition: 0.2s; }
 .nav-link:hover { color: var(--primary); }
 
-/* LAYOUT */
-.container {
-  max-width: 1400px; margin: 30px auto; padding: 0 20px;
-}
+/* CONTAINER */
+.container { max-width: 1400px; margin: 30px auto; padding: 0 20px; }
 
-/* HEADER & SELECTOR */
-.header-action {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  margin-bottom: 24px;
-  
-  display: flex; 
-  flex-direction: column;
-  gap: 15px;
-}
-
-.header-top {
-  display: flex; justify-content: space-between; align-items: center;
-}
+/* HEADER */
+.header-action { background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 24px; display: flex; flex-direction: column; gap: 15px; }
+.header-top { display: flex; justify-content: space-between; align-items: center; }
 .page-title { font-size: 20px; font-weight: 700; color: var(--text-main); margin: 0; }
-
-.btn-refresh {
-  background: white; border: 1px solid var(--border); padding: 8px 16px;
-  border-radius: 6px; cursor: pointer; color: var(--primary); font-weight: 600;
-  display: flex; align-items: center; gap: 6px; transition: 0.2s;
-}
+.btn-refresh { background: white; border: 1px solid var(--border); padding: 8px 16px; border-radius: 6px; cursor: pointer; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
 .btn-refresh:hover { background: #f0f9ff; border-color: var(--primary); }
 
-/* DROPDOWN SELECTOR STYLE */
-.selector-area {
-  display: flex; align-items: center; gap: 10px;
-  background: #f8fafc; padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border);
-}
+/* SELECTOR */
+.selector-area { display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border); }
 .selector-label { font-weight: 600; color: var(--text-muted); font-size: 13px; }
-.type-select {
-  padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: 600; color: var(--text-main);
-  font-size: 14px; min-width: 200px; outline: none; cursor: pointer;
-}
+.type-select { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: 600; color: var(--text-main); font-size: 14px; min-width: 200px; outline: none; cursor: pointer; }
 .type-select:focus { border-color: var(--primary); ring: 2px solid #bae6fd; }
 
-/* UTILITY CLASSES UNTUK SHOW/HIDE */
+/* UTILITY */
 .d-none { display: none !important; }
-.d-block { display: block !important; }
 
-/* TABLE CARD */
-.card {
-  background: var(--card-bg); border-radius: 12px;
-  border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  margin-bottom: 30px; overflow: hidden;
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.card-header {
-  padding: 16px 24px; border-bottom: 1px solid var(--border);
-  display: flex; justify-content: space-between; align-items: center; background: #fafafa;
-}
+/* CARD & TABLE */
+.card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 30px; overflow: hidden; }
+.card-header { padding: 16px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #fafafa; }
 .card-title { font-size: 16px; font-weight: 600; margin: 0; color: var(--text-main); }
-
-.search-input {
-  padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px;
-  font-size: 13px; width: 250px; outline: none;
-}
-
-/* TABLE STYLE */
+.search-input { padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; width: 250px; outline: none; }
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; min-width: 600px; }
-
-th {
-  text-align: left; padding: 12px 24px; background: #f8fafc;
-  color: var(--text-muted); font-size: 12px; font-weight: 600; text-transform: uppercase;
-  border-bottom: 1px solid var(--border); white-space: nowrap;
-}
-
-td {
-  padding: 12px 24px; border-bottom: 1px solid var(--border);
-  color: #334155;
-}
+th { text-align: left; padding: 12px 24px; background: #f8fafc; color: var(--text-muted); font-size: 12px; font-weight: 600; text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; }
+td { padding: 12px 24px; border-bottom: 1px solid var(--border); color: #334155; }
 tr:last-child td { border-bottom: none; }
 tr:hover td { background-color: #f1f5f9; }
 
-/* STOK INDICATORS */
+/* STATUS COLORS */
 .stock-val { font-weight: 700; text-align: right; }
 .stock-safe { color: var(--success); }
 .stock-low { color: var(--warning); }
 .stock-empty { color: var(--danger); background: #fef2f2; }
 
-/* LOADERS */
+/* LOADER & ERROR MSG */
 .loader-box { padding: 40px; text-align: center; color: var(--text-muted); }
-.spinner {
-  width: 24px; height: 24px; border: 3px solid #e2e8f0; border-top-color: var(--primary);
-  border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px;
-}
+.spinner { width: 24px; height: 24px; border: 3px solid #e2e8f0; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
 @keyframes spin { to { transform: rotate(360deg); } }
-
+.error-msg { color: var(--danger); font-weight: bold; padding: 20px; text-align: center; }
 </style>
 </head>
 <body>
 
 <div class="top-bar">
-  <div class="brand">
-    AUXILIUM <span>Warehouse Monitor</span>
-  </div>
+  <div class="brand">AUXILIUM <span>Warehouse Monitor</span></div>
   <nav>
     <a href="../index.html" class="nav-link">Kembali ke Order Form</a>
     <a href="#" class="nav-link" style="color:var(--primary); font-weight:600;">Stok Gudang</a>
@@ -167,9 +88,7 @@ tr:hover td { background-color: #f1f5f9; }
   <div class="header-action">
     <div class="header-top">
       <h1 class="page-title">Laporan Stok Barang</h1>
-      <button class="btn-refresh" onclick="loadData()">
-        <span>↻</span> Refresh Data
-      </button>
+      <button class="btn-refresh" onclick="loadData()"><span>↻</span> Refresh Data</button>
     </div>
 
     <div class="selector-area">
@@ -191,18 +110,13 @@ tr:hover td { background-color: #f1f5f9; }
         <table id="tableSpandek">
           <thead>
             <tr>
-              <th>Nama Barang</th>
-              <th>Spesifikasi</th>
-              <th>Warna</th>
-              <th>Satuan</th>
-              <th style="text-align:right">Sisa Stok</th>
+              <th>Nama Barang</th><th>Spesifikasi</th><th>Warna</th><th>Satuan</th><th style="text-align:right">Sisa Stok</th>
             </tr>
           </thead>
           <tbody id="bodySpandek"></tbody>
         </table>
-        <div id="loadingSpandek" class="loader-box">
-          <div class="spinner"></div> Mengambil data Spandek...
-        </div>
+        <div id="loadingSpandek" class="loader-box"><div class="spinner"></div> Mengambil data Spandek...</div>
+        <div id="errorSpandek" class="error-msg d-none"></div>
       </div>
     </div>
   </div>
@@ -217,17 +131,13 @@ tr:hover td { background-color: #f1f5f9; }
         <table id="tableNon">
           <thead>
             <tr>
-              <th>Nama Barang</th>
-              <th>Kategori</th>
-              <th>Satuan</th>
-              <th style="text-align:right">Sisa Stok</th>
+              <th>Nama Barang</th><th>Kategori</th><th>Satuan</th><th style="text-align:right">Sisa Stok</th>
             </tr>
           </thead>
           <tbody id="bodyNon"></tbody>
         </table>
-        <div id="loadingNon" class="loader-box">
-          <div class="spinner"></div> Mengambil data Non Spandek...
-        </div>
+        <div id="loadingNon" class="loader-box"><div class="spinner"></div> Mengambil data Non Spandek...</div>
+        <div id="errorNon" class="error-msg d-none"></div>
       </div>
     </div>
   </div>
@@ -236,65 +146,83 @@ tr:hover td { background-color: #f1f5f9; }
 
 <script>
   // =========================================================
-  // GANTI URL DI BAWAH INI DENGAN HASIL DEPLOY APPS SCRIPT
+  // PASTIKAN URL INI BENAR DAN SUDAH DI-DEPLOY TERBARU
   // =========================================================
   const API_URL = "https://script.google.com/macros/s/AKfycbxDLvQ-of3TrOnLdXac9Iv2YbwwFPjFyh7ufUd4PBFda6_V7CCzuVIpwPT8dpG0_dZb3A/exec"; 
 
   window.onload = loadData;
 
-  // --- FUNGSI GANTI TAMPILAN ---
   function toggleView() {
-    const selector = document.getElementById("viewSelector");
-    const val = selector.value;
-    
+    const val = document.getElementById("viewSelector").value;
     const divSpandek = document.getElementById("container-spandek");
     const divNon = document.getElementById("container-nonspandek");
 
     if (val === "spandek") {
-      // Tampilkan Spandek, Sembunyikan Non
       divSpandek.classList.remove("d-none");
       divNon.classList.add("d-none");
     } else {
-      // Tampilkan Non, Sembunyikan Spandek
       divSpandek.classList.add("d-none");
       divNon.classList.remove("d-none");
     }
   }
 
-  // --- LOAD DATA ---
   async function loadData() {
-    // Reset Loader
+    // Reset UI
     document.getElementById("bodySpandek").innerHTML = "";
     document.getElementById("bodyNon").innerHTML = "";
+    
+    // Show Loaders, Hide Errors
     document.getElementById("loadingSpandek").style.display = "block";
     document.getElementById("loadingNon").style.display = "block";
+    document.getElementById("errorSpandek").classList.add("d-none");
+    document.getElementById("errorNon").classList.add("d-none");
 
     try {
-      const response = await fetch(API_URL + "?action=getInventoryData");
-      const data = await response.json();
+      console.log("Memulai fetch data...");
+      
+      // Tambahkan 'redirect: follow' untuk menangani redirect Google Script
+      const response = await fetch(API_URL + "?action=getInventoryData", {
+        method: "GET",
+        redirect: "follow"
+      });
 
-      renderTable("bodySpandek", "loadingSpandek", data.spandek, 5);
-      renderTable("bodyNon", "loadingNon", data.nonSpandek, 4);
+      if (!response.ok) {
+        throw new Error(`HTTP Error: ${response.status}`);
+      }
+
+      // Coba ambil text dulu sebelum parse JSON untuk debugging
+      const text = await response.text();
+      console.log("Response Server:", text); 
+
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        throw new Error("Gagal membaca data JSON. Server mengirim respon yang salah (mungkin HTML error page). Cek Console.");
+      }
+
+      // Render Data
+      renderTable("bodySpandek", "loadingSpandek", data.spandek || [], 5, "errorSpandek");
+      renderTable("bodyNon", "loadingNon", data.nonSpandek || [], 4, "errorNon");
 
     } catch (err) {
-      console.error(err);
-      alert("Gagal koneksi. Periksa internet atau URL Script.");
-      document.getElementById("loadingSpandek").innerText = "Error";
-      document.getElementById("loadingNon").innerText = "Error";
+      console.error("Fetch Error:", err);
+      showError("Gagal mengambil data. " + err.message);
     }
   }
 
-  function renderTable(tbodyId, loaderId, rows, expectedCols) {
+  function renderTable(tbodyId, loaderId, rows, expectedCols, errorId) {
     const tbody = document.getElementById(tbodyId);
     document.getElementById(loaderId).style.display = "none";
 
-    if (!rows || rows.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="${expectedCols}" style="text-align:center; padding: 20px;">Data Kosong</td></tr>`;
+    if (!Array.isArray(rows) || rows.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="${expectedCols}" style="text-align:center; padding: 20px;">Data Kosong / Tidak Ditemukan</td></tr>`;
       return;
     }
 
     rows.forEach(row => {
-      if (!row[0]) return; // Skip baris kosong
+      // Pastikan baris memiliki data minimal di kolom pertama
+      if (!row || !row[0]) return; 
 
       const tr = document.createElement("tr");
       let html = "";
@@ -303,12 +231,11 @@ tr:hover td { background-color: #f1f5f9; }
         let content = cell;
         let className = "";
 
-        // Logic warna Stok (Kolom Terakhir)
+        // Kolom Stok (Terakhir)
         if (idx === expectedCols - 1) {
           className = "stock-val ";
           let num = parseFloat(cell);
           if (isNaN(num)) num = 0;
-
           if (num <= 0) className += "stock-empty";
           else if (num < 10) className += "stock-low";
           else className += "stock-safe";
@@ -316,25 +243,33 @@ tr:hover td { background-color: #f1f5f9; }
 
         html += `<td class="${className}">${content}</td>`;
       });
-
       tr.innerHTML = html;
       tbody.appendChild(tr);
     });
+  }
+
+  function showError(msg) {
+    document.getElementById("loadingSpandek").style.display = "none";
+    document.getElementById("loadingNon").style.display = "none";
+    
+    const errSpan = document.getElementById("errorSpandek");
+    const errNon = document.getElementById("errorNon");
+    
+    errSpan.textContent = msg;
+    errSpan.classList.remove("d-none");
+    
+    errNon.textContent = msg;
+    errNon.classList.remove("d-none");
   }
 
   function searchTable(input, tableId) {
     const filter = input.value.toUpperCase();
     const table = document.getElementById(tableId);
     const tr = table.getElementsByTagName("tr");
-
     for (let i = 1; i < tr.length; i++) {
       let tds = tr[i].getElementsByTagName("td");
       let found = false;
-      if (tds[0]) {
-        if (tds[0].textContent.toUpperCase().indexOf(filter) > -1) {
-          found = true;
-        }
-      }
+      if (tds[0] && tds[0].textContent.toUpperCase().indexOf(filter) > -1) found = true;
       tr[i].style.display = found ? "" : "none";
     }
   }
