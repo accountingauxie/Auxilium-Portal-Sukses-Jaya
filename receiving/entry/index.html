@@ -241,9 +241,9 @@
             <th>Description</th>
             <th style="width:70px">Ordered</th>
             
-            <th style="width:90px">Price (Awal)</th>
-            <th style="width:80px">Disc</th>
-            <th style="width:90px">Net Price</th>
+            <th style="width:90px; display:none;">Price (Awal)</th>
+            <th style="width:80px; display:none;">Disc</th>
+            <th style="width:90px; display:none;">Net Price</th>
             
             <th style="width:70px">Received</th>
             <th style="width:70px">Remaining</th>
@@ -275,8 +275,8 @@
 </div>
 
 <script>
-  // UPDATE URL INI
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzsi3v4uYUw5W0T3tBpfJ2-laqUys4Vg8Z2zg2lVMP4QOjA1D_YLf3Aqo9bVh445cTq9w/exec";
+  // UPDATE URL INI SESUAI SCRIPT ANDA
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwGvK8McwC-ZgBDd_bm8-NRTSkhWjD9MWySJqUBnKQHmeF4KlnV7q0xBNeGZDhZmq3t5g/exec";
 
   let currentINV = "";
   let invChoices = null;
@@ -306,8 +306,6 @@
     rawLines.forEach(ln => {
       const desc = (ln.description || "").trim();
       if (desc.toLowerCase().startsWith("discount -")) {
-        // "Discount - Core L3" -> parent "Core L3"
-        // remove "Discount - " (11 chars)
         const parentName = desc.substring(11).trim(); 
         discountMap[parentName] = Math.abs(Number(ln.unitAmount) || 0);
       } else {
@@ -317,7 +315,6 @@
 
     return mainItems.map(item => {
       const discVal = discountMap[item.description.trim()] || 0;
-      // If edit mode (unitAmountBefore exists), use it. Else use original unitAmount.
       let priceBefore = item.unitAmountBefore !== undefined ? item.unitAmountBefore : item.unitAmount;
       const priceNet = priceBefore - discVal;
 
@@ -345,12 +342,20 @@
     if (parentQty) parentQty.value = total > 0 ? total : "";
   }
 
+  // UPDATED: KPC Readonly when split
   function ensureParentModeForSplit(baseTr) {
     const qtyInput = baseTr.querySelector(".qty-receipt");
     const kpcInput = baseTr.querySelector(".kpc-new");
     baseTr.dataset.hasSplit = "1";
-    if (qtyInput) { qtyInput.readOnly = true; qtyInput.classList.add("readonly-field"); }
-    if (kpcInput) { kpcInput.value = ""; }
+    if (qtyInput) { 
+        qtyInput.readOnly = true; 
+        qtyInput.classList.add("readonly-field"); 
+    }
+    if (kpcInput) { 
+        kpcInput.value = ""; 
+        kpcInput.readOnly = true; 
+        kpcInput.classList.add("readonly-field");
+    }
   }
 
   function attachRowEvents(tr){
@@ -375,10 +380,13 @@
           row.remove();
           const base = getBaseRowByIndex(idx);
           const subs = getSubRowsByIndex(idx);
+          // Jika semua split dihapus, kembalikan parent ke normal
           if (!subs.length && base) {
             delete base.dataset.hasSplit;
             const q = base.querySelector(".qty-receipt");
+            const k = base.querySelector(".kpc-new");
             if (q) { q.readOnly = false; q.classList.remove("readonly-field"); }
+            if (k) { k.readOnly = false; k.classList.remove("readonly-field"); } // Revert KPC Readonly
           }
           recalcParentTotal(idx);
         } else {
@@ -409,6 +417,7 @@
         const defaultQty = remaining;
         const itemCode = ln.itemCode || ln.kpc || "";
         
+        // HIDE PRICE COLUMNS (DISPLAY NONE)
         tr.innerHTML = `
           <td class="row-handle">⋮⋮</td>
           <td>${ln.poNumber}</td>
@@ -417,9 +426,9 @@
           <td>${ln.description}</td>
           <td><input class="table-input readonly-field ordered" value="${ln.orderedQty}" readonly></td>
           
-          <td><input type="number" class="table-input readonly-field price-before" value="${ln.unitAmountBefore}" readonly></td>
-          <td><input type="number" class="table-input readonly-field discount-val" value="${ln.discount}" readonly></td>
-          <td><input type="number" class="table-input readonly-field price-net" value="${ln.unitAmount}" readonly style="font-weight:bold;color:#000"></td>
+          <td style="display:none"><input type="number" class="table-input readonly-field price-before" value="${ln.unitAmountBefore}" readonly></td>
+          <td style="display:none"><input type="number" class="table-input readonly-field discount-val" value="${ln.discount}" readonly></td>
+          <td style="display:none"><input type="number" class="table-input readonly-field price-net" value="${ln.unitAmount}" readonly style="font-weight:bold;color:#000"></td>
           
           <td><input class="table-input readonly-field received" value="${ln.receivedToDate}" readonly></td>
           <td><input class="table-input readonly-field remaining" value="${remaining}" readonly></td>
@@ -451,6 +460,7 @@
         baseTr.dataset.rowIndex = baseData.rowIndex;
         const remaining = Number(baseData.remainingQty) || 0;
         
+        // HIDE PRICE COLUMNS (DISPLAY NONE)
         baseTr.innerHTML = `
           <td class="row-handle">⋮⋮</td>
           <td>${baseData.poNumber}</td>
@@ -459,9 +469,9 @@
           <td>${baseData.description}</td>
           <td><input class="table-input readonly-field ordered" value="${baseData.orderedQty}" readonly></td>
           
-          <td><input type="number" class="table-input readonly-field price-before" value="${baseData.unitAmountBefore}" readonly></td>
-          <td><input type="number" class="table-input readonly-field discount-val" value="${baseData.discount}" readonly></td>
-          <td><input type="number" class="table-input readonly-field price-net" value="${baseData.unitAmount}" readonly style="font-weight:bold;color:#000"></td>
+          <td style="display:none"><input type="number" class="table-input readonly-field price-before" value="${baseData.unitAmountBefore}" readonly></td>
+          <td style="display:none"><input type="number" class="table-input readonly-field discount-val" value="${baseData.discount}" readonly></td>
+          <td style="display:none"><input type="number" class="table-input readonly-field price-net" value="${baseData.unitAmount}" readonly style="font-weight:bold;color:#000"></td>
 
           <td><input class="table-input readonly-field received" value="${baseData.receivedToDate}" readonly></td>
           <td><input class="table-input readonly-field remaining" value="${remaining}" readonly></td>
@@ -479,6 +489,7 @@
              const subTr = document.createElement("tr");
              subTr.classList.add("subline-row");
              subTr.dataset.rowIndex = baseData.rowIndex;
+             // HIDE PRICE COLUMNS (DISPLAY NONE)
              subTr.innerHTML = `
                <td class="row-handle">⋮⋮</td>
                <td>${baseData.poNumber}</td>
@@ -487,9 +498,9 @@
                <td>${baseData.description}</td>
                <td><input class="table-input readonly-field ordered" value="${baseData.orderedQty}" readonly></td>
                
-               <td><input type="number" class="table-input readonly-field price-before" value="${baseData.unitAmountBefore}" readonly></td>
-               <td><input type="number" class="table-input readonly-field discount-val" value="${baseData.discount}" readonly></td>
-               <td><input type="number" class="table-input readonly-field price-net" value="${baseData.unitAmount}" readonly></td>
+               <td style="display:none"><input type="number" class="table-input readonly-field price-before" value="${baseData.unitAmountBefore}" readonly></td>
+               <td style="display:none"><input type="number" class="table-input readonly-field discount-val" value="${baseData.discount}" readonly></td>
+               <td style="display:none"><input type="number" class="table-input readonly-field price-net" value="${baseData.unitAmount}" readonly></td>
 
                <td><input class="table-input readonly-field received" value="${baseData.receivedToDate}" readonly></td>
                <td><input class="table-input readonly-field remaining" value="${Number(s.remainingQty)||remaining}" readonly></td>
@@ -537,6 +548,7 @@
     const subTr = document.createElement("tr");
     subTr.classList.add("subline-row");
     subTr.dataset.rowIndex = idx;
+    // HIDE PRICE COLUMNS (DISPLAY NONE)
     subTr.innerHTML = `
       <td class="row-handle">⋮⋮</td>
       <td>${po}</td>
@@ -545,9 +557,9 @@
       <td>${desc}</td>
       <td><input class="table-input readonly-field ordered" value="${ord}" readonly></td>
       
-      <td><input type="number" class="table-input readonly-field price-before" value="${pBefore}" readonly></td>
-      <td><input type="number" class="table-input readonly-field discount-val" value="${pDisc}" readonly></td>
-      <td><input type="number" class="table-input readonly-field price-net" value="${pNet}" readonly></td>
+      <td style="display:none"><input type="number" class="table-input readonly-field price-before" value="${pBefore}" readonly></td>
+      <td style="display:none"><input type="number" class="table-input readonly-field discount-val" value="${pDisc}" readonly></td>
+      <td style="display:none"><input type="number" class="table-input readonly-field price-net" value="${pNet}" readonly></td>
 
       <td><input class="table-input readonly-field received" value="${rec}" readonly></td>
       <td><input class="table-input readonly-field remaining" value="${rem}" readonly></td>
@@ -748,7 +760,6 @@
       if (data.receivingDate) receivingDate.value = data.receivingDate;
       notes.value = data.notes||"";
       renderSummary(data.header);
-      // Fill missing summary parts if needed
       document.getElementById("summaryStatus").textContent = data.locked ? "LOCKED" : "Open";
       
       renderLines(data.lines, true);
