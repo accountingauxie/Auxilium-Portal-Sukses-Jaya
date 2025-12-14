@@ -116,6 +116,8 @@
             max-width: 1200px;
             width: 100%;
             padding: 0 20px;
+            /* Tambahan margin bawah agar tidak mepet saat scroll */
+            margin-bottom: 50px; 
         }
 
         .card {
@@ -152,15 +154,22 @@
             margin-bottom: 20px;
         }
         
+        /* Style Icon Import (Hijau) */
         .card-icon.import-style {
             background-color: #e6f8f0; 
             color: #0ca678; 
         }
 
-        /* Tambahan style optional untuk icon PO (Warna Ungu) */
+        /* Style Icon PO (Ungu) */
         .card-icon.po-style {
             background-color: #f3f0ff;
             color: #7950f2;
+        }
+
+        /* Style Icon Bill/Invoice (Oranye) - BARU */
+        .card-icon.bill-style {
+            background-color: #fff4e6;
+            color: #fd7e14;
         }
 
         .card h3 {
@@ -238,6 +247,17 @@
             <p>Input penerimaan barang, verifikasi invoice supplier, dan submit data receiving harian.</p>
             <span class="card-action">
                 Open Entry Module &rarr;
+            </span>
+        </a>
+
+        <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/polist/index.html" class="card">
+            <div class="card-icon bill-style">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+            </div>
+            <h3>PO List</h3>
+            <p>Import PO bills to Xero upon receiving vendor invoices.</p>
+            <span class="card-action">
+                Manage Bills &rarr;
             </span>
         </a>
 
