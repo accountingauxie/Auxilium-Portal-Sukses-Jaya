@@ -195,7 +195,7 @@
         }
         window.onload = fetchData;
 
-        function renderCards(data) {
+function renderCards(data) {
             const container = document.getElementById('cardContainer');
             container.innerHTML = '';
             if (data.length === 0) {
@@ -204,9 +204,28 @@
             }
             data.forEach(po => {
                 const isBilled = po.status === 'Billed';
-                const statusClass = isBilled ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-800';
+                
+                // --- LOGIKA STATUS BARU BERDASARKAN KOLOM P ---
+                let badgeText = po.status; // Default Pending
+                let badgeClass = 'bg-yellow-100 text-yellow-800 border border-yellow-200'; // Default warna Pending
+
+                if (isBilled) {
+                    // Jika Kolom P ada isinya "SUCCESS IMPORT"
+                    if (po.importStatusText === "SUCCESS IMPORT") {
+                        badgeText = "Sudah Terimport";
+                        badgeClass = "bg-green-100 text-green-700 border border-green-200";
+                    } else {
+                        // Jika Kolom P masih Processing atau kosong, tapi sudah Billed
+                        badgeText = "Process to Import";
+                        badgeClass = "bg-blue-100 text-blue-700 border border-blue-200";
+                    }
+                }
+                // ----------------------------------------------
+
                 const btnText = isBilled ? 'View Bill' : 'Create Bill';
+                // Tombol tetap aktif meskipun sudah terimport agar bisa dilihat detailnya
                 const btnClass = isBilled ? 'text-slate-600 bg-slate-100 hover:bg-slate-200' : 'text-white bg-blue-600 hover:bg-blue-700 shadow-md';
+                
                 const html = `
                 <div class="bg-white rounded-xl p-5 border border-slate-200 hover:shadow-md transition">
                     <div class="flex justify-between items-start mb-3">
@@ -214,7 +233,9 @@
                             <h3 class="font-bold text-slate-800">${po.id}</h3>
                             <p class="text-xs text-slate-500">${po.vendor}</p>
                         </div>
-                        <span class="px-2 py-1 rounded text-xs font-bold ${statusClass}">${po.status}</span>
+                        <span class="px-2 py-1 rounded text-xs font-bold ${badgeClass}">
+                            ${badgeText}
+                        </span>
                     </div>
                     <div class="text-sm text-slate-600 mb-4"><i class="far fa-calendar mr-2"></i> ${formatDate(po.tanggalInput)}</div>
                     <button onclick="openBillModal('${po.id}')" class="w-full py-2 rounded-lg font-medium text-sm transition ${btnClass}">${btnText}</button>
@@ -222,7 +243,6 @@
                 container.innerHTML += html;
             });
         }
-
         function openBillModal(idPO) {
             const po = allData.find(d => d.id === idPO);
             if (!po) return;
