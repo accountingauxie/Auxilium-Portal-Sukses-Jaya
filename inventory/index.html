@@ -7,7 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-/* CSS SAMA SEPERTI SEBELUMNYA */
 :root {
   --primary: #0075c9;
   --bg: #f5f7fa;
@@ -19,7 +18,9 @@
   --success: #10b981;
   --warning: #f59e0b;
 }
+
 * { box-sizing: border-box; }
+
 body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); font-size: 14px; }
 
 /* NAVBAR */
@@ -104,13 +105,17 @@ tr:hover td { background-color: #f1f5f9; }
     <div class="card">
       <div class="card-header">
         <h3 class="card-title">Database Spandek (Kolom C-G)</h3>
-        <input type="text" class="search-input" placeholder="Cari Spandek..." onkeyup="searchTable(this, 'tableSpandek')">
+        <input type="text" class="search-input" placeholder="Cari Type/Nama/Kode..." onkeyup="searchTable(this, 'tableSpandek')">
       </div>
       <div class="table-wrap">
         <table id="tableSpandek">
           <thead>
             <tr>
-              <th>Type</th><th>Nama Barang</th><th>Satuan</th><th>KPC / Kode Barang</th><th style="text-align:right">Sisa Stok</th>
+              <th>Type</th>
+              <th>Nama Barang</th>
+              <th>Satuan</th>
+              <th>KPC / Kode Barang</th>
+              <th style="text-align:right">Sisa Stok</th>
             </tr>
           </thead>
           <tbody id="bodySpandek"></tbody>
@@ -125,13 +130,16 @@ tr:hover td { background-color: #f1f5f9; }
     <div class="card">
       <div class="card-header">
         <h3 class="card-title">Database Non-Spandek (Kolom C-F)</h3>
-        <input type="text" class="search-input" placeholder="Cari Item Non-Spandek..." onkeyup="searchTable(this, 'tableNon')">
+        <input type="text" class="search-input" placeholder="Cari Type/Nama..." onkeyup="searchTable(this, 'tableNon')">
       </div>
       <div class="table-wrap">
         <table id="tableNon">
           <thead>
             <tr>
-              <th>Type</th><th>Nama Barang</th><th>Satuan</th><th style="text-align:right">Sisa Stok</th>
+              <th>Type</th>
+              <th>Nama Barang</th>
+              <th>Satuan</th>
+              <th style="text-align:right">Sisa Stok</th>
             </tr>
           </thead>
           <tbody id="bodyNon"></tbody>
@@ -146,7 +154,7 @@ tr:hover td { background-color: #f1f5f9; }
 
 <script>
   // =========================================================
-  // PASTIKAN URL INI BENAR DAN SUDAH DI-DEPLOY TERBARU
+  // GANTI URL DI BAWAH INI DENGAN URL DEPLOY TERBARU KAMU
   // =========================================================
   const API_URL = "https://script.google.com/macros/s/AKfycbxnHjQCw44ypDNWwU8Ie8MMZZcvGOme72wTe5_0znBFRICSd0PjuhzWbRWlLStQkluw/exec"; 
 
@@ -167,47 +175,38 @@ tr:hover td { background-color: #f1f5f9; }
   }
 
   async function loadData() {
-    // Reset UI
     document.getElementById("bodySpandek").innerHTML = "";
     document.getElementById("bodyNon").innerHTML = "";
-    
-    // Show Loaders, Hide Errors
     document.getElementById("loadingSpandek").style.display = "block";
     document.getElementById("loadingNon").style.display = "block";
     document.getElementById("errorSpandek").classList.add("d-none");
     document.getElementById("errorNon").classList.add("d-none");
 
     try {
-      console.log("Memulai fetch data...");
-      
-      // Tambahkan 'redirect: follow' untuk menangani redirect Google Script
+      // Menggunakan redirect: follow untuk menangani respon dari Google Script
       const response = await fetch(API_URL + "?action=getInventoryData", {
         method: "GET",
         redirect: "follow"
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status}`);
-      }
-
-      // Coba ambil text dulu sebelum parse JSON untuk debugging
+      if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+      
       const text = await response.text();
-      console.log("Response Server:", text); 
-
       let data;
       try {
         data = JSON.parse(text);
       } catch (e) {
-        throw new Error("Gagal membaca data JSON. Server mengirim respon yang salah (mungkin HTML error page). Cek Console.");
+        throw new Error("Gagal membaca JSON. Pastikan Script di-Deploy dengan benar.");
       }
 
-      // Render Data
+      // Render Spandek (Expected 5 Kolom)
       renderTable("bodySpandek", "loadingSpandek", data.spandek || [], 5, "errorSpandek");
+      // Render Non Spandek (Expected 4 Kolom)
       renderTable("bodyNon", "loadingNon", data.nonSpandek || [], 4, "errorNon");
 
     } catch (err) {
-      console.error("Fetch Error:", err);
-      showError("Gagal mengambil data. " + err.message);
+      console.error(err);
+      showError(err.message);
     }
   }
 
@@ -216,12 +215,12 @@ tr:hover td { background-color: #f1f5f9; }
     document.getElementById(loaderId).style.display = "none";
 
     if (!Array.isArray(rows) || rows.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="${expectedCols}" style="text-align:center; padding: 20px;">Data Kosong / Tidak Ditemukan</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="${expectedCols}" style="text-align:center; padding: 20px;">Data Kosong</td></tr>`;
       return;
     }
 
     rows.forEach(row => {
-      // Pastikan baris memiliki data minimal di kolom pertama
+      // Pastikan ada data (Kolom C/Type terisi)
       if (!row || !row[0]) return; 
 
       const tr = document.createElement("tr");
@@ -231,7 +230,7 @@ tr:hover td { background-color: #f1f5f9; }
         let content = cell;
         let className = "";
 
-        // Kolom Stok (Terakhir)
+        // Kolom Terakhir selalu dianggap Stok
         if (idx === expectedCols - 1) {
           className = "stock-val ";
           let num = parseFloat(cell);
@@ -251,25 +250,29 @@ tr:hover td { background-color: #f1f5f9; }
   function showError(msg) {
     document.getElementById("loadingSpandek").style.display = "none";
     document.getElementById("loadingNon").style.display = "none";
-    
-    const errSpan = document.getElementById("errorSpandek");
-    const errNon = document.getElementById("errorNon");
-    
-    errSpan.textContent = msg;
-    errSpan.classList.remove("d-none");
-    
-    errNon.textContent = msg;
-    errNon.classList.remove("d-none");
+    document.getElementById("errorSpandek").textContent = msg;
+    document.getElementById("errorSpandek").classList.remove("d-none");
+    document.getElementById("errorNon").textContent = msg;
+    document.getElementById("errorNon").classList.remove("d-none");
   }
 
+  // UPDATED SEARCH: Mencari di semua kolom (Nama, Type, Kode)
   function searchTable(input, tableId) {
     const filter = input.value.toUpperCase();
     const table = document.getElementById(tableId);
     const tr = table.getElementsByTagName("tr");
+
     for (let i = 1; i < tr.length; i++) {
-      let tds = tr[i].getElementsByTagName("td");
+      const tds = tr[i].getElementsByTagName("td");
       let found = false;
-      if (tds[0] && tds[0].textContent.toUpperCase().indexOf(filter) > -1) found = true;
+      
+      // Loop semua kolom dalam baris tersebut
+      for (let j = 0; j < tds.length; j++) {
+        if (tds[j].textContent.toUpperCase().indexOf(filter) > -1) {
+          found = true;
+          break; // Jika ketemu di salah satu kolom, tampilkan baris
+        }
+      }
       tr[i].style.display = found ? "" : "none";
     }
   }
