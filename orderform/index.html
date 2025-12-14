@@ -843,7 +843,7 @@ async function submitOrder() {
     if (!customer || customer === "add_new") {
       showToast("Pilih customer terlebih dahulu", "warning");
       btn.disabled = false;
-      btn.textContent = "Send Order";
+      btn.textContent = "Send Order"; // Revert to Send Order
       return;
     }
 
@@ -878,7 +878,7 @@ async function submitOrder() {
     if (items.length === 0) {
       showToast("Minimal isi 1 baris item", "warning");
       btn.disabled = false;
-      btn.textContent = "Send Order";
+      btn.textContent = "Send Order"; // Revert to Send Order
       return;
     }
 
@@ -915,7 +915,7 @@ async function submitOrder() {
   }
 
   btn.disabled = false;
-  btn.textContent = "Send Order";
+  btn.textContent = "Send Order"; // Revert to Send Order
 }
 </script>
 
