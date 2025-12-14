@@ -15,15 +15,16 @@
             --ux-blue-soft: #ecf4ff;
             --primary: #2563eb;
             --primary-bg: #eff6ff;
-            --accent: #3b82f6;
             --bg-body: #f8fafc;
             --text-main: #0f172a;
             --text-sub: #64748b;
             --border-color: #e2e8f0;
             --success: #10b981;
             --po-accent: #f59e0b; 
-            --danger: #ef4444; /* Merah untuk Error */
+            --danger: #ef4444; 
             --danger-bg: #fef2f2;
+            --process-color: #3b82f6; /* Biru untuk processing */
+            --process-bg: #dbeafe;
         }
 
         body { 
@@ -78,15 +79,19 @@
             padding: 20px 24px; display: flex; align-items: center; justify-content: space-between;
             position: relative; overflow: hidden; transition: all 0.2s ease; cursor: default;
         }
-        /* Default Border (Orange) */
+        
+        /* CARD STATE COLORS (Border Left) */
         .po-card::before {
             content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
-            background: var(--po-accent); border-top-left-radius: 8px; border-bottom-left-radius: 8px;
+            background: var(--po-accent); /* Default Orange (Ready) */
+            border-top-left-radius: 8px; border-bottom-left-radius: 8px;
         }
-        
-        /* FAILED STATE STYLE */
+
         .po-card.failed::before { background: var(--danger); }
         .po-card.failed { border-color: #fecaca; background: #fffbfb; }
+
+        .po-card.processing::before { background: var(--process-color); }
+        .po-card.processing { border-color: #bfdbfe; background: #f8fafc; }
 
         .po-card:hover { transform: translateY(-2px); box-shadow: 0 8px 16px -4px rgba(0,0,0,0.08); }
 
@@ -95,7 +100,7 @@
         .po-inv-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
         .inv-text { font-size: 16px; font-weight: 700; color: var(--text-main); }
         
-        /* Status Pills */
+        /* STATUS PILLS */
         .status-pill {
             background: #ecfdf5; color: #059669; font-size: 10px; font-weight: 700;
             padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px;
@@ -103,6 +108,9 @@
         }
         .status-pill.failed {
             background: var(--danger-bg); color: var(--danger); border-color: #fecaca;
+        }
+        .status-pill.processing {
+            background: var(--process-bg); color: var(--process-color); border-color: #bfdbfe;
         }
 
         .supplier-info { display: flex; flex-direction: column; gap: 2px; }
@@ -149,6 +157,10 @@
 
         .btn-sync { background: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
         .btn-sync:hover { background: #059669; }
+        
+        /* Tombol Disable untuk Processing */
+        .btn-sync:disabled { background: #94a3b8; cursor: not-allowed; }
+
         .btn-close { background: white; border: 1px solid #e2e8f0; color: var(--text-main); padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; }
         .btn-close:hover { background: #f1f5f9; }
 
@@ -260,7 +272,7 @@
 
     <script>
         // GANTI URL INI DENGAN URL DEPLOYMENT TERBARU ANDA
-        const API_URL = "https://script.google.com/macros/s/AKfycbw98C9--n_hf-ZhO0YupyPYqh6awT5zuyDgR-pfNOOQJ9he7rC-9VdmwP_rhilEvCg3iw/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbzDnQMiM4hFbIYUmN0PbyBGzsVndRKSUIJeFY_5DruiosTR1sxCwWmpbYKMWeNFpCryHw/exec";
         
         var globalData = {};
         const fmtIDR = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
@@ -293,18 +305,28 @@
             for (let key in data) {
                 let item = data[key];
                 
-                // Data sudah ada di level Parent (Header) berkat update backend
+                // Variabel Data Header
                 let recId = item.recId || "-";
                 let poNum = item.poNumber || "-";
                 let invNum = item.invNumber || "-";
                 
-                // LOGIKA STATUS: Cek apakah syncStatus == "FAILED"
-                // Backend mengirim syncStatus: "PENDING" atau "FAILED"
-                let isFailed = (item.syncStatus === "FAILED");
+                // --- LOGIKA STATUS TAMPILAN ---
+                // Backend mengirim syncStatus: "PENDING", "PROCESSING", atau "FAILED"
+                let status = item.syncStatus;
                 
-                let cardClass = isFailed ? "po-card failed" : "po-card";
-                let badgeClass = isFailed ? "status-pill failed" : "status-pill";
-                let badgeText = isFailed ? "Sync Failed - Retry" : "Ready";
+                let badgeClass = "status-pill"; // Default Hijau (Ready)
+                let badgeText = "Ready";
+                let cardClass = "po-card";
+
+                if (status === "FAILED") {
+                    badgeClass = "status-pill failed";
+                    badgeText = "Failed - Retry";
+                    cardClass = "po-card failed";
+                } else if (status === "PROCESSING") {
+                    badgeClass = "status-pill processing";
+                    badgeText = "Processing...";
+                    cardClass = "po-card processing";
+                }
 
                 // Template HTML
                 container.innerHTML += `
@@ -393,6 +415,18 @@
                 </tr>`;
             });
 
+            // LOGIKA TOMBOL SYNC DI MODAL
+            let btnSync = document.getElementById('syncBtn');
+            if (data.syncStatus === "PROCESSING") {
+                btnSync.disabled = true;
+                btnSync.innerHTML = "Processing...";
+                btnSync.style.backgroundColor = "#94a3b8";
+            } else {
+                btnSync.disabled = false;
+                btnSync.innerHTML = '<span class="material-icons" style="font-size: 18px;">sync</span> Process Sync';
+                btnSync.style.backgroundColor = "var(--success)";
+            }
+
             document.getElementById('detailModal').style.display = "flex";
         }
 
@@ -408,14 +442,11 @@
 
             const oriText = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = "Syncing...";
+            btn.innerHTML = "Starting...";
 
-            // KIRIM REC ID & STATUS SUCCESS KE BACKEND
-            // Karena ini simulasi tombol sukses, kita kirim status='SUCCESS'
-            const payload = new URLSearchParams({ 
-                recId: recId,
-                status: "SUCCESS" // Tambahan: Menandakan proses berhasil dilakukan dari UI
-            });
+            // HANYA MENGIRIM TRIGGER REC ID SAJA (Tanpa parameter Status)
+            // Biarkan backend set status jadi PROCESSING
+            const payload = new URLSearchParams({ recId: recId });
 
             fetch(API_URL, {
                 method: "POST",
@@ -425,17 +456,19 @@
             .then(res => res.json())
             .then(result => {
                 if (result.success) {
-                    alert("Success! Data has been imported.");
+                    alert("Sync Started! Status set to Processing.");
                     closeModal();
+                    
+                    // Reload data untuk melihat perubahan status menjadi PROCESSING
                     document.getElementById('loading').style.display = 'flex';
-                    fetchData(); // Reload list agar item yang sudah imported hilang
+                    fetchData(); 
                 } else {
-                    alert("Sync Failed: " + result.message);
+                    alert("Failed to Start: " + result.message);
                 }
             })
             .catch(err => {
                 console.error(err);
-                alert("Connection Error. Check console for details.");
+                alert("Connection Error.");
             })
             .finally(() => {
                 btn.disabled = false;
