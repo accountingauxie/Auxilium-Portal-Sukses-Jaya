@@ -276,7 +276,7 @@
 
 <script>
   // UPDATE URL INI SESUAI SCRIPT ANDA
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwGvK8McwC-ZgBDd_bm8-NRTSkhWjD9MWySJqUBnKQHmeF4KlnV7q0xBNeGZDhZmq3t5g/exec";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxooJMRXefK87pfLIdy4Mj26-JaBBMdyjVkFreOiBCPlNMnZeWsBvwsPDoeKMzmjVP53g/exec";
 
   let currentINV = "";
   let invChoices = null;
@@ -342,7 +342,7 @@
     if (parentQty) parentQty.value = total > 0 ? total : "";
   }
 
-  // UPDATED: KPC Readonly when split
+  // KPC Readonly Helper
   function ensureParentModeForSplit(baseTr) {
     const qtyInput = baseTr.querySelector(".qty-receipt");
     const kpcInput = baseTr.querySelector(".kpc-new");
@@ -351,6 +351,7 @@
         qtyInput.readOnly = true; 
         qtyInput.classList.add("readonly-field"); 
     }
+    // KPC di parent sudah readonly by default, tapi kita pastikan stylingnya
     if (kpcInput) { 
         kpcInput.value = ""; 
         kpcInput.readOnly = true; 
@@ -380,13 +381,11 @@
           row.remove();
           const base = getBaseRowByIndex(idx);
           const subs = getSubRowsByIndex(idx);
-          // Jika semua split dihapus, kembalikan parent ke normal
           if (!subs.length && base) {
             delete base.dataset.hasSplit;
             const q = base.querySelector(".qty-receipt");
-            const k = base.querySelector(".kpc-new");
             if (q) { q.readOnly = false; q.classList.remove("readonly-field"); }
-            if (k) { k.readOnly = false; k.classList.remove("readonly-field"); } // Revert KPC Readonly
+            // Note: KPC Parent tetap readonly sesuai request "Line Original Harusnya Read Only"
           }
           recalcParentTotal(idx);
         } else {
@@ -405,11 +404,11 @@
   function renderLines(rawLines, useExistingQty) {
     tableBody.innerHTML = "";
     
-    // Merge Logic Activated Here
+    // Merge Logic
     const lines = mergeDiscountLines(rawLines);
 
     if (!useExistingQty) {
-      // NEW MODE
+      // --- NEW MODE ---
       lines.forEach(ln => {
         const tr = document.createElement("tr");
         tr.dataset.rowIndex = ln.rowIndex;
@@ -417,12 +416,14 @@
         const defaultQty = remaining;
         const itemCode = ln.itemCode || ln.kpc || "";
         
-        // HIDE PRICE COLUMNS (DISPLAY NONE)
+        // PERUBAHAN: 
+        // 1. KPC Parent diberi 'readonly' dan class 'readonly-field'
+        // 2. Kolom Harga diberi style="display:none"
         tr.innerHTML = `
           <td class="row-handle">⋮⋮</td>
           <td>${ln.poNumber}</td>
           <td><span class="kpc-original">${itemCode}</span></td>
-          <td><input class="table-input kpc-new" placeholder="KPC"></td>
+          <td><input class="table-input kpc-new readonly-field" placeholder="KPC" readonly></td>
           <td>${ln.description}</td>
           <td><input class="table-input readonly-field ordered" value="${ln.orderedQty}" readonly></td>
           
@@ -441,7 +442,7 @@
         attachRowEvents(tr);
       });
     } else {
-      // EDIT MODE
+      // --- EDIT MODE ---
       const groups = {};
       lines.forEach(ln => {
         const k = String(ln.rowIndex||"");
@@ -460,12 +461,12 @@
         baseTr.dataset.rowIndex = baseData.rowIndex;
         const remaining = Number(baseData.remainingQty) || 0;
         
-        // HIDE PRICE COLUMNS (DISPLAY NONE)
+        // PERUBAHAN: KPC Readonly & Harga Display None
         baseTr.innerHTML = `
           <td class="row-handle">⋮⋮</td>
           <td>${baseData.poNumber}</td>
           <td><span class="kpc-original">${baseData.itemCode||""}</span></td>
-          <td><input class="table-input kpc-new" placeholder="KPC"></td>
+          <td><input class="table-input kpc-new readonly-field" placeholder="KPC" readonly></td>
           <td>${baseData.description}</td>
           <td><input class="table-input readonly-field ordered" value="${baseData.orderedQty}" readonly></td>
           
@@ -489,7 +490,7 @@
              const subTr = document.createElement("tr");
              subTr.classList.add("subline-row");
              subTr.dataset.rowIndex = baseData.rowIndex;
-             // HIDE PRICE COLUMNS (DISPLAY NONE)
+             // Split row KPC tetap editable (tidak ada readonly)
              subTr.innerHTML = `
                <td class="row-handle">⋮⋮</td>
                <td>${baseData.poNumber}</td>
@@ -539,16 +540,16 @@
     let initKpc="", initQty="";
     if (subs.length === 0) {
        const q = baseTr.querySelector(".qty-receipt");
-       const k = baseTr.querySelector(".kpc-new");
+       // KPC parent is readonly/empty, so don't grab it
        initQty = q ? q.value : "";
-       initKpc = k ? k.value : "";
        ensureParentModeForSplit(baseTr);
     }
 
     const subTr = document.createElement("tr");
     subTr.classList.add("subline-row");
     subTr.dataset.rowIndex = idx;
-    // HIDE PRICE COLUMNS (DISPLAY NONE)
+    
+    // PERUBAHAN: Harga Display None & KPC Editable untuk split row
     subTr.innerHTML = `
       <td class="row-handle">⋮⋮</td>
       <td>${po}</td>
@@ -584,7 +585,6 @@
     const rows = [...document.querySelectorAll("#tableBody tr")];
     if (rows.length === 0) return "No lines.";
 
-    // Simple group validation
     const grp = {};
     for (let r of rows) {
       const idx = r.dataset.rowIndex;
@@ -592,7 +592,11 @@
       if (!grp[idx]) grp[idx] = { rem: Number(r.querySelector(".remaining").value)||0, tot:0 };
       const q = Number(r.querySelector(".qty-receipt").value)||0;
       const k = r.querySelector(".kpc-new").value.trim();
-      if (q > 0 && !k) return "Missing KPC for qty > 0";
+      
+      // Validasi KPC hanya jika Qty > 0 dan BUKAN baris parent yang readonly
+      const isParent = !r.classList.contains("subline-row");
+      if (q > 0 && !k && !isParent) return "Missing KPC for split qty > 0";
+      
       if (r.classList.contains("subline-row") || !r.dataset.hasSplit) grp[idx].tot += q;
     }
     for (let idx in grp) {
@@ -621,7 +625,6 @@
       const base = g.base;
       if (!base) return;
 
-      // Extract Common Data
       const poNumber = base.children[1].textContent.trim();
       const itemCode = base.querySelector(".kpc-original").textContent.trim();
       const description = base.children[4].textContent.trim();
@@ -630,6 +633,7 @@
       const remainingQty = base.querySelector(".remaining").value;
       const uom = base.querySelector(".uom-field").value;
       
+      // Ambil nilai dari kolom tersembunyi
       const unitAmountBefore = base.querySelector(".price-before").value;
       const discount = base.querySelector(".discount-val").value;
       const unitAmountNet = base.querySelector(".price-net").value;
@@ -659,7 +663,6 @@
       invNumber: currentINV || invSelect.value || "",
       header: { 
         supplier: document.getElementById("summarySupplier").textContent,
-        // TAMBAHAN: Ambil Invoice Date dari Summary agar terkirim ke backend
         invoiceDate: document.getElementById("summaryDate").textContent 
       },
       notes: notes.value,
@@ -675,7 +678,6 @@
            await loadEditableReceivingList();
            enterNewMode();
            tableBody.innerHTML="";
-           // Clear summary
            ["summarySupplier","summaryDate","summaryStatus","summaryTotalOrdered","summaryTotalReceived","summaryTotalRemaining"].forEach(id=>document.getElementById(id).textContent="-");
          } else { alert("Error: "+res.message); }
       })
