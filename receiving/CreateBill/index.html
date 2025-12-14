@@ -22,23 +22,28 @@
 <body class="text-slate-800">
 
     <div class="max-w-7xl mx-auto p-4 md:p-6">
-        <div class="flex justify-between items-center mb-8">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
             <div>
                 <h1 class="text-2xl font-bold text-slate-900">Purchase Orders</h1>
                 <p class="text-sm text-slate-500">Manage and convert PO to Bills</p>
             </div>
-            <div class="flex gap-3">
-                <input type="text" id="searchInput" onkeyup="applyFilters()" placeholder="Search PO..." class="pl-4 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                <select id="filterStatus" onchange="applyFilters()" class="border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none">
+            <div class="flex gap-3 w-full md:w-auto">
+                <input type="text" id="searchInput" onkeyup="applyFilters()" placeholder="Search PO or Vendor..." class="w-full md:w-64 pl-4 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <select id="filterStatus" onchange="applyFilters()" class="border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none bg-white">
                     <option value="All">All Status</option>
                     <option value="Pending" selected>Pending</option>
                     <option value="Billed">Billed</option>
+                    <option value="Process to Import">Process Import</option>
+                    <option value="Success Imported">Success</option>
+                    <option value="Failed to Import">Failed</option>
                 </select>
             </div>
         </div>
+
         <div id="loading" class="flex justify-center py-20">
             <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
         </div>
+
         <div id="cardContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
     </div>
 
@@ -58,12 +63,7 @@
 
             <div class="flex-1 overflow-y-auto p-6 bg-slate-50/50">
                 
-                <div id="status-banner" class="hidden mb-4 p-3 bg-green-100 text-green-800 rounded-lg text-sm font-medium flex items-center gap-2 border border-green-200">
-                    <i class="fas fa-check-circle"></i> <span>Bill has been approved. Switch to edit mode to make changes.</span>
-                </div>
-                <div id="xero-banner" class="hidden mb-4 p-3 bg-red-100 text-red-800 rounded-lg text-sm font-medium flex items-center gap-2 border border-red-200">
-                    <i class="fas fa-lock"></i> <span>Locked: This bill has been imported to Xero.</span>
-                </div>
+                <div id="banner-container"></div>
 
                 <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4 bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
                     <div>
@@ -110,7 +110,7 @@
                     <table class="w-full text-sm text-left">
                         <thead class="bg-slate-100 text-slate-600 font-semibold border-b border-slate-200">
                             <tr>
-                                <th class="p-3 w-1/4">Item / Deion</th>
+                                <th class="p-3 w-1/4">Item / Description</th>
                                 <th class="p-3 w-20 text-center">Satuan</th>
                                 <th class="p-3 w-32 bg-blue-50 text-blue-800 border-l border-r border-blue-100">Spec (Opt)</th>
                                 <th class="p-3 w-24 text-center">Qty</th>
@@ -172,7 +172,7 @@
     </div>
 
     <script>
-        // --- PENTING: GANTI URL DI BAWAH DENGAN URL DEPLOYMENT TERBARU ANDA ---
+        // URL YANG ANDA BERIKAN
         const API_URL = "https://script.google.com/macros/s/AKfycbzL8cLJafXy85zKIv9R-hFmbPJDsYgLA0FfDSf08x83g4IrzGgkKcRd2AR39Fu_ru6A/exec"; 
         const TAX_RATE = 0.11; 
 
@@ -183,6 +183,8 @@
         let isEditMode = false;
 
         async function fetchData() {
+            document.getElementById('loading').style.display = 'flex';
+            document.getElementById('cardContainer').innerHTML = '';
             try {
                 const response = await fetch(`${API_URL}?t=${new Date().getTime()}`);
                 const data = await response.json();
@@ -190,69 +192,78 @@
                 document.getElementById('loading').style.display = 'none';
                 applyFilters();
             } catch (error) {
+                console.error(error);
                 alert("Gagal memuat data. Periksa koneksi.");
             }
         }
         window.onload = fetchData;
 
-function renderCards(data) {
-    const container = document.getElementById('cardContainer');
-    container.innerHTML = '';
-    
-    if (data.length === 0) {
-        container.innerHTML = '<div class="col-span-3 text-center text-slate-400 py-10">No data found.</div>';
-        return;
-    }
+        function renderCards(data) {
+            const container = document.getElementById('cardContainer');
+            container.innerHTML = '';
+            if (data.length === 0) {
+                container.innerHTML = '<div class="col-span-3 text-center text-slate-400 py-10">No data found.</div>';
+                return;
+            }
+            data.forEach(po => {
+                // LOGIKA WARNA STATUS DI KARTU
+                let statusClass = 'bg-slate-100 text-slate-600';
+                let btnText = 'View Bill';
+                let btnClass = 'text-slate-600 bg-slate-100 hover:bg-slate-200';
 
-    data.forEach(po => {
-        // Logika Warna Status
-        let statusClass = 'bg-slate-100 text-slate-700'; // Default
-        let btnText = 'View Bill';
-        let btnClass = 'text-slate-600 bg-slate-100 hover:bg-slate-200';
+                // 1. PENDING
+                if (po.status === 'Pending') {
+                    statusClass = 'bg-yellow-100 text-yellow-800';
+                    btnText = 'Create Bill';
+                    btnClass = 'text-white bg-blue-600 hover:bg-blue-700 shadow-md';
+                } 
+                // 2. BILLED (Belum Import)
+                else if (po.status === 'Billed') {
+                    statusClass = 'bg-blue-100 text-blue-700';
+                } 
+                // 3. PROCESS (Sudah klik Import, belum ada hasil di Col P)
+                else if (po.status === 'Process to Import') {
+                    statusClass = 'bg-orange-100 text-orange-700 animate-pulse border border-orange-200';
+                } 
+                // 4. SUCCESS (Col P = Success)
+                else if (po.status === 'Success Imported') {
+                    statusClass = 'bg-emerald-100 text-emerald-800 border border-emerald-200';
+                } 
+                // 5. FAILED (Col P = Failed)
+                else if (po.status === 'Failed to Import') {
+                    statusClass = 'bg-red-100 text-red-800 border border-red-200';
+                }
 
-        if (po.status === 'Pending') {
-            statusClass = 'bg-yellow-100 text-yellow-800';
-            btnText = 'Create Bill';
-            btnClass = 'text-white bg-blue-600 hover:bg-blue-700 shadow-md';
-        } else if (po.status === 'Billed') {
-            statusClass = 'bg-blue-100 text-blue-700';
-        } else if (po.status === 'Process to Import') {
-            statusClass = 'bg-orange-100 text-orange-700 animate-pulse'; // Efek kedip dikit
-        } else if (po.status === 'Success Imported') {
-            statusClass = 'bg-green-100 text-green-700 border border-green-200';
-        } else if (po.status === 'Failed to Import') {
-            statusClass = 'bg-red-100 text-red-700 border border-red-200';
+                const html = `
+                <div class="bg-white rounded-xl p-5 border border-slate-200 hover:shadow-md transition">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h3 class="font-bold text-slate-800">${po.id}</h3>
+                            <p class="text-xs text-slate-500">${po.vendor}</p>
+                        </div>
+                        <span class="px-2 py-1 rounded text-xs font-bold ${statusClass}">${po.status}</span>
+                    </div>
+                    <div class="text-sm text-slate-600 mb-4"><i class="far fa-calendar mr-2"></i> ${formatDate(po.tanggalInput)}</div>
+                    <button onclick="openBillModal('${po.id}')" class="w-full py-2 rounded-lg font-medium text-sm transition ${btnClass}">${btnText}</button>
+                </div>`;
+                container.innerHTML += html;
+            });
         }
 
-        const html = `
-        <div class="bg-white rounded-xl p-5 border border-slate-200 hover:shadow-md transition">
-            <div class="flex justify-between items-start mb-3">
-                <div>
-                    <h3 class="font-bold text-slate-800">${po.id}</h3>
-                    <p class="text-xs text-slate-500">${po.vendor}</p>
-                </div>
-                <span class="px-2 py-1 rounded text-xs font-bold ${statusClass}">${po.status}</span>
-            </div>
-            <div class="text-sm text-slate-600 mb-4"><i class="far fa-calendar mr-2"></i> ${formatDate(po.tanggalInput)}</div>
-            <button onclick="openBillModal('${po.id}')" class="w-full py-2 rounded-lg font-medium text-sm transition ${btnClass}">${btnText}</button>
-        </div>`;
-        container.innerHTML += html;
-    });
-}
         function openBillModal(idPO) {
             const po = allData.find(d => d.id === idPO);
             if (!po) return;
 
             currentPOId = idPO;
             currentFileUrl = po.fileUrl || ""; 
-            const isBilled = po.status === 'Billed';
-            const isImported = po.isImported === true;
-
+            
+            // Isi Form
             document.getElementById('bill-po-id').innerText = po.id;
             document.getElementById('bill-vendor').value = po.vendor;
             document.getElementById('bill-inv-number').value = po.invNumber || ''; 
             document.getElementById('bill-file').value = ''; 
 
+            // Tombol Lihat File
             if(currentFileUrl) {
                 document.getElementById('existing-file-container').classList.remove('hidden');
                 document.getElementById('btn-view-file').href = currentFileUrl;
@@ -260,6 +271,7 @@ function renderCards(data) {
                 document.getElementById('existing-file-container').classList.add('hidden');
             }
             
+            // Date Format
             const setDateInput = (elemId, dateStr) => {
                 if (dateStr) {
                     const d = new Date(dateStr);
@@ -287,29 +299,70 @@ function renderCards(data) {
                 optionalSpec: item.optionalSpec || '' 
             }));
 
-            // Reset Buttons
-            document.getElementById('status-banner').classList.add('hidden');
-            document.getElementById('xero-banner').classList.add('hidden');
-            document.getElementById('btn-edit').classList.add('hidden');
-            document.getElementById('btn-xero').classList.add('hidden');
-            document.getElementById('btn-save').classList.add('hidden');
+            // --- LOGIKA BANNER DAN TOMBOL ---
+            const bannerContainer = document.getElementById('banner-container');
+            bannerContainer.innerHTML = ''; // Reset Banner
+            
+            const btnEdit = document.getElementById('btn-edit');
+            const btnXero = document.getElementById('btn-xero');
+            const btnSave = document.getElementById('btn-save');
 
-            if (isBilled) {
-                document.getElementById('modal-title').innerText = "Bill Details";
-                setFormState(false); 
+            // Reset Default Visibility
+            btnEdit.classList.add('hidden');
+            btnXero.classList.add('hidden');
+            btnSave.classList.add('hidden');
 
-                if (isImported) {
-                    document.getElementById('xero-banner').classList.remove('hidden');
-                } else {
-                    document.getElementById('status-banner').classList.remove('hidden');
-                    document.getElementById('btn-edit').classList.remove('hidden');
-                    document.getElementById('btn-xero').classList.remove('hidden');
-                }
-            } else {
+            if (po.status === 'Pending') {
+                // STATUS: PENDING -> Boleh Edit & Save
                 document.getElementById('modal-title').innerText = "New Bill";
-                document.getElementById('btn-save').classList.remove('hidden');
-                document.getElementById('btn-save').innerHTML = '<i class="fas fa-check"></i> Approve & Save';
+                btnSave.classList.remove('hidden');
+                btnSave.innerHTML = '<i class="fas fa-check"></i> Approve & Save';
                 setFormState(true); 
+            } else {
+                // STATUS: SUDAH ADA DATA (Billed / Import / Success / Failed)
+                document.getElementById('modal-title').innerText = "Bill Details";
+                setFormState(false); // Default terkunci
+
+                if (po.status === 'Billed') {
+                    // Normal Billed -> Bisa Edit, Bisa Import
+                    bannerContainer.innerHTML = `
+                        <div class="mb-4 p-3 bg-green-50 text-green-800 rounded-lg text-sm font-medium flex items-center gap-2 border border-green-200">
+                            <i class="fas fa-check-circle text-lg"></i> 
+                            <span>Bill has been approved. Ready to Import.</span>
+                        </div>`;
+                    btnEdit.classList.remove('hidden');
+                    btnXero.classList.remove('hidden');
+                    btnXero.innerHTML = '<i class="fas fa-file-export"></i> Import to Xero';
+                } 
+                else if (po.status === 'Process to Import') {
+                    // Sedang Proses -> KUNCI SEMUA
+                    bannerContainer.innerHTML = `
+                        <div class="mb-4 p-3 bg-orange-50 text-orange-800 rounded-lg text-sm font-medium flex items-center gap-2 border border-orange-200 animate-pulse">
+                            <i class="fas fa-spinner fa-spin text-lg"></i> 
+                            <span>Locked: Processing to Xero... Please wait.</span>
+                        </div>`;
+                    // Tidak ada tombol yang muncul
+                }
+                else if (po.status === 'Success Imported') {
+                    // Sukses -> KUNCI SEMUA
+                    bannerContainer.innerHTML = `
+                        <div class="mb-4 p-3 bg-emerald-50 text-emerald-800 rounded-lg text-sm font-medium flex items-center gap-2 border border-emerald-200">
+                            <i class="fas fa-check-double text-lg"></i> 
+                            <span>Locked: Successfully Imported to Xero.</span>
+                        </div>`;
+                    // Tidak ada tombol yang muncul
+                }
+                else if (po.status === 'Failed to Import') {
+                    // Gagal -> Munculkan tombol Edit & Retry
+                    bannerContainer.innerHTML = `
+                        <div class="mb-4 p-3 bg-red-50 text-red-800 rounded-lg text-sm font-medium flex items-center gap-2 border border-red-200">
+                            <i class="fas fa-exclamation-triangle text-lg"></i> 
+                            <span>Error: Failed to Import. Please check data and try again.</span>
+                        </div>`;
+                    btnEdit.classList.remove('hidden');
+                    btnXero.classList.remove('hidden');
+                    btnXero.innerHTML = '<i class="fas fa-sync"></i> Retry Import';
+                }
             }
 
             renderBillItems();
@@ -318,24 +371,28 @@ function renderCards(data) {
         }
 
         async function requestXeroImport() {
-            if(!confirm("Anda yakin ingin import data ini ke Xero? Data akan terkunci setelah ini.")) return;
-            document.getElementById('loadingText').innerText = "Processing Xero Import...";
+            if(!confirm("Anda yakin ingin import data ini ke Xero? Data akan dikunci setelah proses dimulai.")) return;
+            
+            document.getElementById('loadingText').innerText = "Marking for Import...";
             document.getElementById('modalLoading').classList.remove('hidden');
+            
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     body: JSON.stringify({ action: 'import_xero', idPO: currentPOId })
                 });
                 const result = await response.json();
+                
                 if (result.status === 'success') {
-                    alert("Berhasil ditandai untuk Import Xero!");
+                    alert("Berhasil! Status berubah menjadi 'Process to Import'.");
                     closeModal();
-                    fetchData(); 
+                    fetchData(); // Reload data agar status berubah warna
                 } else {
                     alert("Gagal: " + result.message);
                 }
-            } catch (err) { alert("Koneksi Error"); } 
-            finally { 
+            } catch (err) { 
+                alert("Koneksi Error"); 
+            } finally { 
                 document.getElementById('modalLoading').classList.add('hidden');
                 document.getElementById('loadingText').innerText = "Saving Bill Data...";
             }
@@ -348,7 +405,9 @@ function renderCards(data) {
                 document.getElementById('btn-xero').classList.add('hidden'); 
                 document.getElementById('btn-save').classList.remove('hidden');
                 document.getElementById('btn-save').innerHTML = '<i class="fas fa-save"></i> Update Changes';
-                document.getElementById('status-banner').classList.add('hidden');
+                
+                // Hilangkan banner saat edit mode agar bersih
+                document.getElementById('banner-container').innerHTML = '';
             }
         }
 
@@ -503,8 +562,18 @@ function renderCards(data) {
             const status = document.getElementById('filterStatus').value;
             const search = document.getElementById('searchInput').value.toLowerCase();
             let filtered = allData;
-            if (status !== 'All') filtered = filtered.filter(p => p.status === status);
-            if (search) filtered = filtered.filter(p => p.id.toLowerCase().includes(search) || p.vendor.toLowerCase().includes(search));
+            
+            if (status !== 'All') {
+                // Filter berdasarkan status text persis
+                filtered = filtered.filter(p => p.status === status);
+            }
+            
+            if (search) {
+                filtered = filtered.filter(p => 
+                    p.id.toLowerCase().includes(search) || 
+                    p.vendor.toLowerCase().includes(search)
+                );
+            }
             renderCards(filtered);
         }
     </script>
