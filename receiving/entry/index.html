@@ -276,7 +276,7 @@
 
 <script>
   // UPDATE URL INI
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxgeeDChfGNzFL3Q5d-mWkHzyKqjzZlhyKjPzonoWR7P9BOGa4LmP-TNJf3Yhya-O4MkA/exec";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw__TOSvAYBSXe2YzqHlxPI_vlvAaW90sAO7c4I-UQKLvPcfzoIoeN6CoKeJQCUU125VA/exec";
 
   let currentINV = "";
   let invChoices = null;
@@ -645,7 +645,11 @@
       receivingId: receivingId.value,
       receivingDate: receivingDate.value,
       invNumber: currentINV || invSelect.value || "",
-      header: { supplier: document.getElementById("summarySupplier").textContent },
+      header: { 
+        supplier: document.getElementById("summarySupplier").textContent,
+        // TAMBAHAN: Ambil Invoice Date dari Summary agar terkirim ke backend
+        invoiceDate: document.getElementById("summaryDate").textContent 
+      },
       notes: notes.value,
       lines: lines
     };
