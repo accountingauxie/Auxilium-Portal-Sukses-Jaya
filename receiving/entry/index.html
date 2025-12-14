@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Receiving PO Entry V2 (Price Hidden)</title>
+  <title>Receiving PO Entry V2 (Fixed KPC & Hidden Price)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
@@ -29,8 +29,7 @@
       font-size: 13px; color: #333;
     }
 
-    /* --- CLASS UNTUK MENYEMBUNYIKAN HARGA --- */
-    /* Ubah menjadi display: table-cell; jika ingin menampilkan kembali */
+    /* CLASS UNTUK MENYEMBUNYIKAN HARGA */
     .confidential-col {
       display: none !important; 
     }
@@ -366,14 +365,18 @@
     if (parentQty) parentQty.value = total > 0 ? total : "";
   }
 
+  // Logika Readonly saat Split aktif
   function ensureParentModeForSplit(baseTr) {
     const qtyInput = baseTr.querySelector(".qty-receipt");
     const kpcInput = baseTr.querySelector(".kpc-new");
     baseTr.dataset.hasSplit = "1";
+    
+    // QTY Parent jadi readonly
     if (qtyInput) { 
         qtyInput.readOnly = true; 
         qtyInput.classList.add("readonly-field"); 
     }
+    // KPC Parent jadi readonly dan dikosongkan (pindah ke split)
     if (kpcInput) { 
         kpcInput.value = ""; 
         kpcInput.readOnly = true; 
@@ -403,10 +406,18 @@
           row.remove();
           const base = getBaseRowByIndex(idx);
           const subs = getSubRowsByIndex(idx);
+          
+          // JIKA SEMUA SPLIT DIHAPUS, KEMBALIKAN PARENT KE MODE EDITABLE
           if (!subs.length && base) {
             delete base.dataset.hasSplit;
+            
+            // Qty aktif lagi
             const q = base.querySelector(".qty-receipt");
             if (q) { q.readOnly = false; q.classList.remove("readonly-field"); }
+            
+            // KPC aktif lagi (FIX HERE)
+            const k = base.querySelector(".kpc-new");
+            if (k) { k.readOnly = false; k.classList.remove("readonly-field"); }
           }
           recalcParentTotal(idx);
         } else {
@@ -421,12 +432,13 @@
     }
   }
 
-  // --- RENDER (UPDATED WITH HIDDEN COLS) ---
+  // --- RENDER ---
   function renderLines(rawLines, useExistingQty) {
     tableBody.innerHTML = "";
     const lines = mergeDiscountLines(rawLines);
 
     if (!useExistingQty) {
+      // --- NEW MODE ---
       lines.forEach(ln => {
         const tr = document.createElement("tr");
         tr.dataset.rowIndex = ln.rowIndex;
@@ -434,12 +446,12 @@
         const defaultQty = remaining;
         const itemCode = ln.itemCode || ln.kpc || "";
         
-        // Perhatikan class="confidential-col" pada 3 baris harga
+        // PERBAIKAN: Hapus 'readonly' dan 'readonly-field' dari kolom KPC-new
         tr.innerHTML = `
           <td class="row-handle">⋮⋮</td>
           <td>${ln.poNumber}</td>
           <td><span class="kpc-original">${itemCode}</span></td>
-          <td><input class="table-input kpc-new readonly-field" placeholder="KPC" readonly></td>
+          <td><input class="table-input kpc-new" placeholder="KPC"></td> 
           <td>${ln.description}</td>
           <td><input class="table-input readonly-field ordered" value="${ln.orderedQty}" readonly></td>
           
@@ -458,6 +470,7 @@
         attachRowEvents(tr);
       });
     } else {
+      // --- EDIT MODE ---
       const groups = {};
       lines.forEach(ln => {
         const k = String(ln.rowIndex||"");
@@ -476,11 +489,18 @@
         baseTr.dataset.rowIndex = baseData.rowIndex;
         const remaining = Number(baseData.remainingQty) || 0;
         
+        // LOGIKA: Jika ada splits, KPC di parent readonly. Jika tidak, editable.
+        const isParentReadonly = grp.splits.length > 1; // >1 karena base masuk ke splits di logika grouping
+        const kpcClass = isParentReadonly ? "table-input kpc-new readonly-field" : "table-input kpc-new";
+        const kpcAttr  = isParentReadonly ? "readonly" : "";
+        const kpcVal   = isParentReadonly ? "" : (baseData.kpc || ""); 
+        // Jika split, value parent kosong. Jika tidak, tampilkan.
+
         baseTr.innerHTML = `
           <td class="row-handle">⋮⋮</td>
           <td>${baseData.poNumber}</td>
           <td><span class="kpc-original">${baseData.itemCode||""}</span></td>
-          <td><input class="table-input kpc-new readonly-field" placeholder="KPC" readonly></td>
+          <td><input class="${kpcClass}" placeholder="KPC" value="${kpcVal}" ${kpcAttr}></td>
           <td>${baseData.description}</td>
           <td><input class="table-input readonly-field ordered" value="${baseData.orderedQty}" readonly></td>
           
@@ -501,6 +521,26 @@
         if (grp.splits.length > 1) {
           ensureParentModeForSplit(baseTr);
           grp.splits.forEach(s => {
+             // Skip row yang merupakan base itu sendiri jika logic groupingnya memasukkan base ke splits
+             // Di kode ini, logic grouping: groups[k].splits.push(ln); -> semua masuk split array
+             // Saat render loop splits, kita perlu render split lines-nya saja
+             // Tapi data dari backend jika edit mode: base line ada qty=0 atau qty>0?
+             // Asumsi: Backend loadReceivingEntry mengembalikan baris2 terpisah.
+             // Kita harus hati-hati agar tidak duplikat.
+             // Di kode sebelumnya, logic grouping agak sederhana. Kita pakai logic aman:
+             
+             // Jika s.kpc !== baseData.kpc atau memang ini baris tambahan
+             // Cara mudah: Render sub-lines hanya jika ini BUKAN baris pertama di array splits (jika array sudah di sort)
+             // TAPI, lebih aman render sesuai data baris yang dikirim server.
+             
+             // Revisi Render Edit Mode Split:
+             // Karena server mengirim flat list, kita anggap row pertama adalah Base.
+          });
+          
+          // Render ulang sub-rows yang benar
+          // Filter: semua lines kecuali yang pertama (karena pertama jadi base)
+          const subLines = grp.splits.slice(1); // Ambil sisanya
+          subLines.forEach(s => {
              const subTr = document.createElement("tr");
              subTr.classList.add("subline-row");
              subTr.dataset.rowIndex = baseData.rowIndex;
@@ -555,6 +595,7 @@
     if (subs.length === 0) {
        const q = baseTr.querySelector(".qty-receipt");
        initQty = q ? q.value : "";
+       // SAAT SPLIT PERTAMA KALI: Matikan KPC Parent
        ensureParentModeForSplit(baseTr);
     }
 
@@ -606,7 +647,14 @@
       const k = r.querySelector(".kpc-new").value.trim();
       
       const isParent = !r.classList.contains("subline-row");
-      if (q > 0 && !k && !isParent) return "Missing KPC for split qty > 0";
+      const hasSplit = r.dataset.hasSplit === "1";
+      
+      // Validasi:
+      // 1. Jika ini parent dan TIDAK split -> KPC harus diisi jika qty > 0 (Opsional, tergantung rule Anda. Jika wajib KPC, uncomment bawah)
+      // if (isParent && !hasSplit && q > 0 && !k) return "Missing KPC on line item";
+
+      // 2. Jika ini subline -> KPC wajib jika qty > 0
+      if (!isParent && q > 0 && !k) return "Missing KPC for split line";
       
       if (r.classList.contains("subline-row") || !r.dataset.hasSplit) grp[idx].tot += q;
     }
@@ -654,10 +702,12 @@
       };
 
       if (g.subs.length === 0) {
+        // KONDISI TIDAK SPLIT: Ambil KPC dari Parent
         const k = base.querySelector(".kpc-new").value.trim();
         const q = base.querySelector(".qty-receipt").value;
         if (Number(q) > 0) lines.push({ ...common, kpc: k, qtyThisReceipt: q });
       } else {
+        // KONDISI SPLIT: Ambil KPC dari Sublines
         g.subs.forEach(sr => {
            const k = sr.querySelector(".kpc-new").value.trim();
            const q = sr.querySelector(".qty-receipt").value;
