@@ -307,7 +307,7 @@
 
 <script>
   // ================= CONFIGURATION =================
-  const API_URL = "https://script.google.com/macros/s/AKfycbwrU6aZj28ZEkQa1eSVJK9APQMdPEqwQA-deHJHeoTqS23EPoE-zO14hDW211wOaXmISg/exec"; 
+  const API_URL = "https://script.google.com/macros/s/AKfycbz5q-Vv3253IamEJKEylRigSvevv-cZEaprX0LuHI6g0w6NzcDnHwPev50tvQDJI1Bcdw/exec"; 
   // =================================================
 
   let allInvoices = [];
@@ -663,6 +663,8 @@
       const tr = document.createElement('tr');
       tr.className = `row-group-${mainIndex}`;
       tr.setAttribute('data-main-index', mainIndex);
+      // PENTING: Menambahkan atribut sub-index untuk identifikasi saat Approve
+      tr.setAttribute('data-sub-index', subIndex);
 
       let typeCode = "-";
       let badgeColor = "#64748b";
@@ -1041,12 +1043,13 @@
     setModalLoading(true);
     
     const tableRows = document.querySelectorAll('#modalTableBody tr');
-    const updatedItems = [];
+    // GANTI: Pisahkan Invoice Items (Parent) dan Production Items (Child)
+    const invoiceItems = [];
+    const productionItems = [];
 
     tableRows.forEach(tr => {
-        if (tr.classList.contains('is-locked-parent')) {
-            return; // Skip Parent yang di-split
-        }
+        const subIndex = parseInt(tr.getAttribute('data-sub-index'));
+        const isParentLocked = tr.classList.contains('is-locked-parent');
 
         const product = tr.querySelector('.data-product').value;
         const type = tr.querySelector('.data-type').value;
@@ -1063,19 +1066,34 @@
         const prodType = tr.querySelector('.inp-prodtype').value;
         const weNum = tr.querySelector('.inp-wenum').value;
 
-        // Hanya kirim row yang Qty > 0
-        if(qty > 0) {
-            updatedItems.push({
-                product, type, meter, qty, unitPrice, priceQty, discount, total,
-                machine, kpc, prodType, weNumber: weNum
-            });
+        const itemData = {
+            product, type, meter, qty, unitPrice, priceQty, discount, total,
+            machine, kpc, prodType, weNumber: weNum
+        };
+
+        // LOGIKA PEMISAHAN:
+        
+        // 1. INVOICE: Ambil baris utama (Index 0).
+        //    - Jika Single: subIndex=0, qty penuh.
+        //    - Jika Parent Split: subIndex=0, qty penuh (Original).
+        if (subIndex === 0) {
+            invoiceItems.push(itemData);
+        }
+
+        // 2. PRODUCTION: Ambil baris Single DAN baris Anak. Skip Parent yang terkunci.
+        //    - Jika Single: !isParentLocked -> Masuk
+        //    - Jika Parent Split: isParentLocked -> Skip
+        //    - Jika Child: subIndex > 0 -> Masuk
+        if (!isParentLocked) {
+             productionItems.push(itemData);
         }
     });
 
     const payload = {
       invoiceNumber: inv.invoiceNumber, customerName: inv.customer, date: inv.date,
       catatan: inv.catatan, keySalesOrder: inv.keySalesOrder, 
-      items: updatedItems, 
+      invoiceItems: invoiceItems,       // List untuk Sales Order Approved
+      productionItems: productionItems, // List untuk WE Result
       dpp: inv.dpp, ppn: inv.ppn, grandTotal: inv.grandTotal
     };
     
