@@ -198,18 +198,21 @@
         }
         window.onload = fetchData;
 
-        function renderCards(data) {
+      function renderCards(data) {
             const container = document.getElementById('cardContainer');
             container.innerHTML = '';
+            
             if (data.length === 0) {
                 container.innerHTML = '<div class="col-span-3 text-center text-slate-400 py-10">No data found.</div>';
                 return;
             }
+
             data.forEach(po => {
                 let statusClass = 'bg-slate-100 text-slate-600';
                 let btnText = 'View Bill';
                 let btnClass = 'text-slate-600 bg-slate-100 hover:bg-slate-200';
 
+                // Logika Warna Status
                 if (po.status === 'Pending') {
                     statusClass = 'bg-yellow-100 text-yellow-800';
                     btnText = 'Create Bill';
@@ -228,22 +231,40 @@
                     statusClass = 'bg-red-100 text-red-800 border border-red-200';
                 }
 
+                // --- TAMBAHAN BARU: LOGIC MENAMPILKAN INV NUMBER ---
+                let invInfo = '';
+                if (po.invNumber) {
+                    // Tampilkan Inv Number jika ada isinya
+                    invInfo = `
+                    <div class="mt-2 text-xs font-mono bg-slate-50 border border-slate-200 rounded px-2 py-1 inline-block text-slate-600">
+                        <i class="fas fa-hashtag text-slate-400 mr-1"></i>${po.invNumber}
+                    </div>`;
+                }
+                // ---------------------------------------------------
+
                 const html = `
-                <div class="bg-white rounded-xl p-5 border border-slate-200 hover:shadow-md transition">
-                    <div class="flex justify-between items-start mb-3">
-                        <div>
-                            <h3 class="font-bold text-slate-800">${po.id}</h3>
-                            <p class="text-xs text-slate-500">${po.vendor}</p>
+                <div class="bg-white rounded-xl p-5 border border-slate-200 hover:shadow-md transition flex flex-col justify-between h-full">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h3 class="font-bold text-slate-800">${po.id}</h3>
+                                <p class="text-xs text-slate-500 line-clamp-1" title="${po.vendor}">${po.vendor}</p>
+                            </div>
+                            <span class="px-2 py-1 rounded text-xs font-bold whitespace-nowrap ${statusClass}">${po.status}</span>
                         </div>
-                        <span class="px-2 py-1 rounded text-xs font-bold ${statusClass}">${po.status}</span>
+                        
+                        ${invInfo}
+                        
+                        <div class="text-sm text-slate-400 mt-3 mb-4 flex items-center">
+                            <i class="far fa-calendar mr-2"></i> ${formatDate(po.tanggalInput)}
+                        </div>
                     </div>
-                    <div class="text-sm text-slate-600 mb-4"><i class="far fa-calendar mr-2"></i> ${formatDate(po.tanggalInput)}</div>
-                    <button onclick="openBillModal('${po.id}')" class="w-full py-2 rounded-lg font-medium text-sm transition ${btnClass}">${btnText}</button>
+                    
+                    <button onclick="openBillModal('${po.id}')" class="w-full py-2 rounded-lg font-medium text-sm transition mt-auto ${btnClass}">${btnText}</button>
                 </div>`;
                 container.innerHTML += html;
             });
         }
-
         function openBillModal(idPO) {
             const po = allData.find(d => d.id === idPO);
             if (!po) return;
