@@ -40,7 +40,13 @@ body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--bg);
 .btn-refresh { background: white; border: 1px solid var(--border); padding: 8px 16px; border-radius: 6px; cursor: pointer; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
 .btn-refresh:hover { background: #f0f9ff; border-color: var(--primary); }
 
-/* SELECTOR (Dihapus/diabaikan karena menampilkan semua) */
+/* SELECTOR */
+.selector-area { display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border); }
+.selector-label { font-weight: 600; color: var(--text-muted); font-size: 13px; }
+.type-select { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: 600; color: var(--text-main); font-size: 14px; min-width: 200px; outline: none; cursor: pointer; }
+.type-select:focus { border-color: var(--primary); ring: 2px solid #bae6fd; }
+
+/* UTILITY */
 .d-none { display: none !important; }
 
 /* CARD & TABLE */
@@ -82,26 +88,35 @@ tr:hover td { background-color: #f1f5f9; }
   
   <div class="header-action">
     <div class="header-top">
-      <h1 class="page-title">Laporan Stok Barang (KPC, Spandek, Non Spandek)</h1>
-      <button class="btn-refresh" onclick="loadData()"><span>↻</span> Refresh Data</button>
+      <h1 class="page-title">Laporan Stok Barang</h1>
+      <button class="btn-refresh" onclick="loadData(true)"><span>↻</span> Refresh Data</button>
     </div>
-      </div>
+
+    <div class="selector-area">
+      <span class="selector-label">Tampilkan Laporan:</span>
+      <select id="viewSelector" class="type-select" onchange="toggleView()">
+        <option value="kpc">⚙️ Stok KPC</option>
+        <option value="spandek">📦 Stok Spandek</option>
+        <option value="nonspandek">📄 Stok Non-Spandek</option>
+      </select>
+    </div>
+  </div>
 
     <div id="container-kpc">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">📦 Stok KPC (Summary KPC: Kolom A-E)</h3>
-        <input type="text" class="search-input" placeholder="Cari Kode/Nama KPC..." onkeyup="searchTable(this, 'tableKPC')">
+        <h3 class="card-title">Stok KPC (Summary KPC: Kolom A-E)</h3>
+        <input type="text" class="search-input" placeholder="Cari Kode/Nama Produk..." onkeyup="searchTable(this, 'tableKPC')">
       </div>
       <div class="table-wrap">
         <table id="tableKPC">
           <thead>
             <tr>
-              <th>Kode KPC</th>
-              <th>Nama Barang</th>
-              <th>Satuan</th>
-              <th>Tanggal Update</th>
-              <th style="text-align:right">Sisa Stok</th>
+              <th>Nama Produk</th>
+              <th>KPC</th>
+              <th style="text-align:right">Panjang Awal</th>
+              <th style="text-align:right">Terpakai</th>
+              <th style="text-align:right">Panjang Sisa</th>
             </tr>
           </thead>
           <tbody id="bodyKPC"></tbody>
@@ -111,20 +126,23 @@ tr:hover td { background-color: #f1f5f9; }
       </div>
     </div>
   </div>
-      <div id="container-spandek">
+  
+    <div id="container-spandek" class="d-none">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">📦 Stok Spandek (Summary Spandek: Kolom C-G)</h3>
-        <input type="text" class="search-input" placeholder="Cari Type/Nama/Kode..." onkeyup="searchTable(this, 'tableSpandek')">
+        <h3 class="card-title">Stok Spandek (Summary Spandek: Kolom C-G)</h3>
+        <input type="text" class="search-input" placeholder="Cari Nama/Satuan..." onkeyup="searchTable(this, 'tableSpandek')">
       </div>
       <div class="table-wrap">
         <table id="tableSpandek">
           <thead>
             <tr>
-              <th>Type</th>
-              <th>Nama Barang</th>
+              <th>Nama Produk</th> 
               <th>Satuan</th>
-              <th>Kode Barang</th>               <th style="text-align:right">Sisa Stok</th>             </tr>
+              <th style="text-align:right">Stok</th>
+              <th style="text-align:right">Pending</th>
+              <th style="text-align:right">Stok Setelah Pending</th>
+            </tr>
           </thead>
           <tbody id="bodySpandek"></tbody>
         </table>
@@ -133,20 +151,23 @@ tr:hover td { background-color: #f1f5f9; }
       </div>
     </div>
   </div>
-      <div id="container-nonspandek">
+
+    <div id="container-nonspandek" class="d-none">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">📄 Stok Non-Spandek (Summary Non Spandek: Kolom C-G)</h3>
-        <input type="text" class="search-input" placeholder="Cari Type/Nama/Kode..." onkeyup="searchTable(this, 'tableNon')">
+        <h3 class="card-title">Stok Non-Spandek (Summary Non Spandek: Kolom C-G)</h3>
+        <input type="text" class="search-input" placeholder="Cari Nama/Satuan..." onkeyup="searchTable(this, 'tableNon')">
       </div>
       <div class="table-wrap">
         <table id="tableNon">
           <thead>
             <tr>
-              <th>Type</th>
-              <th>Nama Barang</th>
+              <th>Nama Produk</th> 
               <th>Satuan</th>
-              <th>Kode Barang</th>               <th style="text-align:right">Sisa Stok</th>             </tr>
+              <th style="text-align:right">Stok</th>
+              <th style="text-align:right">Pending</th>
+              <th style="text-align:right">Stok Setelah Pending</th>
+            </tr>
           </thead>
           <tbody id="bodyNon"></tbody>
         </table>
@@ -155,35 +176,54 @@ tr:hover td { background-color: #f1f5f9; }
       </div>
     </div>
   </div>
-  </div>
+
+</div>
 
 <script>
   // =========================================================
   // GANTI URL DI BAWAH INI DENGAN URL DEPLOY TERBARU KAMU
   // =========================================================
+  // PASTIKAN URL INI MENGAMBIL DATA KPC, SPANDEK, dan NON SPANDEK
   const API_URL = "https://script.google.com/macros/s/AKfycby5N2auQ__JVSp-RdO-5xtUwanRZZW7YZMZ163j2NP61N3SIfVnPxr8PBXYbgBC6LJH/exec"; 
 
-  window.onload = loadData;
+  let inventoryData = {}; // Cache data yang sudah diambil
+  
+  window.onload = () => {
+    loadData(false).then(() => { // Ambil data saat awal, jangan paksa refresh
+      toggleView(); // Tampilkan view default (KPC)
+    });
+  }
 
-  // Menghapus fungsi toggleView() karena semua data akan ditampilkan
+  function toggleView() {
+    const val = document.getElementById("viewSelector").value;
+    const containers = ['container-kpc', 'container-spandek', 'container-nonspandek'];
 
-  async function loadData() {
-    // Reset dan tampilkan loading untuk ketiga bagian
-    document.getElementById("bodyKPC").innerHTML = "";
-    document.getElementById("bodySpandek").innerHTML = "";
-    document.getElementById("bodyNon").innerHTML = "";
-    document.getElementById("loadingKPC").style.display = "block";
-    document.getElementById("loadingSpandek").style.display = "block";
-    document.getElementById("loadingNon").style.display = "block";
-    document.getElementById("errorKPC").classList.add("d-none");
-    document.getElementById("errorSpandek").classList.add("d-none");
-    document.getElementById("errorNon").classList.add("d-none");
+    containers.forEach(id => {
+      const div = document.getElementById(id);
+      if (`container-${val}` === id) {
+        div.classList.remove("d-none");
+      } else {
+        div.classList.add("d-none");
+      }
+    });
+  }
+
+  async function loadData(forceRefresh = false) {
+    // Jika data sudah ada di cache dan tidak dipaksa refresh, gunakan data cache
+    if (Object.keys(inventoryData).length > 0 && !forceRefresh) {
+      renderAllTables(inventoryData);
+      return;
+    }
+
+    // Tampilkan loader untuk semua
+    ['loadingKPC', 'loadingSpandek', 'loadingNon'].forEach(id => {
+      document.getElementById(id).style.display = "block";
+      document.getElementById(id.replace('loading', 'body')).innerHTML = "";
+      document.getElementById(id.replace('loading', 'error')).classList.add("d-none");
+    });
+
 
     try {
-      // Pastikan Google Apps Script Anda mengembalikan data.kpc, data.spandek, dan data.nonSpandek
-      // Untuk Stok KPC: Summary KPC, Kolom A-E (5 kolom)
-      // Untuk Stok Spandek: Summary Spandek, Kolom C-G (5 kolom)
-      // Untuk Stok Non Spandek: Summary Non Spandek, Kolom C-G (5 kolom)
       const response = await fetch(API_URL + "?action=getInventoryData", {
         method: "GET",
         redirect: "follow"
@@ -198,55 +238,90 @@ tr:hover td { background-color: #f1f5f9; }
       } catch (e) {
         throw new Error("Gagal membaca JSON. Pastikan Script di-Deploy dengan benar.");
       }
-
-      // Render KPC (Expected 5 Kolom: A, B, C, D, E)
-      renderTable("bodyKPC", "loadingKPC", data.kpc || [], 5, "errorKPC"); 
-      // Render Spandek (Expected 5 Kolom: C, D, E, F, G)
-      renderTable("bodySpandek", "loadingSpandek", data.spandek || [], 5, "errorSpandek");
-      // Render Non Spandek (Expected 5 Kolom: C, D, E, F, G) - BERUBAH DARI 4 KE 5 KOLOM
-      renderTable("bodyNon", "loadingNon", data.nonSpandek || [], 5, "errorNon");
+      
+      inventoryData = data; // Simpan ke cache
+      renderAllTables(data);
 
     } catch (err) {
       console.error(err);
-      // Tampilkan error di semua div
       showError(err.message);
     }
   }
+  
+  function renderAllTables(data) {
+    // KPC: 5 Kolom (A-E)
+    renderTable("bodyKPC", "loadingKPC", data.kpc || [], 5, "errorKPC", [2, 3, 4]); // Kolom yang perlu diformat: 2, 3, 4 (Panjang Awal, Terpakai, Panjang Sisa)
+    
+    // Spandek: 5 Kolom (C-G)
+    // Kolom di Sheet: C(Nama), D(Satuan), E(Stok), F(Pending), G(Stok Setelah Pending)
+    // Indeks Array: 0(Nama), 1(Satuan), 2(Stok), 3(Pending), 4(Stok Setelah Pending)
+    renderTable("bodySpandek", "loadingSpandek", data.spandek || [], 5, "errorSpandek", [2, 3, 4]); // Kolom yang perlu diformat: 2, 3, 4
+    
+    // Non Spandek: 5 Kolom (C-G)
+    renderTable("bodyNon", "loadingNon", data.nonSpandek || [], 5, "errorNon", [2, 3, 4]); // Kolom yang perlu diformat: 2, 3, 4
+    
+    // Panggil toggleView untuk memastikan tampilan yang benar muncul
+    toggleView();
+  }
 
-  function renderTable(tbodyId, loaderId, rows, expectedCols, errorId) {
+
+  /**
+   * Merender data ke tabel dengan penyesuaian desimal.
+   * @param {string} tbodyId ID tbody
+   * @param {string} loaderId ID loader
+   * @param {Array<Array<any>>} rows Data baris
+   * @param {number} expectedCols Jumlah kolom yang diharapkan
+   * @param {string} errorId ID error
+   * @param {number[]} stockIndices Indeks kolom yang merupakan nilai stok dan perlu diformat/diberi warna.
+   */
+  function renderTable(tbodyId, loaderId, rows, expectedCols, errorId, stockIndices) {
     const tbody = document.getElementById(tbodyId);
     document.getElementById(loaderId).style.display = "none";
-    document.getElementById(errorId).classList.add("d-none"); // Pastikan error disembunyikan jika ada data
+    document.getElementById(errorId).classList.add("d-none");
 
     if (!Array.isArray(rows) || rows.length === 0) {
       tbody.innerHTML = `<tr><td colspan="${expectedCols}" style="text-align:center; padding: 20px;">Data Kosong atau tidak ditemukan.</td></tr>`;
       return;
     }
+    
+    // Fungsi untuk memformat angka dengan maks 2 desimal
+    function formatDecimal(value) {
+      let num = parseFloat(String(value).replace(/,/g, ''));
+      if (isNaN(num)) return value;
+      
+      return num.toLocaleString('id-ID', {
+        minimumFractionDigits: 0, 
+        maximumFractionDigits: 2 // Maksimal 2 desimal
+      });
+    }
 
     rows.forEach(row => {
-      // Pastikan ada data di kolom pertama yang relevan (Kolom A/C terisi)
       if (!row || !row[0]) return; 
 
       const tr = document.createElement("tr");
       let html = "";
       
-      // Loop hanya sebanyak expectedCols
       for (let idx = 0; idx < expectedCols; idx++) {
-        let cell = row[idx] !== undefined ? row[idx] : ""; // Ambil data dari baris, atau string kosong jika undefined
+        let cell = row[idx] !== undefined ? row[idx] : ""; 
         let content = cell;
         let className = "";
 
-        // Kolom Terakhir selalu dianggap Stok (idx = expectedCols - 1)
-        if (idx === expectedCols - 1) {
-          className = "stock-val ";
-          let num = parseFloat(String(cell).replace(/,/g, '')); // Bersihkan koma untuk parsing angka
-          if (isNaN(num)) num = 0;
-          if (num <= 0) className += "stock-empty";
-          else if (num < 10) className += "stock-low";
-          else className += "stock-safe";
-
-          // Format angka stok agar lebih rapi (opsional)
-          content = num.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+        if (stockIndices.includes(idx)) {
+          // Ini adalah kolom Stok/Angka yang perlu diformat/diberi warna
+          
+          // Format desimal
+          content = formatDecimal(cell);
+          className = "stock-val "; 
+          
+          // Logika penentuan warna hanya diterapkan pada kolom terakhir (Stok/Sisa Akhir)
+          if (idx === expectedCols - 1) {
+            let num = parseFloat(String(cell).replace(/,/g, ''));
+            if (isNaN(num)) num = 0;
+            
+            if (num <= 0) className += "stock-empty";
+            else if (num < 10) className += "stock-low";
+            else className += "stock-safe";
+          }
         }
 
         html += `<td class="${className}">${content}</td>`;
@@ -257,20 +332,18 @@ tr:hover td { background-color: #f1f5f9; }
   }
 
   function showError(msg) {
-    // Tampilkan pesan error di semua div
-    document.getElementById("loadingKPC").style.display = "none";
-    document.getElementById("loadingSpandek").style.display = "none";
-    document.getElementById("loadingNon").style.display = "none";
+    // Tampilkan pesan error di div yang sedang aktif
+    const currentView = document.getElementById("viewSelector").value;
+    
+    const errorId = `error${currentView.charAt(0).toUpperCase() + currentView.slice(1)}`;
+    const loadingId = `loading${currentView.charAt(0).toUpperCase() + currentView.slice(1)}`;
 
-    document.getElementById("errorKPC").textContent = msg;
-    document.getElementById("errorKPC").classList.remove("d-none");
-    document.getElementById("errorSpandek").textContent = msg;
-    document.getElementById("errorSpandek").classList.remove("d-none");
-    document.getElementById("errorNon").textContent = msg;
-    document.getElementById("errorNon").classList.remove("d-none");
+    document.getElementById(loadingId).style.display = "none";
+    document.getElementById(errorId).textContent = msg;
+    document.getElementById(errorId).classList.remove("d-none");
   }
 
-  // UPDATED SEARCH: Mencari di semua kolom (Nama, Type, Kode)
+  // SEARCH Function (tetap tidak berubah)
   function searchTable(input, tableId) {
     const filter = input.value.toUpperCase();
     const table = document.getElementById(tableId);
@@ -280,11 +353,10 @@ tr:hover td { background-color: #f1f5f9; }
       const tds = tr[i].getElementsByTagName("td");
       let found = false;
       
-      // Loop semua kolom dalam baris tersebut
       for (let j = 0; j < tds.length; j++) {
         if (tds[j].textContent.toUpperCase().indexOf(filter) > -1) {
           found = true;
-          break; // Jika ketemu di salah satu kolom, tampilkan baris
+          break; 
         }
       }
       tr[i].style.display = found ? "" : "none";
