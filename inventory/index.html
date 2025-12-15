@@ -8,15 +8,15 @@
 
 <style>
 :root {
-  --primary: #0075c9;
-  --bg: #f5f7fa;
-  --card-bg: #ffffff;
-  --border: #e2e8f0;
-  --text-main: #1e293b;
-  --text-muted: #64748b;
-  --danger: #ef4444;
-  --success: #10b981;
-  --warning: #f59e0b;
+  --primary: #0075c9;
+  --bg: #f5f7fa;
+  --card-bg: #ffffff;
+  --border: #e2e8f0;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --danger: #ef4444;
+  --success: #10b981;
+  --warning: #f59e0b;
 }
 
 * { box-sizing: border-box; }
@@ -40,13 +40,7 @@ body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--bg);
 .btn-refresh { background: white; border: 1px solid var(--border); padding: 8px 16px; border-radius: 6px; cursor: pointer; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
 .btn-refresh:hover { background: #f0f9ff; border-color: var(--primary); }
 
-/* SELECTOR */
-.selector-area { display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border); }
-.selector-label { font-weight: 600; color: var(--text-muted); font-size: 13px; }
-.type-select { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: 600; color: var(--text-main); font-size: 14px; min-width: 200px; outline: none; cursor: pointer; }
-.type-select:focus { border-color: var(--primary); ring: 2px solid #bae6fd; }
-
-/* UTILITY */
+/* SELECTOR (Dihapus/diabaikan karena menampilkan semua) */
 .d-none { display: none !important; }
 
 /* CARD & TABLE */
@@ -77,205 +71,225 @@ tr:hover td { background-color: #f1f5f9; }
 <body>
 
 <div class="top-bar">
-  <div class="brand">AUXILIUM <span>Warehouse Monitor</span></div>
-  <nav>
-    <a href="../index.html" class="nav-link">Kembali ke Order Form</a>
-    <a href="#" class="nav-link" style="color:var(--primary); font-weight:600;">Stok Gudang</a>
-  </nav>
+  <div class="brand">AUXILIUM <span>Warehouse Monitor</span></div>
+  <nav>
+    <a href="../index.html" class="nav-link">Kembali ke Order Form</a>
+    <a href="#" class="nav-link" style="color:var(--primary); font-weight:600;">Stok Gudang</a>
+  </nav>
 </div>
 
 <div class="container">
-  
-  <div class="header-action">
-    <div class="header-top">
-      <h1 class="page-title">Laporan Stok Barang</h1>
-      <button class="btn-refresh" onclick="loadData()"><span>↻</span> Refresh Data</button>
-    </div>
+  
+  <div class="header-action">
+    <div class="header-top">
+      <h1 class="page-title">Laporan Stok Barang (KPC, Spandek, Non Spandek)</h1>
+      <button class="btn-refresh" onclick="loadData()"><span>↻</span> Refresh Data</button>
+    </div>
+      </div>
 
-    <div class="selector-area">
-      <span class="selector-label">Tampilkan Laporan:</span>
-      <select id="viewSelector" class="type-select" onchange="toggleView()">
-        <option value="spandek">📦 Stok Spandek</option>
-        <option value="nonspandek">📄 Stok Non-Spandek</option>
-      </select>
-    </div>
-  </div>
-
-  <div id="container-spandek">
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title">Database Spandek (Kolom C-G)</h3>
-        <input type="text" class="search-input" placeholder="Cari Type/Nama/Kode..." onkeyup="searchTable(this, 'tableSpandek')">
-      </div>
-      <div class="table-wrap">
-        <table id="tableSpandek">
-          <thead>
-            <tr>
-              <th>Type</th>
-              <th>Nama Barang</th>
-              <th>Satuan</th>
-              <th>KPC / Kode Barang</th>
-              <th style="text-align:right">Sisa Stok</th>
-            </tr>
-          </thead>
-          <tbody id="bodySpandek"></tbody>
-        </table>
-        <div id="loadingSpandek" class="loader-box"><div class="spinner"></div> Mengambil data Spandek...</div>
-        <div id="errorSpandek" class="error-msg d-none"></div>
-      </div>
-    </div>
-  </div>
-
-  <div id="container-nonspandek" class="d-none">
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title">Database Non-Spandek (Kolom C-F)</h3>
-        <input type="text" class="search-input" placeholder="Cari Type/Nama..." onkeyup="searchTable(this, 'tableNon')">
-      </div>
-      <div class="table-wrap">
-        <table id="tableNon">
-          <thead>
-            <tr>
-              <th>Type</th>
-              <th>Nama Barang</th>
-              <th>Satuan</th>
-              <th style="text-align:right">Sisa Stok</th>
-            </tr>
-          </thead>
-          <tbody id="bodyNon"></tbody>
-        </table>
-        <div id="loadingNon" class="loader-box"><div class="spinner"></div> Mengambil data Non Spandek...</div>
-        <div id="errorNon" class="error-msg d-none"></div>
-      </div>
-    </div>
-  </div>
-
-</div>
+    <div id="container-kpc">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">📦 Stok KPC (Summary KPC: Kolom A-E)</h3>
+        <input type="text" class="search-input" placeholder="Cari Kode/Nama KPC..." onkeyup="searchTable(this, 'tableKPC')">
+      </div>
+      <div class="table-wrap">
+        <table id="tableKPC">
+          <thead>
+            <tr>
+              <th>Kode KPC</th>
+              <th>Nama Barang</th>
+              <th>Satuan</th>
+              <th>Tanggal Update</th>
+              <th style="text-align:right">Sisa Stok</th>
+            </tr>
+          </thead>
+          <tbody id="bodyKPC"></tbody>
+        </table>
+        <div id="loadingKPC" class="loader-box"><div class="spinner"></div> Mengambil data Stok KPC...</div>
+        <div id="errorKPC" class="error-msg d-none"></div>
+      </div>
+    </div>
+  </div>
+      <div id="container-spandek">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">📦 Stok Spandek (Summary Spandek: Kolom C-G)</h3>
+        <input type="text" class="search-input" placeholder="Cari Type/Nama/Kode..." onkeyup="searchTable(this, 'tableSpandek')">
+      </div>
+      <div class="table-wrap">
+        <table id="tableSpandek">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Nama Barang</th>
+              <th>Satuan</th>
+              <th>Kode Barang</th>               <th style="text-align:right">Sisa Stok</th>             </tr>
+          </thead>
+          <tbody id="bodySpandek"></tbody>
+        </table>
+        <div id="loadingSpandek" class="loader-box"><div class="spinner"></div> Mengambil data Stok Spandek...</div>
+        <div id="errorSpandek" class="error-msg d-none"></div>
+      </div>
+    </div>
+  </div>
+      <div id="container-nonspandek">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">📄 Stok Non-Spandek (Summary Non Spandek: Kolom C-G)</h3>
+        <input type="text" class="search-input" placeholder="Cari Type/Nama/Kode..." onkeyup="searchTable(this, 'tableNon')">
+      </div>
+      <div class="table-wrap">
+        <table id="tableNon">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Nama Barang</th>
+              <th>Satuan</th>
+              <th>Kode Barang</th>               <th style="text-align:right">Sisa Stok</th>             </tr>
+          </thead>
+          <tbody id="bodyNon"></tbody>
+        </table>
+        <div id="loadingNon" class="loader-box"><div class="spinner"></div> Mengambil data Non Spandek...</div>
+        <div id="errorNon" class="error-msg d-none"></div>
+      </div>
+    </div>
+  </div>
+  </div>
 
 <script>
-  // =========================================================
-  // GANTI URL DI BAWAH INI DENGAN URL DEPLOY TERBARU KAMU
-  // =========================================================
-  const API_URL = "https://script.google.com/macros/s/AKfycbx102YdIooZHyc_FnKSomqSmO-3p8Ac_L_3OzJosnX7q0pRtmzUtDzGUT_qInDynN-P/exec"; 
+  // =========================================================
+  // GANTI URL DI BAWAH INI DENGAN URL DEPLOY TERBARU KAMU
+  // =========================================================
+  const API_URL = "https://script.google.com/macros/s/AKfycby5N2auQ__JVSp-RdO-5xtUwanRZZW7YZMZ163j2NP61N3SIfVnPxr8PBXYbgBC6LJH/exec"; 
 
-  window.onload = loadData;
+  window.onload = loadData;
 
-  function toggleView() {
-    const val = document.getElementById("viewSelector").value;
-    const divSpandek = document.getElementById("container-spandek");
-    const divNon = document.getElementById("container-nonspandek");
+  // Menghapus fungsi toggleView() karena semua data akan ditampilkan
 
-    if (val === "spandek") {
-      divSpandek.classList.remove("d-none");
-      divNon.classList.add("d-none");
-    } else {
-      divSpandek.classList.add("d-none");
-      divNon.classList.remove("d-none");
-    }
-  }
+  async function loadData() {
+    // Reset dan tampilkan loading untuk ketiga bagian
+    document.getElementById("bodyKPC").innerHTML = "";
+    document.getElementById("bodySpandek").innerHTML = "";
+    document.getElementById("bodyNon").innerHTML = "";
+    document.getElementById("loadingKPC").style.display = "block";
+    document.getElementById("loadingSpandek").style.display = "block";
+    document.getElementById("loadingNon").style.display = "block";
+    document.getElementById("errorKPC").classList.add("d-none");
+    document.getElementById("errorSpandek").classList.add("d-none");
+    document.getElementById("errorNon").classList.add("d-none");
 
-  async function loadData() {
-    document.getElementById("bodySpandek").innerHTML = "";
-    document.getElementById("bodyNon").innerHTML = "";
-    document.getElementById("loadingSpandek").style.display = "block";
-    document.getElementById("loadingNon").style.display = "block";
-    document.getElementById("errorSpandek").classList.add("d-none");
-    document.getElementById("errorNon").classList.add("d-none");
+    try {
+      // Pastikan Google Apps Script Anda mengembalikan data.kpc, data.spandek, dan data.nonSpandek
+      // Untuk Stok KPC: Summary KPC, Kolom A-E (5 kolom)
+      // Untuk Stok Spandek: Summary Spandek, Kolom C-G (5 kolom)
+      // Untuk Stok Non Spandek: Summary Non Spandek, Kolom C-G (5 kolom)
+      const response = await fetch(API_URL + "?action=getInventoryData", {
+        method: "GET",
+        redirect: "follow"
+      });
 
-    try {
-      // Menggunakan redirect: follow untuk menangani respon dari Google Script
-      const response = await fetch(API_URL + "?action=getInventoryData", {
-        method: "GET",
-        redirect: "follow"
-      });
+      if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+      
+      const text = await response.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        throw new Error("Gagal membaca JSON. Pastikan Script di-Deploy dengan benar.");
+      }
 
-      if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-      
-      const text = await response.text();
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch (e) {
-        throw new Error("Gagal membaca JSON. Pastikan Script di-Deploy dengan benar.");
-      }
+      // Render KPC (Expected 5 Kolom: A, B, C, D, E)
+      renderTable("bodyKPC", "loadingKPC", data.kpc || [], 5, "errorKPC"); 
+      // Render Spandek (Expected 5 Kolom: C, D, E, F, G)
+      renderTable("bodySpandek", "loadingSpandek", data.spandek || [], 5, "errorSpandek");
+      // Render Non Spandek (Expected 5 Kolom: C, D, E, F, G) - BERUBAH DARI 4 KE 5 KOLOM
+      renderTable("bodyNon", "loadingNon", data.nonSpandek || [], 5, "errorNon");
 
-      // Render Spandek (Expected 5 Kolom)
-      renderTable("bodySpandek", "loadingSpandek", data.spandek || [], 5, "errorSpandek");
-      // Render Non Spandek (Expected 4 Kolom)
-      renderTable("bodyNon", "loadingNon", data.nonSpandek || [], 4, "errorNon");
+    } catch (err) {
+      console.error(err);
+      // Tampilkan error di semua div
+      showError(err.message);
+    }
+  }
 
-    } catch (err) {
-      console.error(err);
-      showError(err.message);
-    }
-  }
+  function renderTable(tbodyId, loaderId, rows, expectedCols, errorId) {
+    const tbody = document.getElementById(tbodyId);
+    document.getElementById(loaderId).style.display = "none";
+    document.getElementById(errorId).classList.add("d-none"); // Pastikan error disembunyikan jika ada data
 
-  function renderTable(tbodyId, loaderId, rows, expectedCols, errorId) {
-    const tbody = document.getElementById(tbodyId);
-    document.getElementById(loaderId).style.display = "none";
+    if (!Array.isArray(rows) || rows.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="${expectedCols}" style="text-align:center; padding: 20px;">Data Kosong atau tidak ditemukan.</td></tr>`;
+      return;
+    }
 
-    if (!Array.isArray(rows) || rows.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="${expectedCols}" style="text-align:center; padding: 20px;">Data Kosong</td></tr>`;
-      return;
-    }
+    rows.forEach(row => {
+      // Pastikan ada data di kolom pertama yang relevan (Kolom A/C terisi)
+      if (!row || !row[0]) return; 
 
-    rows.forEach(row => {
-      // Pastikan ada data (Kolom C/Type terisi)
-      if (!row || !row[0]) return; 
+      const tr = document.createElement("tr");
+      let html = "";
+      
+      // Loop hanya sebanyak expectedCols
+      for (let idx = 0; idx < expectedCols; idx++) {
+        let cell = row[idx] !== undefined ? row[idx] : ""; // Ambil data dari baris, atau string kosong jika undefined
+        let content = cell;
+        let className = "";
 
-      const tr = document.createElement("tr");
-      let html = "";
-      
-      row.forEach((cell, idx) => {
-        let content = cell;
-        let className = "";
+        // Kolom Terakhir selalu dianggap Stok (idx = expectedCols - 1)
+        if (idx === expectedCols - 1) {
+          className = "stock-val ";
+          let num = parseFloat(String(cell).replace(/,/g, '')); // Bersihkan koma untuk parsing angka
+          if (isNaN(num)) num = 0;
+          if (num <= 0) className += "stock-empty";
+          else if (num < 10) className += "stock-low";
+          else className += "stock-safe";
 
-        // Kolom Terakhir selalu dianggap Stok
-        if (idx === expectedCols - 1) {
-          className = "stock-val ";
-          let num = parseFloat(cell);
-          if (isNaN(num)) num = 0;
-          if (num <= 0) className += "stock-empty";
-          else if (num < 10) className += "stock-low";
-          else className += "stock-safe";
-        }
+          // Format angka stok agar lebih rapi (opsional)
+          content = num.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+        }
 
-        html += `<td class="${className}">${content}</td>`;
-      });
-      tr.innerHTML = html;
-      tbody.appendChild(tr);
-    });
-  }
+        html += `<td class="${className}">${content}</td>`;
+      }
+      tr.innerHTML = html;
+      tbody.appendChild(tr);
+    });
+  }
 
-  function showError(msg) {
-    document.getElementById("loadingSpandek").style.display = "none";
-    document.getElementById("loadingNon").style.display = "none";
-    document.getElementById("errorSpandek").textContent = msg;
-    document.getElementById("errorSpandek").classList.remove("d-none");
-    document.getElementById("errorNon").textContent = msg;
-    document.getElementById("errorNon").classList.remove("d-none");
-  }
+  function showError(msg) {
+    // Tampilkan pesan error di semua div
+    document.getElementById("loadingKPC").style.display = "none";
+    document.getElementById("loadingSpandek").style.display = "none";
+    document.getElementById("loadingNon").style.display = "none";
 
-  // UPDATED SEARCH: Mencari di semua kolom (Nama, Type, Kode)
-  function searchTable(input, tableId) {
-    const filter = input.value.toUpperCase();
-    const table = document.getElementById(tableId);
-    const tr = table.getElementsByTagName("tr");
+    document.getElementById("errorKPC").textContent = msg;
+    document.getElementById("errorKPC").classList.remove("d-none");
+    document.getElementById("errorSpandek").textContent = msg;
+    document.getElementById("errorSpandek").classList.remove("d-none");
+    document.getElementById("errorNon").textContent = msg;
+    document.getElementById("errorNon").classList.remove("d-none");
+  }
 
-    for (let i = 1; i < tr.length; i++) {
-      const tds = tr[i].getElementsByTagName("td");
-      let found = false;
-      
-      // Loop semua kolom dalam baris tersebut
-      for (let j = 0; j < tds.length; j++) {
-        if (tds[j].textContent.toUpperCase().indexOf(filter) > -1) {
-          found = true;
-          break; // Jika ketemu di salah satu kolom, tampilkan baris
-        }
-      }
-      tr[i].style.display = found ? "" : "none";
-    }
-  }
+  // UPDATED SEARCH: Mencari di semua kolom (Nama, Type, Kode)
+  function searchTable(input, tableId) {
+    const filter = input.value.toUpperCase();
+    const table = document.getElementById(tableId);
+    const tr = table.getElementsByTagName("tr");
+
+    for (let i = 1; i < tr.length; i++) {
+      const tds = tr[i].getElementsByTagName("td");
+      let found = false;
+      
+      // Loop semua kolom dalam baris tersebut
+      for (let j = 0; j < tds.length; j++) {
+        if (tds[j].textContent.toUpperCase().indexOf(filter) > -1) {
+          found = true;
+          break; // Jika ketemu di salah satu kolom, tampilkan baris
+        }
+      }
+      tr[i].style.display = found ? "" : "none";
+    }
+  }
 </script>
 
 </body>
