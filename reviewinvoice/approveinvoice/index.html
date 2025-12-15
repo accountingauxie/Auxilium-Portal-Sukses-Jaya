@@ -95,15 +95,15 @@
 
     /* Modal */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 1000; display: none; justify-content: center; align-items: center; padding: 20px; opacity: 0; transition: opacity 0.2s; }
-    .invoice-paper { background: white; width: 100%; max-width: 1400px; max-height: 90vh; overflow-y: auto; padding: 2.5rem; border-radius: 16px; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); animation: slideUp 0.3s ease-out forwards; }
+    .invoice-paper { background: white; width: 100%; max-width: 950px; max-height: 90vh; overflow-y: auto; padding: 2.5rem; border-radius: 16px; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); animation: slideUp 0.3s ease-out forwards; }
     
     @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
     .paper-header { display: flex; justify-content: space-between; margin-bottom: 2rem; border-bottom: 2px solid var(--text-main); padding-bottom: 1rem; }
     .paper-table-container { overflow-x: auto; margin-bottom: 20px; }
-    .paper-table { width: 100%; border-collapse: collapse; min-width: 1000px; }
-    .paper-table th { background: #f8fafc; color: var(--text-sub); font-size: 0.75rem; text-transform: uppercase; padding: 12px; font-weight: 700; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+    .paper-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+    .paper-table th { background: #f8fafc; color: var(--text-sub); font-size: 0.75rem; text-transform: uppercase; padding: 12px; font-weight: 700; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); }
     .paper-table td { padding: 12px; border-bottom: 1px solid var(--border-color); color: var(--text-main); font-size: 0.9rem; vertical-align: middle; }
     
     .invoice-footer { margin-top: 2rem; padding-top: 1rem; border-top: 2px solid var(--text-main); display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem; flex-wrap: wrap; }
@@ -123,9 +123,6 @@
     .btn-partial { background: #d97706; color: white; box-shadow: 0 4px 6px -1px rgba(217, 119, 6, 0.3); }
     .btn-partial:hover { background: #b45309; transform: translateY(-1px); }
     
-    .btn-split { background: #facc15; color: #854d0e; font-size: 0.75rem; padding: 6px 10px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer; display: flex; gap: 5px; align-items: center; }
-    .btn-split:hover { background: #eab308; }
-
     .btn-revert { background: #64748b; color: white; }
     .btn-revert:hover { background: #475569; }
 
@@ -147,12 +144,6 @@
     /* Helper */
     .text-right { text-align: right; }
     .text-center { text-align: center; }
-    
-    /* Input Styling for Table */
-    .tbl-input { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; outline: none; transition: 0.2s; }
-    .tbl-input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1); }
-    .tbl-input[readonly] { background-color: #f1f5f9; color: #94a3b8; border: 1px solid #e2e8f0; cursor: not-allowed; }
-    .tbl-input[disabled] { background-color: #f1f5f9; color: #94a3b8; border: 1px solid #e2e8f0; cursor: not-allowed; }
   </style>
 </head>
 <body>
@@ -297,7 +288,7 @@
 
 <script>
   // ================= CONFIGURATION =================
-  const API_URL = "https://script.google.com/macros/s/AKfycbxrX2l9rYpvToOMKRiSdsTZG2EXGGcuZ2zIq9aB-iDy81Zfrqq0SVdDoCQd5Jc2RPI2-Q/exec"; 
+  const API_URL = "https://script.google.com/macros/s/AKfycbyZsY8GalIwLMI0I8I1d-xO7wrNZn-t-MlMFbRH4JY6A72lqIioyK-t1r4Kh22uhT8WeA/exec"; 
   // =================================================
 
   let allInvoices = [];
@@ -314,7 +305,7 @@
       el.style.display = show ? 'flex' : 'none';
       if(show) el.style.opacity = '1'; 
   }
-   
+  
   function formatMoney(amount) { 
       return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount); 
   }
@@ -326,10 +317,12 @@
       .then(response => {
         showLoading(false);
         if (response.ok) {
+          // --- FIX CRUCIAL: PAKSA JADI STRING AGAR TIDAK ERROR .includes() ---
           allInvoices = response.data.map(inv => {
               inv.invoiceNumber = String(inv.invoiceNumber); 
               return inv;
           });
+          // -------------------------------------------------------------------
 
           processInvoicesRelationship(); 
           renderInvoices();
@@ -415,17 +408,20 @@
       const invStatus = inv.status || 'Pending';
       let matchStatus = false;
 
+      // Logic "Virtual" Approved untuk Parent
       let displayStatus = invStatus;
       if (inv.isFullyShipped) displayStatus = 'Approved';
 
       if (currentFilter === 'All') matchStatus = true;
       else if (currentFilter === 'Approved') {
           if (invStatus === 'Approved' || displayStatus === 'Approved') matchStatus = true;
+          // Sub filter logic
           if (matchStatus && currentApprovedSubFilter !== 'All') {
               if (currentApprovedSubFilter === 'WE' && !inv.progressStatus.includes('WE')) matchStatus = false;
               if (currentApprovedSubFilter === 'Xero' && !inv.progressStatus.includes('Xero')) matchStatus = false;
           }
       } else {
+          // Filter biasa
           if (currentFilter === 'Partially Delivered' && (invStatus === 'Partially Delivered' && !inv.isFullyShipped)) {
               matchStatus = true;
           } else {
@@ -463,6 +459,7 @@
       let badgeClass = 'badge-pending';
       let versionBadge = '';
 
+      // TAMPILAN KHUSUS JIKA FULLY SHIPPED
       if (inv.isFullyShipped) {
           status = 'Approved';
           borderClass = 'border-approved';
@@ -549,14 +546,15 @@
     }
     document.getElementById('modalDate').textContent = displayDate;
 
-    // --- STATUS BADGES ---
+    // --- REVISI 3: STATUS LOGIC (APPROVED + PARTIAL VERSION) ---
     const statusContainer = document.getElementById('modalStatusContainer');
-    statusContainer.innerHTML = ''; 
+    statusContainer.innerHTML = ''; // Reset
 
     let badgeClass = 'badge-pending';
     let statusText = inv.status || 'Pending';
     let addVersionTag = false;
     
+    // Override jika fully shipped
     if (inv.isFullyShipped) {
         statusText = 'Approved';
         badgeClass = 'badge-approved';
@@ -567,10 +565,12 @@
         else if(inv.status === 'Partially Delivered') badgeClass = 'badge-partial';
     }
 
-    if(addVersionTag) statusContainer.innerHTML += `<span class="badge-pill badge-version"><i class="fa-solid fa-code-branch"></i> Partial Delivered Version</span>`;
+    if(addVersionTag) {
+        statusContainer.innerHTML += `<span class="badge-pill badge-version"><i class="fa-solid fa-code-branch"></i> Partial Delivered Version</span>`;
+    }
     statusContainer.innerHTML += `<span class="badge-pill ${badgeClass}">${statusText}</span>`;
 
-    // --- RENDER TABLE ---
+    // --- RENDER TABLE & LINKED INFO ---
     const thead = document.getElementById('modalTableHead');
     const tbody = document.getElementById('modalTableBody');
     const linkedArea = document.getElementById('linkedInfoArea');
@@ -578,13 +578,24 @@
     
     tbody.innerHTML = '';
     linkedArea.innerHTML = '';
-    outstandingArea.style.display = 'none';
+    outstandingArea.style.display = 'none'; // Default hide
 
-    // CEK APAKAH PARENT (Punya Child)
+    // LOGIC: PARENT vs CHILD
     if (inv.children && inv.children.length > 0) {
-        thead.innerHTML = `<tr><th style="text-align:left;">Product</th><th style="text-align:right;">Order Qty</th><th style="text-align:right;">Shipped</th><th style="text-align:right;">Total</th></tr>`;
-        
+        // === VIEW FOR PARENT INVOICE ===
+        thead.innerHTML = `
+            <tr>
+                <th style="text-align:left;">Product</th>
+                <th style="text-align:right;">Order Qty</th>
+                <th style="text-align:right; color:#2563eb;">Shipped</th>
+                <th style="text-align:right; color:#ef4444;">Remaining</th>
+                <th style="text-align:right;">Price/Qty</th>
+                <th style="text-align:right;">Total</th>
+            </tr>`;
+
+        // Calculate Remaining Value
         let totalRemainingValue = 0;
+
         const itemCalc = inv.items.map(item => {
             let shipped = 0;
             inv.children.forEach(child => {
@@ -595,45 +606,83 @@
             });
             const remain = Math.max(0, item.qty - shipped);
             totalRemainingValue += (remain * item.priceQty);
+
             return { ...item, shipped: shipped, remaining: remain };
         });
 
         itemCalc.forEach(item => {
-            tbody.innerHTML += `<tr><td><b>${item.product}</b></td><td align="right">${item.qty}</td><td align="right" style="color:#2563eb;">${item.shipped}</td><td align="right">${formatMoney(item.total)}</td></tr>`;
+            tbody.innerHTML += `
+            <tr>
+                <td><b>${item.product}</b></td>
+                <td style="text-align:right;">${item.qty}</td>
+                <td style="text-align:right; font-weight:bold; color:#2563eb;">${item.shipped}</td>
+                <td style="text-align:right; font-weight:bold; color:#ef4444;">${item.remaining}</td>
+                <td style="text-align:right;">${formatMoney(item.priceQty)}</td>
+                <td style="text-align:right;">${formatMoney(item.total)}</td>
+            </tr>`;
         });
-        
+
         document.getElementById('valOutstanding').textContent = formatMoney(totalRemainingValue);
         outstandingArea.style.display = 'block';
 
-         let linksHtml = inv.children.map(child => `
+        // Linked Info Box
+        let linksHtml = inv.children.map(child => `
             <div class="linked-item">
                 <span>Invoice <a href="#" onclick="switchInvoice('${child.invoiceNumber}')">${child.invoiceNumber}</a></span>
                 <span>${formatMoney(child.grandTotal)}</span>
             </div>
         `).join('');
-        linkedArea.innerHTML = `<div class="linked-box"><div class="linked-title"><i class="fa-solid fa-link"></i> Applied Partial Invoices</div>${linksHtml}</div>`;
+        
+        linkedArea.innerHTML = `
+            <div class="linked-box">
+                <div class="linked-title"><i class="fa-solid fa-link"></i> Applied Partial Invoices</div>
+                ${linksHtml}
+                <div style="font-size:0.75rem; margin-top:8px; color:#64748b; font-style:italic;">*Values deducted from original</div>
+            </div>`;
 
     } else {
-        // === VIEW NORMAL (CHILD/SINGLE) DENGAN SPLIT & INPUT ===
-        
+        // === VIEW FOR CHILD OR NORMAL ===
         thead.innerHTML = `
             <tr>
-              <th style="width:60px; text-align:center;">Action</th>
-              <th style="text-align:left;">Product Name</th>
               <th style="text-align:center;">Type</th>
+              <th style="text-align:left;">Product</th>
               <th style="text-align:right;">Meter</th>
-              <th style="text-align:right; width:70px;">Qty</th>
+              <th style="text-align:right;">Qty</th>
+              <th style="text-align:right;">Price</th>
+              <th style="text-align:right;">Disc</th>
+              <th style="text-align:right;">Price/Qty</th>
               <th style="text-align:right;">Total</th>
-              
-              <th style="width:130px; background:#f0f9ff;">Machine</th>
-              <th style="width:110px; background:#f0f9ff;">KPC Number</th>
-              <th style="width:110px; background:#f0f9ff;">Prod. Type</th>
-              <th style="width:180px; background:#f0f9ff;">WE Number (Result)</th>
             </tr>`;
 
-        inv.items.forEach((item, index) => {
-            renderItemRow(tbody, item, index, 0); 
+        inv.items.forEach(item => {
+            let typeCode = "-";
+            const rawType = (item.type || "").toString().toUpperCase();
+            if (rawType.includes("NON") || item.product.includes("NON SPANDEK")) typeCode = "NP";
+            else if (rawType.includes("SPANDEK") || item.product.includes("SPANDEK")) typeCode = "SP";
+
+            tbody.innerHTML += `
+            <tr>
+              <td style="text-align:center;"><span style="background:#f1f5f9; padding:2px 8px; border-radius:6px; font-size:0.75em; font-weight:bold; color:#64748b;">${typeCode}</span></td>
+              <td><b>${item.product}</b></td>
+              <td style="text-align:right;">${item.meter > 0 ? item.meter : '-'}</td>
+              <td style="text-align:right;">${item.qty}</td>
+              <td style="text-align:right;">${formatMoney(item.unitPrice)}</td>
+              <td style="text-align:right;">${formatMoney(item.discount)}</td>
+              <td style="text-align:right; font-weight:bold; color:#2563eb;">${formatMoney(item.priceQty)}</td>
+              <td style="text-align:right; font-weight:600;">${formatMoney(item.total)}</td>
+            </tr>`;
         });
+
+        if (inv.parent) {
+            linkedArea.innerHTML = `
+                <div class="linked-box" style="background:#eff6ff; border-color:#bfdbfe;">
+                    <div class="linked-title" style="color:#1d4ed8;"><i class="fa-solid fa-arrow-up-right-from-square"></i> Linked Source</div>
+                    <div style="margin-bottom:5px; font-size:0.9rem;">Applied to Order:</div>
+                    <a href="#" style="color:#2563eb; font-weight:700; font-size:1.05rem; text-decoration:none;" onclick="switchInvoice('${inv.parent.invoiceNumber}')">
+                         ${inv.parent.invoiceNumber}
+                    </a>
+                </div>`;
+        }
     }
 
     document.getElementById('valDPP').textContent = formatMoney(inv.dpp || 0);
@@ -641,186 +690,53 @@
     document.getElementById('valGrand').textContent = formatMoney(inv.grandTotal || 0);
 
     // --- BUTTONS LOGIC ---
-    updateButtonLogic(inv);
-  }
-
-  // --- HELPER UNTUK RENDER ROW ---
-  function renderItemRow(tbody, item, mainIndex, subIndex) {
-      const tr = document.createElement('tr');
-      tr.className = `row-group-${mainIndex}`;
-      tr.setAttribute('data-main-index', mainIndex);
-
-      let typeCode = "-";
-      let badgeColor = "#64748b";
-      const rawType = (item.type || "").toString().toUpperCase();
-      
-      // LOGIC PENENTUAN SP vs NP (STRICT)
-      let isSP = false;
-
-      // 1. Cek Apakah ada kata NON / NP (Prioritas Utama)
-      if (rawType.includes("NP") || rawType.includes("NON")) {
-          typeCode = "NP"; 
-          badgeColor = "#475569";
-          isSP = false;
-      } 
-      // 2. Jika tidak ada NON, cek SPANDEK / SP
-      else if (rawType.includes("SPANDEK") || rawType.includes("SP")) {
-          typeCode = "SP"; 
-          badgeColor = "#16a34a";
-          isSP = true;
-      }
-      // 3. Fallback (Anggap NP jika tidak jelas)
-      else {
-          typeCode = "NP"; 
-          badgeColor = "#475569";
-          isSP = false;
-      }
-
-      // Unique ID for inputs
-      const uid = `${mainIndex}_${subIndex}`;
-
-      // Config untuk NP (Readonly) vs SP (Editable)
-      const inputState = isSP ? '' : 'disabled';
-      const splitBtnVisibility = isSP ? '' : 'visibility:hidden;';
-
-      // HTML STRUCTURE
-      tr.innerHTML = `
-        <td style="text-align:center;">
-           ${subIndex === 0 ? `<button class="btn-split" style="${splitBtnVisibility}" onclick="addSplitRow(${mainIndex})"><i class="fa-solid fa-code-branch"></i> Split</button>` : ''}
-        </td>
-        <td>
-           <span style="font-weight:600; font-size:0.9rem;">${item.product}</span>
-           <input type="hidden" class="data-product" value="${item.product}">
-           <input type="hidden" class="data-unitprice" value="${item.unitPrice}">
-           <input type="hidden" class="data-priceqty" value="${item.priceQty}">
-           <input type="hidden" class="data-type" value="${item.type}">
-           <input type="hidden" class="data-discount" value="${item.discount}">
-        </td>
-        <td style="text-align:center;">
-           <span style="background:${badgeColor}; padding:4px 8px; border-radius:4px; font-size:0.75em; font-weight:bold; color:white;">${typeCode}</span>
-        </td>
-        <td style="text-align:right;">
-           <input type="text" class="tbl-input text-right data-meter" value="${item.meter > 0 ? item.meter : ''}" readonly style="width:50px; background:transparent; border:none;">
-        </td>
-        <td style="text-align:right;">
-           <input type="number" class="tbl-input text-right data-qty" value="${item.qty}" style="font-weight:bold;" onchange="recalcRow(this)" ${subIndex > 0 ? '' : 'readonly'}>
-        </td>
-        <td style="text-align:right; font-weight:600;">
-           <span class="data-total-display">${formatMoney(item.total)}</span>
-           <input type="hidden" class="data-total" value="${item.total}">
-        </td>
-        
-        <td>
-           <select class="tbl-input inp-machine" id="machine_${uid}" onchange="generateWENumber('${uid}')" ${inputState}>
-              <option value="">-- Select --</option>
-              <option value="PM08">PM08</option>
-              <option value="PM014">PM014</option>
-           </select>
-        </td>
-        <td>
-           <input type="text" class="tbl-input inp-kpc" id="kpc_${uid}" placeholder="Input KPC" oninput="generateWENumber('${uid}')" ${inputState}>
-        </td>
-        <td>
-           <select class="tbl-input inp-prodtype" id="prodtype_${uid}" onchange="generateWENumber('${uid}')" ${inputState}>
-              <option value="">-- Type --</option>
-              <option value="Custom">Custom</option>
-              <option value="Plat">Plat</option>
-           </select>
-        </td>
-        <td>
-           <input type="text" class="tbl-input inp-wenum" id="wenum_${uid}" readonly placeholder="-" style="color:#2563eb; font-weight:600; background:#f0f9ff;" ${inputState}>
-        </td>
-      `;
-      
-      tbody.appendChild(tr);
-  }
-
-  function addSplitRow(mainIndex) {
-      const parentRow = document.querySelector(`tr[data-main-index="${mainIndex}"]`);
-      if(!parentRow) return;
-
-      const product = parentRow.querySelector('.data-product').value;
-      const unitPrice = parseFloat(parentRow.querySelector('.data-unitprice').value) || 0;
-      const priceQty = parseFloat(parentRow.querySelector('.data-priceqty').value) || 0;
-      const type = parentRow.querySelector('.data-type').value;
-      const meter = parentRow.querySelector('.data-meter').value;
-      const discount = parseFloat(parentRow.querySelector('.data-discount').value) || 0;
-
-      const item = {
-          product: product,
-          type: type,
-          meter: meter,
-          qty: 0, 
-          unitPrice: unitPrice,
-          priceQty: priceQty,
-          discount: discount,
-          total: 0
-      };
-
-      const existingRows = document.querySelectorAll(`.row-group-${mainIndex}`);
-      const subIndex = existingRows.length;
-      
-      const lastRow = existingRows[existingRows.length - 1];
-      const tbody = document.getElementById('modalTableBody');
-      
-      renderItemRow(tbody, item, mainIndex, subIndex);
-      
-      const newRow = tbody.lastElementChild;
-      lastRow.insertAdjacentElement('afterend', newRow);
-  }
-
-  function generateWENumber(uid) {
-      const machine = document.getElementById(`machine_${uid}`).value;
-      const kpc = document.getElementById(`kpc_${uid}`).value;
-      const prodType = document.getElementById(`prodtype_${uid}`).value;
-      const invNum = document.getElementById('modalInvoiceNum').textContent;
-
-      const output = document.getElementById(`wenum_${uid}`);
-      
-      if(machine && kpc && prodType) {
-          // Format: NamaMesin_KPCNumber_NomorOrder_PRodType
-          output.value = `${machine}_${kpc}_${invNum}_${prodType}`;
-      } else {
-          output.value = "";
-      }
-  }
-  
-  function recalcRow(inputQty) {
-      const tr = inputQty.closest('tr');
-      const qty = parseFloat(inputQty.value) || 0;
-      const priceQty = parseFloat(tr.querySelector('.data-priceqty').value) || 0;
-      
-      const newTotal = qty * priceQty;
-      
-      tr.querySelector('.data-total-display').textContent = formatMoney(newTotal);
-      tr.querySelector('.data-total').value = newTotal;
-  }
-
-  function updateButtonLogic(inv) {
     const actionDiv = document.getElementById('modalActions');
     actionDiv.innerHTML = ''; 
 
     if (inv.status === 'Approved' || inv.isFullyShipped) {
-        actionDiv.innerHTML = `<div style="color:var(--approved-text); font-weight:600;"><i class="fa-solid fa-check-circle"></i> Approved.</div>`;
+        // No Actions (Sudah Selesai)
+        actionDiv.innerHTML = `<div style="color:var(--approved-text); font-weight:600; display:flex; align-items:center; gap:6px;"><i class="fa-solid fa-check-circle"></i> This Invoice has been Approved.</div>`;
     } 
     else if (inv.status === 'Canceled') {
-       actionDiv.innerHTML = `<div style="color:var(--canceled-text);">Canceled: ${inv.noteCanceled || '-'}</div>`;
+       actionDiv.innerHTML = `
+         <div style="margin-right:auto; color:var(--canceled-text); font-size:0.9rem; display:flex; align-items:center; gap:5px;">
+            <i class="fa-regular fa-comment-dots"></i> <b>Reason:</b> ${inv.noteCanceled || '-'}
+         </div>
+         <button class="btn-action btn-revert" onclick="handleActionFromModal('Pending')">
+           <i class="fa-solid fa-rotate-left"></i> Revert to Pending
+         </button>
+       `;
     } 
     else {
        const isParent = inv.children.length > 0;
-       let buttonsHtml = `<button class="btn-action btn-reject" onclick="handleActionFromModal('Canceled')"><i class="fa-solid fa-xmark"></i> Reject</button>`;
        
+       let buttonsHtml = `
+         <button class="btn-action btn-reject" onclick="handleActionFromModal('Canceled')">
+            <i class="fa-solid fa-xmark"></i> Reject
+         </button>
+       `;
+       
+       // Tombol Partial (Hanya aktif jika belum Fully Shipped)
        if (!inv.isFullyShipped) {
-           buttonsHtml += `<button class="btn-action btn-partial" onclick="openPartialModal()"><i class="fa-solid fa-boxes-packing"></i> ${isParent ? 'Next Partial' : 'Partially Delivered'}</button>`;
+           buttonsHtml += `
+             <button class="btn-action btn-partial" onclick="openPartialModal()">
+                <i class="fa-solid fa-boxes-packing"></i> ${isParent ? 'Create Next Partial' : 'Partially Delivered'}
+             </button>
+           `;
        }
 
        if (isParent) {
-           buttonsHtml += `<button class="btn-action btn-approve" disabled><i class="fa-solid fa-lock"></i> Approve Invoice</button>`;
+           buttonsHtml += `
+             <button class="btn-action btn-approve" disabled title="Parent Invoice cannot be approved directly.">
+                <i class="fa-solid fa-lock"></i> Approve Invoice
+             </button>
+           `;
        } else {
-           // Tombol Approve selalu muncul. 
-           // Jika SP, user wajib isi data di tabel, tapi kita tidak blocking (User Responsibility).
-           // Saat diklik Approve, data tabel akan dikirim.
-           buttonsHtml += `<button class="btn-action btn-approve" onclick="handleApproveFromModal()"><i class="fa-solid fa-check"></i> Approve Invoice</button>`;
+           buttonsHtml += `
+             <button class="btn-action btn-approve" onclick="handleApproveFromModal()">
+                <i class="fa-solid fa-check"></i> Approve Invoice
+             </button>
+           `;
        }
        actionDiv.innerHTML = buttonsHtml;
     }
@@ -840,6 +756,7 @@
     const inv = invoiceMap[currentOpenInvoiceId];
     if (!inv) return;
 
+    // --- PERBAIKAN: MANUAL COPY UNTUK MENGHINDARI CIRCULAR REFERENCE ERROR ---
     tempPartialData = {
         invoiceNumber: inv.invoiceNumber,
         customer: inv.customer,
@@ -850,11 +767,13 @@
         ppn: inv.ppn,
         grandTotal: inv.grandTotal
     };
+    // --------------------------------------------------------------------------
 
     const itemsWithRemaining = [];
 
     tempPartialData.items.forEach(item => {
         let shipped = 0;
+        // Hitung yang sudah dikirim dari data Children yang asli
         if (inv.children) {
             inv.children.forEach(child => {
                 if (child.status !== 'Canceled') {
@@ -863,10 +782,13 @@
                 }
             });
         }
+        
         const remaining = item.qty - shipped;
+        
+        // Hanya masukkan item yang masih punya sisa
         if (remaining > 0) {
             item.maxQty = remaining; 
-            item.qty = remaining; 
+            item.qty = remaining; // Default qty yang ditampilkan adalah sisa
             itemsWithRemaining.push(item);
         }
     });
@@ -975,39 +897,9 @@
     if (!inv) return;
     setModalLoading(true);
     
-    // --- AMBIL DATA DARI DOM TABLE (Handling Split Row) ---
-    const tableRows = document.querySelectorAll('#modalTableBody tr');
-    const updatedItems = [];
-
-    tableRows.forEach(tr => {
-        const product = tr.querySelector('.data-product').value;
-        const type = tr.querySelector('.data-type').value;
-        const meter = tr.querySelector('.data-meter').value;
-        const unitPrice = parseFloat(tr.querySelector('.data-unitprice').value) || 0;
-        const priceQty = parseFloat(tr.querySelector('.data-priceqty').value) || 0;
-        const discount = parseFloat(tr.querySelector('.data-discount').value) || 0;
-        
-        const qty = parseFloat(tr.querySelector('.data-qty').value) || 0;
-        const total = parseFloat(tr.querySelector('.data-total').value) || 0;
-
-        const machine = tr.querySelector('.inp-machine').value;
-        const kpc = tr.querySelector('.inp-kpc').value;
-        const prodType = tr.querySelector('.inp-prodtype').value;
-        const weNum = tr.querySelector('.inp-wenum').value;
-
-        // Hanya kirim row yang Qty > 0
-        if(qty > 0) {
-            updatedItems.push({
-                product, type, meter, qty, unitPrice, priceQty, discount, total,
-                machine, kpc, prodType, weNumber: weNum
-            });
-        }
-    });
-
     const payload = {
       invoiceNumber: inv.invoiceNumber, customerName: inv.customer, date: inv.date,
-      catatan: inv.catatan, keySalesOrder: inv.keySalesOrder, 
-      items: updatedItems, // Items hasil edit/split
+      catatan: inv.catatan, keySalesOrder: inv.keySalesOrder, items: inv.items,
       dpp: inv.dpp, ppn: inv.ppn, grandTotal: inv.grandTotal
     };
     
