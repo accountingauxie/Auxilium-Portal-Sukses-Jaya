@@ -151,7 +151,8 @@
     /* Input Styling for Table */
     .tbl-input { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; outline: none; transition: 0.2s; }
     .tbl-input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1); }
-    .tbl-input[readonly] { background-color: #f8fafc; color: #64748b; border: 1px dashed #cbd5e1; }
+    .tbl-input[readonly] { background-color: #f1f5f9; color: #94a3b8; border: 1px solid #e2e8f0; cursor: not-allowed; }
+    .tbl-input[disabled] { background-color: #f1f5f9; color: #94a3b8; border: 1px solid #e2e8f0; cursor: not-allowed; }
   </style>
 </head>
 <body>
@@ -643,7 +644,7 @@
     updateButtonLogic(inv);
   }
 
-  // --- HELPER UNTUK RENDER ROW (Bisa Dipanggil Ulang oleh Split) ---
+  // --- HELPER UNTUK RENDER ROW ---
   function renderItemRow(tbody, item, mainIndex, subIndex) {
       const tr = document.createElement('tr');
       tr.className = `row-group-${mainIndex}`;
@@ -653,19 +654,39 @@
       let badgeColor = "#64748b";
       const rawType = (item.type || "").toString().toUpperCase();
       
-      if (rawType.includes("NP") || rawType.includes("NON") || item.product.includes("NON SPANDEK")) {
-          typeCode = "NP"; badgeColor = "#475569";
-      } else if (rawType.includes("SPANDEK") || item.product.includes("SPANDEK")) {
-          typeCode = "SP"; badgeColor = "#16a34a";
+      // LOGIC PENENTUAN SP vs NP (STRICT)
+      let isSP = false;
+
+      // 1. Cek Apakah ada kata NON / NP (Prioritas Utama)
+      if (rawType.includes("NP") || rawType.includes("NON")) {
+          typeCode = "NP"; 
+          badgeColor = "#475569";
+          isSP = false;
+      } 
+      // 2. Jika tidak ada NON, cek SPANDEK / SP
+      else if (rawType.includes("SPANDEK") || rawType.includes("SP")) {
+          typeCode = "SP"; 
+          badgeColor = "#16a34a";
+          isSP = true;
+      }
+      // 3. Fallback (Anggap NP jika tidak jelas)
+      else {
+          typeCode = "NP"; 
+          badgeColor = "#475569";
+          isSP = false;
       }
 
       // Unique ID for inputs
       const uid = `${mainIndex}_${subIndex}`;
 
+      // Config untuk NP (Readonly) vs SP (Editable)
+      const inputState = isSP ? '' : 'disabled';
+      const splitBtnVisibility = isSP ? '' : 'visibility:hidden;';
+
       // HTML STRUCTURE
       tr.innerHTML = `
         <td style="text-align:center;">
-           ${subIndex === 0 ? `<button class="btn-split" onclick="addSplitRow(${mainIndex})"><i class="fa-solid fa-code-branch"></i> Split</button>` : ''}
+           ${subIndex === 0 ? `<button class="btn-split" style="${splitBtnVisibility}" onclick="addSplitRow(${mainIndex})"><i class="fa-solid fa-code-branch"></i> Split</button>` : ''}
         </td>
         <td>
            <span style="font-weight:600; font-size:0.9rem;">${item.product}</span>
@@ -679,10 +700,10 @@
            <span style="background:${badgeColor}; padding:4px 8px; border-radius:4px; font-size:0.75em; font-weight:bold; color:white;">${typeCode}</span>
         </td>
         <td style="text-align:right;">
-           <input type="text" class="tbl-input text-right data-meter" value="${item.meter > 0 ? item.meter : ''}" readonly style="width:50px;">
+           <input type="text" class="tbl-input text-right data-meter" value="${item.meter > 0 ? item.meter : ''}" readonly style="width:50px; background:transparent; border:none;">
         </td>
         <td style="text-align:right;">
-           <input type="number" class="tbl-input text-right data-qty" value="${item.qty}" style="font-weight:bold;" onchange="recalcRow(this)">
+           <input type="number" class="tbl-input text-right data-qty" value="${item.qty}" style="font-weight:bold;" onchange="recalcRow(this)" ${subIndex > 0 ? '' : 'readonly'}>
         </td>
         <td style="text-align:right; font-weight:600;">
            <span class="data-total-display">${formatMoney(item.total)}</span>
@@ -690,24 +711,24 @@
         </td>
         
         <td>
-           <select class="tbl-input inp-machine" id="machine_${uid}" onchange="generateWENumber('${uid}')">
+           <select class="tbl-input inp-machine" id="machine_${uid}" onchange="generateWENumber('${uid}')" ${inputState}>
               <option value="">-- Select --</option>
               <option value="PM08">PM08</option>
               <option value="PM014">PM014</option>
            </select>
         </td>
         <td>
-           <input type="text" class="tbl-input inp-kpc" id="kpc_${uid}" placeholder="Input KPC" oninput="generateWENumber('${uid}')">
+           <input type="text" class="tbl-input inp-kpc" id="kpc_${uid}" placeholder="Input KPC" oninput="generateWENumber('${uid}')" ${inputState}>
         </td>
         <td>
-           <select class="tbl-input inp-prodtype" id="prodtype_${uid}" onchange="generateWENumber('${uid}')">
+           <select class="tbl-input inp-prodtype" id="prodtype_${uid}" onchange="generateWENumber('${uid}')" ${inputState}>
               <option value="">-- Type --</option>
               <option value="Custom">Custom</option>
               <option value="Plat">Plat</option>
            </select>
         </td>
         <td>
-           <input type="text" class="tbl-input inp-wenum" id="wenum_${uid}" readonly placeholder="-" style="color:#2563eb; font-weight:600; background:#f0f9ff;">
+           <input type="text" class="tbl-input inp-wenum" id="wenum_${uid}" readonly placeholder="-" style="color:#2563eb; font-weight:600; background:#f0f9ff;" ${inputState}>
         </td>
       `;
       
@@ -715,11 +736,9 @@
   }
 
   function addSplitRow(mainIndex) {
-      // Cari row parent
       const parentRow = document.querySelector(`tr[data-main-index="${mainIndex}"]`);
       if(!parentRow) return;
 
-      // Ambil data dasar dari hidden inputs parent
       const product = parentRow.querySelector('.data-product').value;
       const unitPrice = parseFloat(parentRow.querySelector('.data-unitprice').value) || 0;
       const priceQty = parseFloat(parentRow.querySelector('.data-priceqty').value) || 0;
@@ -727,30 +746,25 @@
       const meter = parentRow.querySelector('.data-meter').value;
       const discount = parseFloat(parentRow.querySelector('.data-discount').value) || 0;
 
-      // Buat object item dummy
       const item = {
           product: product,
           type: type,
           meter: meter,
-          qty: 0, // Default 0 untuk baris baru
+          qty: 0, 
           unitPrice: unitPrice,
           priceQty: priceQty,
           discount: discount,
           total: 0
       };
 
-      // Hitung subIndex baru
       const existingRows = document.querySelectorAll(`.row-group-${mainIndex}`);
       const subIndex = existingRows.length;
       
-      // Render di akhir grup
       const lastRow = existingRows[existingRows.length - 1];
       const tbody = document.getElementById('modalTableBody');
       
-      // Render manual lalu insert after
       renderItemRow(tbody, item, mainIndex, subIndex);
       
-      // Pindahkan row yang baru dibuat (yang ada di paling bawah tbody) ke bawah lastRow
       const newRow = tbody.lastElementChild;
       lastRow.insertAdjacentElement('afterend', newRow);
   }
@@ -764,6 +778,7 @@
       const output = document.getElementById(`wenum_${uid}`);
       
       if(machine && kpc && prodType) {
+          // Format: NamaMesin_KPCNumber_NomorOrder_PRodType
           output.value = `${machine}_${kpc}_${invNum}_${prodType}`;
       } else {
           output.value = "";
@@ -785,16 +800,6 @@
     const actionDiv = document.getElementById('modalActions');
     actionDiv.innerHTML = ''; 
 
-    // DETEKSI SP (LOGIC FIX: Check Type NP FIRST)
-    const hasSP = inv.items.some(item => {
-        const t = (item.type || "").toString().toUpperCase();
-        if (t.includes("NP") || t.includes("NON")) return false; // Ignore if NP
-        const p = (item.product || "").toUpperCase();
-        return t.includes("SP") || p.includes("SPANDEK") || p.includes("GOBI") || p.includes("PUMA");
-    });
-
-    const isWEGenerated = (inv.progressStatus || "").includes("WE Generated");
-
     if (inv.status === 'Approved' || inv.isFullyShipped) {
         actionDiv.innerHTML = `<div style="color:var(--approved-text); font-weight:600;"><i class="fa-solid fa-check-circle"></i> Approved.</div>`;
     } 
@@ -809,18 +814,13 @@
            buttonsHtml += `<button class="btn-action btn-partial" onclick="openPartialModal()"><i class="fa-solid fa-boxes-packing"></i> ${isParent ? 'Next Partial' : 'Partially Delivered'}</button>`;
        }
 
-       if (hasSP && !isWEGenerated) {
-           buttonsHtml += `
-             <button class="btn-action" style="background:#eab308; color:white;" onclick="goToWorkEffort('${inv.invoiceNumber}')"><i class="fa-solid fa-hammer"></i> Buat Work Effort</button>
-             <button class="btn-action" style="background:#cbd5e1; color:white; cursor:not-allowed;" disabled><i class="fa-solid fa-lock"></i> Approve</button>
-           `;
+       if (isParent) {
+           buttonsHtml += `<button class="btn-action btn-approve" disabled><i class="fa-solid fa-lock"></i> Approve Invoice</button>`;
        } else {
-           // Murni NP atau WE Sudah Ada -> Approve Enabled
-           if (isParent) {
-               buttonsHtml += `<button class="btn-action btn-approve" disabled><i class="fa-solid fa-lock"></i> Approve Invoice</button>`;
-           } else {
-               buttonsHtml += `<button class="btn-action btn-approve" onclick="handleApproveFromModal()"><i class="fa-solid fa-check"></i> Approve Invoice</button>`;
-           }
+           // Tombol Approve selalu muncul. 
+           // Jika SP, user wajib isi data di tabel, tapi kita tidak blocking (User Responsibility).
+           // Saat diklik Approve, data tabel akan dikirim.
+           buttonsHtml += `<button class="btn-action btn-approve" onclick="handleApproveFromModal()"><i class="fa-solid fa-check"></i> Approve Invoice</button>`;
        }
        actionDiv.innerHTML = buttonsHtml;
     }
@@ -975,8 +975,7 @@
     if (!inv) return;
     setModalLoading(true);
     
-    // --- AMBIL DATA DARI TABEL HTML (TERMASUK SPLIT) ---
-    // Karena user bisa split row, kita harus membaca ulang DOM Table
+    // --- AMBIL DATA DARI DOM TABLE (Handling Split Row) ---
     const tableRows = document.querySelectorAll('#modalTableBody tr');
     const updatedItems = [];
 
@@ -988,17 +987,15 @@
         const priceQty = parseFloat(tr.querySelector('.data-priceqty').value) || 0;
         const discount = parseFloat(tr.querySelector('.data-discount').value) || 0;
         
-        // Ambil Qty & Total yang mungkin sudah diedit user
         const qty = parseFloat(tr.querySelector('.data-qty').value) || 0;
         const total = parseFloat(tr.querySelector('.data-total').value) || 0;
 
-        // Ambil Inputan Baru
         const machine = tr.querySelector('.inp-machine').value;
         const kpc = tr.querySelector('.inp-kpc').value;
         const prodType = tr.querySelector('.inp-prodtype').value;
         const weNum = tr.querySelector('.inp-wenum').value;
 
-        // Hanya masukkan ke data jika Qty > 0 (opsional, tergantung rule bisnismu)
+        // Hanya kirim row yang Qty > 0
         if(qty > 0) {
             updatedItems.push({
                 product, type, meter, qty, unitPrice, priceQty, discount, total,
@@ -1010,7 +1007,7 @@
     const payload = {
       invoiceNumber: inv.invoiceNumber, customerName: inv.customer, date: inv.date,
       catatan: inv.catatan, keySalesOrder: inv.keySalesOrder, 
-      items: updatedItems, // Mengirim item hasil editan table
+      items: updatedItems, // Items hasil edit/split
       dpp: inv.dpp, ppn: inv.ppn, grandTotal: inv.grandTotal
     };
     
@@ -1046,11 +1043,6 @@
         document.getElementById('invoiceModal').style.display='none';
       } else { alert("Failed"); }
     });
-  }
-
-  function goToWorkEffort(invoiceId) {
-      const weUrl = "https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/wespandek/Index.html";
-      window.open(`${weUrl}?inv=${invoiceId}`, '_blank');
   }
 
   function setModalLoading(isLoading) {
