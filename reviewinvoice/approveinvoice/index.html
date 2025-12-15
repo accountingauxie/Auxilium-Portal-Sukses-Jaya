@@ -95,15 +95,15 @@
 
     /* Modal */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 1000; display: none; justify-content: center; align-items: center; padding: 20px; opacity: 0; transition: opacity 0.2s; }
-    .invoice-paper { background: white; width: 100%; max-width: 950px; max-height: 90vh; overflow-y: auto; padding: 2.5rem; border-radius: 16px; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); animation: slideUp 0.3s ease-out forwards; }
+    .invoice-paper { background: white; width: 100%; max-width: 1050px; max-height: 90vh; overflow-y: auto; padding: 2.5rem; border-radius: 16px; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); animation: slideUp 0.3s ease-out forwards; }
     
     @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
     .paper-header { display: flex; justify-content: space-between; margin-bottom: 2rem; border-bottom: 2px solid var(--text-main); padding-bottom: 1rem; }
     .paper-table-container { overflow-x: auto; margin-bottom: 20px; }
-    .paper-table { width: 100%; border-collapse: collapse; min-width: 600px; }
-    .paper-table th { background: #f8fafc; color: var(--text-sub); font-size: 0.75rem; text-transform: uppercase; padding: 12px; font-weight: 700; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); }
+    .paper-table { width: 100%; border-collapse: collapse; min-width: 800px; }
+    .paper-table th { background: #f8fafc; color: var(--text-sub); font-size: 0.75rem; text-transform: uppercase; padding: 12px; font-weight: 700; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
     .paper-table td { padding: 12px; border-bottom: 1px solid var(--border-color); color: var(--text-main); font-size: 0.9rem; vertical-align: middle; }
     
     .invoice-footer { margin-top: 2rem; padding-top: 1rem; border-top: 2px solid var(--text-main); display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem; flex-wrap: wrap; }
@@ -288,7 +288,7 @@
 
 <script>
   // ================= CONFIGURATION =================
-  const API_URL = "https://script.google.com/macros/s/AKfycbyZsY8GalIwLMI0I8I1d-xO7wrNZn-t-MlMFbRH4JY6A72lqIioyK-t1r4Kh22uhT8WeA/exec"; 
+  const API_URL = "https://script.google.com/macros/s/AKfycbxCk4IY80d0zMsPWAkh_Ql9tVPU8tgDN03DGAnjgUZ8E5vcJHbAqGE2Mb_U88bPKQ1Zow/exec"; 
   // =================================================
 
   let allInvoices = [];
@@ -544,15 +544,14 @@
     }
     document.getElementById('modalDate').textContent = displayDate;
 
-    // --- REVISI 3: STATUS LOGIC (APPROVED + PARTIAL VERSION) ---
+    // --- REVISI: STATUS LOGIC ---
     const statusContainer = document.getElementById('modalStatusContainer');
-    statusContainer.innerHTML = ''; // Reset
+    statusContainer.innerHTML = ''; 
 
     let badgeClass = 'badge-pending';
     let statusText = inv.status || 'Pending';
     let addVersionTag = false;
     
-    // Override jika fully shipped
     if (inv.isFullyShipped) {
         statusText = 'Approved';
         badgeClass = 'badge-approved';
@@ -568,7 +567,7 @@
     }
     statusContainer.innerHTML += `<span class="badge-pill ${badgeClass}">${statusText}</span>`;
 
-    // --- RENDER TABLE & LINKED INFO ---
+    // --- RENDER TABLE (DENGAN INPUT TAMBAHAN) ---
     const thead = document.getElementById('modalTableHead');
     const tbody = document.getElementById('modalTableBody');
     const linkedArea = document.getElementById('linkedInfoArea');
@@ -576,9 +575,8 @@
     
     tbody.innerHTML = '';
     linkedArea.innerHTML = '';
-    outstandingArea.style.display = 'none'; // Default hide
+    outstandingArea.style.display = 'none'; 
 
-    // LOGIC: PARENT vs CHILD
     if (inv.children && inv.children.length > 0) {
         // === VIEW FOR PARENT INVOICE ===
         thead.innerHTML = `
@@ -639,35 +637,48 @@
             </div>`;
 
     } else {
-        // === VIEW FOR CHILD OR NORMAL ===
+        // === VIEW FOR CHILD OR NORMAL (ADA INPUT TAMBAHAN) ===
         thead.innerHTML = `
             <tr>
               <th style="text-align:center;">Type</th>
               <th style="text-align:left;">Product</th>
-              <th style="text-align:right;">Meter</th>
               <th style="text-align:right;">Qty</th>
-              <th style="text-align:right;">Price</th>
-              <th style="text-align:right;">Disc</th>
               <th style="text-align:right;">Price/Qty</th>
               <th style="text-align:right;">Total</th>
+              
+              <th style="width:100px; background:#f0f9ff; text-align:center;">Machine</th>
+              <th style="width:80px; background:#f0f9ff; text-align:center;">KPC</th>
+              <th style="width:80px; background:#f0f9ff; text-align:center;">Prod Type</th>
+              <th style="width:100px; background:#f0f9ff; text-align:center;">WE Number</th>
             </tr>`;
 
-        inv.items.forEach(item => {
+        inv.items.forEach((item, index) => {
             let typeCode = "-";
             const rawType = (item.type || "").toString().toUpperCase();
-            if (rawType.includes("NON") || item.product.includes("NON SPANDEK")) typeCode = "NP";
+            if (rawType.includes("NP") || rawType.includes("NON") || item.product.includes("NON SPANDEK")) typeCode = "NP";
             else if (rawType.includes("SPANDEK") || item.product.includes("SPANDEK")) typeCode = "SP";
+
+            // Dropdown Machine
+            const machineSelect = `
+                <select id="input_machine_${index}" class="control-input" style="padding:4px; font-size:0.8rem; width:100%;">
+                    <option value="">-</option>
+                    <option value="PM08">PM08</option>
+                    <option value="PM014">PM014</option>
+                </select>
+            `;
 
             tbody.innerHTML += `
             <tr>
               <td style="text-align:center;"><span style="background:#f1f5f9; padding:2px 8px; border-radius:6px; font-size:0.75em; font-weight:bold; color:#64748b;">${typeCode}</span></td>
               <td><b>${item.product}</b></td>
-              <td style="text-align:right;">${item.meter > 0 ? item.meter : '-'}</td>
               <td style="text-align:right;">${item.qty}</td>
-              <td style="text-align:right;">${formatMoney(item.unitPrice)}</td>
-              <td style="text-align:right;">${formatMoney(item.discount)}</td>
               <td style="text-align:right; font-weight:bold; color:#2563eb;">${formatMoney(item.priceQty)}</td>
               <td style="text-align:right; font-weight:600;">${formatMoney(item.total)}</td>
+
+              <td style="padding:4px;">${machineSelect}</td>
+              <td style="padding:4px;"><input type="text" id="input_kpc_${index}" class="control-input" style="width:100%; font-size:0.8rem;"></td>
+              <td style="padding:4px;"><input type="text" id="input_prod_${index}" class="control-input" style="width:100%; font-size:0.8rem;"></td>
+              <td style="padding:4px;"><input type="text" id="input_we_${index}" class="control-input" style="width:100%; font-size:0.8rem;"></td>
             </tr>`;
         });
 
@@ -687,28 +698,29 @@
     document.getElementById('valPPN').textContent = formatMoney(inv.ppn || 0);
     document.getElementById('valGrand').textContent = formatMoney(inv.grandTotal || 0);
 
-    // --- BUTTONS LOGIC (CONDITIONAL WORKFLOW) ---
+    // --- BUTTONS LOGIC (CONDITIONAL WORKFLOW FIX) ---
     const actionDiv = document.getElementById('modalActions');
     actionDiv.innerHTML = ''; 
 
-    // 1. DETEKSI SP (LOGIC BARU)
-    // Cek apakah ada item yang Type atau Product-nya mengandung SP / Spandek / Gobi
+    // 1. DETEKSI SP (PERBAIKAN LOGIC)
     const hasSP = inv.items.some(item => {
-        const t = (item.type || "").toUpperCase();
+        const t = (item.type || "").toString().toUpperCase();
+        
+        // FIX: Prioritaskan pengecekan NP/NON
+        // Jika type mengandung NP/NON, anggap bukan SP (meskipun nama produk ada Gobi/Spandek)
+        if (t.includes("NP") || t.includes("NON")) return false; 
+
+        // Cek keyword SP
         const p = (item.product || "").toUpperCase();
-        return t.includes("SP") || p.includes("SPANDEK") || p.includes("GOBI");
+        return t.includes("SP") || p.includes("SPANDEK") || p.includes("GOBI") || p.includes("PUMA");
     });
 
-    // 2. CEK STATUS WORK EFFORT
-    // Apakah di kolom progressStatus sudah ada kata "WE Generated"?
     const isWEGenerated = (inv.progressStatus || "").includes("WE Generated");
 
     if (inv.status === 'Approved' || inv.isFullyShipped) {
-        // KONDISI: SUDAH SELESAI
         actionDiv.innerHTML = `<div style="color:var(--approved-text); font-weight:600; display:flex; align-items:center; gap:6px;"><i class="fa-solid fa-check-circle"></i> This Invoice has been Approved.</div>`;
     } 
     else if (inv.status === 'Canceled') {
-       // KONDISI: BATAL
        actionDiv.innerHTML = `
          <div style="margin-right:auto; color:var(--canceled-text); font-size:0.9rem; display:flex; align-items:center; gap:5px;">
             <i class="fa-regular fa-comment-dots"></i> <b>Reason:</b> ${inv.noteCanceled || '-'}
@@ -719,7 +731,6 @@
        `;
     } 
     else {
-       // KONDISI: PENDING / PARTIAL (ACTIVE)
        const isParent = inv.children.length > 0;
        
        let buttonsHtml = `
@@ -728,7 +739,6 @@
          </button>
        `;
        
-       // Tombol Partial (Tetap ada)
        if (!inv.isFullyShipped) {
            buttonsHtml += `
              <button class="btn-action btn-partial" onclick="openPartialModal()">
@@ -739,22 +749,16 @@
 
        // === LOGIC UTAMA: SP vs NP ===
        if (hasSP && !isWEGenerated) {
-           // KASUS A: Ada barang SP TAPI belum buat Work Effort
-           // Tampilkan tombol Buat WE, Sembunyikan Approve (atau disable)
            buttonsHtml += `
              <button class="btn-action" style="background:#eab308; color:white; box-shadow: 0 4px 6px -1px rgba(234, 179, 8, 0.3);" onclick="goToWorkEffort('${inv.invoiceNumber}')">
                 <i class="fa-solid fa-hammer"></i> Buat Work Effort
              </button>
-             
              <button class="btn-action" style="background:#cbd5e1; color:white; cursor:not-allowed;" disabled title="Harap buat Work Effort terlebih dahulu karena ada item SP">
                 <i class="fa-solid fa-lock"></i> Approve
              </button>
            `;
        } else {
-           // KASUS B: 
-           // 1. Barang NP Semua -> Langsung muncul Approve
-           // 2. ATAU Barang SP sudah dibuat WE -> Muncul Approve
-           
+           // Murni NP atau WE Sudah Ada -> Approve Enabled
            if (isParent) {
                buttonsHtml += `
                  <button class="btn-action btn-approve" disabled title="Parent Invoice cannot be approved directly.">
@@ -769,7 +773,6 @@
                `;
            }
        }
-       
        actionDiv.innerHTML = buttonsHtml;
     }
   }
@@ -788,7 +791,6 @@
     const inv = invoiceMap[currentOpenInvoiceId];
     if (!inv) return;
 
-    // MANUAL COPY UNTUK MENGHINDARI CIRCULAR REFERENCE ERROR
     tempPartialData = {
         invoiceNumber: inv.invoiceNumber,
         customer: inv.customer,
@@ -804,7 +806,6 @@
 
     tempPartialData.items.forEach(item => {
         let shipped = 0;
-        // Hitung yang sudah dikirim dari data Children yang asli
         if (inv.children) {
             inv.children.forEach(child => {
                 if (child.status !== 'Canceled') {
@@ -813,13 +814,10 @@
                 }
             });
         }
-        
         const remaining = item.qty - shipped;
-        
-        // Hanya masukkan item yang masih punya sisa
         if (remaining > 0) {
             item.maxQty = remaining; 
-            item.qty = remaining; // Default qty yang ditampilkan adalah sisa
+            item.qty = remaining; 
             itemsWithRemaining.push(item);
         }
     });
@@ -928,9 +926,25 @@
     if (!inv) return;
     setModalLoading(true);
     
+    // --- AMBIL DATA DARI INPUTAN ---
+    const updatedItems = inv.items.map((item, index) => {
+        const elMachine = document.getElementById(`input_machine_${index}`);
+        const elKPC     = document.getElementById(`input_kpc_${index}`);
+        const elProd    = document.getElementById(`input_prod_${index}`);
+        const elWE      = document.getElementById(`input_we_${index}`);
+
+        return {
+            ...item,
+            machine: elMachine ? elMachine.value : "",
+            kpc: elKPC ? elKPC.value : "",
+            prodType: elProd ? elProd.value : "",
+            weNumber: elWE ? elWE.value : ""
+        };
+    });
+
     const payload = {
       invoiceNumber: inv.invoiceNumber, customerName: inv.customer, date: inv.date,
-      catatan: inv.catatan, keySalesOrder: inv.keySalesOrder, items: inv.items,
+      catatan: inv.catatan, keySalesOrder: inv.keySalesOrder, items: updatedItems,
       dpp: inv.dpp, ppn: inv.ppn, grandTotal: inv.grandTotal
     };
     
@@ -968,9 +982,7 @@
     });
   }
 
-  // --- WORK EFFORT NAVIGATION ---
   function goToWorkEffort(invoiceId) {
-      // Link ke halaman Work Effort dengan membawa parameter No Invoice
       const weUrl = "https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/wespandek/Index.html";
       window.open(`${weUrl}?inv=${invoiceId}`, '_blank');
   }
