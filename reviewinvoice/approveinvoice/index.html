@@ -22,8 +22,8 @@
       --approved-bg: #dcfce7; --approved-text: #166534;
       --pending-bg: #fef9c3; --pending-text: #854d0e;
       --canceled-bg: #fee2e2; --canceled-text: #991b1b;
-      --partial-bg: #e0f2fe; --partial-text: #075985;
-      --version-bg: #f3e8ff; --version-text: #6b21a8;
+      --partial-bg: #e0f2fe; --partial-text: #075985; /* Dibiarkan, tapi tidak digunakan */
+      --version-bg: #f3e8ff; --version-text: #6b21a8; /* Dibiarkan, tapi tidak digunakan */
     }
 
     * { box-sizing: border-box; }
@@ -70,7 +70,7 @@
     .border-pending::before { background-color: #eab308; }
     .border-approved::before { background-color: #22c55e; }
     .border-canceled::before { background-color: #ef4444; }
-    .border-partial::before { background-color: #0ea5e9; }
+    /* .border-partial::before { background-color: #0ea5e9; } */
 
     .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; padding-left: 12px; }
     .card-title { font-size: 1.1rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
@@ -86,8 +86,8 @@
     .badge-approved { background-color: var(--approved-bg); color: var(--approved-text); }
     .badge-pending { background-color: var(--pending-bg); color: var(--pending-text); }
     .badge-canceled { background-color: var(--canceled-bg); color: var(--canceled-text); }
-    .badge-partial { background-color: var(--partial-bg); color: var(--partial-text); }
-    .badge-version { background-color: var(--version-bg); color: var(--version-text); border: 1px solid #ddd6fe; }
+    /* .badge-partial { background-color: var(--partial-bg); color: var(--partial-text); } */
+    /* .badge-version { background-color: var(--version-bg); color: var(--version-text); border: 1px solid #ddd6fe; } */
 
     .price-tag { font-size: 1.35rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; padding-left: 12px; margin-top: auto; }
     .btn-details { margin-top: 1.25rem; width: 100%; padding: 12px; background: #f8fafc; color: var(--primary); border: 1px solid transparent; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
@@ -111,7 +111,7 @@
     .invoice-footer { margin-top: 2rem; padding-top: 1rem; border-top: 2px solid var(--text-main); display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem; flex-wrap: wrap; }
     .total-row { display: flex; justify-content: space-between; width: 100%; padding: 6px 0; font-size: 0.95rem; }
     .grand-total { font-size: 1.25rem; font-weight: 800; color: var(--primary); margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--border-color); }
-    .outstanding-row { font-size: 1rem; font-weight: 700; color: #ef4444; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #e2e8f0; }
+    /* .outstanding-row { font-size: 1rem; font-weight: 700; color: #ef4444; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #e2e8f0; } */
 
     /* Action Buttons */
     .btn-action { padding: 12px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
@@ -122,8 +122,8 @@
     .btn-reject { background: #ef4444; color: white; box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3); }
     .btn-reject:hover { background: #dc2626; transform: translateY(-1px); }
     
-    .btn-partial { background: #d97706; color: white; box-shadow: 0 4px 6px -1px rgba(217, 119, 6, 0.3); }
-    .btn-partial:hover { background: #b45309; transform: translateY(-1px); }
+    /* .btn-partial { background: #d97706; color: white; box-shadow: 0 4px 6px -1px rgba(217, 119, 6, 0.3); }
+    .btn-partial:hover { background: #b45309; transform: translateY(-1px); } */
     
     .btn-split { background: #facc15; color: #854d0e; font-size: 0.75rem; padding: 6px 10px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer; display: flex; gap: 5px; align-items: center; justify-content: center; width: 100%; }
     .btn-split:hover { background: #eab308; }
@@ -131,24 +131,16 @@
     .btn-remove { background: #fee2e2; color: #dc2626; font-size: 0.85rem; padding: 6px 10px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer; display: flex; gap: 5px; align-items: center; justify-content: center; width: 100%; }
     .btn-remove:hover { background: #fecaca; }
 
-    .btn-revert { background: #64748b; color: white; }
-    .btn-revert:hover { background: #475569; }
+    /* .btn-revert { background: #64748b; color: white; }
+    .btn-revert:hover { background: #475569; } */
 
     /* Parent Split Style */
     .row-parent-split { background-color: #fffbeb !important; }
     .row-parent-split input, .row-parent-split select { color: #92400e; }
     .sisa-badge { display: block; font-size: 0.7rem; color: #d97706; font-weight: 700; margin-top: 4px; text-align: right; }
 
-    /* Partial Linked Box */
-    .linked-box { background: #fffbe6; border: 1px solid #fcd34d; padding: 15px; border-radius: 10px; width: 100%; max-width: 400px; }
-    .linked-title { font-size: 0.8rem; font-weight: 700; color: #b45309; margin-bottom: 10px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
-    .linked-item { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px dashed #e2e8f0; }
-    .linked-item a { color: var(--primary); text-decoration: none; font-weight: 600; }
-    .linked-item a:hover { text-decoration: underline; }
+    /* Partial Linked Box (DIHAPUS DARI LOGIKA) */
     
-    .input-qty { width: 70px; padding: 8px; border: 1px solid #ccc; border-radius: 6px; text-align: right; font-weight: bold; background: #fffbe6; font-size: 1rem; }
-    .input-qty:focus { outline: 2px solid #d97706; border-color: #d97706; }
-
     /* Loading */
     .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(2px); }
     .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 0.8s linear infinite; }
@@ -199,7 +191,6 @@
             </div>
         </div>
         
-        <button class="filter-btn" onclick="setFilter('Partially Delivered')" id="btn-Partial">Partial</button>
         <button class="filter-btn" onclick="setFilter('Canceled')" id="btn-Canceled">Canceled</button>
       </div>
       
@@ -256,9 +247,7 @@
           <div class="total-row"><span>PPN (12%)</span><span id="valPPN">Rp 0</span></div>
           <div class="total-row grand-total"><span>GRAND TOTAL</span><span id="valGrand">Rp 0</span></div>
           <div id="outstandingArea" style="display:none;">
-              <div class="total-row outstanding-row"><span>SISA TAGIHAN</span><span id="valOutstanding">Rp 0</span></div>
-              <small style="color:#64748b; font-size:0.75rem; text-align:right; display:block;">(Estimated Remaining Balance)</small>
-          </div>
+            </div>
         </div>
       </div>
 
@@ -266,48 +255,11 @@
     </div>
   </div>
 
-  <div id="partialModal" class="modal-overlay">
-    <div class="invoice-paper" style="max-width:850px; border-top: 6px solid #d97706;">
-        <h2 style="color:#b45309; margin-bottom: 10px;">Create Partial Invoice</h2>
-        <p style="color:#64748b; margin-bottom: 25px; margin-top:0;">Adjust the <b>Send Qty</b> below for items being delivered now.</p>
-        
-        <div class="paper-table-container">
-            <table class="paper-table">
-                <thead>
-                    <tr>
-                        <th style="text-align:left;">Product</th>
-                        <th style="text-align:right;">Price/Qty</th>
-                        <th style="text-align:right;">Max Qty</th>
-                        <th style="text-align:right; width:120px;">Send Qty</th>
-                        <th style="text-align:right;">Total</th>
-                    </tr>
-                </thead>
-                <tbody id="partialTableBody"></tbody>
-            </table>
-        </div>
-
-        <div class="invoice-footer" style="justify-content: flex-end;">
-            <div style="width:100%; max-width:300px;">
-                <div class="total-row"><span>Subtotal (DPP)</span><span id="pDPP">0</span></div>
-                <div class="total-row"><span>PPN</span><span id="pPPN">0</span></div>
-                <div class="total-row grand-total"><span>GRAND TOTAL</span><span id="pGrand">0</span></div>
-            </div>
-        </div>
-
-        <div style="margin-top:30px; display:flex; gap:10px; justify-content:flex-end;">
-            <button class="btn-action btn-revert" onclick="document.getElementById('partialModal').style.display='none'">Cancel</button>
-            <button class="btn-action btn-partial" onclick="submitPartialDelivery()">
-                <i class="fa-solid fa-paper-plane"></i> Create Invoice
-            </button>
-        </div>
-    </div>
-  </div>
-
   <div id="loading" class="loading-overlay"><div class="spinner"></div></div>
 
 <script>
   // ================= CONFIGURATION =================
-  const API_URL = "https://script.google.com/macros/s/AKfycbzVAkZw6xakoiClJuhhZbgeMvrCTRMo59B7unvaD6elRd5_6KV20TQHAheus_-gMViYQw/exec"; 
+  const API_URL = "https://script.google.com/macros/s/AKfycby2FJ7SGCxtJeVa6mIuMACioIwkyEK2-IIkvtUQnY_p0PnZSV-MH1LFCRG3faoWy4T6dw/exec"; 
   // =================================================
 
   let allInvoices = [];
@@ -315,7 +267,7 @@
   let currentFilter = 'All'; 
   let currentApprovedSubFilter = 'All'; 
   let currentOpenInvoiceId = null; 
-  let tempPartialData = null; 
+  // let tempPartialData = null; // Dihapus
 
   window.onload = fetchInvoices;
 
@@ -341,59 +293,26 @@
               return inv;
           });
 
-          processInvoicesRelationship(); 
+          // processInvoicesRelationship(); // Dihapus
           renderInvoices();
         } else { alert("Error: " + response.error); }
       })
       .catch(err => { showLoading(false); alert("Network Error: " + err); });
   }
 
-  // --- LOGIC RELASI PARENT-CHILD ---
+  // --- LOGIC RELASI PARENT-CHILD DIHAPUS ---
+  /*
   function processInvoicesRelationship() {
-    invoiceMap = {};
-    allInvoices.forEach(inv => {
-        invoiceMap[inv.invoiceNumber] = inv;
-        inv.children = []; 
-        inv.parent = null; 
-        inv.isFullyShipped = false; 
-    });
-
-    allInvoices.forEach(inv => {
-        const invNum = String(inv.invoiceNumber);
-        if (invNum.includes("-P")) {
-            const parentId = invNum.split("-P")[0];
-            if (invoiceMap[parentId]) {
-                invoiceMap[parentId].children.push(inv);
-                inv.parent = invoiceMap[parentId];
-            }
-        }
-    });
-
-    // Cek apakah Parent sudah "Fully Shipped"
-    allInvoices.forEach(inv => {
-        if (inv.children.length > 0) {
-            let totalQtyOrder = inv.items.reduce((sum, i) => sum + i.qty, 0);
-            let totalQtyShipped = 0;
-            
-            inv.children.forEach(child => {
-                if (child.status !== "Canceled") {
-                    totalQtyShipped += child.items.reduce((sum, i) => sum + i.qty, 0);
-                }
-            });
-
-            if (totalQtyShipped >= totalQtyOrder && totalQtyOrder > 0) {
-                inv.isFullyShipped = true; 
-            }
-        }
-    });
+    // ... logic dihapus
   }
+  */
 
   function setFilter(status) {
     currentFilter = status;
     document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
     
     let btnId = `btn-${status}`;
-    if(status === 'Partially Delivered') btnId = 'btn-Partial';
+    // if(status === 'Partially Delivered') btnId = 'btn-Partial'; // Dihapus
     
     const btn = document.getElementById(btnId);
     if(btn) btn.classList.add('active');
@@ -425,22 +344,19 @@
       const invStatus = inv.status || 'Pending';
       let matchStatus = false;
 
+      // Logika Partial Delivery Dihapus
       let displayStatus = invStatus;
-      if (inv.isFullyShipped) displayStatus = 'Approved';
 
       if (currentFilter === 'All') matchStatus = true;
       else if (currentFilter === 'Approved') {
-          if (invStatus === 'Approved' || displayStatus === 'Approved') matchStatus = true;
+          if (invStatus === 'Approved') matchStatus = true;
           if (matchStatus && currentApprovedSubFilter !== 'All') {
               if (currentApprovedSubFilter === 'WE' && !inv.progressStatus.includes('WE')) matchStatus = false;
               if (currentApprovedSubFilter === 'Xero' && !inv.progressStatus.includes('Xero')) matchStatus = false;
           }
       } else {
-          if (currentFilter === 'Partially Delivered' && (invStatus === 'Partially Delivered' && !inv.isFullyShipped)) {
-              matchStatus = true;
-          } else {
-              matchStatus = invStatus === currentFilter;
-          }
+        // Status Partial Delivered tidak lagi dianggap filter valid, hanya Pending/Canceled
+        matchStatus = invStatus === currentFilter;
       }
 
       const matchSearch = inv.customer.toLowerCase().includes(searchVal) || inv.invoiceNumber.toString().toLowerCase().includes(searchVal);
@@ -459,7 +375,7 @@
     filtered.sort((a, b) => {
         const numA = parseInt(String(a.invoiceNumber).replace(/\D/g, '')) || 0;
         const numB = parseInt(String(b.invoiceNumber).replace(/\D/g, '')) || 0;
-        return (sortVal === 'asc') ? (numA - numB) : (numB - numA);
+        return (sortVal === 'asc') ? (numA - numB) : (numB - a.invoiceNumber); // Sort by Order Number (Numerical part)
     });
 
     if (filtered.length === 0) { 
@@ -471,18 +387,13 @@
       let status = inv.status || 'Pending';
       let borderClass = 'border-pending';
       let badgeClass = 'badge-pending';
-      let versionBadge = '';
+      // let versionBadge = ''; // Dihapus
 
-      if (inv.isFullyShipped) {
-          status = 'Approved';
-          borderClass = 'border-approved';
-          badgeClass = 'badge-approved';
-          versionBadge = '<span class="badge-pill badge-version"><i class="fa-solid fa-code-branch"></i> Partial Ver.</span>';
-      } else {
-          if (status === 'Approved') { borderClass = 'border-approved'; badgeClass = 'badge-approved'; }
-          else if (status === 'Canceled') { borderClass = 'border-canceled'; badgeClass = 'badge-canceled'; }
-          else if (status === 'Partially Delivered') { borderClass = 'border-partial'; badgeClass = 'badge-partial'; }
-      }
+      // Logika Partial/FullyShipped Dihapus
+      if (status === 'Approved') { borderClass = 'border-approved'; badgeClass = 'badge-approved'; }
+      else if (status === 'Canceled') { borderClass = 'border-canceled'; badgeClass = 'badge-canceled'; }
+      // else if (status === 'Partially Delivered') { borderClass = 'border-partial'; badgeClass = 'badge-partial'; } // Dihapus
+      
 
       const grandTotal = inv.grandTotal || 0;
       let noteHtml = inv.noteCanceled ? `<div style="font-size:0.8rem; color:#ef4444; background:#fef2f2; padding:6px 10px; border-radius:8px; margin-top:8px; inline-flex; gap:6px; align-items:center;"><i class="fa-solid fa-circle-exclamation"></i> ${inv.noteCanceled}</div>` : '';
@@ -507,8 +418,8 @@
             <div class="card-sub" style="font-size:0.8rem;"><i class="fa-regular fa-calendar"></i> ${inv.date ? new Date(inv.date).toLocaleDateString('id-ID') : '-'}</div>
           </div>
           <div class="status-area">
-              <div style="display:flex; gap:4px; flex-wrap:wrap; justify-content:flex-end;">${versionBadge}<span class="badge-pill ${badgeClass}">${status}</span></div>
-              <div style="display:flex; gap:4px; margin-top:4px;">${progressBadgeHtml}</div>
+            <div style="display:flex; gap:4px; flex-wrap:wrap; justify-content:flex-end;"><span class="badge-pill ${badgeClass}">${status}</span></div>
+            <div style="display:flex; gap:4px; margin-top:4px;">${progressBadgeHtml}</div>
           </div>
         </div>
         <div class="price-tag">${formatMoney(grandTotal)}</div>
@@ -565,19 +476,13 @@
 
     let badgeClass = 'badge-pending';
     let statusText = inv.status || 'Pending';
-    let addVersionTag = false;
+    // let addVersionTag = false; // Dihapus
     
-    if (inv.isFullyShipped) {
-        statusText = 'Approved';
-        badgeClass = 'badge-approved';
-        addVersionTag = true;
-    } else {
-        if(inv.status === 'Approved') badgeClass = 'badge-approved';
-        else if(inv.status === 'Canceled') badgeClass = 'badge-canceled';
-        else if(inv.status === 'Partially Delivered') badgeClass = 'badge-partial';
-    }
+    // Logika Partial/FullyShipped Dihapus
+    if(inv.status === 'Approved') badgeClass = 'badge-approved';
+    else if(inv.status === 'Canceled') badgeClass = 'badge-canceled';
+    // else if(inv.status === 'Partially Delivered') badgeClass = 'badge-partial'; // Dihapus
 
-    if(addVersionTag) statusContainer.innerHTML += `<span class="badge-pill badge-version"><i class="fa-solid fa-code-branch"></i> Partial Delivered Version</span>`;
     statusContainer.innerHTML += `<span class="badge-pill ${badgeClass}">${statusText}</span>`;
 
     // --- RENDER TABLE ---
@@ -590,66 +495,32 @@
     linkedArea.innerHTML = '';
     outstandingArea.style.display = 'none';
 
-    // CEK APAKAH PARENT (Punya Child)
-    if (inv.children && inv.children.length > 0) {
-        thead.innerHTML = `<tr><th style="text-align:left;">Product</th><th style="text-align:right;">Order Qty</th><th style="text-align:right;">Shipped</th><th style="text-align:right;">Total</th></tr>`;
-        
-        let totalRemainingValue = 0;
-        const itemCalc = inv.items.map(item => {
-            let shipped = 0;
-            inv.children.forEach(child => {
-                if (child.status !== 'Canceled') {
-                    const match = child.items.find(cItem => cItem.product === item.product);
-                    if (match) shipped += match.qty;
-                }
-            });
-            const remain = Math.max(0, item.qty - shipped);
-            totalRemainingValue += (remain * item.priceQty);
-            return { ...item, shipped: shipped, remaining: remain };
-        });
+    // Logika PARENT/CHILD Dihapus (sekarang selalu view normal)
+    
+    // === VIEW NORMAL (SINGLE) ===
+    thead.innerHTML = `
+        <tr>
+          <th style="width:50px; text-align:center;">Act</th>
+          <th style="text-align:left; min-width:150px;">Product Name</th>
+          <th style="text-align:center;">Type</th>
+          <th style="text-align:right;">Meter</th>
+          
+          <th style="text-align:right; min-width:90px;">Price</th>
+          <th style="text-align:right; width:60px;">Disc</th>
+          <th style="text-align:right; min-width:90px;">Price/Qty</th>
 
-        itemCalc.forEach(item => {
-            tbody.innerHTML += `<tr><td><b>${item.product}</b></td><td align="right">${item.qty}</td><td align="right" style="color:#2563eb;">${item.shipped}</td><td align="right">${formatMoney(item.total)}</td></tr>`;
-        });
-        
-        document.getElementById('valOutstanding').textContent = formatMoney(totalRemainingValue);
-        outstandingArea.style.display = 'block';
+          <th style="text-align:right; width:70px;">Qty</th>
+          <th style="text-align:right; min-width:100px;">Total</th>
+          
+          <th style="width:90px; background:#f0f9ff;">Machine</th>
+          <th style="width:100px; background:#f0f9ff;">KPC</th>
+          <th style="width:80px; background:#f0f9ff;">Type</th>
+          <th style="min-width:220px; background:#f0f9ff;">WE Num</th>
+        </tr>`;
 
-         let linksHtml = inv.children.map(child => `
-            <div class="linked-item">
-                <span>Invoice <a href="#" onclick="switchInvoice('${child.invoiceNumber}')">${child.invoiceNumber}</a></span>
-                <span>${formatMoney(child.grandTotal)}</span>
-            </div>
-        `).join('');
-        linkedArea.innerHTML = `<div class="linked-box"><div class="linked-title"><i class="fa-solid fa-link"></i> Applied Partial Invoices</div>${linksHtml}</div>`;
-
-    } else {
-        // === VIEW NORMAL (CHILD/SINGLE) ===
-        // PERBAIKAN: Kolom WE Number dilebarkan (min-width: 220px)
-        thead.innerHTML = `
-            <tr>
-              <th style="width:50px; text-align:center;">Act</th>
-              <th style="text-align:left; min-width:150px;">Product Name</th>
-              <th style="text-align:center;">Type</th>
-              <th style="text-align:right;">Meter</th>
-              
-              <th style="text-align:right; min-width:90px;">Price</th>
-              <th style="text-align:right; width:60px;">Disc</th>
-              <th style="text-align:right; min-width:90px;">Price/Qty</th>
-
-              <th style="text-align:right; width:70px;">Qty</th>
-              <th style="text-align:right; min-width:100px;">Total</th>
-              
-              <th style="width:90px; background:#f0f9ff;">Machine</th>
-              <th style="width:100px; background:#f0f9ff;">KPC</th>
-              <th style="width:80px; background:#f0f9ff;">Type</th>
-              <th style="min-width:220px; background:#f0f9ff;">WE Num</th>
-            </tr>`;
-
-        inv.items.forEach((item, index) => {
-            renderItemRow(tbody, item, index, 0); 
-        });
-    }
+    inv.items.forEach((item, index) => {
+        renderItemRow(tbody, item, index, 0); 
+    });
 
     document.getElementById('valDPP').textContent = formatMoney(inv.dpp || 0);
     document.getElementById('valPPN').textContent = formatMoney(inv.ppn || 0);
@@ -664,7 +535,7 @@
       tr.className = `row-group-${mainIndex}`;
       tr.setAttribute('data-main-index', mainIndex);
       // PENTING: Menambahkan atribut sub-index untuk identifikasi saat Approve
-      tr.setAttribute('data-sub-index', subIndex);
+      tr.setAttribute('data-sub-index', subIndex); // Tetap 0
 
       let typeCode = "-";
       let badgeColor = "#64748b";
@@ -683,80 +554,70 @@
 
       const uid = `${mainIndex}_${subIndex}`;
       
-      // LOGIKA TOMBOL & READONLY
-      const isSplitChild = subIndex > 0;
+      // LOGIKA TOMBOL & READONLY (Disederhanakan untuk Single Item)
+      const isSplitChild = subIndex > 0; // Sekarang selalu False
       
       let actionBtn = '';
       if (isSP) {
-          if (isSplitChild) {
-              actionBtn = `<button class="btn-remove" onclick="removeSplitRow(this, ${mainIndex})"><i class="fa-solid fa-trash"></i></button>`;
-          } else {
-              actionBtn = `<button class="btn-split" onclick="addSplitRow(${mainIndex})"><i class="fa-solid fa-code-branch"></i> Split</button>`;
-          }
+          // Hanya ada tombol split, tapi tanpa logika parent/child lagi
+          actionBtn = `<button class="btn-split" onclick="addSplitRow(${mainIndex})"><i class="fa-solid fa-code-branch"></i> Split</button>`;
       }
 
-      const isParentLocked = (subIndex === 0 && document.querySelectorAll(`.row-group-${mainIndex}`).length > 0);
-      
-      let inputState = (isSP && !isParentLocked) ? '' : 'disabled';
-      if (isSplitChild) inputState = ''; 
-
-      if(subIndex === 0 && inputState === 'disabled' && isSP) {
-          tr.classList.add('row-parent-split');
-          tr.classList.add('is-locked-parent'); 
-      }
+      // Logika Parent Locked Dihapus
+      let inputState = isSplitChild ? '' : ''; // Input selalu enabled kecuali meter
 
       const sisaHtml = (subIndex === 0 && isSP) ? `<span class="sisa-badge" id="sisa_${mainIndex}"></span>` : '';
 
       // UPDATE: Option CSTM dan PLAT
       tr.innerHTML = `
-        <td style="text-align:center;">${actionBtn}</td>
-        <td>
-           <span style="font-weight:600; font-size:0.85rem;">${item.product}</span>
-           <input type="hidden" class="data-product" value="${item.product}">
-           <input type="hidden" class="data-unitprice" value="${item.unitPrice}">
-           <input type="hidden" class="data-priceqty" value="${item.priceQty}">
-           <input type="hidden" class="data-type" value="${item.type}">
-           <input type="hidden" class="data-discount" value="${item.discount}">
-           <input type="hidden" class="original-qty" value="${item.qty}"> 
-        </td>
-        <td style="text-align:center;">
-           <span style="background:${badgeColor}; padding:3px 6px; border-radius:4px; font-size:0.7em; font-weight:bold; color:white;">${typeCode}</span>
-        </td>
-        <td style="text-align:right;">
-           <input type="text" class="tbl-input text-right data-meter" value="${item.meter > 0 ? item.meter : ''}" readonly style="width:40px; background:transparent; border:none; padding:0;">
-        </td>
-        <td style="text-align:right; font-size:0.85rem;">${formatMoney(item.unitPrice)}</td>
-        <td style="text-align:right; font-size:0.85rem; color:#ef4444;">${item.discount > 0 ? item.discount + '%' : '-'}</td>
-        <td style="text-align:right; font-size:0.85rem; font-weight:600;">${formatMoney(item.priceQty)}</td>
-        <td style="text-align:right;">
-           <input type="number" class="tbl-input text-right data-qty" value="${item.qty}" style="font-weight:bold; width:60px;" onchange="recalcRow(this)" ${inputState}>
-           ${sisaHtml}
-        </td>
-        <td style="text-align:right; font-size:0.85rem; font-weight:600;">
-           <span class="data-total-display">${formatMoney(item.total)}</span>
-           <input type="hidden" class="data-total" value="${item.total}">
-        </td>
-        <td>
-           <select class="tbl-input inp-machine" id="machine_${uid}" onchange="generateWENumber('${uid}')" ${inputState} style="font-size:0.8rem;">
-              <option value="">-</option>
-              <option value="PM08">PM08</option>
-              <option value="PM014">PM014</option>
-           </select>
-        </td>
-        <td>
-           <input type="text" class="tbl-input inp-kpc" id="kpc_${uid}" placeholder="..." oninput="generateWENumber('${uid}')" ${inputState} style="font-size:0.8rem;">
-        </td>
-        <td>
-           <select class="tbl-input inp-prodtype" id="prodtype_${uid}" onchange="generateWENumber('${uid}')" ${inputState} style="font-size:0.8rem;">
-              <option value="">-</option>
-              <option value="CSTM">CSTM</option>
-              <option value="PLAT">PLAT</option>
-           </select>
-        </td>
-        <td>
-           <input type="text" class="tbl-input inp-wenum" id="wenum_${uid}" readonly placeholder="-" style="color:#2563eb; font-weight:600; background:#f0f9ff; font-size:0.8rem;" ${inputState}>
-        </td>
-      `;
+          <td style="text-align:center;">${actionBtn}</td>
+          <td>
+             <span style="font-weight:600; font-size:0.85rem;">${item.product}</span>
+             <input type="hidden" class="data-product" value="${item.product}">
+             <input type="hidden" class="data-unitprice" value="${item.unitPrice}">
+             <input type="hidden" class="data-priceqty" value="${item.priceQty}">
+             <input type="hidden" class="data-type" value="${item.type}">
+             <input type="hidden" class="data-discount" value="${item.discount}">
+             <input type="hidden" class="original-qty" value="${item.qty}"> 
+          </td>
+          <td style="text-align:center;">
+             <span style="background:${badgeColor}; padding:3px 6px; border-radius:4px; font-size:0.7em; font-weight:bold; color:white;">${typeCode}</span>
+          </td>
+          <td style="text-align:right;">
+             <input type="text" class="tbl-input text-right data-meter" value="${item.meter > 0 ? item.meter : ''}" readonly style="width:40px; background:transparent; border:none; padding:0;">
+          </td>
+          <td style="text-align:right; font-size:0.85rem;">${formatMoney(item.unitPrice)}</td>
+          <td style="text-align:right; font-size:0.85rem; color:#ef4444;">${item.discount > 0 ? item.discount + '%' : '-'}</td>
+          <td style="text-align:right; font-size:0.85rem; font-weight:600;">${formatMoney(item.priceQty)}</td>
+          <td style="text-align:right;">
+             <input type="number" class="tbl-input text-right data-qty" value="${item.qty}" style="font-weight:bold; width:60px;" onchange="recalcRow(this)" ${inputState}>
+             ${sisaHtml}
+          </td>
+          <td style="text-align:right; font-size:0.85rem; font-weight:600;">
+             <span class="data-total-display">${formatMoney(item.total)}</span>
+             <input type="hidden" class="data-total" value="${item.total}">
+          </td>
+          <td>
+             <select class="tbl-input inp-machine" id="machine_${uid}" onchange="generateWENumber('${uid}')" ${inputState} style="font-size:0.8rem;">
+               <option value="">-</option>
+               <option value="PM08">PM08</option>
+               <option value="PM014">PM014</option>
+             </select>
+          </td>
+          <td>
+             <input type="text" class="tbl-input inp-kpc" id="kpc_${uid}" placeholder="..." oninput="generateWENumber('${uid}')" ${inputState} style="font-size:0.8rem;">
+          </td>
+          <td>
+             <select class="tbl-input inp-prodtype" id="prodtype_${uid}" onchange="generateWENumber('${uid}')" ${inputState} style="font-size:0.8rem;">
+               <option value="">-</option>
+               <option value="CSTM">CSTM</option>
+               <option value="PLAT">PLAT</option>
+             </select>
+          </td>
+          <td>
+             <input type="text" class="tbl-input inp-wenum" id="wenum_${uid}" readonly placeholder="-" style="color:#2563eb; font-weight:600; background:#f0f9ff; font-size:0.8rem;" ${inputState}>
+          </td>
+        `;
       
       tbody.appendChild(tr);
 
@@ -774,12 +635,17 @@
       const meter = parentRow.querySelector('.data-meter').value;
       const discount = parseFloat(parentRow.querySelector('.data-discount').value) || 0;
 
+      // Kunci baris Parent
       parentRow.classList.add('row-parent-split');
       parentRow.classList.add('is-locked-parent');
       parentRow.querySelectorAll('.tbl-input').forEach(input => {
-          input.disabled = true;
-          input.style.backgroundColor = '#f1f5f9';
+          if(!input.classList.contains('data-meter')) { // Meter tetap readonly
+             input.disabled = true;
+             input.style.backgroundColor = '#f1f5f9';
+          }
       });
+      // Tombol Split diganti menjadi tombol Remove
+      parentRow.querySelector('.btn-split').outerHTML = `<button class="btn-remove" onclick="removeSplitRow(this, ${mainIndex})"><i class="fa-solid fa-trash"></i></button>`;
 
       const item = {
           product: product, type: type, meter: meter, qty: 0, 
@@ -787,18 +653,24 @@
       };
 
       const existingRows = document.querySelectorAll(`.row-group-${mainIndex}`);
-      const subIndex = existingRows.length;
+      const subIndex = existingRows.length; // Sub-index baru
       const lastRow = existingRows[existingRows.length - 1];
       const tbody = document.getElementById('modalTableBody');
       
       renderItemRow(tbody, item, mainIndex, subIndex);
       
       const newRow = tbody.lastElementChild;
+      newRow.querySelector('.btn-remove').outerHTML = `<button class="btn-remove" onclick="removeSplitRow(this, ${mainIndex})"><i class="fa-solid fa-trash"></i></button>`;
       lastRow.insertAdjacentElement('afterend', newRow);
+
+      // Set Qty 0 untuk baris baru
+      newRow.querySelector('.data-qty').value = 0;
+      calculateRemaining(mainIndex);
   }
 
   function removeSplitRow(btn, mainIndex) {
       const tr = btn.closest('tr');
+      const subIndex = parseInt(tr.getAttribute('data-sub-index'));
       tr.remove();
 
       const remainingRows = document.querySelectorAll(`.row-group-${mainIndex}`);
@@ -809,10 +681,15 @@
           parentRow.classList.remove('is-locked-parent');
           parentRow.querySelectorAll('.tbl-input').forEach(input => {
               if(!input.classList.contains('data-meter')) {
-                input.disabled = false;
-                input.style.backgroundColor = '#fff';
+                 input.disabled = false;
+                 input.style.backgroundColor = '#fff';
               }
           });
+          // Kembalikan tombol ke Split
+          parentRow.querySelector('.btn-remove').outerHTML = `<button class="btn-split" onclick="addSplitRow(${mainIndex})"><i class="fa-solid fa-code-branch"></i> Split</button>`;
+      } else if (subIndex === 0) {
+        // Jika baris Parent (index 0) dihapus (Ini seharusnya tidak terjadi, tapi jika terjadi)
+        // Lakukan reload modal atau beri pesan error
       }
       
       calculateRemaining(mainIndex);
@@ -870,26 +747,21 @@
     const actionDiv = document.getElementById('modalActions');
     actionDiv.innerHTML = ''; 
 
-    if (inv.status === 'Approved' || inv.isFullyShipped) {
+    // Logika Partial/FullyShipped Dihapus
+    if (inv.status === 'Approved') {
         actionDiv.innerHTML = `<div style="color:var(--approved-text); font-weight:600;"><i class="fa-solid fa-check-circle"></i> Approved.</div>`;
     } 
     else if (inv.status === 'Canceled') {
        actionDiv.innerHTML = `<div style="color:var(--canceled-text);">Canceled: ${inv.noteCanceled || '-'}</div>`;
     } 
     else {
-       const isParent = inv.children.length > 0;
-       let buttonsHtml = `<button class="btn-action btn-reject" onclick="handleActionFromModal('Canceled')"><i class="fa-solid fa-xmark"></i> Reject</button>`;
-       
-       if (!inv.isFullyShipped) {
-           buttonsHtml += `<button class="btn-action btn-partial" onclick="openPartialModal()"><i class="fa-solid fa-boxes-packing"></i> ${isParent ? 'Next Partial' : 'Partially Delivered'}</button>`;
-       }
+        let buttonsHtml = `<button class="btn-action btn-reject" onclick="handleActionFromModal('Canceled')"><i class="fa-solid fa-xmark"></i> Reject</button>`;
+        
+        // Tombol Partial Delivered Dihapus
 
-       if (isParent) {
-           buttonsHtml += `<button class="btn-action btn-approve" disabled><i class="fa-solid fa-lock"></i> Approve Invoice</button>`;
-       } else {
-           buttonsHtml += `<button class="btn-action btn-approve" onclick="handleApproveFromModal()"><i class="fa-solid fa-check"></i> Approve Invoice</button>`;
-       }
-       actionDiv.innerHTML = buttonsHtml;
+        buttonsHtml += `<button class="btn-action btn-approve" onclick="handleApproveFromModal()"><i class="fa-solid fa-check"></i> Approve Invoice</button>`;
+        
+        actionDiv.innerHTML = buttonsHtml;
     }
   }
 
@@ -901,138 +773,7 @@
     }
   }
 
-  // --- PARTIAL DELIVERY LOGIC ---
-
- function openPartialModal() {
-    const inv = invoiceMap[currentOpenInvoiceId];
-    if (!inv) return;
-
-    tempPartialData = {
-        invoiceNumber: inv.invoiceNumber,
-        customer: inv.customer,
-        keySalesOrder: inv.keySalesOrder,
-        catatan: inv.catatan,
-        items: inv.items.map(item => ({...item})), 
-        dpp: inv.dpp,
-        ppn: inv.ppn,
-        grandTotal: inv.grandTotal
-    };
-
-    const itemsWithRemaining = [];
-
-    tempPartialData.items.forEach(item => {
-        let shipped = 0;
-        if (inv.children) {
-            inv.children.forEach(child => {
-                if (child.status !== 'Canceled') {
-                   const match = child.items.find(c => c.product === item.product);
-                   if (match) shipped += match.qty;
-                }
-            });
-        }
-        const remaining = item.qty - shipped;
-        if (remaining > 0) {
-            item.maxQty = remaining; 
-            item.qty = remaining; 
-            itemsWithRemaining.push(item);
-        }
-    });
-
-    tempPartialData.items = itemsWithRemaining; 
-
-    if (tempPartialData.items.length === 0) {
-        alert("Semua item untuk order ini sudah dikirim (Fully Delivered).");
-        return;
-    }
-
-    const tbody = document.getElementById('partialTableBody');
-    tbody.innerHTML = '';
-
-    tempPartialData.items.forEach((item, index) => {
-        const tr = document.createElement('tr');
-        const initialTotal = item.qty * item.priceQty;
-        item.total = initialTotal;
-        
-        tr.innerHTML = `
-            <td><b>${item.product}</b></td>
-            <td style="text-align:right;">${formatMoney(item.priceQty)}</td>
-            <td style="text-align:right; color:#888;">${item.maxQty}</td>
-            <td style="text-align:right;">
-                <input type="number" class="input-qty" value="${item.qty}" min="0" max="${item.maxQty}" 
-                 oninput="recalcPartialRow(this, ${index})" onchange="recalcPartialRow(this, ${index})">
-            </td>
-            <td style="text-align:right; font-weight:bold;" id="pTotal-${index}">${formatMoney(initialTotal)}</td>
-        `;
-        tbody.appendChild(tr);
-    });
-
-    recalcPartialGrandTotal(); 
-    document.getElementById('partialModal').style.display = 'flex'; 
-  }
-
-  function recalcPartialRow(input, index) {
-    let max = parseFloat(input.getAttribute('max'));
-    let newQty = parseFloat(input.value);
-    
-    if (newQty > max) { alert(`Maksimal Qty sisa adalah ${max}`); newQty = max; input.value = max; }
-    if (newQty < 0 || isNaN(newQty)) { newQty = 0; }
-    
-    tempPartialData.items[index].qty = newQty;
-    const newTotal = newQty * tempPartialData.items[index].priceQty;
-    tempPartialData.items[index].total = newTotal;
-
-    document.getElementById(`pTotal-${index}`).textContent = formatMoney(newTotal);
-    recalcPartialGrandTotal();
-  }
-
-  function recalcPartialGrandTotal() {
-    let grandTotal = 0;
-    tempPartialData.items.forEach(item => { grandTotal += (item.total || 0); });
-
-    const dpp = grandTotal / 1.11;
-    const ppn = grandTotal - dpp;
-
-    document.getElementById('pDPP').textContent = formatMoney(dpp);
-    document.getElementById('pPPN').textContent = formatMoney(ppn);
-    document.getElementById('pGrand').textContent = formatMoney(grandTotal);
-
-    tempPartialData.dpp = dpp;
-    tempPartialData.ppn = ppn;
-    tempPartialData.grandTotal = grandTotal;
-  }
-
-  function submitPartialDelivery() {
-    if(!confirm("Create Partial Invoice? Original invoice will mark as 'Partially Delivered'.")) return;
-    
-    const activeItems = tempPartialData.items.filter(i => i.qty > 0);
-    if(activeItems.length === 0) { alert("Cannot create invoice with 0 items."); return; }
-
-    showLoading(true);
-    
-    const payload = {
-        originalInvoiceNumber: tempPartialData.invoiceNumber, 
-        customerName: tempPartialData.customer,
-        keySalesOrder: tempPartialData.keySalesOrder,
-        catatan: tempPartialData.catatan,
-        items: activeItems, 
-        dpp: tempPartialData.dpp,
-        ppn: tempPartialData.ppn,
-        grandTotal: tempPartialData.grandTotal
-    };
-
-    fetch(API_URL + "?action=partialDelivery", { method: "POST", body: JSON.stringify(payload) })
-    .then(res => res.json())
-    .then(data => {
-        showLoading(false);
-        if(data.ok) {
-            alert("Success! Created Invoice: " + data.newId);
-            document.getElementById('partialModal').style.display='none';
-            document.getElementById('invoiceModal').style.display='none';
-            fetchInvoices(); 
-        } else { alert("Failed: " + data.error); }
-    })
-    .catch(err => { showLoading(false); alert("Network error"); });
-  }
+  // --- PARTIAL DELIVERY LOGIC DIHAPUS ---
 
   // --- ACTIONS ---
   
@@ -1044,12 +785,12 @@
     
     const tableRows = document.querySelectorAll('#modalTableBody tr');
     // GANTI: Pisahkan Invoice Items (Parent) dan Production Items (Child)
-    const invoiceItems = [];
-    const productionItems = [];
+    const invoiceItems = []; // Untuk Sales Order Approved
+    const productionItems = []; // Untuk WE Result
 
     tableRows.forEach(tr => {
         const subIndex = parseInt(tr.getAttribute('data-sub-index'));
-        const isParentLocked = tr.classList.contains('is-locked-parent');
+        const isParentLocked = tr.classList.contains('is-locked-parent'); // Untuk logika split
 
         const product = tr.querySelector('.data-product').value;
         const type = tr.querySelector('.data-type').value;
@@ -1058,6 +799,10 @@
         const priceQty = parseFloat(tr.querySelector('.data-priceqty').value) || 0;
         const discount = parseFloat(tr.querySelector('.data-discount').value) || 0;
         
+        // Jika baris Parent ter-split, gunakan original qty/total untuk invoiceItems
+        const originalQty = parseFloat(tr.querySelector('.original-qty').value) || 0;
+        const originalTotal = originalQty * priceQty;
+
         const qty = parseFloat(tr.querySelector('.data-qty').value) || 0;
         const total = parseFloat(tr.querySelector('.data-total').value) || 0;
 
@@ -1071,28 +816,41 @@
             machine, kpc, prodType, weNumber: weNum
         };
 
-        // LOGIKA PEMISAHAN:
-        
-        // 1. INVOICE: Ambil baris utama (Index 0).
-        //    - Jika Single: subIndex=0, qty penuh.
-        //    - Jika Parent Split: subIndex=0, qty penuh (Original).
+        // 1. INVOICE: Ambil baris utama (Index 0). Gunakan data asli jika ter-split.
         if (subIndex === 0) {
-            invoiceItems.push(itemData);
+            if (isParentLocked) { // Jika ada split, kirim data asli
+               invoiceItems.push({
+                  product, type, meter, unitPrice, priceQty, discount,
+                  qty: originalQty, total: originalTotal, // Gunakan Qty dan Total Asli
+                  machine: "", kpc: "", prodType: "", weNumber: "" // Kosongkan data produksi
+               });
+            } else {
+               invoiceItems.push(itemData); // Jika tidak split, kirim data yang diedit
+            }
         }
 
         // 2. PRODUCTION: Ambil baris Single DAN baris Anak. Skip Parent yang terkunci.
-        //    - Jika Single: !isParentLocked -> Masuk
-        //    - Jika Parent Split: isParentLocked -> Skip
-        //    - Jika Child: subIndex > 0 -> Masuk
-        if (!isParentLocked) {
-             productionItems.push(itemData);
+        if (!isParentLocked || subIndex > 0) {
+             // Pastikan QTY > 0 untuk dikirim ke Production
+             if(itemData.qty > 0) productionItems.push(itemData);
         }
     });
+
+    // Validasi Sisa Qty
+    let hasError = false;
+    document.querySelectorAll('.sisa-badge').forEach(badge => {
+        const sisa = parseInt(badge.textContent.split(': ')[1]) || 0;
+        if (sisa !== 0) {
+            alert("Harap pastikan semua SISA Qty sudah 0 sebelum Approve.");
+            hasError = true;
+        }
+    });
+    if (hasError) { setModalLoading(false); return; }
 
     const payload = {
       invoiceNumber: inv.invoiceNumber, customerName: inv.customer, date: inv.date,
       catatan: inv.catatan, keySalesOrder: inv.keySalesOrder, 
-      invoiceItems: invoiceItems,       // List untuk Sales Order Approved
+      invoiceItems: invoiceItems,         // List untuk Sales Order Approved
       productionItems: productionItems, // List untuk WE Result
       dpp: inv.dpp, ppn: inv.ppn, grandTotal: inv.grandTotal
     };
