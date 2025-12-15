@@ -171,9 +171,24 @@
         </div>
     </div>
 
+    <div id="notificationModal" class="fixed inset-0 z-[60] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden transform transition-all scale-100 animate-fade-in-up">
+            <div class="p-6 text-center">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-5">
+                    <i class="fas fa-shield-halved text-3xl text-red-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Internal Control</h3>
+                <p id="notif-message" class="text-slate-600 mb-6 leading-relaxed text-sm">Error</p>
+                <button onclick="closeNotification()" class="w-full py-3 px-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition duration-200 shadow-lg shadow-red-200">
+                    OK, Saya Mengerti
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // --- KONFIGURASI ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbwHR0Px0ghtNrJT6oW5aGLTexng5qknN2Kp4hcQrJB6zxIySw-pOYQNt5yU3VI-xOai/exec"; 
+        // --- KONFIGURASI API (GANTI DENGAN DEPLOYMENT TERBARU) ---
+        const API_URL = "https://script.google.com/macros/s/AKfycbzhb-0ORjetneYRMLv2IOvf7M_GRLYFaLUu2d5nPn5Xe8DmjukKEwa0JQZrBD4_hWhm/exec"; 
         const TAX_RATE = 0.11; 
 
         let allData = [];
@@ -198,7 +213,7 @@
         }
         window.onload = fetchData;
 
-    function renderCards(data) {
+        function renderCards(data) {
             const container = document.getElementById('cardContainer');
             container.innerHTML = '';
             
@@ -231,16 +246,14 @@
                     statusClass = 'bg-red-100 text-red-800 border border-red-200';
                 }
 
-                // --- TAMBAHAN BARU: LOGIC MENAMPILKAN INV NUMBER ---
+                // Info Inv Number di Card
                 let invInfo = '';
                 if (po.invNumber) {
-                    // Tampilkan Inv Number jika ada isinya
                     invInfo = `
                     <div class="mt-2 text-xs font-mono bg-slate-50 border border-slate-200 rounded px-2 py-1 inline-block text-slate-600">
                         <i class="fas fa-hashtag text-slate-400 mr-1"></i>${po.invNumber}
                     </div>`;
                 }
-                // ---------------------------------------------------
 
                 const html = `
                 <div class="bg-white rounded-xl p-5 border border-slate-200 hover:shadow-md transition flex flex-col justify-between h-full">
@@ -252,19 +265,17 @@
                             </div>
                             <span class="px-2 py-1 rounded text-xs font-bold whitespace-nowrap ${statusClass}">${po.status}</span>
                         </div>
-                        
                         ${invInfo}
-                        
                         <div class="text-sm text-slate-400 mt-3 mb-4 flex items-center">
                             <i class="far fa-calendar mr-2"></i> ${formatDate(po.tanggalInput)}
                         </div>
                     </div>
-                    
                     <button onclick="openBillModal('${po.id}')" class="w-full py-2 rounded-lg font-medium text-sm transition mt-auto ${btnClass}">${btnText}</button>
                 </div>`;
                 container.innerHTML += html;
             });
         }
+
         function openBillModal(idPO) {
             const po = allData.find(d => d.id === idPO);
             if (!po) return;
@@ -304,9 +315,11 @@
             document.getElementById('bill-note').value = po.adminNote || po.catatan || '';
             document.getElementById('bill-adjustment').value = 0;
 
+            // MAP ITEMS dengan tracking originalQty
             currentItems = po.items.map(item => ({
                 ...item,
-                qty: item.qty || 0, // Pastikan ada value qty
+                qty: item.qty || 0,
+                originalQty: item.qty || 0, // Simpan Qty Awal saat diload
                 price: item.price || 0,
                 disc: item.disc || 0,
                 optionalSpec: item.optionalSpec || '' 
@@ -437,6 +450,7 @@
                     <td class="p-3 align-top">
                          <input type="number" value="${item.qty}" ${disabledAttr} oninput="updateItem(${index}, 'qty', this.value)" class="input-bare text-center text-sm font-medium">
                     </td>
+                    
                     <td class="p-3 align-top">
                         <input type="number" placeholder="0" value="${item.price}" ${disabledAttr} oninput="updateItem(${index}, 'price', this.value)" class="input-bare text-right text-sm font-mono">
                     </td>
@@ -447,12 +461,10 @@
                 </tr>`;
                 tbody.innerHTML += row;
             });
-            // Selalu hitung total meskipun tidak mode edit, untuk menampilkan angka awal
             calculateTotal(); 
         }
 
         function updateItem(index, field, value) {
-            // Cek apakah field adalah angka (price, disc, atau qty)
             if (field === 'price' || field === 'disc' || field === 'qty') {
                 currentItems[index][field] = parseFloat(value) || 0;
             } else {
@@ -490,46 +502,43 @@
             document.getElementById('display-ppn').dataset.value = ppn;
         }
 
-async function submitBill() {
-            // --- 1. INTERNAL CONTROL SECTION ---
+        async function submitBill() {
+            // --- 1. INTERNAL CONTROL (MODERN POPUP) ---
             
-            // A. Validasi Invoice Number
             const invNumber = document.getElementById('bill-inv-number').value;
             if (!invNumber) { 
-                alert("INTERNAL CONTROL: Harap isi Nomor Invoice!"); 
+                showNotification("Nomor Invoice wajib diisi untuk keperluan Internal Control."); 
                 return; 
             }
 
-            // B. Validasi Tanggal (Wajib Diisi)
             const invDate = document.getElementById('bill-date').value;
             const dueDate = document.getElementById('bill-due-date').value;
-            if (!invDate || !dueDate) {
-                alert("INTERNAL CONTROL: Tanggal Invoice dan Due Date WAJIB diisi sebelum disimpan.");
+            
+            if (!invDate) {
+                showNotification("Tanggal Invoice wajib diisi sebelum data disimpan.");
+                return;
+            }
+            if (!dueDate) {
+                showNotification("Due Date wajib diisi sebelum data disimpan.");
                 return;
             }
 
-            // C. Validasi Grand Total (Tidak Boleh 0 atau Minus)
-            // Kita ambil dari dataset value agar akurat (bukan text Rp)
             const grandTotal = parseFloat(document.getElementById('display-grand-total').dataset.value) || 0;
             if (grandTotal <= 0) {
-                alert("INTERNAL CONTROL: Total Bill tidak boleh 0 atau negatif. Harap periksa item harga atau diskon.");
+                showNotification("Total Bill tidak boleh 0 atau negatif. Mohon periksa kembali harga item.");
                 return;
             }
 
-            // D. Validasi Diskon (Tidak Boleh Melebihi Harga Satuan)
-            // Loop semua item untuk pengecekan per baris
             for (let i = 0; i < currentItems.length; i++) {
                 const item = currentItems[i];
                 if (item.disc > item.price) {
-                    alert(`INTERNAL CONTROL ERROR:\nPada item "${item.namaItem}":\nDiskon (${formatRupiah(item.disc)}) tidak boleh lebih besar dari Harga Satuan (${formatRupiah(item.price)}).`);
-                    return; // Stop proses
+                    showNotification(`Internal Control Error:\nPada item "${item.namaItem}", Diskon (${formatRupiah(item.disc)}) melebihi Harga Satuan.`);
+                    return; 
                 }
             }
             
             // --- END INTERNAL CONTROL ---
 
-
-            // --- 2. PROSES UPLOAD FILE (Jika Ada) ---
             const fileInput = document.getElementById('bill-file');
             let fileData = null;
             let fileName = null;
@@ -538,7 +547,7 @@ async function submitBill() {
             if (fileInput.files.length > 0) {
                 const file = fileInput.files[0];
                 if (file.size > 5 * 1024 * 1024) { 
-                    alert("File too large! Max 5MB.");
+                    showNotification("Ukuran file terlalu besar! Maksimal 5MB.");
                     return;
                 }
                 document.getElementById('loadingText').innerText = "Uploading File & Saving...";
@@ -553,14 +562,30 @@ async function submitBill() {
                     fileName = file.name;
                     mimeType = file.type;
                 } catch (e) {
-                    alert("Error processing file");
+                    showNotification("Gagal memproses file attachment.");
                     return;
                 }
             } else {
                 document.getElementById('loadingText').innerText = "Saving Bill Data...";
             }
 
-            // --- 3. PERSIAPAN DATA (PAYLOAD) ---
+            // --- PERSIAPAN DATA: CEK PERUBAHAN QTY ---
+            const itemsToSend = currentItems.map(item => {
+                let specToSend = item.optionalSpec;
+                // Jika Qty berubah, tambahkan info ke Spec/Note Line
+                if (item.qty !== item.originalQty) {
+                    const changeLog = `(Rev Qty: ${item.originalQty} -> ${item.qty})`;
+                    // Cek agar tidak duplikat string jika di-save berkali-kali
+                    if (!specToSend.includes(changeLog)) {
+                         specToSend = specToSend ? `${specToSend} ${changeLog}` : changeLog;
+                    }
+                }
+                return {
+                    ...item,
+                    optionalSpec: specToSend
+                };
+            });
+
             const payload = {
                 action: 'save_bill',
                 data: {
@@ -575,7 +600,7 @@ async function submitBill() {
                     ppn: parseFloat(document.getElementById('display-ppn').dataset.value),
                     adjustment: parseFloat(document.getElementById('bill-adjustment').value) || 0,
                     grandTotal: grandTotal,
-                    items: currentItems, 
+                    items: itemsToSend, // KIRIM ITEM YANG SUDAH DIMODIF NOTE-NYA
                     fileData: fileData,
                     fileName: fileName,
                     mimeType: mimeType,
@@ -583,16 +608,16 @@ async function submitBill() {
                 }
             };
 
-            // --- 4. KIRIM KE APPSCRIPT ---
             document.getElementById('modalLoading').classList.remove('hidden');
             try {
                 const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
                 const result = await response.json();
                 if (result.status === 'success') { closeModal(); fetchData(); } 
-                else { alert("Error: " + result.message); }
-            } catch (err) { alert("Connection Error"); } 
+                else { showNotification("Error Server: " + result.message); }
+            } catch (err) { showNotification("Koneksi Error. Cek internet Anda."); } 
             finally { document.getElementById('modalLoading').classList.add('hidden'); }
-}
+        }
+
         function closeModal() { document.getElementById('billModal').classList.add('hidden'); }
         function formatRupiah(amount) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount); }
         function formatDate(dateStr) {
@@ -607,7 +632,6 @@ async function submitBill() {
             if (status !== 'All') {
                 filtered = filtered.filter(p => p.status === status);
             }
-            
             if (search) {
                 filtered = filtered.filter(p => 
                     p.id.toLowerCase().includes(search) || 
@@ -615,6 +639,16 @@ async function submitBill() {
                 );
             }
             renderCards(filtered);
+        }
+
+        // --- FUNGSI NOTIFIKASI MODERN ---
+        function showNotification(message) {
+            document.getElementById('notif-message').innerText = message;
+            document.getElementById('notificationModal').classList.remove('hidden');
+        }
+
+        function closeNotification() {
+            document.getElementById('notificationModal').classList.add('hidden');
         }
     </script>
 </body>
