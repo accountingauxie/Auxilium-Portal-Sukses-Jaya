@@ -314,7 +314,7 @@
       el.style.display = show ? 'flex' : 'none';
       if(show) el.style.opacity = '1'; 
   }
-   
+    
   function formatMoney(amount) { 
       return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount); 
   }
@@ -535,141 +535,24 @@
     renderModalContent(newId);
   }
 
-function renderModalContent(id) {
-    const inv = invoiceMap[id];
-    if (!inv) return;
-
-    // ... (kode bagian atas tetap sama: Customer, Order No, Date, Status Badge) ...
-    document.getElementById('modalCustomer').textContent = inv.customer;
-    document.getElementById('modalInvoiceNum').textContent = inv.invoiceNumber;
-    // ... (kode tanggal dan status badge tetap sama) ...
-    let displayDate = "-";
-    if (inv.date) {
-        const d = new Date(inv.date);
-        displayDate = !isNaN(d.getTime()) ? d.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) : inv.date;
-    }
-    document.getElementById('modalDate').textContent = displayDate;
-    
-    // ... (kode status container tetap sama) ...
-    const statusContainer = document.getElementById('modalStatusContainer');
-    statusContainer.innerHTML = '';
-    // ... (Logic badge tetap sama) ...
-    let badgeClass = 'badge-pending';
-    let statusText = inv.status || 'Pending';
-    let addVersionTag = false;
-    
-    if (inv.isFullyShipped) {
-        statusText = 'Approved';
-        badgeClass = 'badge-approved';
-        addVersionTag = true;
-    } else {
-        if(inv.status === 'Approved') badgeClass = 'badge-approved';
-        else if(inv.status === 'Canceled') badgeClass = 'badge-canceled';
-        else if(inv.status === 'Partially Delivered') badgeClass = 'badge-partial';
-    }
-
-    if(addVersionTag) statusContainer.innerHTML += `<span class="badge-pill badge-version"><i class="fa-solid fa-code-branch"></i> Partial Delivered Version</span>`;
-    statusContainer.innerHTML += `<span class="badge-pill ${badgeClass}">${statusText}</span>`;
-
-
-    // --- RENDER TABLE ---
-    const thead = document.getElementById('modalTableHead');
-    const tbody = document.getElementById('modalTableBody');
-    const linkedArea = document.getElementById('linkedInfoArea');
-    const outstandingArea = document.getElementById('outstandingArea');
-    
-    tbody.innerHTML = '';
-    linkedArea.innerHTML = '';
-    outstandingArea.style.display = 'none';
-
-    // CEK APAKAH PARENT (Punya Child)
-    if (inv.children && inv.children.length > 0) {
-        // ... (Tampilan Parent tetap sama) ...
-        thead.innerHTML = `<tr><th style="text-align:left;">Product</th><th style="text-align:right;">Order Qty</th><th style="text-align:right;">Shipped</th><th style="text-align:right;">Total</th></tr>`;
-        
-        let totalRemainingValue = 0;
-        const itemCalc = inv.items.map(item => {
-            let shipped = 0;
-            inv.children.forEach(child => {
-                if (child.status !== 'Canceled') {
-                    const match = child.items.find(cItem => cItem.product === item.product);
-                    if (match) shipped += match.qty;
-                }
-            });
-            const remain = Math.max(0, item.qty - shipped);
-            totalRemainingValue += (remain * item.priceQty);
-            return { ...item, shipped: shipped, remaining: remain };
-        });
-
-        itemCalc.forEach(item => {
-            tbody.innerHTML += `<tr><td><b>${item.product}</b></td><td align="right">${item.qty}</td><td align="right" style="color:#2563eb;">${item.shipped}</td><td align="right">${formatMoney(item.total)}</td></tr>`;
-        });
-        
-        document.getElementById('valOutstanding').textContent = formatMoney(totalRemainingValue);
-        outstandingArea.style.display = 'block';
-
-        let linksHtml = inv.children.map(child => `
-            <div class="linked-item">
-                <span>Invoice <a href="#" onclick="switchInvoice('${child.invoiceNumber}')">${child.invoiceNumber}</a></span>
-                <span>${formatMoney(child.grandTotal)}</span>
-            </div>
-        `).join('');
-        linkedArea.innerHTML = `<div class="linked-box"><div class="linked-title"><i class="fa-solid fa-link"></i> Applied Partial Invoices</div>${linksHtml}</div>`;
-
-    } else {
-        // === VIEW NORMAL (CHILD/SINGLE) - DISINI UPDATE HEADERNYA ===
-        
-        thead.innerHTML = `
-            <tr>
-              <th style="width:50px; text-align:center;">Act</th>
-              <th style="text-align:left; min-width:150px;">Product Name</th>
-              <th style="text-align:center;">Type</th>
-              <th style="text-align:right;">Meter</th>
-              
-              <th style="text-align:right; min-width:90px;">Price</th>
-              <th style="text-align:right; width:60px;">Disc</th>
-              <th style="text-align:right; min-width:90px;">Price/Qty</th>
-              <th style="text-align:right; width:70px;">Qty</th>
-              <th style="text-align:right; min-width:100px;">Total</th>
-              
-              <th style="width:100px; background:#f0f9ff;">Machine</th>
-              <th style="width:90px; background:#f0f9ff;">KPC</th>
-              <th style="width:90px; background:#f0f9ff;">Type</th>
-              <th style="width:140px; background:#f0f9ff;">WE Num</th>
-            </tr>`;
-
-        inv.items.forEach((item, index) => {
-            renderItemRow(tbody, item, index, 0); 
-        });
-    }
-
-    document.getElementById('valDPP').textContent = formatMoney(inv.dpp || 0);
-    document.getElementById('valPPN').textContent = formatMoney(inv.ppn || 0);
-    document.getElementById('valGrand').textContent = formatMoney(inv.grandTotal || 0);
-
-    updateButtonLogic(inv);
-}
-  // --- HELPER UNTUK RENDER ROW ---
-// --- BAGIAN 1: Update Header Tabel (renderModalContent) ---
   function renderModalContent(id) {
     const inv = invoiceMap[id];
     if (!inv) return;
 
-    // ... (kode bagian atas tetap sama: Customer, Order No, Date, Status Badge) ...
     document.getElementById('modalCustomer').textContent = inv.customer;
     document.getElementById('modalInvoiceNum').textContent = inv.invoiceNumber;
-    // ... (kode tanggal dan status badge tetap sama) ...
+    
     let displayDate = "-";
     if (inv.date) {
         const d = new Date(inv.date);
         displayDate = !isNaN(d.getTime()) ? d.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) : inv.date;
     }
     document.getElementById('modalDate').textContent = displayDate;
-    
-    // ... (kode status container tetap sama) ...
+
+    // --- STATUS BADGES ---
     const statusContainer = document.getElementById('modalStatusContainer');
-    statusContainer.innerHTML = '';
-    // ... (Logic badge tetap sama) ...
+    statusContainer.innerHTML = ''; 
+
     let badgeClass = 'badge-pending';
     let statusText = inv.status || 'Pending';
     let addVersionTag = false;
@@ -687,7 +570,6 @@ function renderModalContent(id) {
     if(addVersionTag) statusContainer.innerHTML += `<span class="badge-pill badge-version"><i class="fa-solid fa-code-branch"></i> Partial Delivered Version</span>`;
     statusContainer.innerHTML += `<span class="badge-pill ${badgeClass}">${statusText}</span>`;
 
-
     // --- RENDER TABLE ---
     const thead = document.getElementById('modalTableHead');
     const tbody = document.getElementById('modalTableBody');
@@ -700,7 +582,6 @@ function renderModalContent(id) {
 
     // CEK APAKAH PARENT (Punya Child)
     if (inv.children && inv.children.length > 0) {
-        // ... (Tampilan Parent tetap sama) ...
         thead.innerHTML = `<tr><th style="text-align:left;">Product</th><th style="text-align:right;">Order Qty</th><th style="text-align:right;">Shipped</th><th style="text-align:right;">Total</th></tr>`;
         
         let totalRemainingValue = 0;
@@ -724,7 +605,7 @@ function renderModalContent(id) {
         document.getElementById('valOutstanding').textContent = formatMoney(totalRemainingValue);
         outstandingArea.style.display = 'block';
 
-        let linksHtml = inv.children.map(child => `
+         let linksHtml = inv.children.map(child => `
             <div class="linked-item">
                 <span>Invoice <a href="#" onclick="switchInvoice('${child.invoiceNumber}')">${child.invoiceNumber}</a></span>
                 <span>${formatMoney(child.grandTotal)}</span>
@@ -733,7 +614,7 @@ function renderModalContent(id) {
         linkedArea.innerHTML = `<div class="linked-box"><div class="linked-title"><i class="fa-solid fa-link"></i> Applied Partial Invoices</div>${linksHtml}</div>`;
 
     } else {
-        // === VIEW NORMAL (CHILD/SINGLE) - DISINI UPDATE HEADERNYA ===
+        // === VIEW NORMAL (CHILD/SINGLE) DENGAN KOLOM LENGKAP ===
         
         thead.innerHTML = `
             <tr>
@@ -763,8 +644,111 @@ function renderModalContent(id) {
     document.getElementById('valPPN').textContent = formatMoney(inv.ppn || 0);
     document.getElementById('valGrand').textContent = formatMoney(inv.grandTotal || 0);
 
+    // --- BUTTONS LOGIC ---
     updateButtonLogic(inv);
   }
+
+  // --- HELPER UNTUK RENDER ROW ---
+  function renderItemRow(tbody, item, mainIndex, subIndex) {
+      const tr = document.createElement('tr');
+      tr.className = `row-group-${mainIndex}`;
+      tr.setAttribute('data-main-index', mainIndex);
+
+      let typeCode = "-";
+      let badgeColor = "#64748b";
+      const rawType = (item.type || "").toString().toUpperCase();
+      
+      // LOGIC PENENTUAN SP vs NP (STRICT)
+      let isSP = false;
+
+      // 1. Cek Apakah ada kata NON / NP (Prioritas Utama)
+      if (rawType.includes("NP") || rawType.includes("NON")) {
+          typeCode = "NP"; 
+          badgeColor = "#475569";
+          isSP = false;
+      } 
+      // 2. Jika tidak ada NON, cek SPANDEK / SP
+      else if (rawType.includes("SPANDEK") || rawType.includes("SP")) {
+          typeCode = "SP"; 
+          badgeColor = "#16a34a";
+          isSP = true;
+      }
+      // 3. Fallback (Anggap NP jika tidak jelas)
+      else {
+          typeCode = "NP"; 
+          badgeColor = "#475569";
+          isSP = false;
+      }
+
+      // Unique ID for inputs
+      const uid = `${mainIndex}_${subIndex}`;
+
+      // Config untuk NP (Readonly) vs SP (Editable)
+      const inputState = isSP ? '' : 'disabled';
+      const splitBtnVisibility = isSP ? '' : 'visibility:hidden;';
+
+      // HTML STRUCTURE
+      tr.innerHTML = `
+        <td style="text-align:center;">
+           ${subIndex === 0 ? `<button class="btn-split" style="${splitBtnVisibility}" onclick="addSplitRow(${mainIndex})"><i class="fa-solid fa-code-branch"></i></button>` : ''}
+        </td>
+        <td>
+           <span style="font-weight:600; font-size:0.85rem;">${item.product}</span>
+           <input type="hidden" class="data-product" value="${item.product}">
+           <input type="hidden" class="data-unitprice" value="${item.unitPrice}">
+           <input type="hidden" class="data-priceqty" value="${item.priceQty}">
+           <input type="hidden" class="data-type" value="${item.type}">
+           <input type="hidden" class="data-discount" value="${item.discount}">
+        </td>
+        <td style="text-align:center;">
+           <span style="background:${badgeColor}; padding:3px 6px; border-radius:4px; font-size:0.7em; font-weight:bold; color:white;">${typeCode}</span>
+        </td>
+        <td style="text-align:right;">
+           <input type="text" class="tbl-input text-right data-meter" value="${item.meter > 0 ? item.meter : ''}" readonly style="width:40px; background:transparent; border:none; padding:0;">
+        </td>
+
+        <td style="text-align:right; font-size:0.85rem;">
+            ${formatMoney(item.unitPrice)}
+        </td>
+        <td style="text-align:right; font-size:0.85rem; color:#ef4444;">
+            ${item.discount > 0 ? item.discount + '%' : '-'}
+        </td>
+        <td style="text-align:right; font-size:0.85rem; font-weight:600;">
+            ${formatMoney(item.priceQty)}
+        </td>
+        <td style="text-align:right;">
+           <input type="number" class="tbl-input text-right data-qty" value="${item.qty}" style="font-weight:bold; width:60px;" onchange="recalcRow(this)" ${subIndex > 0 ? '' : 'readonly'}>
+        </td>
+        <td style="text-align:right; font-weight:600; font-size:0.9rem;">
+           <span class="data-total-display">${formatMoney(item.total)}</span>
+           <input type="hidden" class="data-total" value="${item.total}">
+        </td>
+        
+        <td>
+           <select class="tbl-input inp-machine" id="machine_${uid}" onchange="generateWENumber('${uid}')" ${inputState} style="font-size:0.8rem;">
+              <option value="">-</option>
+              <option value="PM08">PM08</option>
+              <option value="PM014">PM014</option>
+           </select>
+        </td>
+        <td>
+           <input type="text" class="tbl-input inp-kpc" id="kpc_${uid}" placeholder="..." oninput="generateWENumber('${uid}')" ${inputState} style="font-size:0.8rem;">
+        </td>
+        <td>
+           <select class="tbl-input inp-prodtype" id="prodtype_${uid}" onchange="generateWENumber('${uid}')" ${inputState} style="font-size:0.8rem;">
+              <option value="">-</option>
+              <option value="Custom">Cus</option>
+              <option value="Plat">Plat</option>
+           </select>
+        </td>
+        <td>
+           <input type="text" class="tbl-input inp-wenum" id="wenum_${uid}" readonly placeholder="-" style="color:#2563eb; font-weight:600; background:#f0f9ff; font-size:0.8rem;" ${inputState}>
+        </td>
+      `;
+      
+      tbody.appendChild(tr);
+  }
+
   function addSplitRow(mainIndex) {
       const parentRow = document.querySelector(`tr[data-main-index="${mainIndex}"]`);
       if(!parentRow) return;
