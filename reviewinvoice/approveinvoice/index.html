@@ -123,11 +123,19 @@
     .btn-partial { background: #d97706; color: white; box-shadow: 0 4px 6px -1px rgba(217, 119, 6, 0.3); }
     .btn-partial:hover { background: #b45309; transform: translateY(-1px); }
     
-    .btn-split { background: #facc15; color: #854d0e; font-size: 0.75rem; padding: 6px 10px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer; display: flex; gap: 5px; align-items: center; }
+    .btn-split { background: #facc15; color: #854d0e; font-size: 0.75rem; padding: 6px 10px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer; display: flex; gap: 5px; align-items: center; justify-content: center; width: 100%; }
     .btn-split:hover { background: #eab308; }
+
+    .btn-remove { background: #fee2e2; color: #dc2626; font-size: 0.85rem; padding: 6px 10px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer; display: flex; gap: 5px; align-items: center; justify-content: center; width: 100%; }
+    .btn-remove:hover { background: #fecaca; }
 
     .btn-revert { background: #64748b; color: white; }
     .btn-revert:hover { background: #475569; }
+
+    /* Parent Split Style */
+    .row-parent-split { background-color: #fffbeb !important; }
+    .row-parent-split input, .row-parent-split select { color: #92400e; }
+    .sisa-badge { display: block; font-size: 0.7rem; color: #d97706; font-weight: 700; margin-top: 4px; text-align: right; }
 
     /* Partial Linked Box */
     .linked-box { background: #fffbe6; border: 1px solid #fcd34d; padding: 15px; border-radius: 10px; width: 100%; max-width: 400px; }
@@ -614,7 +622,7 @@
         linkedArea.innerHTML = `<div class="linked-box"><div class="linked-title"><i class="fa-solid fa-link"></i> Applied Partial Invoices</div>${linksHtml}</div>`;
 
     } else {
-        // === VIEW NORMAL (CHILD/SINGLE) DENGAN KOLOM LENGKAP ===
+        // === VIEW NORMAL (CHILD/SINGLE) ===
         
         thead.innerHTML = `
             <tr>
@@ -626,6 +634,7 @@
               <th style="text-align:right; min-width:90px;">Price</th>
               <th style="text-align:right; width:60px;">Disc</th>
               <th style="text-align:right; min-width:90px;">Price/Qty</th>
+
               <th style="text-align:right; width:70px;">Qty</th>
               <th style="text-align:right; min-width:100px;">Total</th>
               
@@ -644,7 +653,6 @@
     document.getElementById('valPPN').textContent = formatMoney(inv.ppn || 0);
     document.getElementById('valGrand').textContent = formatMoney(inv.grandTotal || 0);
 
-    // --- BUTTONS LOGIC ---
     updateButtonLogic(inv);
   }
 
@@ -658,40 +666,49 @@
       let badgeColor = "#64748b";
       const rawType = (item.type || "").toString().toUpperCase();
       
-      // LOGIC PENENTUAN SP vs NP (STRICT)
       let isSP = false;
-
-      // 1. Cek Apakah ada kata NON / NP (Prioritas Utama)
       if (rawType.includes("NP") || rawType.includes("NON")) {
-          typeCode = "NP"; 
-          badgeColor = "#475569";
-          isSP = false;
+          typeCode = "NP"; badgeColor = "#475569"; isSP = false;
       } 
-      // 2. Jika tidak ada NON, cek SPANDEK / SP
       else if (rawType.includes("SPANDEK") || rawType.includes("SP")) {
-          typeCode = "SP"; 
-          badgeColor = "#16a34a";
-          isSP = true;
+          typeCode = "SP"; badgeColor = "#16a34a"; isSP = true;
       }
-      // 3. Fallback (Anggap NP jika tidak jelas)
       else {
-          typeCode = "NP"; 
-          badgeColor = "#475569";
-          isSP = false;
+          typeCode = "NP"; badgeColor = "#475569"; isSP = false;
       }
 
-      // Unique ID for inputs
       const uid = `${mainIndex}_${subIndex}`;
+      
+      // LOGIKA TOMBOL & READONLY
+      // Jika SubIndex > 0 berarti itu adalah anak hasil split (Ada tombol Sampah)
+      const isSplitChild = subIndex > 0;
+      
+      // Tombol Aksi: Split (untuk Parent) ATAU Remove (untuk Child)
+      let actionBtn = '';
+      if (isSP) {
+          if (isSplitChild) {
+              actionBtn = `<button class="btn-remove" onclick="removeSplitRow(this, ${mainIndex})"><i class="fa-solid fa-trash"></i></button>`;
+          } else {
+              actionBtn = `<button class="btn-split" onclick="addSplitRow(${mainIndex})"><i class="fa-solid fa-code-branch"></i> Split</button>`;
+          }
+      }
 
-      // Config untuk NP (Readonly) vs SP (Editable)
-      const inputState = isSP ? '' : 'disabled';
-      const splitBtnVisibility = isSP ? '' : 'visibility:hidden;';
+      // Check jika ini parent dan sudah punya anak, maka dia ReadOnly
+      const isParentLocked = (subIndex === 0 && document.querySelectorAll(`.row-group-${mainIndex}`).length > 0);
+      
+      let inputState = (isSP && !isParentLocked) ? '' : 'disabled';
+      if (isSplitChild) inputState = ''; // Child selalu editable
 
-      // HTML STRUCTURE
+      // Jika Parent sedang terkunci (karena di split), tambahkan class visual
+      if(subIndex === 0 && inputState === 'disabled' && isSP) {
+          tr.classList.add('row-parent-split');
+          tr.classList.add('is-locked-parent'); // Penanda logic
+      }
+
+      const sisaHtml = (subIndex === 0 && isSP) ? `<span class="sisa-badge" id="sisa_${mainIndex}"></span>` : '';
+
       tr.innerHTML = `
-        <td style="text-align:center;">
-           ${subIndex === 0 ? `<button class="btn-split" style="${splitBtnVisibility}" onclick="addSplitRow(${mainIndex})"><i class="fa-solid fa-code-branch"></i></button>` : ''}
-        </td>
+        <td style="text-align:center;">${actionBtn}</td>
         <td>
            <span style="font-weight:600; font-size:0.85rem;">${item.product}</span>
            <input type="hidden" class="data-product" value="${item.product}">
@@ -699,31 +716,24 @@
            <input type="hidden" class="data-priceqty" value="${item.priceQty}">
            <input type="hidden" class="data-type" value="${item.type}">
            <input type="hidden" class="data-discount" value="${item.discount}">
-        </td>
+           <input type="hidden" class="original-qty" value="${item.qty}"> </td>
         <td style="text-align:center;">
            <span style="background:${badgeColor}; padding:3px 6px; border-radius:4px; font-size:0.7em; font-weight:bold; color:white;">${typeCode}</span>
         </td>
         <td style="text-align:right;">
            <input type="text" class="tbl-input text-right data-meter" value="${item.meter > 0 ? item.meter : ''}" readonly style="width:40px; background:transparent; border:none; padding:0;">
         </td>
-
-        <td style="text-align:right; font-size:0.85rem;">
-            ${formatMoney(item.unitPrice)}
-        </td>
-        <td style="text-align:right; font-size:0.85rem; color:#ef4444;">
-            ${item.discount > 0 ? item.discount + '%' : '-'}
-        </td>
-        <td style="text-align:right; font-size:0.85rem; font-weight:600;">
-            ${formatMoney(item.priceQty)}
-        </td>
+        <td style="text-align:right; font-size:0.85rem;">${formatMoney(item.unitPrice)}</td>
+        <td style="text-align:right; font-size:0.85rem; color:#ef4444;">${item.discount > 0 ? item.discount + '%' : '-'}</td>
+        <td style="text-align:right; font-size:0.85rem; font-weight:600;">${formatMoney(item.priceQty)}</td>
         <td style="text-align:right;">
-           <input type="number" class="tbl-input text-right data-qty" value="${item.qty}" style="font-weight:bold; width:60px;" onchange="recalcRow(this)" ${subIndex > 0 ? '' : 'readonly'}>
+           <input type="number" class="tbl-input text-right data-qty" value="${item.qty}" style="font-weight:bold; width:60px;" onchange="recalcRow(this)" ${inputState}>
+           ${sisaHtml}
         </td>
         <td style="text-align:right; font-weight:600; font-size:0.9rem;">
            <span class="data-total-display">${formatMoney(item.total)}</span>
            <input type="hidden" class="data-total" value="${item.total}">
         </td>
-        
         <td>
            <select class="tbl-input inp-machine" id="machine_${uid}" onchange="generateWENumber('${uid}')" ${inputState} style="font-size:0.8rem;">
               <option value="">-</option>
@@ -747,12 +757,16 @@
       `;
       
       tbody.appendChild(tr);
+
+      // Hitung ulang sisa jika ini parent
+      if(subIndex === 0 && isSP) calculateRemaining(mainIndex);
   }
 
   function addSplitRow(mainIndex) {
       const parentRow = document.querySelector(`tr[data-main-index="${mainIndex}"]`);
       if(!parentRow) return;
 
+      // Ambil data dari Parent
       const product = parentRow.querySelector('.data-product').value;
       const unitPrice = parseFloat(parentRow.querySelector('.data-unitprice').value) || 0;
       const priceQty = parseFloat(parentRow.querySelector('.data-priceqty').value) || 0;
@@ -760,20 +774,22 @@
       const meter = parentRow.querySelector('.data-meter').value;
       const discount = parseFloat(parentRow.querySelector('.data-discount').value) || 0;
 
+      // Kunci Parent Row (Read Only)
+      parentRow.classList.add('row-parent-split');
+      parentRow.classList.add('is-locked-parent');
+      parentRow.querySelectorAll('.tbl-input').forEach(input => {
+          input.disabled = true;
+          input.style.backgroundColor = '#f1f5f9';
+      });
+
+      // Buat Baris Baru
       const item = {
-          product: product,
-          type: type,
-          meter: meter,
-          qty: 0, 
-          unitPrice: unitPrice,
-          priceQty: priceQty,
-          discount: discount,
-          total: 0
+          product: product, type: type, meter: meter, qty: 0, 
+          unitPrice: unitPrice, priceQty: priceQty, discount: discount, total: 0
       };
 
       const existingRows = document.querySelectorAll(`.row-group-${mainIndex}`);
       const subIndex = existingRows.length;
-      
       const lastRow = existingRows[existingRows.length - 1];
       const tbody = document.getElementById('modalTableBody');
       
@@ -783,16 +799,60 @@
       lastRow.insertAdjacentElement('afterend', newRow);
   }
 
+  function removeSplitRow(btn, mainIndex) {
+      const tr = btn.closest('tr');
+      tr.remove();
+
+      // Cek apakah masih ada anak?
+      const remainingRows = document.querySelectorAll(`.row-group-${mainIndex}`);
+      
+      // Jika hanya tersisa 1 baris, itu adalah Parent. Buka kuncinya.
+      if (remainingRows.length === 1) {
+          const parentRow = remainingRows[0];
+          parentRow.classList.remove('row-parent-split');
+          parentRow.classList.remove('is-locked-parent');
+          parentRow.querySelectorAll('.tbl-input').forEach(input => {
+              // Kecuali meter yang emang readonly
+              if(!input.classList.contains('data-meter')) {
+                input.disabled = false;
+                input.style.backgroundColor = '#fff';
+              }
+          });
+      }
+      
+      calculateRemaining(mainIndex);
+  }
+
+  function calculateRemaining(mainIndex) {
+      const rows = document.querySelectorAll(`.row-group-${mainIndex}`);
+      const parentRow = rows[0];
+      const sisaBadge = document.getElementById(`sisa_${mainIndex}`);
+      if(!sisaBadge) return;
+
+      const originalQty = parseFloat(parentRow.querySelector('.original-qty').value) || 0;
+      
+      let totalChildQty = 0;
+      // Loop mulai dari index 1 (anak-anak)
+      for(let i = 1; i < rows.length; i++) {
+          totalChildQty += parseFloat(rows[i].querySelector('.data-qty').value) || 0;
+      }
+
+      const sisa = originalQty - totalChildQty;
+      sisaBadge.textContent = `Sisa: ${sisa}`;
+      
+      if(sisa < 0) sisaBadge.style.color = '#ef4444'; // Merah jika minus
+      else if(sisa === 0) sisaBadge.style.color = '#22c55e'; // Hijau jika pas
+      else sisaBadge.style.color = '#d97706'; // Kuning jika masih ada sisa
+  }
+
   function generateWENumber(uid) {
       const machine = document.getElementById(`machine_${uid}`).value;
       const kpc = document.getElementById(`kpc_${uid}`).value;
       const prodType = document.getElementById(`prodtype_${uid}`).value;
       const invNum = document.getElementById('modalInvoiceNum').textContent;
-
       const output = document.getElementById(`wenum_${uid}`);
       
       if(machine && kpc && prodType) {
-          // Format: NamaMesin_KPCNumber_NomorOrder_PRodType
           output.value = `${machine}_${kpc}_${invNum}_${prodType}`;
       } else {
           output.value = "";
@@ -805,9 +865,12 @@
       const priceQty = parseFloat(tr.querySelector('.data-priceqty').value) || 0;
       
       const newTotal = qty * priceQty;
-      
       tr.querySelector('.data-total-display').textContent = formatMoney(newTotal);
       tr.querySelector('.data-total').value = newTotal;
+
+      // Jika ini anak, update sisa di parent
+      const mainIndex = tr.getAttribute('data-main-index');
+      calculateRemaining(mainIndex);
   }
 
   function updateButtonLogic(inv) {
@@ -831,9 +894,6 @@
        if (isParent) {
            buttonsHtml += `<button class="btn-action btn-approve" disabled><i class="fa-solid fa-lock"></i> Approve Invoice</button>`;
        } else {
-           // Tombol Approve selalu muncul. 
-           // Jika SP, user wajib isi data di tabel, tapi kita tidak blocking (User Responsibility).
-           // Saat diklik Approve, data tabel akan dikirim.
            buttonsHtml += `<button class="btn-action btn-approve" onclick="handleApproveFromModal()"><i class="fa-solid fa-check"></i> Approve Invoice</button>`;
        }
        actionDiv.innerHTML = buttonsHtml;
@@ -989,11 +1049,16 @@
     if (!inv) return;
     setModalLoading(true);
     
-    // --- AMBIL DATA DARI DOM TABLE (Handling Split Row) ---
     const tableRows = document.querySelectorAll('#modalTableBody tr');
     const updatedItems = [];
 
     tableRows.forEach(tr => {
+        // PENTING: Jika baris ini adalah Parent yang di-split (Locked), JANGAN dikirim ke backend.
+        // Kita hanya kirim Anak-anaknya agar data WE dan Total tidak double.
+        if (tr.classList.contains('is-locked-parent')) {
+            return; // Skip Parent yang di-split
+        }
+
         const product = tr.querySelector('.data-product').value;
         const type = tr.querySelector('.data-type').value;
         const meter = tr.querySelector('.data-meter').value;
@@ -1021,7 +1086,7 @@
     const payload = {
       invoiceNumber: inv.invoiceNumber, customerName: inv.customer, date: inv.date,
       catatan: inv.catatan, keySalesOrder: inv.keySalesOrder, 
-      items: updatedItems, // Items hasil edit/split
+      items: updatedItems, 
       dpp: inv.dpp, ppn: inv.ppn, grandTotal: inv.grandTotal
     };
     
