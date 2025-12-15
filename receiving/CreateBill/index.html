@@ -490,10 +490,46 @@
             document.getElementById('display-ppn').dataset.value = ppn;
         }
 
-        async function submitBill() {
+async function submitBill() {
+            // --- 1. INTERNAL CONTROL SECTION ---
+            
+            // A. Validasi Invoice Number
             const invNumber = document.getElementById('bill-inv-number').value;
-            if (!invNumber) { alert("Please enter Invoice Number!"); return; }
+            if (!invNumber) { 
+                alert("INTERNAL CONTROL: Harap isi Nomor Invoice!"); 
+                return; 
+            }
 
+            // B. Validasi Tanggal (Wajib Diisi)
+            const invDate = document.getElementById('bill-date').value;
+            const dueDate = document.getElementById('bill-due-date').value;
+            if (!invDate || !dueDate) {
+                alert("INTERNAL CONTROL: Tanggal Invoice dan Due Date WAJIB diisi sebelum disimpan.");
+                return;
+            }
+
+            // C. Validasi Grand Total (Tidak Boleh 0 atau Minus)
+            // Kita ambil dari dataset value agar akurat (bukan text Rp)
+            const grandTotal = parseFloat(document.getElementById('display-grand-total').dataset.value) || 0;
+            if (grandTotal <= 0) {
+                alert("INTERNAL CONTROL: Total Bill tidak boleh 0 atau negatif. Harap periksa item harga atau diskon.");
+                return;
+            }
+
+            // D. Validasi Diskon (Tidak Boleh Melebihi Harga Satuan)
+            // Loop semua item untuk pengecekan per baris
+            for (let i = 0; i < currentItems.length; i++) {
+                const item = currentItems[i];
+                if (item.disc > item.price) {
+                    alert(`INTERNAL CONTROL ERROR:\nPada item "${item.namaItem}":\nDiskon (${formatRupiah(item.disc)}) tidak boleh lebih besar dari Harga Satuan (${formatRupiah(item.price)}).`);
+                    return; // Stop proses
+                }
+            }
+            
+            // --- END INTERNAL CONTROL ---
+
+
+            // --- 2. PROSES UPLOAD FILE (Jika Ada) ---
             const fileInput = document.getElementById('bill-file');
             let fileData = null;
             let fileName = null;
@@ -524,21 +560,22 @@
                 document.getElementById('loadingText').innerText = "Saving Bill Data...";
             }
 
+            // --- 3. PERSIAPAN DATA (PAYLOAD) ---
             const payload = {
                 action: 'save_bill',
                 data: {
                     idPO: currentPOId,
                     vendor: document.getElementById('bill-vendor').value,
                     invNumber: invNumber,
-                    invDate: document.getElementById('bill-date').value,
-                    dueDate: document.getElementById('bill-due-date').value,
+                    invDate: invDate,
+                    dueDate: dueDate,
                     taxMode: document.getElementById('tax-mode').value,
                     note: document.getElementById('bill-note').value,
                     subtotal: parseFloat(document.getElementById('display-subtotal').dataset.value),
                     ppn: parseFloat(document.getElementById('display-ppn').dataset.value),
                     adjustment: parseFloat(document.getElementById('bill-adjustment').value) || 0,
-                    grandTotal: parseFloat(document.getElementById('display-grand-total').dataset.value),
-                    items: currentItems, // Ini sekarang membawa Qty yang sudah diupdate
+                    grandTotal: grandTotal,
+                    items: currentItems, 
                     fileData: fileData,
                     fileName: fileName,
                     mimeType: mimeType,
@@ -546,6 +583,7 @@
                 }
             };
 
+            // --- 4. KIRIM KE APPSCRIPT ---
             document.getElementById('modalLoading').classList.remove('hidden');
             try {
                 const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
@@ -554,8 +592,7 @@
                 else { alert("Error: " + result.message); }
             } catch (err) { alert("Connection Error"); } 
             finally { document.getElementById('modalLoading').classList.add('hidden'); }
-        }
-
+}
         function closeModal() { document.getElementById('billModal').classList.add('hidden'); }
         function formatRupiah(amount) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount); }
         function formatDate(dateStr) {
