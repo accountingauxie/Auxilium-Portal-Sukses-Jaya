@@ -305,7 +305,7 @@
       el.style.display = show ? 'flex' : 'none';
       if(show) el.style.opacity = '1'; 
   }
-  
+   
   function formatMoney(amount) { 
       return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount); 
   }
@@ -317,12 +317,10 @@
       .then(response => {
         showLoading(false);
         if (response.ok) {
-          // --- FIX CRUCIAL: PAKSA JADI STRING AGAR TIDAK ERROR .includes() ---
           allInvoices = response.data.map(inv => {
               inv.invoiceNumber = String(inv.invoiceNumber); 
               return inv;
           });
-          // -------------------------------------------------------------------
 
           processInvoicesRelationship(); 
           renderInvoices();
@@ -689,15 +687,28 @@
     document.getElementById('valPPN').textContent = formatMoney(inv.ppn || 0);
     document.getElementById('valGrand').textContent = formatMoney(inv.grandTotal || 0);
 
-    // --- BUTTONS LOGIC ---
+    // --- BUTTONS LOGIC (CONDITIONAL WORKFLOW) ---
     const actionDiv = document.getElementById('modalActions');
     actionDiv.innerHTML = ''; 
 
+    // 1. DETEKSI SP (LOGIC BARU)
+    // Cek apakah ada item yang Type atau Product-nya mengandung SP / Spandek / Gobi
+    const hasSP = inv.items.some(item => {
+        const t = (item.type || "").toUpperCase();
+        const p = (item.product || "").toUpperCase();
+        return t.includes("SP") || p.includes("SPANDEK") || p.includes("GOBI");
+    });
+
+    // 2. CEK STATUS WORK EFFORT
+    // Apakah di kolom progressStatus sudah ada kata "WE Generated"?
+    const isWEGenerated = (inv.progressStatus || "").includes("WE Generated");
+
     if (inv.status === 'Approved' || inv.isFullyShipped) {
-        // No Actions (Sudah Selesai)
+        // KONDISI: SUDAH SELESAI
         actionDiv.innerHTML = `<div style="color:var(--approved-text); font-weight:600; display:flex; align-items:center; gap:6px;"><i class="fa-solid fa-check-circle"></i> This Invoice has been Approved.</div>`;
     } 
     else if (inv.status === 'Canceled') {
+       // KONDISI: BATAL
        actionDiv.innerHTML = `
          <div style="margin-right:auto; color:var(--canceled-text); font-size:0.9rem; display:flex; align-items:center; gap:5px;">
             <i class="fa-regular fa-comment-dots"></i> <b>Reason:</b> ${inv.noteCanceled || '-'}
@@ -708,6 +719,7 @@
        `;
     } 
     else {
+       // KONDISI: PENDING / PARTIAL (ACTIVE)
        const isParent = inv.children.length > 0;
        
        let buttonsHtml = `
@@ -716,7 +728,7 @@
          </button>
        `;
        
-       // Tombol Partial (Hanya aktif jika belum Fully Shipped)
+       // Tombol Partial (Tetap ada)
        if (!inv.isFullyShipped) {
            buttonsHtml += `
              <button class="btn-action btn-partial" onclick="openPartialModal()">
@@ -725,19 +737,39 @@
            `;
        }
 
-       if (isParent) {
+       // === LOGIC UTAMA: SP vs NP ===
+       if (hasSP && !isWEGenerated) {
+           // KASUS A: Ada barang SP TAPI belum buat Work Effort
+           // Tampilkan tombol Buat WE, Sembunyikan Approve (atau disable)
            buttonsHtml += `
-             <button class="btn-action btn-approve" disabled title="Parent Invoice cannot be approved directly.">
-                <i class="fa-solid fa-lock"></i> Approve Invoice
+             <button class="btn-action" style="background:#eab308; color:white; box-shadow: 0 4px 6px -1px rgba(234, 179, 8, 0.3);" onclick="goToWorkEffort('${inv.invoiceNumber}')">
+                <i class="fa-solid fa-hammer"></i> Buat Work Effort
+             </button>
+             
+             <button class="btn-action" style="background:#cbd5e1; color:white; cursor:not-allowed;" disabled title="Harap buat Work Effort terlebih dahulu karena ada item SP">
+                <i class="fa-solid fa-lock"></i> Approve
              </button>
            `;
        } else {
-           buttonsHtml += `
-             <button class="btn-action btn-approve" onclick="handleApproveFromModal()">
-                <i class="fa-solid fa-check"></i> Approve Invoice
-             </button>
-           `;
+           // KASUS B: 
+           // 1. Barang NP Semua -> Langsung muncul Approve
+           // 2. ATAU Barang SP sudah dibuat WE -> Muncul Approve
+           
+           if (isParent) {
+               buttonsHtml += `
+                 <button class="btn-action btn-approve" disabled title="Parent Invoice cannot be approved directly.">
+                    <i class="fa-solid fa-lock"></i> Approve Invoice
+                 </button>
+               `;
+           } else {
+               buttonsHtml += `
+                 <button class="btn-action btn-approve" onclick="handleApproveFromModal()">
+                    <i class="fa-solid fa-check"></i> Approve Invoice
+                 </button>
+               `;
+           }
        }
+       
        actionDiv.innerHTML = buttonsHtml;
     }
   }
@@ -756,7 +788,7 @@
     const inv = invoiceMap[currentOpenInvoiceId];
     if (!inv) return;
 
-    // --- PERBAIKAN: MANUAL COPY UNTUK MENGHINDARI CIRCULAR REFERENCE ERROR ---
+    // MANUAL COPY UNTUK MENGHINDARI CIRCULAR REFERENCE ERROR
     tempPartialData = {
         invoiceNumber: inv.invoiceNumber,
         customer: inv.customer,
@@ -767,7 +799,6 @@
         ppn: inv.ppn,
         grandTotal: inv.grandTotal
     };
-    // --------------------------------------------------------------------------
 
     const itemsWithRemaining = [];
 
@@ -935,6 +966,13 @@
         document.getElementById('invoiceModal').style.display='none';
       } else { alert("Failed"); }
     });
+  }
+
+  // --- WORK EFFORT NAVIGATION ---
+  function goToWorkEffort(invoiceId) {
+      // Link ke halaman Work Effort dengan membawa parameter No Invoice
+      const weUrl = "https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/wespandek/Index.html";
+      window.open(`${weUrl}?inv=${invoiceId}`, '_blank');
   }
 
   function setModalLoading(isLoading) {
