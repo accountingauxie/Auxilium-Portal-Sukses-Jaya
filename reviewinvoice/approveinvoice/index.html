@@ -96,7 +96,7 @@
     /* Modal */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 1000; display: none; justify-content: center; align-items: center; padding: 20px; opacity: 0; transition: opacity 0.2s; }
     
-    /* PERBAIKAN: Modal Lebih Lebar untuk mengakomodasi kolom tambahan */
+    /* Modal Size Update */
     .invoice-paper { background: white; width: 95%; max-width: 1600px; max-height: 90vh; overflow-y: auto; padding: 2.5rem; border-radius: 16px; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); animation: slideUp 0.3s ease-out forwards; }
     
     @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -307,7 +307,7 @@
 
 <script>
   // ================= CONFIGURATION =================
-  const API_URL = "https://script.google.com/macros/s/AKfycbwJZreaYO-b43x7Jdp5TWJaTBlA2f8pY6EcJo5_J-J2MSndDeDrKKUrZD41PDmiZV9ATw/exec"; 
+  const API_URL = "https://script.google.com/macros/s/AKfycbzZRhjH5WoSwxV2goSzeCQz2RGNN_qOSZ9Iffk0w-vl3PldWaJXaIFugx9C58DDBdKsHw/exec"; 
   // =================================================
 
   let allInvoices = [];
@@ -705,7 +705,7 @@
 
       const sisaHtml = (subIndex === 0 && isSP) ? `<span class="sisa-badge" id="sisa_${mainIndex}"></span>` : '';
 
-      // PERBAIKAN: Kolom Total sekarang tampil seperti Text biasa (Readonly) tapi tetap punya hidden input
+      // UPDATE: Option CSTM dan PLAT
       tr.innerHTML = `
         <td style="text-align:center;">${actionBtn}</td>
         <td>
@@ -747,8 +747,8 @@
         <td>
            <select class="tbl-input inp-prodtype" id="prodtype_${uid}" onchange="generateWENumber('${uid}')" ${inputState} style="font-size:0.8rem;">
               <option value="">-</option>
-              <option value="Custom">Cus</option>
-              <option value="Plat">Plat</option>
+              <option value="CSTM">CSTM</option>
+              <option value="PLAT">PLAT</option>
            </select>
         </td>
         <td>
