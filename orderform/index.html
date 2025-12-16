@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Purchase Order - Xero Perfect</title>
+<title>Purchase Order - Xero Pixel Perfect</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -59,7 +59,7 @@ input.detail-readonly {
   background: transparent; border: none; border-bottom: 1px dashed #ccc; color: #555; width: 100%; padding: 5px 0;
 }
 
-/* --- TABLE --- */
+/* --- TABLE STYLING (FIXED) --- */
 .table-container { margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px 4px 0 0; overflow: visible; }
 table.xero-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
 
@@ -69,23 +69,24 @@ table.xero-table th {
   border-bottom: 1px solid #ccc; border-right: 1px solid #eee;
 }
 
-/* TABLE CELLS (ROW HEIGHT & ALIGNMENT) */
+/* KUNCI PERBAIKAN DI SINI: CELL SETTING */
 table.xero-table td {
-  padding: 0; 
+  padding: 0 !important; /* Hapus padding agar elemen bisa full */
   border-bottom: 1px solid #e0e0e0; 
   border-right: 1px solid #f0f0f0;
-  vertical-align: middle; 
+  vertical-align: top; /* Reset ke top agar height 100% bekerja */
   background: #fff; 
-  height: 42px; /* Fixed height baris */
+  height: 42px; /* Tinggi fix */
 }
 
-/* Inputs Table (Text inputs) */
+/* Inputs Standard (Text/Number) */
 table.xero-table input {
   width: 100%; padding: 0 10px; 
-  border: 1px solid transparent; 
+  border: 1px solid transparent; /* Border transparan default */
   background: transparent; font-size: 13px; 
-  height: 100%; /* Full Height */
+  height: 41px; /* Full height minus 1px border visually */
   color: #333;
+  display: block; /* Agar mengisi ruang */
 }
 table.xero-table input:focus {
   border: 1px solid var(--xero-blue); background: #fff; outline: none; z-index: 5; position: relative;
@@ -93,49 +94,66 @@ table.xero-table input:focus {
 table.xero-table input[readonly] { color: #666; cursor: default; }
 
 
-/* --- CHOICES.JS (DROPDOWN) FIX --- */
+/* --- CHOICES.JS (DROPDOWN) PIXEL PERFECT FIX --- */
 
-/* Style Dasar (Header) */
-.choices__inner {
-  background-color: #fff !important; font-size: 13px; min-height: 38px;
-  display: flex; align-items: center; border: 1px solid #ccc !important;
-  border-radius: 3px !important; padding: 0 10px !important;
-}
-.is-focused .choices__inner { border-color: var(--xero-blue) !important; }
-
-/* FIX UTAMA: DROPDOWN DALAM TABEL (FULL HEIGHT & CENTER) */
+/* 1. Reset Container Luar Choices */
 .xero-table .choices {
-    height: 100%; /* Wrapper harus full height dari TD */
-    margin: 0;
+    margin-bottom: 0 !important; /* Hapus margin bawah bawaan library */
+    height: 100%; /* Paksa tinggi container */
     overflow: visible;
 }
 
+/* 2. Styling Kotak Dalam (Inner) agar Full Cell */
 .xero-table .choices__inner {
   border: 1px solid transparent !important; 
   background-color: transparent !important;
   border-radius: 0 !important; 
-  min-height: 100% !important; /* Paksa tinggi penuh */
-  height: 100% !important;
-  display: flex !important;    /* Gunakan flexbox */
-  align-items: center !important; /* Tengahkan vertikal */
+  
+  /* FORCE HEIGHT & ALIGNMENT */
+  min-height: 41px !important; 
+  height: 41px !important;
+  display: flex !important;    
+  align-items: center !important; /* Tengahkan teks vertikal */
   padding: 0 10px !important;
 }
 
-/* Efek Hover/Fokus di Tabel */
+/* 3. Efek Focus/Open - Border Biru Xero */
 .xero-table .is-open .choices__inner,
 .xero-table .is-focused .choices__inner,
 .xero-table .choices__inner:hover {
   background-color: #fff !important;
   border: 1px solid var(--xero-blue) !important; 
-  z-index: 2;
+  z-index: 10;
+  position: relative;
 }
 
-.xero-table .choices__list--dropdown { width: auto; min-width: 100%; z-index: 9999; }
-.xero-table .choices__list--single { padding: 0; } /* Hapus padding default text */
+/* 4. Fix Dropdown List Position */
+.xero-table .choices__list--dropdown { 
+    width: auto; 
+    min-width: 100%; 
+    z-index: 9999; 
+    border: 1px solid var(--xero-blue) !important;
+    margin-top: 0 !important; /* Tempel langsung di bawah */
+}
+.xero-table .choices__list--single { padding: 0; } 
+
+/* CSS untuk Dropdown Customer di Header (Beda Style) */
+.header-grid .choices__inner, 
+.header-grid input.main-input,
+.header-grid select {
+    background-color: #fff !important;
+    border: 1px solid #ccc !important;
+    border-radius: 3px !important;
+    min-height: 38px !important;
+    height: 38px !important;
+    display: flex; align-items: center;
+}
+.header-grid .is-focused .choices__inner { border-color: var(--xero-blue) !important; }
+
 
 /* Column Widths */
 .col-drag { width: 30px; text-align: center; }
-.col-type { width: 160px; } /* Sedikit diperlebar */
+.col-type { width: 160px; } 
 .col-item { width: 300px; }
 .col-unit { width: 70px; }
 .col-meter { width: 65px; }
@@ -173,7 +191,7 @@ table.xero-table input[readonly] { color: #666; cursor: default; }
 .status-badge { 
     padding: 3px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; 
     text-transform: uppercase; display: inline-block; width: 90%; 
-    text-align: center; margin: 0 auto;
+    text-align: center; margin-top: 12px; /* Manual center push */
 }
 .status-ok { background: var(--green-bg); color: var(--green-text); }
 .status-oos { background: var(--red-bg); color: var(--red-text); }
@@ -379,7 +397,6 @@ function addRow() {
   const itemSel = tr.querySelector(".item-select");
   const meterInp = tr.querySelector(".meter-input");
   
-  // INIT CHOICES FOR TYPE & ITEM
   const choiceType = new Choices(typeSel, { 
       searchEnabled: false, shouldSort: false, itemSelectText:"", 
       placeholder: true, placeholderValue: "Type",
