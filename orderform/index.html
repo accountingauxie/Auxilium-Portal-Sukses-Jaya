@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Purchase Order - Xero Pixel Perfect</title>
+<title>Purchase Order - Pixel Perfect Alignment</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -59,9 +59,13 @@ input.detail-readonly {
   background: transparent; border: none; border-bottom: 1px dashed #ccc; color: #555; width: 100%; padding: 5px 0;
 }
 
-/* --- TABLE STYLING (FIXED) --- */
+/* --- TABLE STYLING --- */
 .table-container { margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px 4px 0 0; overflow: visible; }
-table.xero-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+table.xero-table { 
+    width: 100%; 
+    border-collapse: collapse; /* Pastikan border menyatu */
+    table-layout: fixed; 
+}
 
 table.xero-table th {
   background: #f8f9fa; text-align: left; padding: 12px 10px;
@@ -69,55 +73,61 @@ table.xero-table th {
   border-bottom: 1px solid #ccc; border-right: 1px solid #eee;
 }
 
-/* KUNCI PERBAIKAN DI SINI: CELL SETTING */
+/* TABLE CELLS */
 table.xero-table td {
-  padding: 0 !important; /* Hapus padding agar elemen bisa full */
+  padding: 0 !important; 
   border-bottom: 1px solid #e0e0e0; 
   border-right: 1px solid #f0f0f0;
-  vertical-align: top; /* Reset ke top agar height 100% bekerja */
+  vertical-align: top;
   background: #fff; 
-  height: 42px; /* Tinggi fix */
+  height: 42px;
+  position: relative; /* Penting untuk alignment */
 }
 
-/* Inputs Standard (Text/Number) */
+/* INPUT TEXT BIASA */
 table.xero-table input {
   width: 100%; padding: 0 10px; 
-  border: 1px solid transparent; /* Border transparan default */
+  border: 1px solid transparent; /* Border transparan agar lurus */
   background: transparent; font-size: 13px; 
-  height: 41px; /* Full height minus 1px border visually */
+  height: 41px; /* 42px - 1px border bottom */
   color: #333;
-  display: block; /* Agar mengisi ruang */
+  display: block;
+  margin: 0;
 }
 table.xero-table input:focus {
   border: 1px solid var(--xero-blue); background: #fff; outline: none; z-index: 5; position: relative;
+  margin: -1px; /* Kompensasi border agar tidak geser */
+  width: calc(100% + 2px); /* Kompensasi lebar */
+  height: 43px; /* Kompensasi tinggi */
 }
 table.xero-table input[readonly] { color: #666; cursor: default; }
 
 
-/* --- CHOICES.JS (DROPDOWN) PIXEL PERFECT FIX --- */
+/* --- CHOICES.JS (DROPDOWN) FIX ALIGNMENT --- */
 
-/* 1. Reset Container Luar Choices */
+/* 1. RESET CONTAINER LUAR */
 .xero-table .choices {
-    margin-bottom: 0 !important; /* Hapus margin bawah bawaan library */
-    height: 100%; /* Paksa tinggi container */
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100%;
+    width: 100%;
     overflow: visible;
 }
 
-/* 2. Styling Kotak Dalam (Inner) agar Full Cell */
+/* 2. INNER BOX (Tampilan Utama Dropdown) */
 .xero-table .choices__inner {
-  border: 1px solid transparent !important; 
+  border: 1px solid transparent !important; /* Hilangkan border default */
   background-color: transparent !important;
   border-radius: 0 !important; 
-  
-  /* FORCE HEIGHT & ALIGNMENT */
   min-height: 41px !important; 
   height: 41px !important;
   display: flex !important;    
-  align-items: center !important; /* Tengahkan teks vertikal */
+  align-items: center !important; 
   padding: 0 10px !important;
+  margin: 0 !important;
 }
 
-/* 3. Efek Focus/Open - Border Biru Xero */
+/* 3. EFEK HOVER & FOKUS (Border Biru) */
 .xero-table .is-open .choices__inner,
 .xero-table .is-focused .choices__inner,
 .xero-table .choices__inner:hover {
@@ -125,19 +135,24 @@ table.xero-table input[readonly] { color: #666; cursor: default; }
   border: 1px solid var(--xero-blue) !important; 
   z-index: 10;
   position: relative;
+  /* Teknik Negative Margin untuk menimpa border tabel agar lurus */
+  margin: -1px !important; 
+  width: calc(100% + 2px) !important;
+  height: 43px !important;
 }
 
-/* 4. Fix Dropdown List Position */
+/* 4. Dropdown List Position */
 .xero-table .choices__list--dropdown { 
-    width: auto; 
-    min-width: 100%; 
+    width: calc(100% + 2px) !important; /* Lebar penuh + kompensasi border */
+    left: -1px !important; /* Geser kiri 1px agar lurus */
     z-index: 9999; 
     border: 1px solid var(--xero-blue) !important;
-    margin-top: 0 !important; /* Tempel langsung di bawah */
+    margin-top: 0 !important;
+    border-radius: 0 !important;
 }
 .xero-table .choices__list--single { padding: 0; } 
 
-/* CSS untuk Dropdown Customer di Header (Beda Style) */
+/* CSS untuk Dropdown Header (Tidak berubah) */
 .header-grid .choices__inner, 
 .header-grid input.main-input,
 .header-grid select {
@@ -187,11 +202,11 @@ table.xero-table input[readonly] { color: #666; cursor: default; }
 .grand-total { font-size: 20px; font-weight: 700; margin-top: 15px; padding-top: 15px; border-top: 2px solid #ddd; color: var(--text-color); }
 .btn-primary { background-color: #3fba13; color: white; border: none; padding: 12px 30px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; margin-top: 20px; }
 
-/* STATUS BADGE CENTERED */
+/* STATUS BADGE */
 .status-badge { 
     padding: 3px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; 
     text-transform: uppercase; display: inline-block; width: 90%; 
-    text-align: center; margin-top: 12px; /* Manual center push */
+    text-align: center; margin-top: 12px;
 }
 .status-ok { background: var(--green-bg); color: var(--green-text); }
 .status-oos { background: var(--red-bg); color: var(--red-text); }
