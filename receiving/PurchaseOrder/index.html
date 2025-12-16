@@ -1,690 +1,694 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auxilium PO System</title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auxilium PO System</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <style>
-        :root {
-            --primary-teal: #008080;
-            --primary-teal-hover: #006666;
-            --bg-light: #eef2f6; 
-            --text-dark: #333;
-            --navbar-bg: #ffffff; 
-            --navbar-text: #1e293b;
-        }
-        body { background-color: var(--bg-light); font-family: 'Inter', sans-serif; color: var(--text-dark); }
-        
-        /* Navbar Styling - Tema Putih */
-        .navbar-custom { 
-            background-color: var(--navbar-bg); 
-            padding: 12px 24px; 
-            color: var(--navbar-text); 
-            border-bottom: 1px solid #e2e8f0; 
-            box-shadow: 0 1px 2px rgba(0,0,0,0.03); 
-        }
-        
-        /* Logo Styling */
-        .navbar-brand { 
-            font-weight: 800; 
-            letter-spacing: -0.5px; 
-            margin: 0; 
-            color: #0f172a !important; 
-            font-size: 18px;
-        }
-        
-        /* Status Badge Style */
-        .status-badge { background-color: rgba(16, 185, 129, 0.1); color: #059669; border: 1px solid rgba(16, 185, 129, 0.2); padding: 4px 12px; border-radius: 50px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
-        
-        /* Dropdown Menu Trigger Style */
-        .nav-link-custom { 
-            color: #64748b; 
-            text-decoration: none; 
-            font-size: 14px; 
-            transition: 0.2s; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px;
-        }
-        .nav-link-custom:hover { color: var(--primary-teal); }
-        .nav-link-custom:hover .menu-icon-circle { 
-            background-color: #f1f5f9; 
-            border-color: #cbd5e1;
-            color: var(--primary-teal);
-        }
+    <style>
+        :root {
+            --primary-teal: #008080;
+            --primary-teal-hover: #006666;
+            --bg-light: #eef2f6; 
+            --text-dark: #333;
+            --navbar-bg: #ffffff; 
+            --navbar-text: #1e293b;
+        }
+        body { background-color: var(--bg-light); font-family: 'Inter', sans-serif; color: var(--text-dark); }
+        
+        /* Navbar Styling - Tema Putih */
+        .navbar-custom { 
+            background-color: var(--navbar-bg); 
+            padding: 12px 24px; 
+            color: var(--navbar-text); 
+            border-bottom: 1px solid #e2e8f0; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03); 
+        }
+        
+        /* Logo Styling */
+        .navbar-brand { 
+            font-weight: 800; 
+            letter-spacing: -0.5px; 
+            margin: 0; 
+            color: #0f172a !important; 
+            font-size: 18px;
+        }
+        
+        /* Status Badge Style */
+        .status-badge { background-color: rgba(16, 185, 129, 0.1); color: #059669; border: 1px solid rgba(16, 185, 129, 0.2); padding: 4px 12px; border-radius: 50px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+        
+        /* Dropdown Menu Trigger Style */
+        .nav-link-custom { 
+            color: #64748b; 
+            text-decoration: none; 
+            font-size: 14px; 
+            transition: 0.2s; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
+        }
+        .nav-link-custom:hover { color: var(--primary-teal); }
+        .nav-link-custom:hover .menu-icon-circle { 
+            background-color: #f1f5f9; 
+            border-color: #cbd5e1;
+            color: var(--primary-teal);
+        }
 
-        .menu-icon-circle {
-            width: 38px; 
-            height: 38px; 
-            background: white; 
-            border-radius: 50%; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            border: 1px solid #e2e8f0;
-            color: #64748b;
-            transition: all 0.2s ease;
-        }
+        .menu-icon-circle {
+            width: 38px; 
+            height: 38px; 
+            background: white; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+            transition: all 0.2s ease;
+        }
 
-        /* Dropdown Menu Panel */
-        .dropdown-menu-custom { border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.08); padding: 8px 0; margin-top: 15px !important; }
-        .dropdown-item { font-size: 14px; padding: 10px 20px; color: #4b5563; border-bottom: 1px solid #f8fafc; font-weight: 500; }
-        .dropdown-item:last-child { border-bottom: none; }
-        .dropdown-item:hover { background-color: #f8fafc; color: var(--primary-teal); }
-        .dropdown-item i { margin-right: 10px; color: #94a3b8; font-size: 16px; }
-        .dropdown-item:hover i { color: var(--primary-teal); }
-        .dropdown-header { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: #94a3b8; padding: 12px 20px 8px; }
+        /* Dropdown Menu Panel */
+        .dropdown-menu-custom { border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.08); padding: 8px 0; margin-top: 15px !important; }
+        .dropdown-item { font-size: 14px; padding: 10px 20px; color: #4b5563; border-bottom: 1px solid #f8fafc; font-weight: 500; }
+        .dropdown-item:last-child { border-bottom: none; }
+        .dropdown-item:hover { background-color: #f8fafc; color: var(--primary-teal); }
+        .dropdown-item i { margin-right: 10px; color: #94a3b8; font-size: 16px; }
+        .dropdown-item:hover i { color: var(--primary-teal); }
+        .dropdown-header { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: #94a3b8; padding: 12px 20px 8px; }
 
-        /* List Style */
-        .stat-card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.04); transition: transform 0.2s; }
-        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-        .stat-value { font-size: 26px; font-weight: 800; margin-bottom: 5px; color: #1e293b; }
-        .stat-label { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px; }
-        
-        .table-card { background: white; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); overflow: hidden; border: 1px solid rgba(0,0,0,0.04); }
-        .table-header-custom { background-color: #f8fafc; font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 1px solid #e2e8f0; }
-        .status-pill { padding: 4px 10px; border-radius: 50px; font-size: 11px; font-weight: 600; }
-        .status-pill.waiting { background-color: #eff6ff; color: #3b82f6; border: 1px solid #dbeafe; } 
-        .status-pill.done { background-color: #ecfdf5; color: #10b981; border: 1px solid #d1fae5; }
+        /* List Style */
+        .stat-card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.04); transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .stat-value { font-size: 26px; font-weight: 800; margin-bottom: 5px; color: #1e293b; }
+        .stat-label { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px; }
+        
+        .table-card { background: white; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); overflow: hidden; border: 1px solid rgba(0,0,0,0.04); }
+        .table-header-custom { background-color: #f8fafc; font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 1px solid #e2e8f0; }
+        .status-pill { padding: 4px 10px; border-radius: 50px; font-size: 11px; font-weight: 600; }
+        .status-pill.waiting { background-color: #eff6ff; color: #3b82f6; border: 1px solid #dbeafe; } 
+        .status-pill.done { background-color: #ecfdf5; color: #10b981; border: 1px solid #d1fae5; }
 
-        /* Form Style */
-        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .page-title { font-size: 24px; font-weight: 700; margin: 0; color: #0f172a; }
-        .breadcrumb-text { font-size: 13px; color: #64748b; margin-top: 4px; }
-        .btn-back { background: white; border: 1px solid #cbd5e1; color: #475569; font-weight: 600; padding: 8px 16px; border-radius: 8px; font-size: 13px; transition: all 0.2s; }
-        .btn-back:hover { background: #f1f5f9; color: #0f172a; border-color: #94a3b8; }
-        
-        .form-container { background: white; border-radius: 12px; border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.02); padding: 30px; }
-        .form-label-custom { font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 8px; display: block; }
-        .form-control-custom { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 12px; font-size: 14px; width: 100%; transition: border-color 0.2s; }
-        .form-control-custom:focus { border-color: var(--primary-teal); outline: none; box-shadow: 0 0 0 3px rgba(0,128,128,0.1); }
-        
-        /* Select2 Tweak */
-        .select2-container--bootstrap-5 .select2-selection { border-color: #cbd5e1 !important; padding: 10px 12px !important; min-height: 42px; font-size: 14px; border-radius: 8px !important; }
-        .btn-confirm { background-color: var(--primary-teal); color: white; font-weight: 600; border: none; padding: 10px 24px; border-radius: 8px; font-size: 14px; height: 100%; display: flex; align-items: center; gap: 8px; justify-content: center; transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,128,128,0.2); }
-        .btn-confirm:hover { background-color: var(--primary-teal-hover); color: white; box-shadow: 0 6px 15px rgba(0,128,128,0.3); transform: translateY(-1px); }
-        
-        .section-title { font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-top: 30px; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; letter-spacing: 0.5px; }
-        .table-form th { font-size: 12px; color: #475569; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding: 12px; background-color: #f8fafc; text-transform: uppercase; }
-        .table-form td { padding: 10px; vertical-align: top; border-bottom: 1px solid #f1f5f9; }
-        .input-table { border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; font-size: 14px; width: 100%; transition: border-color 0.2s; }
-        .input-table:focus { border-color: var(--primary-teal); outline: none; }
-        .btn-add-product { color: var(--primary-teal); font-weight: 600; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; margin-top: 20px; cursor: pointer; padding: 10px 18px; border-radius: 8px; background: rgba(0,128,128,0.05); transition: 0.2s; border: 1px dashed rgba(0,128,128,0.3); }
-        .btn-add-product:hover { background: rgba(0,128,128,0.1); color: var(--primary-teal-hover); }
-        
-        .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(4px); }
-        
-        .edit-badge { background-color: #fffbeb; color: #b45309; font-size: 12px; padding: 4px 10px; border-radius: 6px; border: 1px solid #fcd34d; margin-left: 10px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
-        
-        .btn-white { background: white; border: 1px solid #e2e8f0; color: #64748b; }
-        .btn-white:hover { border-color: #cbd5e1; color: #1e293b; background: #f8fafc; }
-    </style>
+        /* Form Style */
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .page-title { font-size: 24px; font-weight: 700; margin: 0; color: #0f172a; }
+        .breadcrumb-text { font-size: 13px; color: #64748b; margin-top: 4px; }
+        .btn-back { background: white; border: 1px solid #cbd5e1; color: #475569; font-weight: 600; padding: 8px 16px; border-radius: 8px; font-size: 13px; transition: all 0.2s; }
+        .btn-back:hover { background: #f1f5f9; color: #0f172a; border-color: #94a3b8; }
+        
+        .form-container { background: white; border-radius: 12px; border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.02); padding: 30px; }
+        .form-label-custom { font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 8px; display: block; }
+        .form-control-custom { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 12px; font-size: 14px; width: 100%; transition: border-color 0.2s; }
+        .form-control-custom:focus { border-color: var(--primary-teal); outline: none; box-shadow: 0 0 0 3px rgba(0,128,128,0.1); }
+        
+        /* Select2 Tweak */
+        .select2-container--bootstrap-5 .select2-selection { border-color: #cbd5e1 !important; padding: 10px 12px !important; min-height: 42px; font-size: 14px; border-radius: 8px !important; }
+        .btn-confirm { background-color: var(--primary-teal); color: white; font-weight: 600; border: none; padding: 10px 24px; border-radius: 8px; font-size: 14px; height: 100%; display: flex; align-items: center; gap: 8px; justify-content: center; transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,128,128,0.2); }
+        .btn-confirm:hover { background-color: var(--primary-teal-hover); color: white; box-shadow: 0 6px 15px rgba(0,128,128,0.3); transform: translateY(-1px); }
+        
+        .section-title { font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-top: 30px; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; letter-spacing: 0.5px; }
+        .table-form th { font-size: 12px; color: #475569; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding: 12px; background-color: #f8fafc; text-transform: uppercase; }
+        .table-form td { padding: 10px; vertical-align: top; border-bottom: 1px solid #f1f5f9; }
+        .input-table { border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; font-size: 14px; width: 100%; transition: border-color 0.2s; }
+        .input-table:focus { border-color: var(--primary-teal); outline: none; }
+        .btn-add-product { color: var(--primary-teal); font-weight: 600; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; margin-top: 20px; cursor: pointer; padding: 10px 18px; border-radius: 8px; background: rgba(0,128,128,0.05); transition: 0.2s; border: 1px dashed rgba(0,128,128,0.3); }
+        .btn-add-product:hover { background: rgba(0,128,128,0.1); color: var(--primary-teal-hover); }
+        
+        .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(4px); }
+        
+        .edit-badge { background-color: #fffbeb; color: #b45309; font-size: 12px; padding: 4px 10px; border-radius: 6px; border: 1px solid #fcd34d; margin-left: 10px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        
+        .btn-white { background: white; border: 1px solid #e2e8f0; color: #64748b; }
+        .btn-white:hover { border-color: #cbd5e1; color: #1e293b; background: #f8fafc; }
+    </style>
 </head>
 <body>
 
-    <nav class="navbar-custom fixed-top d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center gap-3">
-            <div style="font-weight:900; font-size: 20px; color:#1e293b; display:flex; align-items:center; gap:8px;">
-                 <span style="border-right: 2px solid #e2e8f0; padding-right: 15px;">AUXILIUM</span>
-                 <span style="font-weight:400; font-size:14px; color:#64748b; letter-spacing: -0.2px;">Purchase Orders</span>
-            </div>
-        </div>
-        
-        <div class="d-flex align-items-center gap-4">
-            <div class="d-flex align-items-center gap-2">
-                <span class="status-badge" id="connStatus">
-                    <span style="width: 6px; height: 6px; background: #10b981; border-radius: 50%;"></span> Online
-                </span>
-            </div>
+    <nav class="navbar-custom fixed-top d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-3">
+            <div style="font-weight:900; font-size: 20px; color:#1e293b; display:flex; align-items:center; gap:8px;">
+                 <span style="border-right: 2px solid #e2e8f0; padding-right: 15px;">AUXILIUM</span>
+                 <span style="font-weight:400; font-size:14px; color:#64748b; letter-spacing: -0.2px;">Purchase Orders</span>
+            </div>
+        </div>
+        
+        <div class="d-flex align-items-center gap-4">
+            <div class="d-flex align-items-center gap-2">
+                <span class="status-badge" id="connStatus">
+                    <span style="width: 6px; height: 6px; background: #10b981; border-radius: 50%;"></span> Online
+                </span>
+            </div>
 
-            <div class="dropdown">
-                <a class="nav-link-custom dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <div class="d-flex flex-column text-end lh-1 d-none d-md-flex">
-                        <span style="font-size: 13px; font-weight: 600; color: #334155;">Menu Akses</span>
-                        <span style="font-size: 11px; color: #94a3b8;">Pilih Modul</span>
-                    </div>
-                    <div class="menu-icon-circle shadow-sm">
-                        <i class="bi bi-grid-fill"></i>
-                    </div>
-                </a>
-                
-                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom shadow-lg border-0">
+            <div class="dropdown">
+                <a class="nav-link-custom dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="d-flex flex-column text-end lh-1 d-none d-md-flex">
+                        <span style="font-size: 13px; font-weight: 600; color: #334155;">Menu Akses</span>
+                        <span style="font-size: 11px; color: #94a3b8;">Pilih Modul</span>
+                    </div>
+                    <div class="menu-icon-circle shadow-sm">
+                        <i class="bi bi-grid-fill"></i>
+                    </div>
+                </a>
+                
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom shadow-lg border-0">
+                    <li>
+                        <a class="dropdown-item" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/index.html">
+                            <i class="bi bi-house-door"></i> Home Pemesanan Pembelian
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider bg-light my-1"></li>
+
+                    <li><h6 class="dropdown-header">Menu Pembeliaan</h6></li>
                     <li>
-                        <a class="dropdown-item" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/index.html">
-                            <i class="bi bi-house-door"></i> Home Pemesanan Pembelian
+                        <a class="dropdown-item" href="./index.html">
+                            <i class="bi bi-file-text"></i> Buat Pesanan Pembelian
                         </a>
                     </li>
-                    <li><hr class="dropdown-divider bg-light my-1"></li>
+                                        <li>
+                        <a class="dropdown-item" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/CreateBill/index.html">
+                            <i class="bi bi-receipt"></i> Buat Bil
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/entry/index.html">
+                            <i class="bi bi-box-seam"></i> Penerimaan PO
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider bg-light my-1"></li>
+                    <li><h6 class="dropdown-header">Accounting</h6></li>
+                    <li>
+                        <a class="dropdown-item" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/ImportXeroPO/index.html">
+                            <i class="bi bi-cloud-arrow-up"></i> Import Xero PO
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider bg-light my-1"></li>
+                    <li>
+                        <a class="dropdown-item text-danger" href="#">
+                            <i class="bi bi-box-arrow-right text-danger"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-                    <li><h6 class="dropdown-header">Menu Pembeliaan</h6></li>
-                    <li>
-                        <a class="dropdown-item" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/CreateBill/index.html">
-                            <i class="bi bi-receipt"></i> Buat Bil
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/entry/index.html">
-                            <i class="bi bi-box-seam"></i> Penerimaan PO
-                        </a>
-                    </li>
-                    <li><hr class="dropdown-divider bg-light my-1"></li>
-                    <li><h6 class="dropdown-header">Accounting</h6></li>
-                    <li>
-                        <a class="dropdown-item" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/ImportXeroPO/index.html">
-                            <i class="bi bi-cloud-arrow-up"></i> Import Xero PO
-                        </a>
-                    </li>
-                    <li><hr class="dropdown-divider bg-light my-1"></li>
-                    <li>
-                        <a class="dropdown-item text-danger" href="#">
-                            <i class="bi bi-box-arrow-right text-danger"></i> Logout
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <div class="container-fluid" style="margin-top: 100px; max-width: 1400px; padding-bottom: 50px;">
 
-    <div class="container-fluid" style="margin-top: 100px; max-width: 1400px; padding-bottom: 50px;">
+        <div id="view-list">
+            <div class="d-flex justify-content-between align-items-end mb-4">
+                <div>
+                    <h3 class="page-title">List Overview</h3>
+                    <div class="breadcrumb-text">Dashboard &bullet; Purchase Orders</div>
+                </div>
+                <button class="btn btn-confirm shadow-sm" style="width: auto;" onclick="createNewPO()">
+                    <i class="bi bi-plus-lg"></i> NEW PO
+                </button>
+            </div>
 
-        <div id="view-list">
-            <div class="d-flex justify-content-between align-items-end mb-4">
-                <div>
-                    <h3 class="page-title">List Overview</h3>
-                    <div class="breadcrumb-text">Dashboard &bullet; Purchase Orders</div>
-                </div>
-                <button class="btn btn-confirm shadow-sm" style="width: auto;" onclick="createNewPO()">
-                    <i class="bi bi-plus-lg"></i> NEW PO
-                </button>
-            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-md-3"><div class="stat-card"><div class="stat-value" id="statTotal">0</div><div class="stat-label">Total Orders</div></div></div>
+                <div class="col-md-3"><div class="stat-card"><div class="stat-value text-success" id="statToday">0</div><div class="stat-label">Created Today</div></div></div>
+                <div class="col-md-3"><div class="stat-card"><div class="stat-value text-primary" id="statWaiting">0</div><div class="stat-label">Waiting Approval</div></div></div>
+                <div class="col-md-3"><div class="stat-card"><div class="stat-value text-danger" id="statItems">0</div><div class="stat-label">Total Items Qty</div></div></div>
+            </div>
 
-            <div class="row g-3 mb-4">
-                <div class="col-md-3"><div class="stat-card"><div class="stat-value" id="statTotal">0</div><div class="stat-label">Total Orders</div></div></div>
-                <div class="col-md-3"><div class="stat-card"><div class="stat-value text-success" id="statToday">0</div><div class="stat-label">Created Today</div></div></div>
-                <div class="col-md-3"><div class="stat-card"><div class="stat-value text-primary" id="statWaiting">0</div><div class="stat-label">Waiting Approval</div></div></div>
-                <div class="col-md-3"><div class="stat-card"><div class="stat-value text-danger" id="statItems">0</div><div class="stat-label">Total Items Qty</div></div></div>
-            </div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="input-group shadow-sm" style="width: 350px;">
+                    <span class="input-group-text bg-white border-end-0 border-light-subtle"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" id="searchInput" class="form-control border-start-0 border-light-subtle ps-0" placeholder="Search Reference, Vendor..." onkeyup="filterTable()">
+                </div>
+                <button class="btn btn-white shadow-sm fw-bold" onclick="fetchListPO()">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh
+                </button>
+            </div>
 
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div class="input-group shadow-sm" style="width: 350px;">
-                    <span class="input-group-text bg-white border-end-0 border-light-subtle"><i class="bi bi-search text-muted"></i></span>
-                    <input type="text" id="searchInput" class="form-control border-start-0 border-light-subtle ps-0" placeholder="Search Reference, Vendor..." onkeyup="filterTable()">
-                </div>
-                <button class="btn btn-white shadow-sm fw-bold" onclick="fetchListPO()">
-                    <i class="bi bi-arrow-clockwise"></i> Refresh
-                </button>
-            </div>
+            <div class="table-card shadow-sm">
+                <table class="table table-hover mb-0">
+                    <thead class="table-header-custom">
+                        <tr>
+                            <th class="py-3 ps-4">Reference</th>
+                            <th class="py-3">Vendor</th>
+                            <th class="py-3">Order Date</th>
+                            <th class="py-3">Created At</th>
+                            <th class="py-3 text-center">Items</th>
+                            <th class="py-3">Status</th>
+                            <th class="py-3 text-center">Action</th> 
+                        </tr>
+                    </thead>
+                    <tbody id="listTableBody">
+                        <tr><td colspan="7" class="text-center py-5 text-muted">Loading data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-            <div class="table-card shadow-sm">
-                <table class="table table-hover mb-0">
-                    <thead class="table-header-custom">
-                        <tr>
-                            <th class="py-3 ps-4">Reference</th>
-                            <th class="py-3">Vendor</th>
-                            <th class="py-3">Order Date</th>
-                            <th class="py-3">Created At</th>
-                            <th class="py-3 text-center">Items</th>
-                            <th class="py-3">Status</th>
-                            <th class="py-3 text-center">Action</th> 
-                        </tr>
-                    </thead>
-                    <tbody id="listTableBody">
-                        <tr><td colspan="7" class="text-center py-5 text-muted">Loading data...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <div id="view-form" class="d-none">
+            
+            <div class="page-header">
+                <div class="d-flex align-items-center">
+                    <div>
+                        <h3 class="page-title" id="formTitle">New Quote</h3>
+                        <div class="breadcrumb-text">Dashboard &bullet; Data Entry</div>
+                    </div>
+                    <div id="editBadge" class="d-none edit-badge shadow-sm">
+                        <i class="bi bi-pencil-square"></i> Editing Mode
+                    </div>
+                </div>
+                <button class="btn btn-back shadow-sm" onclick="switchView('list')">
+                    <i class="bi bi-arrow-left me-1"></i> Back to List
+                </button>
+            </div>
 
-        <div id="view-form" class="d-none">
-            
-            <div class="page-header">
-                <div class="d-flex align-items-center">
-                    <div>
-                        <h3 class="page-title" id="formTitle">New Quote</h3>
-                        <div class="breadcrumb-text">Dashboard &bullet; Data Entry</div>
-                    </div>
-                    <div id="editBadge" class="d-none edit-badge shadow-sm">
-                        <i class="bi bi-pencil-square"></i> Editing Mode
-                    </div>
-                </div>
-                <button class="btn btn-back shadow-sm" onclick="switchView('list')">
-                    <i class="bi bi-arrow-left me-1"></i> Back to List
-                </button>
-            </div>
+            <div class="form-container shadow-sm">
+                <div class="row g-3 align-items-end mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label-custom">Select Vendor</label>
+                        <select id="vendorSelect" class="form-select" style="width:100%;">
+                            <option value="" disabled selected>-- Select Vendor --</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label-custom">Order Date</label>
+                        <input type="date" id="poDate" class="form-control-custom">
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-confirm w-100" onclick="submitPO()">
+                            <i class="bi bi-cloud-upload"></i> <span id="btnSubmitText">CONFIRM PO</span>
+                        </button>
+                    </div>
+                </div>
 
-            <div class="form-container shadow-sm">
-                <div class="row g-3 align-items-end mb-4">
-                    <div class="col-md-6">
-                        <label class="form-label-custom">Select Vendor</label>
-                        <select id="vendorSelect" class="form-select" style="width:100%;">
-                            <option value="" disabled selected>-- Select Vendor --</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label-custom">Order Date</label>
-                        <input type="date" id="poDate" class="form-control-custom">
-                    </div>
-                    <div class="col-md-3">
-                        <button class="btn btn-confirm w-100" onclick="submitPO()">
-                            <i class="bi bi-cloud-upload"></i> <span id="btnSubmitText">CONFIRM PO</span>
-                        </button>
-                    </div>
-                </div>
+                <div class="section-title">Order Items</div>
 
-                <div class="section-title">Order Items</div>
+                <div class="table-responsive">
+                    <table class="table table-form w-100">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">#</th>
+                                <th style="width: 40%;">Product / Item</th>
+                                <th style="width: 15%;">Qty</th>
+                                <th style="width: 15%;">Unit</th>
+                                <th>Note</th>
+                                <th style="width: 50px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="entryTableBody"></tbody>
+                    </table>
+                </div>
 
-                <div class="table-responsive">
-                    <table class="table table-form w-100">
-                        <thead>
-                            <tr>
-                                <th style="width: 50px;">#</th>
-                                <th style="width: 40%;">Product / Item</th>
-                                <th style="width: 15%;">Qty</th>
-                                <th style="width: 15%;">Unit</th>
-                                <th>Note</th>
-                                <th style="width: 50px;"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="entryTableBody"></tbody>
-                    </table>
-                </div>
+                <div onclick="addNewRow()" class="btn-add-product">
+                    <i class="bi bi-plus-circle-fill"></i> Add a product line
+                </div>
+            </div>
+        </div>
 
-                <div onclick="addNewRow()" class="btn-add-product">
-                    <i class="bi bi-plus-circle-fill"></i> Add a product line
-                </div>
-            </div>
-        </div>
+    </div>
 
-    </div>
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+        <div class="fw-bold text-dark fs-5" id="loadingText">Processing...</div>
+    </div>
 
-    <div id="loadingOverlay" class="loading-overlay">
-        <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
-        <div class="fw-bold text-dark fs-5" id="loadingText">Processing...</div>
-    </div>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        // --- URL BARU ANDA ---
+        const API_URL = "https://script.google.com/macros/s/AKfycbztj8FKA46y0nFOTUXu6VjYZCK5qSFr08-ab2n_y7vOwzwXgYGZmi5Q_V-raRRO_J5gsQ/exec"; 
+        
+        let vendorData = {};
+        let savedOrders = [];
+        let isVendorLoaded = false;
+        
+        // --- LOGIKA EDIT ---
+        let currentEditId = null; // Jika null = New, jika berisi String = Edit Mode
 
-    <script>
-        // --- URL BARU ANDA ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbztj8FKA46y0nFOTUXu6VjYZCK5qSFr08-ab2n_y7vOwzwXgYGZmi5Q_V-raRRO_J5gsQ/exec"; 
-        
-        let vendorData = {};
-        let savedOrders = [];
-        let isVendorLoaded = false;
-        
-        // --- LOGIKA EDIT ---
-        let currentEditId = null; // Jika null = New, jika berisi String = Edit Mode
+        window.onload = function() {
+            fetchListPO();
+            setDefaultDate();
+        };
 
-        window.onload = function() {
-            fetchListPO();
-            setDefaultDate();
-        };
+        function switchView(viewName) {
+            const listDiv = document.getElementById("view-list");
+            const formDiv = document.getElementById("view-form");
 
-        function switchView(viewName) {
-            const listDiv = document.getElementById("view-list");
-            const formDiv = document.getElementById("view-form");
+            if (viewName === 'form') {
+                listDiv.classList.add("d-none");
+                formDiv.classList.remove("d-none");
+                if (!isVendorLoaded) fetchVendorData();
+            } else {
+                formDiv.classList.add("d-none");
+                listDiv.classList.remove("d-none");
+                // Reset mode edit saat kembali ke list
+                resetFormState();
+            }
+        }
 
-            if (viewName === 'form') {
-                listDiv.classList.add("d-none");
-                formDiv.classList.remove("d-none");
-                if (!isVendorLoaded) fetchVendorData();
-            } else {
-                formDiv.classList.add("d-none");
-                listDiv.classList.remove("d-none");
-                // Reset mode edit saat kembali ke list
-                resetFormState();
-            }
-        }
+        function createNewPO() {
+            resetFormState();
+            switchView('form');
+        }
 
-        function createNewPO() {
-            resetFormState();
-            switchView('form');
-        }
+        function resetFormState() {
+            currentEditId = null;
+            document.getElementById("formTitle").innerText = "New Quote";
+            document.getElementById("btnSubmitText").innerText = "CONFIRM PO";
+            document.getElementById("editBadge").classList.add("d-none");
+            
+            // Reset Inputs
+            $('#vendorSelect').val(null).trigger('change');
+            document.getElementById("entryTableBody").innerHTML = "";
+            setDefaultDate();
+        }
 
-        function resetFormState() {
-            currentEditId = null;
-            document.getElementById("formTitle").innerText = "New Quote";
-            document.getElementById("btnSubmitText").innerText = "CONFIRM PO";
-            document.getElementById("editBadge").classList.add("d-none");
-            
-            // Reset Inputs
-            $('#vendorSelect').val(null).trigger('change');
-            document.getElementById("entryTableBody").innerHTML = "";
-            setDefaultDate();
-        }
+        function showLoading(show, text = "Processing...") {
+            document.getElementById("loadingText").innerText = text;
+            document.getElementById("loadingOverlay").style.display = show ? "flex" : "none";
+        }
 
-        function showLoading(show, text = "Processing...") {
-            document.getElementById("loadingText").innerText = text;
-            document.getElementById("loadingOverlay").style.display = show ? "flex" : "none";
-        }
+        // --- LIST & FETCHING ---
+        function fetchListPO() {
+            const tbody = document.getElementById("listTableBody");
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-5"><div class="spinner-border text-secondary spinner-border-sm me-2"></div>Updating...</td></tr>`;
 
-        // --- LIST & FETCHING ---
-        function fetchListPO() {
-            const tbody = document.getElementById("listTableBody");
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-5"><div class="spinner-border text-secondary spinner-border-sm me-2"></div>Updating...</td></tr>`;
+            fetch(API_URL + "?action=getSavedOrders")
+            .then(res => res.json())
+            .then(res => {
+                if(res.status === 'success') {
+                    savedOrders = res.data;
+                    renderListTable(savedOrders);
+                    calculateStats(savedOrders);
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-4">${res.message}</td></tr>`;
+                }
+            })
+            .catch(err => tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-4">Error Connection</td></tr>`);
+        }
 
-            fetch(API_URL + "?action=getSavedOrders")
-            .then(res => res.json())
-            .then(res => {
-                if(res.status === 'success') {
-                    savedOrders = res.data;
-                    renderListTable(savedOrders);
-                    calculateStats(savedOrders);
-                } else {
-                    tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-4">${res.message}</td></tr>`;
-                }
-            })
-            .catch(err => tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-4">Error Connection</td></tr>`);
-        }
+        function renderListTable(data) {
+            const tbody = document.getElementById("listTableBody");
+            tbody.innerHTML = "";
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">No orders found.</td></tr>`;
+                return;
+            }
 
-        function renderListTable(data) {
-            const tbody = document.getElementById("listTableBody");
-            tbody.innerHTML = "";
-            if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">No orders found.</td></tr>`;
-                return;
-            }
+            data.forEach(po => {
+                let date = new Date(po.date).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'});
+                let created = new Date(po.createdAt).toLocaleTimeString('id-ID', {hour: '2-digit', minute: '2-digit'});
+                let statusClass = po.status.includes("Waiting") || po.status.includes("Menunggu") ? "waiting" : "done";
+                
+                // --- UPDATE BAGIAN BUTTON ACTION ---
+                let actionBtns = `<div class="d-flex justify-content-center gap-2">`;
 
-            data.forEach(po => {
-                let date = new Date(po.date).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'});
-                let created = new Date(po.createdAt).toLocaleTimeString('id-ID', {hour: '2-digit', minute: '2-digit'});
-                let statusClass = po.status.includes("Waiting") || po.status.includes("Menunggu") ? "waiting" : "done";
-                
-                // --- UPDATE BAGIAN BUTTON ACTION ---
-                let actionBtns = `<div class="d-flex justify-content-center gap-2">`;
+                // 1. Tombol Print (Selalu muncul)
+                actionBtns += `
+                    <button class="btn btn-sm btn-outline-secondary border-0" onclick="printPO('${po.id}')" title="Print / PDF">
+                        <i class="bi bi-printer-fill fs-6"></i>
+                    </button>`;
 
-                // 1. Tombol Print (Selalu muncul)
-                actionBtns += `
-                    <button class="btn btn-sm btn-outline-secondary border-0" onclick="printPO('${po.id}')" title="Print / PDF">
-                        <i class="bi bi-printer-fill fs-6"></i>
-                    </button>`;
+                // 2. Tombol Edit (Hanya jika belum Billed)
+                if(po.status !== "Billed") {
+                    actionBtns += `
+                        <button class="btn btn-sm btn-outline-primary border-0" onclick="editPO('${po.id}')" title="Edit PO">
+                            <i class="bi bi-pencil-square fs-6"></i>
+                        </button>`;
+                } else {
+                    // Icon Lock jika billed
+                    actionBtns += `<span class="text-muted small align-self-center ms-1"><i class="bi bi-lock-fill"></i></span>`;
+                }
 
-                // 2. Tombol Edit (Hanya jika belum Billed)
-                if(po.status !== "Billed") {
-                    actionBtns += `
-                        <button class="btn btn-sm btn-outline-primary border-0" onclick="editPO('${po.id}')" title="Edit PO">
-                            <i class="bi bi-pencil-square fs-6"></i>
-                        </button>`;
-                } else {
-                    // Icon Lock jika billed
-                    actionBtns += `<span class="text-muted small align-self-center ms-1"><i class="bi bi-lock-fill"></i></span>`;
-                }
+                actionBtns += `</div>`;
+                // -----------------------------------
 
-                actionBtns += `</div>`;
-                // -----------------------------------
+                let tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td class="ps-4 fw-bold text-dark">${po.id}</td>
+                    <td>${po.vendor}</td>
+                    <td>${date}</td>
+                    <td class="text-muted small">${created}</td>
+                    <td class="text-center"><span class="badge bg-light text-dark border">${po.itemsCount}</span></td>
+                    <td><span class="status-pill ${statusClass}">${po.status}</span></td>
+                    <td class="text-center">${actionBtns}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
 
-                let tr = document.createElement("tr");
-                tr.innerHTML = `
-                    <td class="ps-4 fw-bold text-dark">${po.id}</td>
-                    <td>${po.vendor}</td>
-                    <td>${date}</td>
-                    <td class="text-muted small">${created}</td>
-                    <td class="text-center"><span class="badge bg-light text-dark border">${po.itemsCount}</span></td>
-                    <td><span class="status-pill ${statusClass}">${po.status}</span></td>
-                    <td class="text-center">${actionBtns}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
+        // --- FUNGSI BARU UNTUK PRINT ---
+        function printPO(poId) {
+            const printUrl = API_URL + "?action=printPO&id=" + poId;
+            window.open(printUrl, '_blank');
+        }
 
-        // --- FUNGSI BARU UNTUK PRINT ---
-        function printPO(poId) {
-            const printUrl = API_URL + "?action=printPO&id=" + poId;
-            window.open(printUrl, '_blank');
-        }
+        // --- LOGIC UTAMA EDIT ---
+        function editPO(poId) {
+            showLoading(true, "Fetching PO Details...");
+            
+            // 1. Set ID
+            currentEditId = poId;
 
-        // --- LOGIC UTAMA EDIT ---
-        function editPO(poId) {
-            showLoading(true, "Fetching PO Details...");
-            
-            // 1. Set ID
-            currentEditId = poId;
+            // 2. Fetch Data dari Server
+            fetch(API_URL + "?action=getPoDetails&id=" + poId)
+            .then(res => res.json())
+            .then(res => {
+                showLoading(false);
+                if(res.status === 'success') {
+                    const data = res.data;
+                    
+                    // 3. Pastikan Vendor Data sudah ada dulu
+                    if(!isVendorLoaded) {
+                        fetchVendorData().then(() => populateEditForm(data, poId));
+                    } else {
+                        populateEditForm(data, poId);
+                    }
+                } else {
+                    Swal.fire("Error", "Gagal mengambil detail PO", "error");
+                }
+            })
+            .catch(err => {
+                showLoading(false);
+                Swal.fire("Error", "Koneksi Error", "error");
+            });
+        }
 
-            // 2. Fetch Data dari Server
-            fetch(API_URL + "?action=getPoDetails&id=" + poId)
-            .then(res => res.json())
-            .then(res => {
-                showLoading(false);
-                if(res.status === 'success') {
-                    const data = res.data;
-                    
-                    // 3. Pastikan Vendor Data sudah ada dulu
-                    if(!isVendorLoaded) {
-                        fetchVendorData().then(() => populateEditForm(data, poId));
-                    } else {
-                        populateEditForm(data, poId);
-                    }
-                } else {
-                    Swal.fire("Error", "Gagal mengambil detail PO", "error");
-                }
-            })
-            .catch(err => {
-                showLoading(false);
-                Swal.fire("Error", "Koneksi Error", "error");
-            });
-        }
+        function populateEditForm(data, poId) {
+            // UI Adjustment
+            switchView('form');
+            document.getElementById("formTitle").innerText = "Edit Quote: " + poId;
+            document.getElementById("btnSubmitText").innerText = "UPDATE PO";
+            document.getElementById("editBadge").classList.remove("d-none");
 
-        function populateEditForm(data, poId) {
-            // UI Adjustment
-            switchView('form');
-            document.getElementById("formTitle").innerText = "Edit Quote: " + poId;
-            document.getElementById("btnSubmitText").innerText = "UPDATE PO";
-            document.getElementById("editBadge").classList.remove("d-none");
+            // Fill Header
+            $('#vendorSelect').val(data.info.vendor).trigger('change');
+            document.getElementById("poDate").value = data.info.date;
 
-            // Fill Header
-            $('#vendorSelect').val(data.info.vendor).trigger('change');
-            document.getElementById("poDate").value = data.info.date;
+            // Clear & Fill Items
+            document.getElementById("entryTableBody").innerHTML = "";
+            
+            // Loop Items
+            data.items.forEach(item => {
+                // Cari index item dari nama item
+                let vendorName = data.info.vendor;
+                let itemIndex = -1;
+                
+                // Cari index di vendorData (agak tricky karena kita simpan nama, bukan index di DB)
+                if(vendorData[vendorName]) {
+                    itemIndex = vendorData[vendorName].findIndex(x => x.item === item.itemName);
+                }
 
-            // Clear & Fill Items
-            document.getElementById("entryTableBody").innerHTML = "";
-            
-            // Loop Items
-            data.items.forEach(item => {
-                // Cari index item dari nama item
-                let vendorName = data.info.vendor;
-                let itemIndex = -1;
-                
-                // Cari index di vendorData (agak tricky karena kita simpan nama, bukan index di DB)
-                if(vendorData[vendorName]) {
-                    itemIndex = vendorData[vendorName].findIndex(x => x.item === item.itemName);
-                }
+                if(itemIndex !== -1) {
+                    addNewRow(itemIndex, item.qty, item.note);
+                } else {
+                    console.warn("Item tidak ditemukan di master data: " + item.itemName);
+                }
+            });
+        }
 
-                if(itemIndex !== -1) {
-                    addNewRow(itemIndex, item.qty, item.note);
-                } else {
-                    console.warn("Item tidak ditemukan di master data: " + item.itemName);
-                }
-            });
-        }
+        // --- FORM & SELECT2 LOGIC ---
+        function fetchVendorData() {
+            return new Promise((resolve, reject) => {
+                fetch(API_URL + "?action=getData")
+                .then(res => res.json())
+                .then(res => {
+                    if(res.status === 'success'){
+                        vendorData = res.data;
+                        isVendorLoaded = true;
+                        populateVendorSelect();
+                        resolve();
+                    } else reject();
+                });
+            });
+        }
 
-        // --- FORM & SELECT2 LOGIC ---
-        function fetchVendorData() {
-            return new Promise((resolve, reject) => {
-                fetch(API_URL + "?action=getData")
-                .then(res => res.json())
-                .then(res => {
-                    if(res.status === 'success'){
-                        vendorData = res.data;
-                        isVendorLoaded = true;
-                        populateVendorSelect();
-                        resolve();
-                    } else reject();
-                });
-            });
-        }
+        function populateVendorSelect() {
+            const select = $('#vendorSelect');
+            select.empty();
+            select.append('<option value="" disabled selected>-- Select Vendor --</option>');
+            Object.keys(vendorData).sort().forEach(v => { select.append(new Option(v, v)); });
+            
+            select.select2({ theme: 'bootstrap-5', placeholder: "-- Select Vendor --", width: '100%' });
+            select.on('select2:select', function (e) {
+                document.getElementById("entryTableBody").innerHTML = ""; 
+                addNewRow(); 
+            });
+        }
 
-        function populateVendorSelect() {
-            const select = $('#vendorSelect');
-            select.empty();
-            select.append('<option value="" disabled selected>-- Select Vendor --</option>');
-            Object.keys(vendorData).sort().forEach(v => { select.append(new Option(v, v)); });
-            
-            select.select2({ theme: 'bootstrap-5', placeholder: "-- Select Vendor --", width: '100%' });
-            select.on('select2:select', function (e) {
-                document.getElementById("entryTableBody").innerHTML = ""; 
-                addNewRow(); 
-            });
-        }
+        function addNewRow(preselectIndex = null, preQty = null, preNote = null) {
+            var vendor = $('#vendorSelect').val(); 
+            if(!vendor && !preselectIndex) return Swal.fire("Vendor Required", "Select vendor first.", "warning");
 
-        function addNewRow(preselectIndex = null, preQty = null, preNote = null) {
-            var vendor = $('#vendorSelect').val(); 
-            if(!vendor && !preselectIndex) return Swal.fire("Vendor Required", "Select vendor first.", "warning");
+            var tbody = document.getElementById("entryTableBody");
+            var rowIdx = tbody.children.length; 
+            var newSelectId = "product-select-" + rowIdx + "-" + Date.now();
 
-            var tbody = document.getElementById("entryTableBody");
-            var rowIdx = tbody.children.length; 
-            var newSelectId = "product-select-" + rowIdx + "-" + Date.now();
+            var itemOptions = '<option value="" disabled selected>Select Product</option>';
+            vendorData[vendor].forEach((obj, index) => {
+                let selected = (preselectIndex !== null && preselectIndex == index) ? "selected" : "";
+                itemOptions += `<option value="${index}" ${selected}>${obj.item}</option>`;
+            });
 
-            var itemOptions = '<option value="" disabled selected>Select Product</option>';
-            vendorData[vendor].forEach((obj, index) => {
-                let selected = (preselectIndex !== null && preselectIndex == index) ? "selected" : "";
-                itemOptions += `<option value="${index}" ${selected}>${obj.item}</option>`;
-            });
+            var tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td class="text-center text-muted align-middle row-number">${rowIdx + 1}</td>
+                <td><select id="${newSelectId}" class="form-select input-table item-select" style="width:100%">${itemOptions}</select></td>
+                <td><input type="number" class="input-table qty-input text-center" value="${preQty || ''}" placeholder="0.00" min="0"></td>
+                <td><input type="text" class="input-table unit-input bg-light text-muted" readonly tabindex="-1"></td>
+                <td><input type="text" class="input-table note-input" value="${preNote || ''}" placeholder="Note"></td>
+                <td class="text-center align-middle"><i class="bi bi-trash3-fill text-danger" style="cursor:pointer;" onclick="removeRow(this)"></i></td>
+            `;
+            tbody.appendChild(tr);
 
-            var tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td class="text-center text-muted align-middle row-number">${rowIdx + 1}</td>
-                <td><select id="${newSelectId}" class="form-select input-table item-select" style="width:100%">${itemOptions}</select></td>
-                <td><input type="number" class="input-table qty-input text-center" value="${preQty || ''}" placeholder="0.00" min="0"></td>
-                <td><input type="text" class="input-table unit-input bg-light text-muted" readonly tabindex="-1"></td>
-                <td><input type="text" class="input-table note-input" value="${preNote || ''}" placeholder="Note"></td>
-                <td class="text-center align-middle"><i class="bi bi-trash3-fill text-danger" style="cursor:pointer;" onclick="removeRow(this)"></i></td>
-            `;
-            tbody.appendChild(tr);
+            $(`#${newSelectId}`).select2({ theme: 'bootstrap-5', placeholder: "Search Product...", width: '100%', dropdownAutoWidth: true });
+            
+            // Trigger update unit jika preselected (saat edit)
+            if(preselectIndex !== null) {
+                // Manual call update logic
+                let mockEl = document.getElementById(newSelectId);
+                let unitInput = tr.querySelector(".unit-input");
+                if(vendorData[vendor][preselectIndex]) unitInput.value = vendorData[vendor][preselectIndex].unit;
+            }
 
-            $(`#${newSelectId}`).select2({ theme: 'bootstrap-5', placeholder: "Search Product...", width: '100%', dropdownAutoWidth: true });
-            
-            // Trigger update unit jika preselected (saat edit)
-            if(preselectIndex !== null) {
-                // Manual call update logic
-                let mockEl = document.getElementById(newSelectId);
-                let unitInput = tr.querySelector(".unit-input");
-                if(vendorData[vendor][preselectIndex]) unitInput.value = vendorData[vendor][preselectIndex].unit;
-            }
+            $(`#${newSelectId}`).on('select2:select', function (e) { updateUnit(this); });
+        }
 
-            $(`#${newSelectId}`).on('select2:select', function (e) { updateUnit(this); });
-        }
+        function updateUnit(selectElement) {
+            var selectedValue = selectElement.value;
+            // Check Duplicates
+            var allSelects = document.querySelectorAll(".item-select");
+            var duplicateCount = 0;
+            allSelects.forEach(el => { if(el.value === selectedValue && selectedValue !== "") duplicateCount++; });
 
-        function updateUnit(selectElement) {
-            var selectedValue = selectElement.value;
-            // Check Duplicates
-            var allSelects = document.querySelectorAll(".item-select");
-            var duplicateCount = 0;
-            allSelects.forEach(el => { if(el.value === selectedValue && selectedValue !== "") duplicateCount++; });
+            if(duplicateCount > 1) {
+                Swal.fire("Duplicate Item", "Item already in list.", "warning");
+                $(selectElement).val(null).trigger('change');
+                selectElement.closest("tr").querySelector(".unit-input").value = "";
+                return;
+            }
 
-            if(duplicateCount > 1) {
-                Swal.fire("Duplicate Item", "Item already in list.", "warning");
-                $(selectElement).val(null).trigger('change');
-                selectElement.closest("tr").querySelector(".unit-input").value = "";
-                return;
-            }
+            var vendor = $('#vendorSelect').val();
+            if(vendorData[vendor] && vendorData[vendor][selectedValue]){
+                selectElement.closest("tr").querySelector(".unit-input").value = vendorData[vendor][selectedValue].unit;
+            }
+        }
 
-            var vendor = $('#vendorSelect').val();
-            if(vendorData[vendor] && vendorData[vendor][selectedValue]){
-                selectElement.closest("tr").querySelector(".unit-input").value = vendorData[vendor][selectedValue].unit;
-            }
-        }
+        function removeRow(icon) {
+            icon.closest("tr").remove();
+            document.querySelectorAll("#entryTableBody tr .row-number").forEach((td, index) => td.innerText = index + 1);
+        }
 
-        function removeRow(icon) {
-            icon.closest("tr").remove();
-            document.querySelectorAll("#entryTableBody tr .row-number").forEach((td, index) => td.innerText = index + 1);
-        }
+        function submitPO() {
+            var vendor = $('#vendorSelect').val();
+            var poDate = document.getElementById("poDate").value;
 
-        function submitPO() {
-            var vendor = $('#vendorSelect').val();
-            var poDate = document.getElementById("poDate").value;
+            if(!vendor) return Swal.fire("Missing Data", "Select vendor.", "error");
+            if(!poDate) return Swal.fire("Missing Data", "Select date.", "error");
 
-            if(!vendor) return Swal.fire("Missing Data", "Select vendor.", "error");
-            if(!poDate) return Swal.fire("Missing Data", "Select date.", "error");
+            var rows = document.querySelectorAll("#entryTableBody tr");
+            var itemsToSave = [];
+            var isValid = true;
 
-            var rows = document.querySelectorAll("#entryTableBody tr");
-            var itemsToSave = [];
-            var isValid = true;
+            rows.forEach((row) => {
+                var itemIdx = row.querySelector(".item-select").value;
+                var qty = row.querySelector(".qty-input").value;
+                var unit = row.querySelector(".unit-input").value;
+                var note = row.querySelector(".note-input").value;
 
-            rows.forEach((row) => {
-                var itemIdx = row.querySelector(".item-select").value;
-                var qty = row.querySelector(".qty-input").value;
-                var unit = row.querySelector(".unit-input").value;
-                var note = row.querySelector(".note-input").value;
+                if(!itemIdx || !qty || qty <= 0) {
+                    isValid = false;
+                    row.querySelector(".qty-input").style.borderColor = "red";
+                } else {
+                    row.querySelector(".qty-input").style.borderColor = "#d1d5db";
+                    var realItemName = vendorData[vendor][itemIdx].item;
+                    itemsToSave.push({ itemName: realItemName, qty: qty, unit: unit, note: note });
+                }
+            });
 
-                if(!itemIdx || !qty || qty <= 0) {
-                    isValid = false;
-                    row.querySelector(".qty-input").style.borderColor = "red";
-                } else {
-                    row.querySelector(".qty-input").style.borderColor = "#d1d5db";
-                    var realItemName = vendorData[vendor][itemIdx].item;
-                    itemsToSave.push({ itemName: realItemName, qty: qty, unit: unit, note: note });
-                }
-            });
+            if(rows.length === 0) return Swal.fire("Empty", "Add at least one product.", "warning");
+            if(!isValid) return Swal.fire("Invalid", "Check Qty fields.", "error");
 
-            if(rows.length === 0) return Swal.fire("Empty", "Add at least one product.", "warning");
-            if(!isValid) return Swal.fire("Invalid", "Check Qty fields.", "error");
+            showLoading(true, "Saving PO...");
 
-            showLoading(true, "Saving PO...");
+            // PAYLOAD: Kirim poId jika sedang edit
+            let payload = { 
+                vendor: vendor, 
+                poDate: poDate, 
+                items: itemsToSave,
+                poId: currentEditId // Kirim ID lama (jika ada)
+            };
 
-            // PAYLOAD: Kirim poId jika sedang edit
-            let payload = { 
-                vendor: vendor, 
-                poDate: poDate, 
-                items: itemsToSave,
-                poId: currentEditId // Kirim ID lama (jika ada)
-            };
+            fetch(API_URL + "?action=saveOrder", {
+                method: "POST",
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(res => {
+                showLoading(false);
+                if(res.status === 'success') {
+                    let msg = currentEditId ? "PO Updated Successfully!" : "PO Created Successfully!";
+                    Swal.fire({ title: 'Success!', text: msg, icon: 'success', confirmButtonColor: '#008080' })
+                    .then(() => {
+                        resetFormState();
+                        switchView('list');
+                        fetchListPO();
+                    });
+                } else {
+                    throw new Error(res.message);
+                }
+            })
+            .catch(err => {
+                showLoading(false);
+                Swal.fire('Failed', err.message, 'error');
+            });
+        }
 
-            fetch(API_URL + "?action=saveOrder", {
-                method: "POST",
-                body: JSON.stringify(payload)
-            })
-            .then(res => res.json())
-            .then(res => {
-                showLoading(false);
-                if(res.status === 'success') {
-                    let msg = currentEditId ? "PO Updated Successfully!" : "PO Created Successfully!";
-                    Swal.fire({ title: 'Success!', text: msg, icon: 'success', confirmButtonColor: '#008080' })
-                    .then(() => {
-                        resetFormState();
-                        switchView('list');
-                        fetchListPO();
-                    });
-                } else {
-                    throw new Error(res.message);
-                }
-            })
-            .catch(err => {
-                showLoading(false);
-                Swal.fire('Failed', err.message, 'error');
-            });
-        }
+        function calculateStats(data) {
+            document.getElementById("statTotal").innerText = data.length;
+            const today = new Date().toDateString();
+            document.getElementById("statToday").innerText = data.filter(po => new Date(po.createdAt).toDateString() === today).length;
+            document.getElementById("statWaiting").innerText = data.filter(po => po.status.includes("Menunggu") || po.status.includes("Waiting")).length;
+            document.getElementById("statItems").innerText = data.reduce((sum, po) => sum + po.itemsCount, 0);
+        }
 
-        function calculateStats(data) {
-            document.getElementById("statTotal").innerText = data.length;
-            const today = new Date().toDateString();
-            document.getElementById("statToday").innerText = data.filter(po => new Date(po.createdAt).toDateString() === today).length;
-            document.getElementById("statWaiting").innerText = data.filter(po => po.status.includes("Menunggu") || po.status.includes("Waiting")).length;
-            document.getElementById("statItems").innerText = data.reduce((sum, po) => sum + po.itemsCount, 0);
-        }
+        function filterTable() {
+            const term = document.getElementById("searchInput").value.toLowerCase();
+            const filtered = savedOrders.filter(po => po.id.toLowerCase().includes(term) || po.vendor.toLowerCase().includes(term));
+            renderListTable(filtered);
+        }
 
-        function filterTable() {
-            const term = document.getElementById("searchInput").value.toLowerCase();
-            const filtered = savedOrders.filter(po => po.id.toLowerCase().includes(term) || po.vendor.toLowerCase().includes(term));
-            renderListTable(filtered);
-        }
-
-        function setDefaultDate() {
-            const date = new Date();
-            const local = date.toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' });
-            document.getElementById("poDate").value = local;
-        }
-    </script>
+        function setDefaultDate() {
+            const date = new Date();
+            const local = date.toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' });
+            document.getElementById("poDate").value = local;
+        }
+    </script>
 </body>
 </html>
-
