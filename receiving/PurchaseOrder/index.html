@@ -16,39 +16,83 @@
         :root {
             --primary-teal: #008080;
             --primary-teal-hover: #006666;
-            /* UBAH DISINI: Warna background diganti agar lebih seragam */
             --bg-light: #eef2f6; 
             --text-dark: #333;
-            --navbar-bg: #1e293b;
+            /* UBAH DISINI: Navbar jadi Putih */
+            --navbar-bg: #ffffff; 
+            --navbar-text: #1e293b;
         }
         body { background-color: var(--bg-light); font-family: 'Inter', sans-serif; color: var(--text-dark); }
         
-        /* Navbar Styling */
-        .navbar-custom { background-color: var(--navbar-bg); padding: 12px 20px; color: white; border-bottom: 1px solid #334155; }
-        .navbar-brand { font-weight: 700; letter-spacing: 0.5px; margin: 0; color: white !important; }
+        /* Navbar Styling - Tema Putih */
+        .navbar-custom { 
+            background-color: var(--navbar-bg); 
+            padding: 12px 24px; 
+            color: var(--navbar-text); 
+            border-bottom: 1px solid #e2e8f0; /* Garis tipis halus */
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03); /* Shadow sangat tipis */
+        }
+        
+        /* Logo Styling */
+        .navbar-brand { 
+            font-weight: 800; 
+            letter-spacing: -0.5px; 
+            margin: 0; 
+            color: #0f172a !important; /* Warna Gelap Pekat */
+            font-size: 18px;
+        }
         
         /* Status Badge Style */
-        .status-badge { background-color: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #059669; padding: 4px 10px; border-radius: 50px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; }
+        .status-badge { background-color: rgba(16, 185, 129, 0.1); color: #059669; border: 1px solid rgba(16, 185, 129, 0.2); padding: 4px 12px; border-radius: 50px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
         
-        /* Dropdown Menu Style */
-        .nav-link-custom { color: #cbd5e1; text-decoration: none; font-size: 14px; transition: 0.2s; cursor: pointer; display: flex; align-items: center; gap: 8px;}
-        .nav-link-custom:hover { color: white; }
-        /* Tambahan padding agar menu tidak terlalu mepet */
-        .dropdown-menu-custom { border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px rgba(0,0,0,0.08); padding: 8px 0; margin-top: 12px !important; }
+        /* Dropdown Menu Trigger Style - Diperbarui untuk tema putih */
+        .nav-link-custom { 
+            color: #64748b; /* Abu-abu medium */
+            text-decoration: none; 
+            font-size: 14px; 
+            transition: 0.2s; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
+        }
+        .nav-link-custom:hover { color: var(--primary-teal); }
+        .nav-link-custom:hover .menu-icon-circle { 
+            background-color: #f1f5f9; 
+            border-color: #cbd5e1;
+            color: var(--primary-teal);
+        }
+
+        .menu-icon-circle {
+            width: 38px; 
+            height: 38px; 
+            background: white; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+            transition: all 0.2s ease;
+        }
+
+        /* Dropdown Menu Panel */
+        .dropdown-menu-custom { border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.08); padding: 8px 0; margin-top: 15px !important; }
         .dropdown-item { font-size: 14px; padding: 10px 20px; color: #4b5563; border-bottom: 1px solid #f8fafc; font-weight: 500; }
         .dropdown-item:last-child { border-bottom: none; }
-        .dropdown-item:hover { background-color: #f1f5f9; color: var(--primary-teal); }
-        .dropdown-item i { margin-right: 10px; color: #9ca3af; font-size: 16px; }
-        .dropdown-header { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: #9ca3af; padding: 12px 20px 8px; }
+        .dropdown-item:hover { background-color: #f8fafc; color: var(--primary-teal); }
+        .dropdown-item i { margin-right: 10px; color: #94a3b8; font-size: 16px; }
+        .dropdown-item:hover i { color: var(--primary-teal); }
+        .dropdown-header { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: #94a3b8; padding: 12px 20px 8px; }
 
         /* List Style */
-        .stat-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.03); transition: transform 0.2s; }
-        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .stat-value { font-size: 24px; font-weight: 700; margin-bottom: 5px; }
+        .stat-card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.04); transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .stat-value { font-size: 26px; font-weight: 800; margin-bottom: 5px; color: #1e293b; }
         .stat-label { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px; }
         
-        .table-card { background: white; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); overflow: hidden; border: 1px solid rgba(0,0,0,0.03); }
-        .table-header-custom { background-color: #f8fafc; font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e2e8f0; }
+        .table-card { background: white; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); overflow: hidden; border: 1px solid rgba(0,0,0,0.04); }
+        .table-header-custom { background-color: #f8fafc; font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 1px solid #e2e8f0; }
         .status-pill { padding: 4px 10px; border-radius: 50px; font-size: 11px; font-weight: 600; }
         .status-pill.waiting { background-color: #eff6ff; color: #3b82f6; border: 1px solid #dbeafe; } 
         .status-pill.done { background-color: #ecfdf5; color: #10b981; border: 1px solid #d1fae5; }
@@ -56,60 +100,66 @@
         /* Form Style */
         .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .page-title { font-size: 24px; font-weight: 700; margin: 0; color: #0f172a; }
-        .breadcrumb-text { font-size: 13px; color: #64748b; margin-top: 2px; }
-        .btn-back { background: white; border: 1px solid #cbd5e1; color: #475569; font-weight: 600; padding: 8px 16px; border-radius: 6px; font-size: 13px; transition: all 0.2s; }
+        .breadcrumb-text { font-size: 13px; color: #64748b; margin-top: 4px; }
+        .btn-back { background: white; border: 1px solid #cbd5e1; color: #475569; font-weight: 600; padding: 8px 16px; border-radius: 8px; font-size: 13px; transition: all 0.2s; }
         .btn-back:hover { background: #f1f5f9; color: #0f172a; border-color: #94a3b8; }
         
-        .form-container { background: white; border-radius: 10px; border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.02); padding: 25px 30px; }
-        .form-label-custom { font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; display: block; }
-        .form-control-custom { border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 12px; font-size: 14px; width: 100%; }
-        .form-control-custom:focus { border-color: var(--primary-teal); outline: none; box-shadow: 0 0 0 2px rgba(0,128,128,0.1); }
+        .form-container { background: white; border-radius: 12px; border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.02); padding: 30px; }
+        .form-label-custom { font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 8px; display: block; }
+        .form-control-custom { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 12px; font-size: 14px; width: 100%; transition: border-color 0.2s; }
+        .form-control-custom:focus { border-color: var(--primary-teal); outline: none; box-shadow: 0 0 0 3px rgba(0,128,128,0.1); }
         
         /* Select2 Tweak */
-        .select2-container--bootstrap-5 .select2-selection { border-color: #cbd5e1 !important; padding: 10px 12px !important; min-height: 42px; font-size: 14px; }
-        .btn-confirm { background-color: var(--primary-teal); color: white; font-weight: 600; border: none; padding: 10px 24px; border-radius: 6px; font-size: 14px; height: 100%; display: flex; align-items: center; gap: 8px; justify-content: center; transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,128,128,0.2); }
-        .btn-confirm:hover { background-color: var(--primary-teal-hover); color: white; box-shadow: 0 6px 8px rgba(0,128,128,0.3); transform: translateY(-1px); }
+        .select2-container--bootstrap-5 .select2-selection { border-color: #cbd5e1 !important; padding: 10px 12px !important; min-height: 42px; font-size: 14px; border-radius: 8px !important; }
+        .btn-confirm { background-color: var(--primary-teal); color: white; font-weight: 600; border: none; padding: 10px 24px; border-radius: 8px; font-size: 14px; height: 100%; display: flex; align-items: center; gap: 8px; justify-content: center; transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,128,128,0.2); }
+        .btn-confirm:hover { background-color: var(--primary-teal-hover); color: white; box-shadow: 0 6px 15px rgba(0,128,128,0.3); transform: translateY(-1px); }
         
         .section-title { font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-top: 30px; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; letter-spacing: 0.5px; }
         .table-form th { font-size: 12px; color: #475569; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding: 12px; background-color: #f8fafc; text-transform: uppercase; }
         .table-form td { padding: 10px; vertical-align: top; border-bottom: 1px solid #f1f5f9; }
-        .input-table { border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; font-size: 14px; width: 100%; }
+        .input-table { border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; font-size: 14px; width: 100%; transition: border-color 0.2s; }
         .input-table:focus { border-color: var(--primary-teal); outline: none; }
-        .btn-add-product { color: var(--primary-teal); font-weight: 600; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 5px; margin-top: 20px; cursor: pointer; padding: 8px 16px; border-radius: 6px; background: rgba(0,128,128,0.05); transition: 0.2s; }
+        .btn-add-product { color: var(--primary-teal); font-weight: 600; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; margin-top: 20px; cursor: pointer; padding: 10px 18px; border-radius: 8px; background: rgba(0,128,128,0.05); transition: 0.2s; border: 1px dashed rgba(0,128,128,0.3); }
         .btn-add-product:hover { background: rgba(0,128,128,0.1); color: var(--primary-teal-hover); }
         
-        .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(2px); }
+        .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(4px); }
         
         .edit-badge { background-color: #fffbeb; color: #b45309; font-size: 12px; padding: 4px 10px; border-radius: 6px; border: 1px solid #fcd34d; margin-left: 10px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        
+        /* Utility */
+        .btn-white { background: white; border: 1px solid #e2e8f0; color: #64748b; }
+        .btn-white:hover { border-color: #cbd5e1; color: #1e293b; background: #f8fafc; }
     </style>
 </head>
 <body>
 
-    <nav class="navbar-custom fixed-top d-flex justify-content-between align-items-center shadow-sm">
+    <nav class="navbar-custom fixed-top d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center gap-3">
-            <i class="bi bi-grid-3x3-gap-fill fs-5 text-white-50"></i>
-            <span class="navbar-brand">AUXILIUM PO</span>
+            <div style="font-weight:900; font-size: 20px; color:#1e293b; display:flex; align-items:center; gap:8px;">
+                 <span style="border-right: 2px solid #e2e8f0; padding-right: 15px;">AUXILIUM</span>
+                 <span style="font-weight:400; font-size:14px; color:#64748b; letter-spacing: -0.2px;">Purchase Orders</span>
+            </div>
         </div>
         
         <div class="d-flex align-items-center gap-4">
             <div class="d-flex align-items-center gap-2">
                 <span class="status-badge" id="connStatus">
-                    <span style="width: 6px; height: 6px; background: #34d399; border-radius: 50%;"></span> Online
+                    <span style="width: 6px; height: 6px; background: #10b981; border-radius: 50%;"></span> Online
                 </span>
             </div>
 
             <div class="dropdown">
                 <a class="nav-link-custom dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <div class="d-flex flex-column text-end lh-1">
-                        <span style="font-size: 13px; font-weight: 500; color: white;">Menu Akses</span>
-                        <span style="font-size: 11px; opacity: 0.7;">Pilih Modul</span>
+                    <div class="d-flex flex-column text-end lh-1 d-none d-md-flex">
+                        <span style="font-size: 13px; font-weight: 600; color: #334155;">Menu Akses</span>
+                        <span style="font-size: 11px; color: #94a3b8;">Pilih Modul</span>
                     </div>
-                    <div style="width: 35px; height: 35px; background: #334155; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid #475569;">
-                        <i class="bi bi-list text-white"></i>
+                    <div class="menu-icon-circle shadow-sm">
+                        <i class="bi bi-grid-fill"></i>
                     </div>
                 </a>
                 
-                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom shadow-lg">
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom shadow-lg border-0">
                     <li>
                         <a class="dropdown-item" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/index.html">
                             <i class="bi bi-house-door"></i> Home Pemesanan Pembelian
@@ -145,13 +195,13 @@
         </div>
     </nav>
 
-    <div class="container-fluid" style="margin-top: 90px; max-width: 1400px; padding-bottom: 50px;">
+    <div class="container-fluid" style="margin-top: 100px; max-width: 1400px; padding-bottom: 50px;">
 
         <div id="view-list">
             <div class="d-flex justify-content-between align-items-end mb-4">
                 <div>
-                    <h3 class="page-title">Purchase Orders</h3>
-                    <div class="breadcrumb-text">Dashboard &bullet; List Overview</div>
+                    <h3 class="page-title">List Overview</h3>
+                    <div class="breadcrumb-text">Dashboard &bullet; Purchase Orders</div>
                 </div>
                 <button class="btn btn-confirm shadow-sm" style="width: auto;" onclick="createNewPO()">
                     <i class="bi bi-plus-lg"></i> NEW PO
@@ -166,16 +216,16 @@
             </div>
 
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <div class="input-group" style="width: 350px;">
-                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
-                    <input type="text" id="searchInput" class="form-control border-start-0 ps-0" placeholder="Search Reference, Vendor..." onkeyup="filterTable()">
+                <div class="input-group shadow-sm" style="width: 350px;">
+                    <span class="input-group-text bg-white border-end-0 border-light-subtle"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" id="searchInput" class="form-control border-start-0 border-light-subtle ps-0" placeholder="Search Reference, Vendor..." onkeyup="filterTable()">
                 </div>
-                <button class="btn btn-white bg-white border fw-bold text-secondary shadow-sm" onclick="fetchListPO()">
+                <button class="btn btn-white shadow-sm fw-bold" onclick="fetchListPO()">
                     <i class="bi bi-arrow-clockwise"></i> Refresh
                 </button>
             </div>
 
-            <div class="table-card">
+            <div class="table-card shadow-sm">
                 <table class="table table-hover mb-0">
                     <thead class="table-header-custom">
                         <tr>
@@ -212,7 +262,7 @@
                 </button>
             </div>
 
-            <div class="form-container">
+            <div class="form-container shadow-sm">
                 <div class="row g-3 align-items-end mb-4">
                     <div class="col-md-6">
                         <label class="form-label-custom">Select Vendor</label>
