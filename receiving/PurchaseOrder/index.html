@@ -18,71 +18,137 @@
         :root {
             --primary-teal: #008080;
             --primary-teal-hover: #006666;
-            --bg-light: #f4f6f8;
+            /* UBAH DISINI: Warna background sedikit lebih gelap agar card putih lebih menonjol */
+            --bg-light: #e2e8f0; 
             --text-dark: #333;
+            --navbar-bg: #1e293b;
         }
         body { background-color: var(--bg-light); font-family: 'Inter', sans-serif; color: var(--text-dark); }
-        .navbar-custom { background-color: #1e293b; padding: 10px 20px; color: white; }
-        .navbar-brand { font-weight: 700; letter-spacing: 0.5px; margin: 0; }
-        .status-badge { background-color: #10b981; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-left: 10px; }
         
+        /* Navbar Styling Baru */
+        .navbar-custom { background-color: var(--navbar-bg); padding: 12px 20px; color: white; border-bottom: 1px solid #334155; }
+        .navbar-brand { font-weight: 700; letter-spacing: 0.5px; margin: 0; color: white !important; }
+        
+        /* Status Badge Style */
+        .status-badge { background-color: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #059669; padding: 4px 10px; border-radius: 50px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; }
+        
+        /* Dropdown Menu Style */
+        .nav-link-custom { color: #cbd5e1; text-decoration: none; font-size: 14px; transition: 0.2s; cursor: pointer; display: flex; align-items: center; gap: 8px;}
+        .nav-link-custom:hover { color: white; }
+        .dropdown-menu-custom { border-radius: 8px; border: none; box-shadow: 0 4px 20px rgba(0,0,0,0.1); padding: 8px 0; margin-top: 10px; }
+        .dropdown-item { font-size: 14px; padding: 10px 20px; color: #4b5563; border-bottom: 1px solid #f3f4f6; }
+        .dropdown-item:last-child { border-bottom: none; }
+        .dropdown-item:hover { background-color: #f8fafc; color: var(--primary-teal); }
+        .dropdown-item i { margin-right: 8px; color: #9ca3af; }
+        .dropdown-header { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: #9ca3af; padding: 8px 20px; }
+
         /* List Style */
-        .stat-card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        .stat-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid white; transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .stat-value { font-size: 24px; font-weight: 700; margin-bottom: 5px; }
-        .stat-label { font-size: 12px; text-transform: uppercase; color: #888; font-weight: 600; }
-        .table-card { background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid #e0e0e0; }
-        .table-header-custom { background-color: #f9fafb; font-size: 12px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-label { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px; }
+        
+        .table-card { background: white; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); overflow: hidden; border: none; }
+        .table-header-custom { background-color: #f8fafc; font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e2e8f0; }
         .status-pill { padding: 4px 10px; border-radius: 50px; font-size: 11px; font-weight: 600; }
-        .status-pill.waiting { background-color: #eff6ff; color: #3b82f6; } 
-        .status-pill.done { background-color: #ecfdf5; color: #10b981; }
+        .status-pill.waiting { background-color: #eff6ff; color: #3b82f6; border: 1px solid #dbeafe; } 
+        .status-pill.done { background-color: #ecfdf5; color: #10b981; border: 1px solid #d1fae5; }
 
         /* Form Style */
-        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .page-title { font-size: 24px; font-weight: 700; margin: 0; color: #111; }
-        .btn-back { background: white; border: 1px solid #d1d5db; color: #374151; font-weight: 500; padding: 8px 16px; border-radius: 6px; font-size: 14px; }
-        .btn-back:hover { background: #f3f4f6; color: #111; }
-        .form-container { background: white; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 1px 2px rgba(0,0,0,0.05); padding: 20px 25px; }
-        .form-label-custom { font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; display: block; }
-        .form-control-custom { border: 1px solid #d1d5db; border-radius: 6px; padding: 10px 12px; font-size: 14px; width: 100%; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .page-title { font-size: 24px; font-weight: 700; margin: 0; color: #0f172a; }
+        .breadcrumb-text { font-size: 13px; color: #64748b; margin-top: 2px; }
+        .btn-back { background: white; border: 1px solid #cbd5e1; color: #475569; font-weight: 600; padding: 8px 16px; border-radius: 6px; font-size: 13px; transition: all 0.2s; }
+        .btn-back:hover { background: #f1f5f9; color: #0f172a; border-color: #94a3b8; }
+        
+        .form-container { background: white; border-radius: 10px; border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.02); padding: 25px 30px; }
+        .form-label-custom { font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; display: block; }
+        .form-control-custom { border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 12px; font-size: 14px; width: 100%; }
+        .form-control-custom:focus { border-color: var(--primary-teal); outline: none; box-shadow: 0 0 0 2px rgba(0,128,128,0.1); }
         
         /* Select2 Tweak */
-        .select2-container--bootstrap-5 .select2-selection { border-color: #d1d5db !important; padding: 10px 12px !important; min-height: 42px; font-size: 14px; }
-        .btn-confirm { background-color: var(--primary-teal); color: white; font-weight: 600; border: none; padding: 10px 24px; border-radius: 6px; font-size: 14px; height: 100%; display: flex; align-items: center; gap: 8px; justify-content: center; }
-        .btn-confirm:hover { background-color: var(--primary-teal-hover); color: white; }
-        .section-title { font-size: 12px; font-weight: 700; color: #6b7280; text-transform: uppercase; margin-top: 25px; margin-bottom: 10px; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px; }
-        .table-form th { font-size: 13px; color: #111; font-weight: 600; border-bottom: 1px solid #e5e7eb; padding: 10px; background-color: #f9fafb; }
-        .table-form td { padding: 10px; vertical-align: top; border-bottom: 1px solid #f3f4f6; }
-        .input-table { border: 1px solid #d1d5db; border-radius: 4px; padding: 8px; font-size: 14px; width: 100%; }
-        .input-table:focus { border-color: var(--primary-teal); outline: none; }
-        .btn-add-product { color: #2563eb; font-weight: 600; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 5px; margin-top: 15px; cursor: pointer; }
-        .btn-add-product:hover { text-decoration: underline; color: #1d4ed8; }
-        .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
+        .select2-container--bootstrap-5 .select2-selection { border-color: #cbd5e1 !important; padding: 10px 12px !important; min-height: 42px; font-size: 14px; }
+        .btn-confirm { background-color: var(--primary-teal); color: white; font-weight: 600; border: none; padding: 10px 24px; border-radius: 6px; font-size: 14px; height: 100%; display: flex; align-items: center; gap: 8px; justify-content: center; transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,128,128,0.2); }
+        .btn-confirm:hover { background-color: var(--primary-teal-hover); color: white; box-shadow: 0 6px 8px rgba(0,128,128,0.3); transform: translateY(-1px); }
         
-        .edit-badge { background-color: #fff3cd; color: #856404; font-size: 0.8rem; padding: 5px 10px; border-radius: 4px; border: 1px solid #ffeeba; margin-left: 10px; }
+        .section-title { font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-top: 30px; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; letter-spacing: 0.5px; }
+        .table-form th { font-size: 12px; color: #475569; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding: 12px; background-color: #f8fafc; text-transform: uppercase; }
+        .table-form td { padding: 10px; vertical-align: top; border-bottom: 1px solid #f1f5f9; }
+        .input-table { border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; font-size: 14px; width: 100%; }
+        .input-table:focus { border-color: var(--primary-teal); outline: none; }
+        .btn-add-product { color: var(--primary-teal); font-weight: 600; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 5px; margin-top: 20px; cursor: pointer; padding: 8px 16px; border-radius: 6px; background: rgba(0,128,128,0.05); transition: 0.2s; }
+        .btn-add-product:hover { background: rgba(0,128,128,0.1); color: var(--primary-teal-hover); }
+        
+        .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(2px); }
+        
+        .edit-badge { background-color: #fffbeb; color: #b45309; font-size: 12px; padding: 4px 10px; border-radius: 6px; border: 1px solid #fcd34d; margin-left: 10px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
     </style>
 </head>
 <body>
 
     <nav class="navbar-custom fixed-top d-flex justify-content-between align-items-center shadow-sm">
-        <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-grid-3x3-gap-fill fs-5"></i>
+        <div class="d-flex align-items-center gap-3">
+            <i class="bi bi-grid-3x3-gap-fill fs-5 text-white-50"></i>
             <span class="navbar-brand">AUXILIUM PO</span>
         </div>
-        <div class="d-flex align-items-center">
-            <span style="font-size: 13px; opacity: 0.8;">user@email.com</span>
-            <span class="status-badge" id="connStatus"><i class="bi bi-wifi"></i> Online</span>
+        
+        <div class="d-flex align-items-center gap-4">
+            <div class="d-flex align-items-center gap-2">
+                <span class="status-badge" id="connStatus">
+                    <span style="width: 6px; height: 6px; background: #34d399; border-radius: 50%;"></span> Online
+                </span>
+            </div>
+
+            <div class="dropdown">
+                <a class="nav-link-custom dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="d-flex flex-column text-end lh-1">
+                        <span style="font-size: 13px; font-weight: 500; color: white;">Menu Akses</span>
+                        <span style="font-size: 11px; opacity: 0.7;">Pilih Modul</span>
+                    </div>
+                    <div style="width: 35px; height: 35px; background: #334155; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid #475569;">
+                        <i class="bi bi-list text-white"></i>
+                    </div>
+                </a>
+                
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom shadow-lg">
+                    <li><h6 class="dropdown-header">Receiving / Penerimaan</h6></li>
+                    <li>
+                        <a class="dropdown-item" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/entry/index.html">
+                            <i class="bi bi-box-seam"></i> Penerimaan PO
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/CreateBill/index.html">
+                            <i class="bi bi-receipt"></i> Buat Bil
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider bg-light my-1"></li>
+                    <li><h6 class="dropdown-header">Accounting</h6></li>
+                    <li>
+                        <a class="dropdown-item" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/ImportXeroPO/index.html">
+                            <i class="bi bi-cloud-arrow-up"></i> Import Xero PO
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider bg-light my-1"></li>
+                    <li>
+                        <a class="dropdown-item text-danger" href="#">
+                            <i class="bi bi-box-arrow-right text-danger"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
 
-    <div class="container-fluid" style="margin-top: 80px; max-width: 1400px;">
+    <div class="container-fluid" style="margin-top: 90px; max-width: 1400px; padding-bottom: 50px;">
 
         <div id="view-list">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-end mb-4">
                 <div>
                     <h3 class="page-title">Purchase Orders</h3>
-                    <div class="breadcrumb-text">Dashboard / List</div>
+                    <div class="breadcrumb-text">Dashboard &bullet; List Overview</div>
                 </div>
-                <button class="btn btn-confirm" style="width: auto;" onclick="createNewPO()">
+                <button class="btn btn-confirm shadow-sm" style="width: auto;" onclick="createNewPO()">
                     <i class="bi bi-plus-lg"></i> NEW PO
                 </button>
             </div>
@@ -95,8 +161,13 @@
             </div>
 
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <input type="text" id="searchInput" class="form-control" style="width: 300px; border-radius: 6px;" placeholder="Search Reference, Vendor..." onkeyup="filterTable()">
-                <button class="btn btn-light border fw-bold" onclick="fetchListPO()"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+                <div class="input-group" style="width: 350px;">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" id="searchInput" class="form-control border-start-0 ps-0" placeholder="Search Reference, Vendor..." onkeyup="filterTable()">
+                </div>
+                <button class="btn btn-white bg-white border fw-bold text-secondary shadow-sm" onclick="fetchListPO()">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh
+                </button>
             </div>
 
             <div class="table-card">
@@ -109,7 +180,8 @@
                             <th class="py-3">Created At</th>
                             <th class="py-3 text-center">Items</th>
                             <th class="py-3">Status</th>
-                            <th class="py-3 text-center">Action</th> </tr>
+                            <th class="py-3 text-center">Action</th> 
+                        </tr>
                     </thead>
                     <tbody id="listTableBody">
                         <tr><td colspan="7" class="text-center py-5 text-muted">Loading data...</td></tr>
@@ -124,13 +196,13 @@
                 <div class="d-flex align-items-center">
                     <div>
                         <h3 class="page-title" id="formTitle">New Quote</h3>
-                        <div class="breadcrumb-text">Dashboard / Entry</div>
+                        <div class="breadcrumb-text">Dashboard &bullet; Data Entry</div>
                     </div>
-                    <div id="editBadge" class="d-none edit-badge">
+                    <div id="editBadge" class="d-none edit-badge shadow-sm">
                         <i class="bi bi-pencil-square"></i> Editing Mode
                     </div>
                 </div>
-                <button class="btn btn-back" onclick="switchView('list')">
+                <button class="btn btn-back shadow-sm" onclick="switchView('list')">
                     <i class="bi bi-arrow-left me-1"></i> Back to List
                 </button>
             </div>
@@ -138,7 +210,7 @@
             <div class="form-container">
                 <div class="row g-3 align-items-end mb-4">
                     <div class="col-md-6">
-                        <label class="form-label-custom">Vendor</label>
+                        <label class="form-label-custom">Select Vendor</label>
                         <select id="vendorSelect" class="form-select" style="width:100%;">
                             <option value="" disabled selected>-- Select Vendor --</option>
                         </select>
@@ -154,14 +226,14 @@
                     </div>
                 </div>
 
-                <div class="section-title">PRODUCTS</div>
+                <div class="section-title">Order Items</div>
 
                 <div class="table-responsive">
                     <table class="table table-form w-100">
                         <thead>
                             <tr>
                                 <th style="width: 50px;">#</th>
-                                <th style="width: 40%;">Product</th>
+                                <th style="width: 40%;">Product / Item</th>
                                 <th style="width: 15%;">Qty</th>
                                 <th style="width: 15%;">Unit</th>
                                 <th>Note</th>
@@ -173,7 +245,7 @@
                 </div>
 
                 <div onclick="addNewRow()" class="btn-add-product">
-                    <i class="bi bi-plus-circle-fill"></i> Add a product
+                    <i class="bi bi-plus-circle-fill"></i> Add a product line
                 </div>
             </div>
         </div>
@@ -181,8 +253,8 @@
     </div>
 
     <div id="loadingOverlay" class="loading-overlay">
-        <div class="spinner-border text-primary mb-2" role="status"></div>
-        <div class="fw-bold text-dark" id="loadingText">Processing...</div>
+        <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+        <div class="fw-bold text-dark fs-5" id="loadingText">Processing...</div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
