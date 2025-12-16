@@ -2,158 +2,376 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Form Pemesanan Lengkap</title>
+<title>Purchase Order - Xero Style</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
 <style>
+/* --- XERO THEME VARIABLES --- */
 :root {
-  --border: #d6dce1; --border-light: #e3e7eb; --header-bg: #f7f8fa;
-  --text-muted: #697386; --blue: #0075c9; --bg: #f5f7fa;
-  --green-bg: #dcfce7; --green-text: #166534; --red-bg: #fee2e2; --red-text: #991b1b;
+  --xero-blue: #116999; /* Xero Blue color */
+  --xero-blue-hover: #0e5a85;
+  --border-color: #cccccc;
+  --bg-color: #f4f5f6; /* Light gray background like Xero dashboard */
+  --text-color: #222222;
+  --input-bg: #ffffff;
+  
+  --green-bg: #dcfce7; --green-text: #166534;
+  --red-bg: #fee2e2; --red-text: #991b1b;
 }
+
 * { box-sizing: border-box; }
-body { margin: 0; font-family: "Arial", sans-serif; background: var(--bg); font-size: 13px; }
 
-/* TOP BAR & NAV */
-.top-bar { padding: 10px 36px; background: #fff; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; }
-.logo-section { font-weight: 600; font-size: 15px; }
-.nav-menu { display: flex; gap: 8px; }
-.nav-item { text-decoration: none; color: #64748b; font-size: 14px; font-weight: 500; padding: 8px 16px; border-radius: 6px; transition: 0.2s; }
-.nav-item:hover, .nav-item.active { background-color: #eff6ff; color: var(--blue); }
+body {
+  margin: 0;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; /* Xero fonts */
+  background: var(--bg-color);
+  font-size: 13px;
+  color: var(--text-color);
+}
 
-/* LAYOUT */
-.page-wrap { display: flex; justify-content: center; padding: 36px 0; }
-.invoice-card { width: 1600px; background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 32px; margin: 0 auto; box-shadow: 0 2px 6px rgba(15,23,42,0.06); }
-h2 { margin: 0 0 18px; font-size: 20px; font-weight: 600; }
+/* --- LAYOUT UTILS --- */
+.page-wrap { padding: 40px 20px; display: flex; justify-content: center; }
 
-/* INPUTS */
-.field-label { display: block; margin-bottom: 4px; font-size: 12px; color: #6b7280; font-weight: 600; }
-input, select, textarea { width: 100%; padding: 7px 10px; border-radius: 4px; border: 1px solid var(--border); font-size: 13px; background: white; }
-input:focus, select:focus, textarea:focus { border-color: #9fb3c8; outline: none; }
-input[readonly], .detail-readonly { background-color: #f8fafc; color: #475569; cursor: default; }
+.invoice-card {
+  width: 100%;
+  max-width: 1600px; /* Lebar maksimal */
+  background: #fff;
+  padding: 40px;
+  border: 1px solid #dcdcdc;
+  /* Xero cards are usually flat or have very subtle shadow */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
+}
 
-/* HEADER GRIDS */
-.header-main { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 20px; margin-bottom: 15px; }
-.header-details { display: grid; grid-template-columns: 1fr 2fr 1fr 1fr; gap: 20px; margin-bottom: 22px; background: #f8fafc; padding: 15px; border-radius: 6px; border: 1px solid var(--border-light); }
+/* --- HEADER SECTION --- */
+.top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 20px;
+}
+.brand-title { font-size: 24px; color: var(--text-color); font-weight: 500; margin: 0; }
+.brand-sub { font-size: 14px; color: #888; font-weight: 400; }
 
-/* TABLE STRUCTURE */
-.table-wrapper { border: 1px solid var(--border); border-radius: 6px; background: #fff; margin-bottom: 16px; overflow: visible !important; }
-.items-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-.items-table th { background: var(--header-bg); padding: 9px; font-size: 12px; color: var(--text-muted); text-align: left; border-bottom: 1px solid var(--border-light); }
-.items-table td { padding: 8px; border-bottom: 1px solid var(--border-light); position: relative; }
+.header-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 20px;
+}
 
-/* COLUMN WIDTHS (UPDATED FOR SATUAN) */
-.items-table th:nth-child(1), td:nth-child(1) { width: 30px; }  /* Drag */
-.items-table th:nth-child(2), td:nth-child(2) { width: 110px; } /* Type */
-.items-table th:nth-child(3), td:nth-child(3) { width: 280px; } /* Item Name (Dikecilkan dikit) */
-.items-table th:nth-child(4), td:nth-child(4) { width: 70px; }  /* Satuan (NEW) */
-.items-table th:nth-child(5), td:nth-child(5) { width: 70px; }  /* Meter */
-.items-table th:nth-child(6), td:nth-child(6) { width: 60px; }  /* Qty */
-.items-table th:nth-child(7), td:nth-child(7) { width: 120px; } /* Unit Price */
-.items-table th:nth-child(8), td:nth-child(8) { width: 90px; }  /* Disc */
-.items-table th:nth-child(9), td:nth-child(9) { width: 120px; } /* Price/Qty */
-.items-table th:nth-child(10), td:nth-child(10) { width: 130px; } /* Total */
-.items-table th:nth-child(11), td:nth-child(11) { width: 80px; } /* Stock */
-.items-table th:nth-child(12), td:nth-child(12) { width: 90px; } /* Status */
-.items-table th:nth-child(13), td:nth-child(13) { width: 30px; } /* Del */
+.field-group { margin-bottom: 5px; }
+.field-label { 
+  display: block; 
+  margin-bottom: 6px; 
+  font-size: 12px; 
+  font-weight: 700; 
+  color: #444; 
+}
 
-.drag-handle { cursor: grab; text-align: center; color: #999; }
-.delete-row { cursor: pointer; text-align: center; color: #d33; font-size: 16px; }
-.add-row-btn { font-size: 13px; padding: 6px 12px; border: 1px solid var(--border); background: #fff; cursor: pointer; border-radius: 4px; margin-bottom: 10px; }
+/* INPUT STYLES (XERO LOOK) */
+input, select, textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  font-size: 13px;
+  color: #333;
+  transition: border-color 0.2s;
+  background: #fff;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--xero-blue);
+  outline: none;
+  box-shadow: 0 0 0 1px rgba(17, 105, 153, 0.2);
+}
 
-/* FOOTER & TOTALS */
-.notes-and-totals { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
-textarea { height: 170px; }
-.totals-box { text-align: right; }
-.summary-row { display: flex; justify-content: space-between; margin: 6px 0; font-size: 14px; }
-.summary-row.total { font-weight: 700; font-size: 18px; margin-top: 12px; border-top: 1px solid #d4d7dc; padding-top: 12px; }
-.approve-btn { margin-top: 20px; padding: 12px 42px; font-weight: 600; background: var(--blue); color: white; border: none; border-radius: 5px; cursor: pointer; }
-.approve-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+/* Readonly fields styling */
+input[readonly], .detail-readonly {
+  background-color: #fbfbfb;
+  color: #555;
+  border-color: #ddd;
+}
 
-/* BADGES & MODALS */
-.status-badge { padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; display: inline-block; width: 100%; text-align: center; }
+/* --- CUSTOMER DETAILS SECTION --- */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 2fr 1.5fr 1fr;
+  gap: 15px;
+  padding: 15px;
+  background: #f9f9f9; /* Subtle contrast */
+  border: 1px solid #eee;
+  margin-bottom: 25px;
+  border-radius: 3px;
+}
+
+/* --- TABLE STYLES (THE CORE XERO LOOK) --- */
+.table-container {
+  overflow-x: auto;
+  margin-bottom: 10px;
+}
+
+table.xero-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+/* Header Tabel Putih Clean */
+table.xero-table th {
+  background: #fff; /* Xero headers are white */
+  text-align: left;
+  padding: 10px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #333;
+  border-bottom: 1px solid #ccc; /* Stronger line for header */
+  border-top: 1px solid #ccc;
+}
+
+table.xero-table td {
+  padding: 0; /* Remove padding to make inputs fit flush */
+  border-bottom: 1px solid #eee;
+  border-right: 1px solid #f0f0f0;
+  vertical-align: top;
+}
+
+/* Inputs inside table - Borderless feel until focus */
+table.xero-table td input {
+  border: 1px solid transparent; /* Invisible border by default */
+  border-radius: 0;
+  padding: 12px 8px;
+  height: 100%;
+  background: transparent;
+}
+table.xero-table td input:focus {
+  border: 1px solid var(--xero-blue);
+  background: #fff;
+  z-index: 2;
+  position: relative;
+}
+/* Except for stock display or readonly calculation */
+table.xero-table td input[readonly] {
+  background: #fcfcfc;
+  color: #777;
+}
+
+/* COLUMN WIDTHS */
+.col-drag { width: 30px; }
+.col-type { width: 110px; }
+.col-item { width: 300px; }
+.col-unit { width: 80px; }
+.col-meter { width: 70px; }
+.col-qty { width: 70px; }
+.col-price { width: 120px; }
+.col-disc { width: 90px; }
+.col-total { width: 130px; }
+.col-stock { width: 80px; }
+.col-status { width: 90px; }
+.col-del { width: 40px; }
+
+/* DROPDOWNS INSIDE TABLE (Choices.js override) */
+.choices__inner {
+  border: 1px solid transparent !important;
+  background-color: transparent !important;
+  min-height: 38px;
+  padding: 4px !important;
+}
+.choices__inner:focus-within {
+  border: 1px solid var(--xero-blue) !important;
+  background-color: #fff !important;
+}
+
+/* DRAG & DELETE */
+.drag-handle { 
+  cursor: grab; 
+  text-align: center; 
+  color: #ccc; 
+  padding-top: 10px !important; 
+}
+.delete-btn {
+  border: none;
+  background: none;
+  color: #999;
+  font-size: 18px;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  padding-top: 8px !important;
+}
+.delete-btn:hover { color: #d33; }
+
+/* --- XERO STYLE BUTTON (ADD ROW) --- */
+.xero-btn-group {
+  display: inline-flex;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+.xero-btn {
+  background-color: #fff;
+  color: var(--xero-blue);
+  border: 1px solid var(--xero-blue);
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 3px 0 0 3px;
+  transition: all 0.2s;
+}
+.xero-btn:hover {
+  background-color: #f0f7fc;
+}
+.xero-btn-arrow {
+  background-color: #fff;
+  color: var(--xero-blue);
+  border: 1px solid var(--xero-blue);
+  border-left: none; /* Combine look */
+  padding: 8px 10px;
+  cursor: pointer;
+  border-radius: 0 3px 3px 0;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+}
+.xero-btn-arrow:hover { background-color: #f0f7fc; }
+
+/* --- FOOTER / TOTALS --- */
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.totals-area { text-align: right; }
+.summary-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 30px;
+  padding: 8px 0;
+  font-size: 14px;
+}
+.summary-row .label { color: #666; font-weight: 500; }
+.summary-row .value { color: #222; font-weight: 600; min-width: 120px; }
+
+.grand-total {
+  font-size: 20px;
+  font-weight: 700;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 2px solid #ddd;
+  color: var(--text-color);
+}
+
+.btn-primary {
+  background-color: #3fba13; /* Xero "Approve" green or could use Blue */
+  /* Or stick to blue if prefer: var(--xero-blue) */
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 20px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.btn-primary:hover { filter: brightness(95%); }
+.btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+
+/* --- STATUS BADGES & MODAL --- */
+.status-badge {
+    padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase;
+    display: inline-block; width: 90%; margin: 8px auto; text-align: center;
+}
 .status-ok { background: var(--green-bg); color: var(--green-text); }
 .status-oos { background: var(--red-bg); color: var(--red-text); }
-.stock-display { text-align: center; font-weight: 600; border: none; background: transparent; }
 
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; z-index: 9999; }
-.modal-box { background: #fff; padding: 24px; width: 400px; border-radius: 10px; box-shadow: 0 8px 26px rgba(0,0,0,0.2); }
-.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-.btn-ok { background: var(--blue); color: #fff; border: none; padding: 8px 18px; border-radius: 6px; cursor: pointer; font-weight: 600; }
-.btn-cancel { background: #ddd; color: #333; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
-.spinner { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #e5e7eb; border-top-color: #fff; animation: spin 0.7s linear infinite; display: none; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 18px; border-radius: 8px; background: #333; color: #fff; opacity: 0; transform: translateY(20px); transition: 0.25s; z-index: 99999; }
+/* Modal Styles */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 9999;
+}
+.modal-box { background: #fff; padding: 30px; width: 420px; border-radius: 6px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+.modal-actions { margin-top: 25px; text-align: right; }
+.btn-ok { background: var(--xero-blue); color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-left: 10px; }
+.btn-cancel { background: #eee; color: #333; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+.spinner { display:inline-block; width:12px; height:12px; border:2px solid #fff; border-top-color:transparent; border-radius:50%; animation:spin 1s linear infinite; margin-left:5px; }
+@keyframes spin { to {transform: rotate(360deg);} }
+
+.toast { position: fixed; bottom: 30px; right: 30px; padding: 15px 25px; background: #333; color: white; border-radius: 5px; opacity: 0; transform: translateY(20px); transition: 0.3s; pointer-events: none; z-index: 10000; }
 .toast.show { opacity: 1; transform: translateY(0); }
+
 </style>
 </head>
 
 <body>
 
-<div id="toast" class="toast"></div>
+<div id="toast" class="toast">Notifikasi</div>
 
 <div id="modalAddCustomer" class="modal-overlay">
   <div class="modal-box">
-    <h3>Tambah Customer Baru</h3>
-    <input id="newCustomerName" type="text" placeholder="Masukkan nama customer" />
+    <h3 style="margin-top:0">Tambah Customer Baru</h3>
+    <input id="newCustomerName" type="text" placeholder="Nama Customer" style="margin-top:10px" />
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeCustomerModal()">Cancel</button>
-      <button class="btn-ok" onclick="submitNewCustomer()"><span id="btnOkText">OK</span><span id="modalSpinner" class="spinner"></span></button>
+      <button class="btn-ok" onclick="submitNewCustomer()">
+        Save <span id="modalSpinner" class="spinner" style="display:none"></span>
+      </button>
     </div>
   </div>
 </div>
 
 <div id="modalStockWarning" class="modal-overlay">
   <div class="modal-box">
-    <h3 style="color: var(--red-text)">⚠️ Stock Tidak Mencukupi</h3>
-    <p>Terdapat item melebihi stok tersedia.<br>Apakah customer bersedia Pre-Order?</p>
+    <h3 style="margin-top:0; color:var(--red-text)">⚠️ Stok Tidak Cukup</h3>
+    <p>Beberapa item melebihi stok yang tersedia.<br>Apakah customer bersedia menunggu (Pre-Order)?</p>
     <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeStockModal()">Batal</button>
-      <button class="btn-ok" onclick="forceSubmitOrder()">Ya, Bersedia</button>
+      <button class="btn-cancel" onclick="closeStockModal()">Batalkan</button>
+      <button class="btn-ok" onclick="forceSubmitOrder()">Ya, Proses Pre-Order</button>
     </div>
   </div>
 </div>
 
-<div class="top-bar">
-  <div class="logo-section">AUXILIUM <span style="font-weight:300;color:#909090">Accounting</span></div>
-  <nav class="nav-menu">
-    <a href="#" class="nav-item active">Home</a>
-    <a href="#" class="nav-item">Receiving</a>
-    <a href="#" class="nav-item">Production</a>
-    <a href="#" class="nav-item">Review Invoice</a>
-  </nav>
-</div>
-
 <div class="page-wrap">
   <div class="invoice-card">
-    <h2>Form Pemesanan</h2>
-
-    <div class="header-main">
+    
+    <div class="top-header">
       <div>
-        <span class="field-label">Customer Name</span>
+        <h1 class="brand-title">New Order</h1>
+        <span class="brand-sub">AUXILIUM Accounting Services</span>
+      </div>
+      </div>
+
+    <div class="header-grid">
+      <div class="field-group">
+        <span class="field-label">Customer</span>
         <select id="customerSelect"></select>
       </div>
-      <div>
+      <div class="field-group">
         <span class="field-label">Order Type</span>
         <select id="orderType">
             <option value="General Order">General Order</option>
             <option value="Pre-Order">Pre-Order</option>
         </select>
       </div>
-      <div>
-        <span class="field-label">Issue date</span>
+      <div class="field-group">
+        <span class="field-label">Date</span>
         <input type="date" id="issueDate">
       </div>
-      <div>
-        <span class="field-label">Order number</span>
+      <div class="field-group">
+        <span class="field-label">Order #</span>
         <input type="text" id="orderNumber" readonly>
       </div>
     </div>
 
-    <div class="header-details">
+    <div class="detail-grid">
         <div>
             <span class="field-label">Contact Person</span>
             <input type="text" id="detailPerson" class="detail-readonly" readonly placeholder="-">
@@ -172,66 +390,81 @@ textarea { height: 170px; }
         </div>
     </div>
 
-    <div class="table-wrapper">
-      <table class="items-table">
+    <div class="table-container">
+      <table class="xero-table">
         <thead>
           <tr>
-            <th></th>
-            <th>Type</th>
-            <th>Item</th>
-            <th>Satuan</th> <th>Meter</th>
-            <th>Qty</th>
-            <th>Unit Price</th>
-            <th>Discount</th>
-            <th>Price/Qty</th>
-            <th>Total</th>
-            <th>Stock</th>
-            <th>Status</th>
-            <th></th>
+            <th class="col-drag"></th>
+            <th class="col-type">Type</th>
+            <th class="col-item">Item</th>
+            <th class="col-unit">Satuan</th>
+            <th class="col-meter">Meter</th>
+            <th class="col-qty">Qty</th>
+            <th class="col-price">Unit Price</th>
+            <th class="col-disc">Disc</th>
+            <th style="width:100px">Net Price</th> 
+            <th class="col-total">Total</th>
+            <th class="col-stock">Stock</th>
+            <th class="col-status">Status</th>
+            <th class="col-del"></th>
           </tr>
         </thead>
         <tbody id="itemsBody"></tbody>
       </table>
     </div>
 
-    <button class="add-row-btn" onclick="addRow()">Add row ▼</button>
+    <div class="xero-btn-group">
+        <button class="xero-btn" onclick="addRow()">Add a new line</button>
+        <button class="xero-btn-arrow">▼</button>
+    </div>
 
-    <div class="notes-and-totals">
+    <div class="footer-grid">
       <div>
-        <span class="field-label">Catatan:</span>
-        <textarea id="notes"></textarea>
+        <span class="field-label">Notes</span>
+        <textarea id="notes" style="height:120px; resize:vertical; margin-top:5px;"></textarea>
       </div>
-      <div class="totals-box">
-        <div class="summary-row"><span class="label">DPP</span><span class="value" id="dppDisplay">0.00</span></div>
-        <div class="summary-row"><span class="label">PPN 11%</span><span class="value" id="ppnDisplay">0.00</span></div>
-        <div class="summary-row total"><span class="label">Grand Total</span><span class="value" id="grandTotalDisplay">0.00</span></div>
-        <button class="approve-btn" type="button">Send Order</button>
+      <div class="totals-area">
+        <div class="summary-row">
+          <span class="label">Subtotal (DPP)</span>
+          <span class="value" id="dppDisplay">0.00</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">Tax (11%)</span>
+          <span class="value" id="ppnDisplay">0.00</span>
+        </div>
+        <div class="summary-row grand-total">
+          <span class="label">TOTAL</span>
+          <span class="value" id="grandTotalDisplay">0.00</span>
+        </div>
+        
+        <button class="btn-primary approve-btn" type="button">Approve Order</button>
       </div>
     </div>
+
   </div>
 </div>
 
 <script>
 /* ================= CONFIGURATION ================= */
-// PASTE URL DEPLOYMENT GOOGLE SCRIPT ANDA DISINI
+// GANTI URL INI DENGAN DEPLOYMENT TERBARU ANDA
 const baseURL = "https://script.google.com/macros/s/AKfycbxDbH557eHfENyWVBXYoylB93SUwNQknGsZdUZLPhBsP5gzWTTVmig6mzhBsDqTHIQXdw/exec";
 
 /* DATA STORAGE */
 let customerData = []; 
 let listSpandek = [], listNonSpandek = [];
 let priceSpan = [], priceNon = [];
-let unitSpan = [], unitNon = []; // Array untuk Satuan
+let unitSpan = [], unitNon = [];
 let stockSpan = [], stockNon = [];
 let choiceCustomer;
 
 /* UTILS */
 function showToast(msg, type="info") {
   const t = document.getElementById("toast"); t.textContent = msg;
-  t.style.background = type==="success"?"#16a34a":type==="error"?"#dc2626":"#333";
+  t.style.background = type==="success"?"#3fba13":type==="error"?"#d93c3c":"#333";
   t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2500);
 }
-function formatMoney(n) { return "Rp " + (Number(n)||0).toLocaleString("en-US", {minimumFractionDigits:2}); }
-function parseMoney(s) { return parseFloat((s||"").replace(/Rp/gi,"").replace(/,/g,"")) || 0; }
+function formatMoney(n) { return (Number(n)||0).toLocaleString("en-US", {minimumFractionDigits:2}); }
+function parseMoney(s) { return parseFloat((s||"").replace(/,/g,"")) || 0; } // Adjusted for standard number format
 
 /* INITIALIZATION */
 window.onload = async function () {
@@ -244,7 +477,6 @@ window.onload = async function () {
   
   new Sortable(document.getElementById("itemsBody"), { handle: ".drag-handle", animation: 150 });
   
-  // Listener Customer Change
   document.getElementById('customerSelect').addEventListener('change', function(e) {
       fillCustomerDetails(e.target.value);
   });
@@ -279,7 +511,7 @@ function setOrderNumber() {
     document.getElementById("orderNumber").value = next;
 }
 
-/* FETCH DATA FROM GOOGLE SCRIPT */
+/* FETCH DATA */
 async function loadDropdowns() {
   try {
     const res = await fetch(baseURL + "?action=getdata");
@@ -290,38 +522,39 @@ async function loadDropdowns() {
     listNonSpandek = data.nonspandek || [];
     priceSpan = data.priceSpan || [];
     priceNon = data.priceNon || [];
-    unitSpan = data.unitSpan || []; // Load Data Satuan
-    unitNon = data.unitNon || [];   // Load Data Satuan
+    unitSpan = data.unitSpan || []; 
+    unitNon = data.unitNon || [];   
     stockSpan = data.stockSpan || [];
     stockNon = data.stockNon || [];
 
-    // Setup Customer Dropdown
     choiceCustomer.clearChoices();
     const items = customerData.map(c => ({ value: c.name, label: c.name }));
-    choiceCustomer.setChoices([{ value: "add_new", label: "➕ Add New Customer" }, ...items], "value", "label", true);
+    choiceCustomer.setChoices([{ value: "add_new", label: "+ Add New Contact" }, ...items], "value", "label", true);
     
   } catch (err) {
     console.error(err);
-    showToast("Gagal memuat data", "error");
+    showToast("Connection Error", "error");
   }
 }
 
 /* ROW OPERATIONS */
 function addRow() {
   const tr = document.createElement("tr");
+  // Structure adapted for Xero style inputs inside TD
   tr.innerHTML = `
     <td class="drag-handle">⋮⋮</td>
-    <td><select class="type-select"><option value="">--</option><option value="Spandek">Spandek</option><option value="Non Spandek">Non Spandek</option></select></td>
+    <td><select class="type-select"><option value="">Type</option><option value="Spandek">Spandek</option><option value="Non Spandek">Non Spandek</option></select></td>
     <td><select class="item-select"></select></td>
-    <td><input class="unit-input" readonly style="background:#f8fafc;text-align:center;"></td> <td><input class="meter-input" disabled style="background:#f0f0f0"></td>
+    <td><input class="unit-input" readonly></td>
+    <td><input class="meter-input" disabled></td>
     <td><input type="number" class="qty-input"></td>
     <td><input class="uprice-input" readonly></td>
     <td><input class="disc-input" value="0"></td>
     <td><input class="pqty-input" readonly></td>
     <td><input class="total-input" readonly></td>
     <td><input class="stock-display" readonly value="-"></td>
-    <td><div class="status-container"></div></td>
-    <td class="delete-row" onclick="deleteRow(this)">🗑</td>
+    <td style="text-align:center"><div class="status-container"></div></td>
+    <td style="text-align:center"><button class="delete-btn" onclick="deleteRow(this)">×</button></td>
   `;
   document.getElementById("itemsBody").appendChild(tr);
 
@@ -329,19 +562,25 @@ function addRow() {
   const itemSel = tr.querySelector(".item-select");
   const meterInp = tr.querySelector(".meter-input");
   
-  const choiceItem = new Choices(itemSel, { searchEnabled: true, shouldSort: false, itemSelectText:"" });
+  // Clean Choices for Items
+  const choiceItem = new Choices(itemSel, { 
+      searchEnabled: true, 
+      shouldSort: false, 
+      itemSelectText:"",
+      placeholder: true,
+      placeholderValue: "Select Item"
+  });
 
   typeSel.addEventListener("change", () => {
     let list = [];
     if (typeSel.value === "Spandek") {
-        list = listSpandek; meterInp.disabled=false; meterInp.style.background="white";
+        list = listSpandek; meterInp.disabled=false; meterInp.style.background="transparent";
     } else {
-        list = listNonSpandek; meterInp.disabled=true; meterInp.style.background="#f0f0f0"; meterInp.value="";
+        list = listNonSpandek; meterInp.disabled=true; meterInp.style.background="#eee"; meterInp.value="";
     }
     itemSel.innerHTML = "";
     choiceItem.setChoices(list.map(n => ({ value: n, label: n })), "value", "label", true);
     
-    // Reset fields
     tr.querySelector(".unit-input").value = "";
     tr.querySelector(".uprice-input").value = "";
     recalcRow(tr);
@@ -369,7 +608,7 @@ function addRow() {
     }
     
     tr.querySelector(".uprice-input").value = formatMoney(price);
-    tr.querySelector(".unit-input").value = unit; // Set Satuan
+    tr.querySelector(".unit-input").value = unit; 
     recalcRow(tr);
   });
 
@@ -388,7 +627,9 @@ function recalcRow(row) {
   const unitPrice = parseMoney(row.querySelector(".uprice-input").value);
   const disc = parseMoney(row.querySelector(".disc-input").value);
   
-  const priceQty = (unitPrice - disc) * meter;
+  // Calculate
+  const netPrice = (unitPrice - disc);
+  const priceQty = netPrice * meter; // Ini harga per lembar/per meter setelah diskon
   const total = priceQty * qty;
 
   row.querySelector(".pqty-input").value = formatMoney(priceQty);
@@ -404,13 +645,13 @@ function recalcRow(row) {
   const statusCont = row.querySelector(".status-container");
   
   if(item) {
-      stockDisp.value = stock; // Tampilkan angka stok
+      stockDisp.value = stock; 
       let req = (type==="Spandek") ? (meter*qty) : qty;
       statusCont.innerHTML = "";
       if(req > 0) {
           const badge = document.createElement("span");
           badge.className = "status-badge " + (stock>=req ? "status-ok" : "status-oos");
-          badge.textContent = stock>=req ? "Available" : "OOS";
+          badge.textContent = stock>=req ? "OK" : "OOS";
           statusCont.appendChild(badge);
       }
   }
@@ -432,16 +673,14 @@ function closeStockModal() { document.getElementById("modalStockWarning").style.
 
 async function submitNewCustomer() {
     const name = document.getElementById("newCustomerName").value;
-    if(!name) return showToast("Isi nama customer", "warning");
+    if(!name) return showToast("Please enter a name", "error");
     
     document.getElementById("modalSpinner").style.display="inline-block";
-    // Mock update frontend list
     customerData.push({name:name, person:'-', address:'-', kecamatan:'-', kota:'-'});
     choiceCustomer.setChoices([{value:name, label:name}], "value", "label", false);
     choiceCustomer.setChoiceByValue(name);
     fillCustomerDetails(name);
     
-    // Send to backend
     try {
         await fetch(baseURL + "?action=addcustomer&name=" + encodeURIComponent(name));
         closeCustomerModal();
@@ -453,7 +692,7 @@ async function submitNewCustomer() {
 document.querySelector(".approve-btn").addEventListener("click", () => {
     const cust = document.getElementById("customerSelect").value;
     const type = document.getElementById("orderType").value;
-    if(!cust || cust==="add_new") return showToast("Pilih Customer", "warning");
+    if(!cust || cust==="add_new") return showToast("Please select a customer", "error");
     
     // Skip stock check if Pre-Order
     const oos = document.querySelectorAll(".status-oos").length > 0;
@@ -467,7 +706,7 @@ document.querySelector(".approve-btn").addEventListener("click", () => {
 function forceSubmitOrder() {
     closeStockModal();
     const btn = document.querySelector(".approve-btn");
-    btn.disabled=true; btn.textContent="Sending...";
+    btn.disabled=true; btn.textContent="Processing...";
 
     const payload = {
         customer: document.getElementById("customerSelect").value,
@@ -485,7 +724,7 @@ function forceSubmitOrder() {
             payload.items.push({
                 type: tr.querySelector(".type-select").value,
                 item: item,
-                satuan: tr.querySelector(".unit-input").value, // Kirim data satuan juga
+                satuan: tr.querySelector(".unit-input").value,
                 meter: tr.querySelector(".meter-input").value,
                 qty: tr.querySelector(".qty-input").value,
                 total: parseMoney(tr.querySelector(".total-input").value)
@@ -497,7 +736,7 @@ function forceSubmitOrder() {
     .then(res => res.text())
     .then(txt => {
         if(txt.includes("OK")) {
-            showToast("Order Success!", "success");
+            showToast("Order Approved!", "success");
             setTimeout(()=>location.reload(), 1500);
         } else {
             throw new Error(txt);
@@ -505,7 +744,7 @@ function forceSubmitOrder() {
     })
     .catch(e => {
         showToast("Failed: " + e.message, "error");
-        btn.disabled=false; btn.textContent="Send Order";
+        btn.disabled=false; btn.textContent="Approve Order";
     });
 }
 </script>
