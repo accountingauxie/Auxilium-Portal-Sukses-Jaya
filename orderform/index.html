@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Purchase Order - Xero Final Look</title>
+<title>Purchase Order - Xero Final Locked Style</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -18,7 +18,7 @@
   --green-bg: #dcfce7; --green-text: #166534;
   --red-bg: #fee2e2; --red-text: #991b1b;
   --border-light: #e0e0e0;
-  --drag-bg: #f9f9f9; /* Warna background kolom drag ala Xero */
+  --locked-bg: #f9fafb; /* Warna abu-abu ala Xero untuk kolom terkunci */
 }
 
 * { box-sizing: border-box; }
@@ -66,11 +66,12 @@ input.detail-readonly {
     margin-bottom: 15px; 
     border: 1px solid #ccc; 
     border-radius: 4px 4px 0 0; 
-    overflow: visible; 
+    overflow-x: auto; /* Allow scroll if needed */
 }
 
 table.xero-table { 
     width: 100%; 
+    border-collapse: separate; /* Required for sticky borders to look right sometimes, but collapse usually better */
     border-collapse: collapse; 
     table-layout: fixed; 
 }
@@ -80,6 +81,7 @@ table.xero-table th {
   font-size: 12px; font-weight: 700; color: #333;
   border-bottom: 1px solid #ccc; 
   border-right: 1px solid var(--border-light);
+  white-space: nowrap;
 }
 
 /* TABLE CELLS */
@@ -92,33 +94,44 @@ table.xero-table td {
   height: 42px;
 }
 
-/* --- XERO "LOCKED" COLUMNS EFFECT --- */
+/* --- XERO "LOCKED" COLUMNS STYLING --- */
 
-/* 1. KOLOM DRAG (KIRI) */
+/* 1. Drag Column (Kiri) */
 .col-drag, .drag-cell {
-    width: 40px !important; /* Fixed width */
+    width: 40px !important;
     max-width: 40px !important;
-    background-color: var(--drag-bg) !important; /* Background Abu-abu */
-    border-right: 1px solid #ccc !important; /* Border pemisah lebih tegas */
+    position: sticky !important;
+    left: 0;
+    z-index: 20; /* Stay on top */
+    background-color: var(--locked-bg) !important; /* Grey Background */
+    border-right: 1px solid #ccc !important; /* Stronger border */
     text-align: center;
     vertical-align: middle !important;
     cursor: grab;
     color: #999;
     font-size: 14px;
-    font-weight: bold;
 }
-.drag-cell:hover { background-color: #eee !important; color: #666; }
+th.col-drag { z-index: 25; border-bottom: 1px solid #ccc; } /* Header higher z-index */
 
-/* 2. KOLOM DELETE (KANAN) */
-.col-del { 
-    width: 45px !important; 
-    border-left: 1px solid #ccc !important; /* Garis pemisah kiri */
+/* 2. Delete Column (Kanan) */
+.col-del, td:last-child {
+    width: 45px !important;
+    position: sticky !important;
+    right: 0;
+    z-index: 20;
+    background-color: var(--locked-bg) !important; /* Grey Background */
+    border-left: 1px solid #ccc !important; /* Stronger border left */
     border-right: none !important;
     text-align: center;
     vertical-align: middle !important;
 }
+th.col-del { z-index: 25; border-bottom: 1px solid #ccc; } 
 
-/* INPUT TEXT (ZOOM SAFE) */
+/* Hover effects for utility columns */
+.drag-cell:hover, .col-del:hover { background-color: #eee !important; color: #666; }
+
+
+/* --- INPUT STYLING --- */
 table.xero-table input {
   width: 100%; height: 100%; padding: 0 10px; 
   border: none !important; background: transparent; 
@@ -152,7 +165,7 @@ table.xero-table input[readonly] { color: #666; cursor: default; }
 }
 .xero-table .choices__list--single { padding: 0; } 
 
-/* CSS Header Dropdown */
+/* Header Dropdown */
 .header-grid .choices__inner, .header-grid input.main-input, .header-grid select {
     background-color: #fff !important; border: 1px solid #ccc !important;
     border-radius: 3px !important; min-height: 38px !important; height: 38px !important;
@@ -169,7 +182,7 @@ table.xero-table input[readonly] { color: #666; cursor: default; }
 
 /* Utils */
 .delete-btn { border: none; background: none; color: #999; font-size: 18px; cursor: pointer; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-.delete-btn:hover { color: #d33; background: #fff5f5; }
+.delete-btn:hover { color: #d33; }
 
 .add-row-btn {
   background-color: #fff; color: var(--xero-blue); border: 1px solid var(--xero-blue);
@@ -272,8 +285,7 @@ table.xero-table input[readonly] { color: #666; cursor: default; }
             <th class="col-total">Total</th>
             <th class="col-stock">Stock</th>
             <th class="col-status">Status</th>
-            <th class="col-del"></th>
-          </tr>
+            <th class="col-del"></th> </tr>
         </thead>
         <tbody id="itemsBody"></tbody>
       </table>
@@ -355,7 +367,7 @@ async function loadDropdowns() {
 
 function addRow() {
   const tr = document.createElement("tr");
-  // Perhatikan class 'drag-cell' dan 'col-del' pada TD pertama dan terakhir
+  // Perhatikan class 'drag-cell' untuk sticky kiri dan 'col-del' untuk sticky kanan
   tr.innerHTML = `
     <td class="drag-cell">::</td>
     <td><select class="type-select"></select></td>
