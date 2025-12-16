@@ -146,31 +146,33 @@ table.xero-table input[readonly] { color: #666; cursor: default; }
 }
 
 /* =======================================================
-   FIX UTAMA: SCROLL DROPDOWN + POSITION FIXED STYLING
+   FIX UTAMA: SCROLL DROPDOWN + SINGLE SCROLLBAR
    ======================================================= */
 .choices__list--dropdown { 
     /* Style Visual */
     border: 1px solid var(--xero-blue) !important; 
     border-radius: 0 !important; 
     box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important; 
-    z-index: 100000 !important; /* Paling Depan */
+    z-index: 100000 !important; 
     background: #fff;
     
     /* SCROLL FIX */
-    max-height: 250px !important; /* Tinggi Maksimum List */
-    overflow-y: auto !important; /* Aktifkan Scrollbar Vertikal */
-
-    /* Hapus Padding Bawaan Choices.js yang mungkin mengganggu scroll */
-    padding: 0 !important;
+    max-height: 250px !important; 
+    overflow-y: auto !important; 
     
-    /* Agar scrollbar Choices.js yang aneh hilang */
+    /* HAPUS SCROLLBAR BAWAAN CHOICES.JS YANG MENGGANGGU */
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
+    
+    /* Hapus Padding list item bawaan choices agar scroll tidak aneh */
+    padding: 0 !important;
 }
 
-/* Hide Choices.js scrollbar di Chrome/Safari */
+/* Hapus Scrollbar Choices.js di Chrome/Safari */
 .choices__list--dropdown::-webkit-scrollbar {
     display: none;
+    width: 0 !important;
+    height: 0 !important;
 }
 /* ======================================================= */
 
@@ -408,11 +410,9 @@ function addRow() {
       
       const rect = container.getBoundingClientRect();
       
-      // Mengubah posisi menjadi Fixed (mengambang di atas segalanya)
       dropdown.style.position = 'fixed';
       dropdown.style.top = rect.bottom + 'px';
       dropdown.style.left = rect.left + 'px';
-      // MENGAMBIL LEBAR ASLI DARI CONTAINER TD (SEHARUSNYA AKURAT)
       dropdown.style.width = rect.width + 'px'; 
       dropdown.style.zIndex = '999999';
   };
