@@ -18,7 +18,6 @@
             --primary-teal-hover: #006666;
             --bg-light: #eef2f6; 
             --text-dark: #333;
-            /* UBAH DISINI: Navbar jadi Putih */
             --navbar-bg: #ffffff; 
             --navbar-text: #1e293b;
         }
@@ -29,8 +28,8 @@
             background-color: var(--navbar-bg); 
             padding: 12px 24px; 
             color: var(--navbar-text); 
-            border-bottom: 1px solid #e2e8f0; /* Garis tipis halus */
-            box-shadow: 0 1px 2px rgba(0,0,0,0.03); /* Shadow sangat tipis */
+            border-bottom: 1px solid #e2e8f0; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03); 
         }
         
         /* Logo Styling */
@@ -38,16 +37,16 @@
             font-weight: 800; 
             letter-spacing: -0.5px; 
             margin: 0; 
-            color: #0f172a !important; /* Warna Gelap Pekat */
+            color: #0f172a !important; 
             font-size: 18px;
         }
         
         /* Status Badge Style */
         .status-badge { background-color: rgba(16, 185, 129, 0.1); color: #059669; border: 1px solid rgba(16, 185, 129, 0.2); padding: 4px 12px; border-radius: 50px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
         
-        /* Dropdown Menu Trigger Style - Diperbarui untuk tema putih */
+        /* Dropdown Menu Trigger Style */
         .nav-link-custom { 
-            color: #64748b; /* Abu-abu medium */
+            color: #64748b; 
             text-decoration: none; 
             font-size: 14px; 
             transition: 0.2s; 
@@ -126,7 +125,6 @@
         
         .edit-badge { background-color: #fffbeb; color: #b45309; font-size: 12px; padding: 4px 10px; border-radius: 6px; border: 1px solid #fcd34d; margin-left: 10px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
         
-        /* Utility */
         .btn-white { background: white; border: 1px solid #e2e8f0; color: #64748b; }
         .btn-white:hover { border-color: #cbd5e1; color: #1e293b; background: #f8fafc; }
     </style>
@@ -166,15 +164,16 @@
                         </a>
                     </li>
                     <li><hr class="dropdown-divider bg-light my-1"></li>
-                    <li><h6 class="dropdown-header">Receiving / Penerimaan</h6></li>
-                    <li>
-                        <a class="dropdown-item" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/entry/index.html">
-                            <i class="bi bi-box-seam"></i> Penerimaan PO
-                        </a>
-                    </li>
+
+                    <li><h6 class="dropdown-header">Menu Pembeliaan</h6></li>
                     <li>
                         <a class="dropdown-item" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/CreateBill/index.html">
                             <i class="bi bi-receipt"></i> Buat Bil
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/entry/index.html">
+                            <i class="bi bi-box-seam"></i> Penerimaan PO
                         </a>
                     </li>
                     <li><hr class="dropdown-divider bg-light my-1"></li>
