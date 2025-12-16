@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Purchase Order - Zoom Perfect</title>
+<title>Purchase Order - Fixed Alignment</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -17,6 +17,7 @@
   --text-color: #222;
   --green-bg: #dcfce7; --green-text: #166534;
   --red-bg: #fee2e2; --red-text: #991b1b;
+  --border-light: #e0e0e0; /* Warna garis tabel */
 }
 
 * { box-sizing: border-box; }
@@ -69,130 +70,95 @@ input.detail-readonly {
 
 table.xero-table { 
     width: 100%; 
-    border-collapse: collapse; 
+    border-collapse: collapse; /* KUNCI: Border menyatu */
     table-layout: fixed; 
 }
 
 table.xero-table th {
   background: #f8f9fa; text-align: left; padding: 12px 10px;
   font-size: 12px; font-weight: 700; color: #333;
-  border-bottom: 1px solid #ccc; border-right: 1px solid #eee;
+  border-bottom: 1px solid #ccc; 
+  border-right: 1px solid var(--border-light); /* Garis vertikal header */
 }
 
-/* CELL SETTING - FIX ZOOM ISSUE */
+/* TABLE CELLS */
 table.xero-table td {
-  padding: 0 !important; /* Wajib 0 */
-  border-bottom: 1px solid #e0e0e0; 
-  border-right: 1px solid #f0f0f0;
+  padding: 0 !important; 
+  border-bottom: 1px solid var(--border-light); 
+  border-right: 1px solid var(--border-light); /* Garis vertikal body */
   vertical-align: top;
   background: #fff; 
   height: 42px;
 }
 
-/* =========================================
-   INPUT & DROPDOWN STYLING (ZOOM SAFE)
-   ========================================= */
-
-/* 1. INPUT TEXT */
+/* INPUT TEXT (ZOOM SAFE) */
 table.xero-table input {
-  width: 100%; 
-  height: 100%; 
-  padding: 0 10px; 
-  border: none !important; /* Hapus border input, pakai border TD */
-  background: transparent; 
-  font-size: 13px; 
-  color: #333;
-  display: block;
+  width: 100%; height: 100%; padding: 0 10px; 
+  border: none !important; background: transparent; 
+  font-size: 13px; color: #333; display: block;
 }
-
-/* Fokus Input: Pakai Box Shadow Inset (Aman Zoom) */
 table.xero-table input:focus {
-  background: #fff; 
-  outline: none; 
-  /* Menggambar border DI DALAM elemen, bukan di luar */
+  background: #fff; outline: none; 
   box-shadow: inset 0 0 0 1px var(--xero-blue) !important; 
 }
 table.xero-table input[readonly] { color: #666; cursor: default; }
 
 
-/* 2. CHOICES JS (DROPDOWN) */
-.xero-table .choices {
-    margin: 0 !important;
-    padding: 0 !important;
-    height: 100%;
-    width: 100%;
-    overflow: visible;
-}
-
+/* --- CHOICES.JS FIX --- */
+.xero-table .choices { margin: 0 !important; padding: 0 !important; height: 100%; width: 100%; overflow: visible; }
 .xero-table .choices__inner {
-  border: none !important; /* Hapus border default */
-  background-color: transparent !important;
-  border-radius: 0 !important; 
-  min-height: 100% !important; 
-  height: 100% !important;
-  display: flex !important;    
-  align-items: center !important; 
-  padding: 0 10px !important;
-  margin: 0 !important;
+  border: none !important; background-color: transparent !important;
+  border-radius: 0 !important; min-height: 100% !important; height: 100% !important;
+  display: flex !important; align-items: center !important; 
+  padding: 0 10px !important; margin: 0 !important;
 }
-
-/* Fokus Dropdown: Box Shadow Inset */
 .xero-table .is-open .choices__inner,
 .xero-table .is-focused .choices__inner,
 .xero-table .choices__inner:hover {
   background-color: #fff !important;
-  /* Gunakan Inset Shadow agar tidak menambah pixel width */
   box-shadow: inset 0 0 0 1px var(--xero-blue) !important; 
 }
-
-/* Dropdown List */
 .xero-table .choices__list--dropdown { 
-    width: 100% !important;
-    left: 0 !important;
-    border: 1px solid var(--xero-blue) !important;
-    margin-top: 0 !important;
-    border-radius: 0 !important;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    z-index: 9999;
+    width: 100% !important; left: 0 !important;
+    border: 1px solid var(--xero-blue) !important; margin-top: 0 !important;
+    border-radius: 0 !important; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 9999;
 }
 .xero-table .choices__list--single { padding: 0; } 
 
-
-/* CSS HEADER DROPDOWN (Standard) */
-.header-grid .choices__inner, 
-.header-grid input.main-input,
-.header-grid select {
-    background-color: #fff !important;
-    border: 1px solid #ccc !important;
-    border-radius: 3px !important;
-    min-height: 38px !important;
-    height: 38px !important;
+/* CSS Header Dropdown */
+.header-grid .choices__inner, .header-grid input.main-input, .header-grid select {
+    background-color: #fff !important; border: 1px solid #ccc !important;
+    border-radius: 3px !important; min-height: 38px !important; height: 38px !important;
     display: flex; align-items: center;
 }
 .header-grid .is-focused .choices__inner { border-color: var(--xero-blue) !important; }
 
 
-/* Column Widths */
-.col-drag { width: 35px; text-align: center; border-right: 1px solid #eee; }
-.col-type { width: 160px; } 
-.col-item { width: 300px; }
-.col-unit { width: 70px; }
-.col-meter { width: 65px; }
-.col-qty { width: 65px; }
-.col-price { width: 110px; }
-.col-disc { width: 70px; }
-.col-net { width: 100px; }
-.col-total { width: 120px; }
-.col-stock { width: 80px; }
-.col-status { width: 80px; }
-.col-del { width: 40px; text-align: center; }
+/* --- PERBAIKAN GARIS DRAG --- */
+.col-drag { 
+    width: 35px; text-align: center; 
+    border-right: 1px solid var(--border-light) !important; /* Paksa border sama */
+}
+
+/* Class Baru untuk Cell Drag di Body */
+.drag-cell {
+    text-align: center;
+    vertical-align: middle !important; /* Tengah Vertikal */
+    cursor: grab;
+    color: #ccc;
+    font-size: 16px;
+    border-right: 1px solid var(--border-light) !important; /* Paksa border sama */
+    background-color: #fafafa; /* Opsional: Warna beda dikit biar jelas */
+}
+.drag-cell:hover { color: #888; background-color: #f0f0f0; }
+
+/* Column Widths Lainnya */
+.col-type { width: 160px; } .col-item { width: 300px; } .col-unit { width: 70px; }
+.col-meter { width: 65px; } .col-qty { width: 65px; } .col-price { width: 110px; }
+.col-disc { width: 70px; } .col-net { width: 100px; } .col-total { width: 120px; }
+.col-stock { width: 80px; } .col-status { width: 80px; } .col-del { width: 40px; text-align: center; }
 
 /* Utils */
-.drag-handle { 
-    cursor: grab; color: #ccc; 
-    display: flex; align-items: center; justify-content: center; 
-    height: 100%; width: 100%; font-size: 14px;
-}
 .delete-btn { border: none; background: none; color: #999; font-size: 16px; cursor: pointer; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
 .delete-btn:hover { color: #d33; background: #fff5f5; }
 
@@ -203,7 +169,7 @@ table.xero-table input[readonly] { color: #666; cursor: default; }
 }
 .add-row-btn:hover { background-color: #f0f7fc; }
 
-/* FOOTER */
+/* Footer */
 .footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 20px; }
 .summary-row { display: flex; justify-content: flex-end; gap: 30px; padding: 8px 0; font-size: 14px; }
 .summary-row .label { color: #666; font-weight: 500; }
@@ -211,7 +177,7 @@ table.xero-table input[readonly] { color: #666; cursor: default; }
 .grand-total { font-size: 20px; font-weight: 700; margin-top: 15px; padding-top: 15px; border-top: 2px solid #ddd; color: var(--text-color); }
 .btn-primary { background-color: #3fba13; color: white; border: none; padding: 12px 30px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; margin-top: 20px; }
 
-/* STATUS BADGE */
+/* Status */
 .status-badge { 
     padding: 3px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; 
     text-transform: uppercase; display: inline-block; width: 90%; 
@@ -221,7 +187,7 @@ table.xero-table input[readonly] { color: #666; cursor: default; }
 .status-oos { background: var(--red-bg); color: var(--red-text); }
 .stock-display { text-align: center; line-height: 42px; }
 
-/* MODALS */
+/* Modals */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 9999; }
 .modal-box { background: #fff; padding: 30px; width: 400px; border-radius: 6px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
 .modal-actions { margin-top: 25px; text-align: right; }
@@ -240,7 +206,7 @@ table.xero-table input[readonly] { color: #666; cursor: default; }
 
 <div id="modalAddCustomer" class="modal-overlay">
   <div class="modal-box">
-    <h3 style="margin-top:0">Tambah Customer Baru</h3>
+    <h3>Tambah Customer Baru</h3>
     <input id="newCustomerName" type="text" placeholder="Nama Customer" class="main-input" style="margin-top:10px" />
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeCustomerModal()">Cancel</button>
@@ -251,7 +217,7 @@ table.xero-table input[readonly] { color: #666; cursor: default; }
 
 <div id="modalStockWarning" class="modal-overlay">
   <div class="modal-box">
-    <h3 style="margin-top:0; color:var(--red-text)">⚠️ Stok Tidak Cukup</h3>
+    <h3 style="color:var(--red-text)">⚠️ Stok Tidak Cukup</h3>
     <p>Beberapa item melebihi stok.<br>Proses sebagai Pre-Order?</p>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeStockModal()">Batalkan</button>
@@ -269,25 +235,10 @@ table.xero-table input[readonly] { color: #666; cursor: default; }
     </div>
 
     <div class="header-grid">
-      <div>
-        <span class="field-label">Customer</span>
-        <select id="customerSelect"></select>
-      </div>
-      <div>
-        <span class="field-label">Order Type</span>
-        <select id="orderType">
-            <option value="General Order" selected>General Order</option>
-            <option value="Pre-Order">Pre-Order</option>
-        </select>
-      </div>
-      <div>
-        <span class="field-label">Date</span>
-        <input type="date" id="issueDate" class="main-input">
-      </div>
-      <div>
-        <span class="field-label">Order #</span>
-        <input type="text" id="orderNumber" class="main-input" readonly>
-      </div>
+      <div><span class="field-label">Customer</span><select id="customerSelect"></select></div>
+      <div><span class="field-label">Order Type</span><select id="orderType"><option value="General Order" selected>General Order</option><option value="Pre-Order">Pre-Order</option></select></div>
+      <div><span class="field-label">Date</span><input type="date" id="issueDate" class="main-input"></div>
+      <div><span class="field-label">Order #</span><input type="text" id="orderNumber" class="main-input" readonly></div>
     </div>
 
     <div class="detail-grid">
@@ -320,15 +271,10 @@ table.xero-table input[readonly] { color: #666; cursor: default; }
       </table>
     </div>
 
-    <button class="add-row-btn" onclick="addRow()">
-        <span>+ Add new line</span>
-    </button>
+    <button class="add-row-btn" onclick="addRow()"><span>+ Add new line</span></button>
 
     <div class="footer-grid">
-      <div>
-        <span class="field-label">Notes</span>
-        <textarea id="notes" class="main-input" style="height:120px; resize:vertical;"></textarea>
-      </div>
+      <div><span class="field-label">Notes</span><textarea id="notes" class="main-input" style="height:120px; resize:vertical;"></textarea></div>
       <div style="text-align: right;">
         <div class="summary-row"><span class="label">Subtotal (DPP)</span><span class="value" id="dppDisplay">0.00</span></div>
         <div class="summary-row"><span class="label">Tax (11%)</span><span class="value" id="ppnDisplay">0.00</span></div>
@@ -341,7 +287,7 @@ table.xero-table input[readonly] { color: #666; cursor: default; }
 </div>
 
 <script>
-/* CONFIG */
+/* UPDATE SCRIPT URL */
 const baseURL = "https://script.google.com/macros/s/AKfycbxDbH557eHfENyWVBXYoylB93SUwNQknGsZdUZLPhBsP5gzWTTVmig6mzhBsDqTHIQXdw/exec";
 
 let customerData=[], listSpandek=[], listNonSpandek=[], priceSpan=[], priceNon=[], unitSpan=[], unitNon=[], stockSpan=[], stockNon=[];
@@ -363,7 +309,7 @@ window.onload = async function () {
   await loadDropdowns();
   setOrderNumber();
   for(let i=0; i<3; i++) addRow();
-  new Sortable(document.getElementById("itemsBody"), { handle: ".drag-handle", animation: 150 });
+  new Sortable(document.getElementById("itemsBody"), { handle: ".drag-cell", animation: 150 });
   
   document.getElementById('customerSelect').addEventListener('change', function(e) { fillCustomerDetails(e.target.value); });
 };
@@ -401,8 +347,9 @@ async function loadDropdowns() {
 
 function addRow() {
   const tr = document.createElement("tr");
+  // PERBAIKAN DI SINI: Class drag-cell sederhana
   tr.innerHTML = `
-    <td class="drag-handle">::</td>
+    <td class="drag-cell">::</td>
     <td><select class="type-select"></select></td>
     <td><select class="item-select"></select></td>
     <td><input class="unit-input" readonly></td>
