@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Purchase Order - Xero Clean Final</title>
+<title>Purchase Order - Xero Clean Final Middle Align</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -69,22 +69,30 @@ table.xero-table th {
   border-bottom: 1px solid #ccc; border-right: 1px solid #eee;
 }
 
+/* PERUBAHAN DISINI: Vertical Align Middle */
 table.xero-table td {
-  padding: 0; border-bottom: 1px solid #e0e0e0; border-right: 1px solid #f0f0f0;
-  vertical-align: top; background: #fff; height: 42px;
+  padding: 0; 
+  border-bottom: 1px solid #e0e0e0; 
+  border-right: 1px solid #f0f0f0;
+  vertical-align: middle; /* Middle Align */
+  background: #fff; 
+  height: 42px;
 }
 
 /* Inputs Table */
 table.xero-table input {
-  width: 100%; padding: 10px; border: 1px solid transparent; 
-  background: transparent; font-size: 13px; height: 100%; color: #333;
+  width: 100%; padding: 0 10px; /* Padding kiri kanan saja */
+  border: 1px solid transparent; 
+  background: transparent; font-size: 13px; 
+  height: 100%; /* Full height agar vertical align input native bekerja */
+  color: #333;
 }
 table.xero-table input:focus {
   border: 1px solid var(--xero-blue); background: #fff; outline: none; z-index: 5; position: relative;
 }
 table.xero-table input[readonly] { color: #666; cursor: default; }
 
-/* --- CHOICES.JS CUSTOMIZATION (CRITICAL) --- */
+/* --- CHOICES.JS CUSTOMIZATION --- */
 /* Style Umum */
 .choices__inner {
   background-color: #fff !important; font-size: 13px; min-height: 38px;
@@ -93,12 +101,11 @@ table.xero-table input[readonly] { color: #666; cursor: default; }
 }
 .is-focused .choices__inner { border-color: var(--xero-blue) !important; }
 
-/* DROPDOWN DI DALAM TABEL (Borderless default, Border Blue on Focus) */
+/* DROPDOWN DI DALAM TABEL */
 .xero-table .choices__inner {
   border: 1px solid transparent !important; background-color: transparent !important;
   border-radius: 0 !important; min-height: 100%;
 }
-/* Efek saat Type/Item diklik */
 .xero-table .is-open .choices__inner,
 .xero-table .is-focused .choices__inner,
 .xero-table .choices__inner:hover {
@@ -106,11 +113,11 @@ table.xero-table input[readonly] { color: #666; cursor: default; }
   border: 1px solid var(--xero-blue) !important; 
 }
 .xero-table .choices__list--dropdown { width: auto; min-width: 100%; z-index: 9999; }
-.xero-table .choices { overflow: visible; }
+.xero-table .choices { overflow: visible; height: 100%; } /* Height 100% penting untuk centering */
 
 /* Column Widths */
 .col-drag { width: 30px; text-align: center; }
-.col-type { width: 150px; } /* Lebar Type disesuaikan */
+.col-type { width: 150px; }
 .col-item { width: 300px; }
 .col-unit { width: 70px; }
 .col-meter { width: 65px; }
@@ -124,8 +131,8 @@ table.xero-table input[readonly] { color: #666; cursor: default; }
 .col-del { width: 40px; text-align: center; }
 
 /* Utils */
-.drag-handle { cursor: grab; color: #ccc; line-height: 40px; }
-.delete-btn { border: none; background: none; color: #999; font-size: 16px; cursor: pointer; width: 100%; height: 100%; }
+.drag-handle { cursor: grab; color: #ccc; display: flex; align-items: center; justify-content: center; height: 100%; }
+.delete-btn { border: none; background: none; color: #999; font-size: 16px; cursor: pointer; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
 .delete-btn:hover { color: #d33; background: #fff5f5; }
 
 /* ADD ROW BUTTON (SINGLE) */
@@ -145,9 +152,15 @@ table.xero-table input[readonly] { color: #666; cursor: default; }
 .btn-primary { background-color: #3fba13; color: white; border: none; padding: 12px 30px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; margin-top: 20px; }
 
 /* MODAL & STATUS */
-.status-badge { padding: 3px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; display: inline-block; width: 90%; margin-top: 10px; text-align: center; }
+/* PERUBAHAN DISINI: Badge otomatis center vertical karena td middle, margin-top dihapus */
+.status-badge { 
+    padding: 3px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; 
+    text-transform: uppercase; display: inline-block; width: 90%; 
+    text-align: center; margin: 0 auto;
+}
 .status-ok { background: var(--green-bg); color: var(--green-text); }
 .status-oos { background: var(--red-bg); color: var(--red-text); }
+.stock-display { text-align: center; }
 
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 9999; }
 .modal-box { background: #fff; padding: 30px; width: 400px; border-radius: 6px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
@@ -283,7 +296,6 @@ function formatMoney(n) { return (Number(n)||0).toLocaleString("en-US", {minimum
 function parseMoney(s) { return parseFloat((s||"").replace(/,/g,"")) || 0; }
 
 window.onload = async function () {
-  // INIT HEADER CHOICES
   choiceCustomer = new Choices("#customerSelect", { searchEnabled: true, shouldSort: false, placeholder: true, placeholderValue: "Select Customer", itemSelectText:"" });
   choiceOrderType = new Choices("#orderType", { searchEnabled: false, shouldSort: false, itemSelectText:"" });
 
@@ -327,7 +339,6 @@ async function loadDropdowns() {
   } catch (err) { console.error(err); showToast("Network Error", "error"); }
 }
 
-/* TABLE ROW LOGIC */
 function addRow() {
   const tr = document.createElement("tr");
   tr.innerHTML = `
@@ -342,7 +353,7 @@ function addRow() {
     <td><input class="pqty-input" readonly></td>
     <td><input class="total-input" readonly></td>
     <td><input class="stock-display" readonly value="-"></td>
-    <td><div class="status-container"></div></td>
+    <td style="text-align:center"><div class="status-container"></div></td>
     <td><button class="delete-btn" onclick="deleteRow(this)">🗑</button></td>
   `;
   document.getElementById("itemsBody").appendChild(tr);
@@ -351,14 +362,10 @@ function addRow() {
   const itemSel = tr.querySelector(".item-select");
   const meterInp = tr.querySelector(".meter-input");
   
-  // INIT CHOICES FOR TYPE & ITEM (SAME LOOK)
   const choiceType = new Choices(typeSel, { 
       searchEnabled: false, shouldSort: false, itemSelectText:"", 
       placeholder: true, placeholderValue: "Type",
-      choices: [
-          { value: 'Spandek', label: 'Spandek' },
-          { value: 'Non Spandek', label: 'Non Spandek' }
-      ]
+      choices: [ { value: 'Spandek', label: 'Spandek' }, { value: 'Non Spandek', label: 'Non Spandek' } ]
   });
   
   const choiceItem = new Choices(itemSel, { 
