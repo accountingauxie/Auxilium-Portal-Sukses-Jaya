@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Purchase Order - Xero Arial Style</title>
+<title>Purchase Order - Xero Final (Est Delivery Added)</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -24,9 +24,9 @@
 * { box-sizing: border-box; }
 
 /* --- FONT ARIAL GLOBAL --- */
-body, input, select, textarea, button, .choices, .choices__inner, .brand-title {
+body, input, select, textarea, button, .choices, .choices__inner, .brand-title, .field-label {
   margin: 0; 
-  font-family: Arial, sans-serif !important; /* Force Arial Everywhere */
+  font-family: Arial, sans-serif !important; 
   font-size: 13px; 
   color: var(--text-color);
 }
@@ -46,10 +46,10 @@ body { background: var(--bg-color); }
 .top-header { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
 .brand-title { font-size: 24px; font-weight: 500; margin: 0; color: #333; }
 
-/* HEADER GRID: UPDATED TO 5 COLUMNS FOR EST. DELIVERY */
+/* HEADER GRID: 5 KOLOM (Termasuk Est. Delivery) */
 .header-grid { 
     display: grid; 
-    /* Customer (2fr), OrderType (1fr), Date (1fr), Est.Delivery (1fr), Order# (1fr) */
+    /* Customer | Order Type | Date | Est. Delivery | Order # */
     grid-template-columns: 2fr 1fr 1fr 1fr 1fr; 
     gap: 20px; 
     margin-bottom: 20px;
@@ -320,7 +320,7 @@ window.onload = async function () {
 
   const today = new Date().toISOString().split("T")[0];
   document.getElementById("issueDate").value = today;
-  document.getElementById("estDeliveryDate").value = today; // Default Est Date = Today
+  document.getElementById("estDeliveryDate").value = today; // Set default date
 
   await loadDropdowns();
   setOrderNumber();
@@ -502,7 +502,7 @@ function forceSubmitOrder() {
         customer: document.getElementById("customerSelect").value,
         orderType: document.getElementById("orderType").value,
         issueDate: document.getElementById("issueDate").value,
-        estDelivery: document.getElementById("estDeliveryDate").value, // NEW PAYLOAD
+        estDelivery: document.getElementById("estDeliveryDate").value,
         orderNumber: document.getElementById("orderNumber").value,
         notes: document.getElementById("notes").value,
         grandTotal: document.getElementById("grandTotalDisplay").textContent,
