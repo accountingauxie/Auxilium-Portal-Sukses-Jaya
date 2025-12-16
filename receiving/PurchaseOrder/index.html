@@ -11,9 +11,9 @@
 
     <style>
         :root {
-            --primary-bg: #f9fafb; /* Light Gray Odoo-like */
-            --nav-bg: #1f2937; /* Dark Navbar */
-            --accent-color: #00878b; /* Teal Odoo */
+            --primary-bg: #f9fafb;
+            --nav-bg: #1f2937;
+            --accent-color: #00878b; /* Warna Teal Odoo */
             --btn-create: #00878b;
         }
 
@@ -24,7 +24,6 @@
         .navbar-brand { color: #fff !important; font-weight: 700; font-size: 1.25rem; }
         .nav-link { color: #d1d5db !important; font-size: 0.9rem; margin-right: 15px; }
         .nav-link:hover { color: #fff !important; }
-        .nav-link.active { color: #fff !important; font-weight: 600; border-bottom: 2px solid var(--accent-color); }
         
         /* Dashboard Cards */
         .kpi-card {
@@ -42,8 +41,10 @@
         .table-custom tr:hover td { background-color: #f9fafb; }
         
         /* Status Badges */
-        .badge-rfq { background-color: #e0f2fe; color: #0284c7; }
-        .badge-po { background-color: #dcfce7; color: #16a34a; }
+        .badge-rfq { background-color: #e0f2fe; color: #0284c7; } /* Biru Muda */
+        .badge-po { background-color: #dcfce7; color: #16a34a; } /* Hijau */
+        .badge-waiting { background-color: #fef9c3; color: #854d0e; } /* Kuning */
+        .badge-late { background-color: #fee2e2; color: #991b1b; } /* Merah */
 
         /* Form Styling */
         .form-section { background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e5e7eb; }
@@ -51,15 +52,11 @@
         .form-control, .form-select { border-color: #d1d5db; border-radius: 6px; padding: 0.5rem 0.75rem; }
         .form-control:focus, .form-select:focus { border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(0, 135, 139, 0.1); }
         
-        /* Buttons */
-        .btn-create { background-color: var(--btn-create); color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 500; }
-        .btn-create:hover { background-color: #006b6e; color: white; }
-        .btn-secondary-custom { background-color: #fff; border: 1px solid #d1d5db; color: #374151; }
-        .btn-secondary-custom:hover { background-color: #f9fafb; }
-
         /* Utilities */
         .hidden { display: none !important; }
         .cursor-pointer { cursor: pointer; }
+        .btn-create { background-color: var(--btn-create); color: white; border: none; }
+        .btn-create:hover { background-color: #006b6e; color: white; }
     </style>
 </head>
 <body>
@@ -90,7 +87,7 @@
                 <button class="btn btn-create shadow-sm" id="btnShowCreate" onclick="showCreateForm()">
                     <i class="bi bi-plus-lg me-1"></i> NEW
                 </button>
-                <button class="btn btn-secondary-custom shadow-sm ms-2 hidden" id="btnBackList" onclick="showDashboard()">
+                <button class="btn btn-light border shadow-sm ms-2 hidden" id="btnBackList" onclick="showDashboard()">
                     <i class="bi bi-arrow-left me-1"></i> Back to List
                 </button>
             </div>
@@ -112,14 +109,14 @@
                 </div>
                 <div class="col-md-3 col-6">
                     <div class="kpi-card">
-                        <div class="kpi-value text-primary">0</div>
+                        <div class="kpi-value text-primary" id="count-waiting">0</div>
                         <div class="kpi-label">Waiting Approval</div>
                     </div>
                 </div>
                 <div class="col-md-3 col-6">
                     <div class="kpi-card">
-                        <div class="kpi-value text-danger">0</div>
-                        <div class="kpi-label">Late</div>
+                        <div class="kpi-value text-danger" id="count-late">0</div>
+                        <div class="kpi-label">Late (>14 Days)</div>
                     </div>
                 </div>
             </div>
@@ -140,8 +137,8 @@
                             <th style="width: 25%;">Vendor</th>
                             <th style="width: 15%;">Order Date</th>
                             <th style="width: 15%;">Activity</th>
-                            <th style="width: 15%;">Items Count</th>
-                            <th style="width: 15%; text-align: center;">Status</th>
+                            <th style="width: 10%;">Items</th>
+                            <th style="width: 20%; text-align: center;">Status</th>
                         </tr>
                     </thead>
                     <tbody id="poListBody">
@@ -177,9 +174,7 @@
             </div>
 
             <div class="card border shadow-sm">
-                <div class="card-header bg-light fw-bold text-uppercase small text-muted">
-                    Products
-                </div>
+                <div class="card-header bg-light fw-bold text-uppercase small text-muted">Products</div>
                 <div class="table-responsive">
                     <table class="table table-bordered mb-0 align-middle" id="itemTable">
                         <thead class="bg-light">
@@ -192,8 +187,7 @@
                                 <th style="width: 50px;"></th>
                             </tr>
                         </thead>
-                        <tbody id="tableBody">
-                            </tbody>
+                        <tbody id="tableBody"></tbody>
                     </table>
                 </div>
                 <div class="p-3 bg-light">
@@ -208,8 +202,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // --- KONFIGURASI URL ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbzkmpSWFcdOtGydQcyLFZSmDZmIj4dl9wGPXV5pqixYhBVWKzzjDGlwdNs4Q_eMZFclzw/exec"; // Ganti jika deploy baru
+        // --- KONFIGURASI URL (PASTIKAN INI SAMA DENGAN WEB APP URL ANDA) ---
+        const API_URL = "https://script.google.com/macros/s/AKfycbyfie-SGt-FpnU-Q8PT5ttb2BuX_BaujeUgl05TnoA_dK-rToA0oBugX3FCh9W6aVVE8Q/exec"; 
         
         // --- GLOBAL VARIABLES ---
         var allVendorData = {};
@@ -218,7 +212,7 @@
         // --- INITIALIZATION ---
         window.onload = function() {
             setDefaultDate();
-            loadInitialData(); // Load Vendor & PO List
+            loadInitialData();
         };
 
         function setDefaultDate() {
@@ -231,7 +225,7 @@
         function loadInitialData() {
             document.getElementById("connectionStatus").className = "badge bg-warning text-dark";
             
-            // 1. Fetch Vendor Data
+            // 1. Fetch Vendor Data (untuk Dropdown)
             fetch(API_URL + "?action=getData")
             .then(res => res.json())
             .then(res => {
@@ -244,7 +238,7 @@
             })
             .catch(e => console.error("Vendor fetch error", e));
 
-            // 2. Fetch Dashboard Data
+            // 2. Fetch Dashboard Data (List PO)
             loadDashboardData();
         }
 
@@ -262,11 +256,57 @@
                 }
             })
             .catch(e => {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Failed to load PO List.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Failed to load PO List. Check connection.</td></tr>';
             });
         }
 
-        // --- RENDER DASHBOARD ---
+        // --- CORE: LOGIKA KPI & DASHBOARD ---
+        function updateKPI(data) {
+            // 1. Total Orders
+            document.getElementById("count-all").innerText = data.length;
+            
+            // Setup Waktu Hari Ini
+            let now = new Date();
+            let todayStr = now.toISOString().slice(0,10); // YYYY-MM-DD
+            
+            // Setup Batas Waktu Late (14 Hari lalu)
+            let twoWeeksAgo = new Date();
+            twoWeeksAgo.setDate(now.getDate() - 14);
+
+            let todayCount = 0;
+            let waitingCount = 0;
+            let lateCount = 0;
+
+            data.forEach(po => {
+                // 2. Hitung Created Today (Bandingkan createdAt dengan hari ini)
+                let createdStr = "";
+                try {
+                    // createdAt diambil dari Script (kolom timestamp)
+                    if(po.createdAt) createdStr = new Date(po.createdAt).toISOString().slice(0,10);
+                } catch(e) {}
+                
+                if (createdStr === todayStr) todayCount++;
+
+                // 3. Hitung Waiting Approval
+                if (po.status === "Menunggu Persetujuan") waitingCount++;
+
+                // 4. Hitung Late (PO date < 14 hari lalu DAN Status belum selesai)
+                let poDateParts = po.date.split("/"); // Asumsi dd/MM/yyyy
+                if(poDateParts.length === 3) {
+                    let poDateObj = new Date(poDateParts[2], poDateParts[1] - 1, poDateParts[0]);
+                    
+                    if (poDateObj < twoWeeksAgo && po.status !== 'Billed' && po.status !== 'Selesai') {
+                        lateCount++;
+                    }
+                }
+            });
+
+            // Update Angka di Kartu
+            document.getElementById("count-today").innerText = todayCount;
+            document.getElementById("count-waiting").innerText = waitingCount;
+            document.getElementById("count-late").innerText = lateCount;
+        }
+
         function renderDashboardTable(data) {
             const tbody = document.getElementById("poListBody");
             tbody.innerHTML = "";
@@ -277,25 +317,35 @@
             }
 
             data.forEach(po => {
-                // Formatting Date
+                // Tampilan Tanggal
                 let dateDisplay = po.date; 
-                try {
-                    let d = new Date(po.date);
-                    dateDisplay = d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
-                } catch(e){}
 
-                // Status Badge Logic
-                let badgeClass = po.status === 'Purchase Order' ? 'badge-po' : 'badge-rfq';
+                // Tampilan Status & Warna Badge
+                let badgeClass = 'bg-secondary';
+                let statusText = po.status;
+
+                if (statusText === 'Purchase Order' || statusText === 'Approved') {
+                    badgeClass = 'badge-po'; 
+                } else if (statusText === 'Menunggu Persetujuan') {
+                    badgeClass = 'badge-waiting'; // Kuning
+                } else if (statusText === 'Billed' || statusText === 'Selesai') {
+                    badgeClass = 'badge-rfq'; // Biru
+                } else if (statusText === 'Late') {
+                    badgeClass = 'badge-late';
+                }
+
+                // Kolom Activity (Time Ago)
+                let activityText = getTimeAgo(po.createdAt);
 
                 let tr = `
                     <tr class="cursor-pointer">
                         <td class="fw-bold text-primary">${po.id}</td>
                         <td class="fw-medium">${po.vendor}</td>
                         <td>${dateDisplay}</td>
-                        <td><span class="text-muted"><i class="bi bi-clock me-1"></i> Waiting Goods</span></td>
+                        <td><span class="text-muted small"><i class="bi bi-clock me-1"></i> ${activityText}</span></td>
                         <td>${po.itemsCount} Items</td>
                         <td class="text-center">
-                            <span class="badge ${badgeClass} rounded-pill px-3">${po.status}</span>
+                            <span class="badge ${badgeClass} rounded-pill px-3 border">${statusText}</span>
                         </td>
                     </tr>
                 `;
@@ -303,19 +353,27 @@
             });
         }
 
-        function updateKPI(data) {
-            document.getElementById("count-all").innerText = data.length;
+        // Helper: Menghitung "X minutes ago"
+        function getTimeAgo(dateString) {
+            if(!dateString) return "-";
+            const date = new Date(dateString);
+            const now = new Date();
+            const seconds = Math.floor((now - date) / 1000);
             
-            // Hitung Hari Ini
-            let today = new Date().toISOString().slice(0,10); // YYYY-MM-DD (rough check)
-            let todayCount = data.filter(d => {
-                // Asumsi format date dari sheet bisa diparse
-                try { return new Date(d.date).toISOString().slice(0,10) === today; } 
-                catch(e) { return false; }
-            }).length;
-            document.getElementById("count-today").innerText = todayCount;
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + "y ago";
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + "m ago";
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + "d ago";
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + "h ago";
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + " min ago";
+            return "Just now";
         }
 
+        // --- FILTERING ---
         function filterTable() {
             let input = document.getElementById("searchInput").value.toLowerCase();
             let filtered = poListCache.filter(po => 
@@ -325,7 +383,7 @@
             renderDashboardTable(filtered);
         }
 
-        // --- NAVIGATION LOGIC ---
+        // --- NAVIGATION ---
         function showDashboard() {
             document.getElementById("view-dashboard").classList.remove("hidden");
             document.getElementById("view-create").classList.add("hidden");
@@ -333,7 +391,7 @@
             document.getElementById("btnBackList").classList.add("hidden");
             document.getElementById("pageTitle").innerText = "Purchase Orders";
             document.getElementById("breadcrumbActive").innerText = "List";
-            loadDashboardData(); // Refresh data saat kembali ke dashboard
+            loadDashboardData(); 
         }
 
         function showCreateForm() {
@@ -344,13 +402,12 @@
             document.getElementById("pageTitle").innerText = "New Quote";
             document.getElementById("breadcrumbActive").innerText = "New";
             
-            // Bersihkan form
             document.getElementById("vendorSelect").value = "";
             document.getElementById("tableBody").innerHTML = "";
-            addNewRow(); // Tambah 1 baris kosong
+            addNewRow(); 
         }
 
-        // --- FORM LOGIC (Diadaptasi dari kode lama Anda) ---
+        // --- FORM FUNCTIONS ---
         function populateVendors(data) {
             var select = document.getElementById("vendorSelect");
             select.innerHTML = '<option value="" disabled selected>-- Select Vendor --</option>';
@@ -363,7 +420,6 @@
 
         function onVendorChange() {
             var tbody = document.getElementById("tableBody");
-            // Cek jika ada data, beri warning (opsional, disederhanakan di sini langsung reset)
             tbody.innerHTML = ""; 
             addNewRow(); 
             document.getElementById("vendorWarning").style.display = "block";
@@ -372,10 +428,6 @@
 
         function addNewRow() {
             var vendor = document.getElementById("vendorSelect").value;
-            if(!vendor && Object.keys(allVendorData).length > 0) {
-                 // Izinkan tambah baris kosong dulu, tapi item dropdown kosong
-            }
-
             var tbody = document.getElementById("tableBody");
             var rowIdx = tbody.children.length + 1; 
 
@@ -398,7 +450,7 @@
                     <input type="number" class="form-control qty-input text-end" placeholder="0.00" min="0">
                 </td>
                 <td><input type="text" class="form-control bg-light unit-input" readonly tabindex="-1"></td>
-                <td><input type="text" class="form-control note-input" placeholder="e.g. Urgent"></td>
+                <td><input type="text" class="form-control note-input" placeholder="Note"></td>
                 <td class="text-center"><button class="btn btn-sm text-danger" onclick="this.closest('tr').remove()"><i class="bi bi-trash"></i></button></td>
             `;
             tbody.appendChild(tr);
@@ -413,12 +465,11 @@
             var duplicateCount = 0;
             allSelects.forEach(el => { if(el.value === idx && idx !== "") duplicateCount++; });
             if(duplicateCount > 1) {
-                Swal.fire("Duplicate", "Product already added. Please adjust Quantity instead.", "warning");
+                Swal.fire("Duplicate", "Product already added.", "warning");
                 selectElement.value = "";
                 return;
             }
 
-            // Update Unit
             if(allVendorData[vendor] && allVendorData[vendor][idx]){
                 selectElement.closest("tr").querySelector(".unit-input").value = allVendorData[vendor][idx].unit;
             }
@@ -441,7 +492,7 @@
                 var unit = row.querySelector(".unit-input").value;
                 var note = row.querySelector(".note-input").value;
 
-                if(itemIdx) { // Hanya proses baris yang ada itemnya
+                if(itemIdx) { 
                     if(!qty || qty <= 0) {
                         isValid = false;
                         row.classList.add("table-danger");
@@ -460,7 +511,6 @@
             if(itemsToSave.length === 0) return Swal.fire("Empty", "Please add at least one product.", "warning");
             if(!isValid) return Swal.fire("Invalid Qty", "Check highlighted rows.", "error");
 
-            // Loading State
             var btn = document.getElementById("btnSimpan");
             var originalText = btn.innerHTML;
             btn.disabled = true;
@@ -479,7 +529,7 @@
                         icon: 'success',
                         confirmButtonColor: '#00878b'
                     }).then(() => {
-                        showDashboard(); // Balik ke dashboard setelah simpan
+                        showDashboard(); 
                     });
                 } else {
                     throw new Error(res.message);
