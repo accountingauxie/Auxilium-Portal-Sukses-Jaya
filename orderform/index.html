@@ -462,7 +462,17 @@ function addRow() {
     recalcRow(tr);
   });
 
-  tr.querySelectorAll("input").forEach(i => i.addEventListener("input", () => { recalcRow(tr); recalcTotals(); }));
+  // MODIFIKASI: VALIDASI INPUT AGAR TIDAK BISA NEGATIF
+  tr.querySelectorAll("input").forEach(i => i.addEventListener("input", function() { 
+      // Cek apakah input ini adalah meter atau qty, jika nilainya < 0, kosongkan
+      if (this.classList.contains("meter-input") || this.classList.contains("qty-input")) {
+          if (parseFloat(this.value) < 0) {
+              this.value = ""; // Reset ke kosong jika negatif
+          }
+      }
+      recalcRow(tr); 
+      recalcTotals(); 
+  }));
 }
 
 function deleteRow(btn) { btn.closest("tr").remove(); recalcTotals(); }
