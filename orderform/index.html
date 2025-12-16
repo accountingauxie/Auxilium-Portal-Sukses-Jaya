@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Purchase Order - Xero Final Single Scroll</title>
+<title>Purchase Order - Xero Final Strict</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -404,16 +404,11 @@ function addRow() {
       searchEnabled: true, shouldSort: false, itemSelectText:"", placeholder: true, placeholderValue: "Select Item" 
   });
 
-  // =========================================================================
   // FIX UTAMA: MENGGUNAKAN POSITION FIXED JS AGAR DROPDOWN KELUAR DARI TABEL
-  // =========================================================================
   const fixDropdownPos = (event) => {
       const container = event.target.closest('.choices');
       const dropdown = container.querySelector('.choices__list--dropdown');
-      
       const rect = container.getBoundingClientRect();
-      
-      // Mengubah posisi menjadi Fixed (mengambang di atas segalanya)
       dropdown.style.position = 'fixed';
       dropdown.style.top = rect.bottom + 'px';
       dropdown.style.left = rect.left + 'px';
@@ -421,22 +416,17 @@ function addRow() {
       dropdown.style.zIndex = '999999';
   };
 
-  // Close dropdown saat scroll agar tidak melayang aneh
   const closeAllDropdowns = () => {
       document.querySelectorAll('.choices__list--dropdown').forEach(dropdown => {
           if (dropdown.style.position === 'fixed') {
               const container = dropdown.closest('.choices');
-              if (container && container.choices) {
-                 container.choices.hideDropdown();
-              }
+              if (container && container.choices) container.choices.hideDropdown();
           }
       });
   };
   window.addEventListener('scroll', closeAllDropdowns, true); 
-
   typeSel.addEventListener('showDropdown', fixDropdownPos);
   itemSel.addEventListener('showDropdown', fixDropdownPos);
-  // =========================================================================
 
   typeSel.addEventListener("change", () => {
     let list = [];
@@ -456,23 +446,44 @@ function addRow() {
     let price = 0, unit = "-", index = -1;
     if (type === "Spandek") { index = listSpandek.indexOf(item); if(index >= 0) { price = priceSpan[index]; unit = unitSpan[index]; } }
     else { index = listNonSpandek.indexOf(item); if(index >= 0) { price = priceNon[index]; unit = unitNon[index]; } }
-    
     tr.querySelector(".uprice-input").value = formatMoney(price);
     tr.querySelector(".unit-input").value = unit;
     recalcRow(tr);
   });
 
-  // MODIFIKASI: VALIDASI INPUT AGAR TIDAK BISA NEGATIF
-  tr.querySelectorAll("input").forEach(i => i.addEventListener("input", function() { 
-      // Cek apakah input ini adalah meter atau qty, jika nilainya < 0, kosongkan
-      if (this.classList.contains("meter-input") || this.classList.contains("qty-input")) {
-          if (parseFloat(this.value) < 0) {
-              this.value = ""; // Reset ke kosong jika negatif
+  // ==========================================================
+  // FIX UTAMA: BLOKIR INPUT NEGATIF (KEYDOWN & INPUT)
+  // ==========================================================
+  tr.querySelectorAll(".meter-input, .qty-input").forEach(inp => {
+      // 1. CEGAH tombol minus (-) ditekan di keyboard
+      inp.addEventListener("keydown", function(e) {
+          if (e.key === "-" || e.key === "Subtract" || e.keyCode === 189 || e.keyCode === 109) {
+              e.preventDefault();
           }
+      });
+
+      // 2. SANITASI jika user melakukan paste atau input lolos
+      inp.addEventListener("input", function() {
+          // Hapus karakter minus jika ada
+          if (this.value.includes("-")) {
+               this.value = this.value.replace(/-/g, "");
+          }
+          // Pastikan tidak ada angka negatif (double protection)
+          if (this.value !== "" && parseFloat(this.value) < 0) {
+               this.value = Math.abs(parseFloat(this.value));
+          }
+          
+          recalcRow(tr); 
+          recalcTotals(); 
+      });
+  });
+
+  // Validasi umum untuk input lain
+  tr.querySelectorAll("input").forEach(i => {
+      if(!i.classList.contains("meter-input") && !i.classList.contains("qty-input")) {
+          i.addEventListener("input", () => { recalcRow(tr); recalcTotals(); });
       }
-      recalcRow(tr); 
-      recalcTotals(); 
-  }));
+  });
 }
 
 function deleteRow(btn) { btn.closest("tr").remove(); recalcTotals(); }
