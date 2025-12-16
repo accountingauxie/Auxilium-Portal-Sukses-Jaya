@@ -79,7 +79,8 @@ h2 { margin: 0 0 18px; font-size: 20px; font-weight: 600; }
 
 .header-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  /* UPDATED: 4 Columns to accommodate Order Type */
+  grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: 20px;
   margin-bottom: 22px;
 }
@@ -276,6 +277,13 @@ textarea { height: 170px; }
       <div>
         <span class="field-label">Contact</span>
         <select id="customerSelect"></select>
+      </div>
+      <div>
+        <span class="field-label">Order Type</span>
+        <select id="orderType">
+            <option value="General Order">General Order</option>
+            <option value="Pre-Order">Pre-Order</option>
+        </select>
       </div>
       <div>
         <span class="field-label">Issue date</span>
@@ -677,6 +685,8 @@ document.querySelector(".approve-btn").addEventListener("click", checkAndSubmitO
 
 async function checkAndSubmitOrder() {
   const customer = document.getElementById("customerSelect").value;
+  const orderType = document.getElementById("orderType").value;
+
   if (!customer || customer === "add_new") { showToast("Pilih customer terlebih dahulu", "warning"); return; }
   
   const rows = document.querySelectorAll("#itemsBody tr");
@@ -685,11 +695,11 @@ async function checkAndSubmitOrder() {
   // 1. Cek Apakah Ada Stock Merah (OOS)
   const oosItems = document.querySelectorAll(".status-oos");
   
-  if (oosItems.length > 0) {
-    // JIKA ADA ITEM YANG KURANG STOK -> Munculkan Pop Up Konfirmasi
+  // Jika OOS > 0 DAN tipe ordernya General, munculkan warning.
+  // Jika Pre-Order, abaikan stok, langsung kirim.
+  if (oosItems.length > 0 && orderType !== "Pre-Order") {
     openStockModal();
   } else {
-    // JIKA AMAN -> Langsung Kirim
     executeSubmission();
   }
 }
@@ -708,6 +718,7 @@ async function executeSubmission() {
 
     try {
         const customer = document.getElementById("customerSelect").value;
+        const orderType = document.getElementById("orderType").value; // Capture Value
         const issueDate = document.getElementById("issueDate").value;
         const orderNumber = document.getElementById("orderNumber").value;
         const notes = document.getElementById("notes").value;
@@ -731,6 +742,7 @@ async function executeSubmission() {
 
         const payloadObj = {
             customer,
+            orderType, // Send to backend
             issueDate,
             orderNumber,
             notes,
