@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Purchase Order - Xero Final Dropdown Width Fix</title>
+<title>Purchase Order - Xero Final Single Scroll</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -94,6 +94,9 @@ table.xero-table td {
   background: #fff; height: 42px; position: relative;
 }
 
+/* CLASS MAGIC: Angkat layer cell saat dropdown aktif */
+.lift-layer { z-index: 500 !important; position: relative; }
+
 /* --- LOCKED COLUMNS (STICKY) --- */
 .col-drag, .drag-cell {
     position: sticky !important; left: 0; width: 40px !important; min-width: 40px !important;
@@ -111,6 +114,7 @@ th.col-drag { z-index: 35; border-bottom: 1px solid #ccc; background-color: var(
 }
 th.col-del { z-index: 35; border-bottom: 1px solid #ccc; background-color: var(--locked-bg); }
 
+/* Shadows */
 .col-drag::after, .drag-cell::after {
     content: ''; position: absolute; top: 0; right: -5px; bottom: 0; width: 5px;
     background: linear-gradient(to right, rgba(0,0,0,0.05), transparent); pointer-events: none;
@@ -141,18 +145,34 @@ table.xero-table input[readonly] { color: #666; cursor: default; }
   background-color: #fff !important; box-shadow: inset 0 0 0 1px var(--xero-blue) !important; 
 }
 
-/* Dropdown Box Style & Scroll Fix */
+/* =======================================================
+   FIX UTAMA: SCROLL DROPDOWN + POSITION FIXED STYLING
+   ======================================================= */
 .choices__list--dropdown { 
+    /* Style Visual */
     border: 1px solid var(--xero-blue) !important; 
     border-radius: 0 !important; 
     box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important; 
-    z-index: 100000 !important; 
+    z-index: 100000 !important; /* Paling Depan */
     background: #fff;
-    max-height: 250px !important; 
-    overflow-y: auto !important; 
-    /* Default position, will be overridden by JS */
-    position: absolute; 
+    
+    /* SCROLL FIX */
+    max-height: 250px !important; /* Tinggi Maksimum List */
+    overflow-y: auto !important; /* Aktifkan Scrollbar Vertikal */
+
+    /* Hapus Padding Bawaan Choices.js yang mungkin mengganggu scroll */
+    padding: 0 !important;
+    
+    /* Agar scrollbar Choices.js yang aneh hilang */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
 }
+
+/* Hide Choices.js scrollbar di Chrome/Safari */
+.choices__list--dropdown::-webkit-scrollbar {
+    display: none;
+}
+/* ======================================================= */
 
 .xero-table .choices__list--single { padding: 0; } 
 
@@ -392,7 +412,7 @@ function addRow() {
       dropdown.style.position = 'fixed';
       dropdown.style.top = rect.bottom + 'px';
       dropdown.style.left = rect.left + 'px';
-      // MENGAMBIL LEBAR ASLI DARI CONTAINER
+      // MENGAMBIL LEBAR ASLI DARI CONTAINER TD (SEHARUSNYA AKURAT)
       dropdown.style.width = rect.width + 'px'; 
       dropdown.style.zIndex = '999999';
   };
