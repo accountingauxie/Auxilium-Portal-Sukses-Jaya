@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Purchase Order - Xero Final Compact</title>
+<title>Purchase Order - Dropdown Front Fix</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -18,7 +18,7 @@
   --green-bg: #dcfce7; --green-text: #166534;
   --red-bg: #fee2e2; --red-text: #991b1b;
   --border-light: #e0e0e0;
-  --locked-bg: #f5f5f5;
+  --locked-bg: #f9fafb; /* Warna background kolom sticky */
 }
 
 * { box-sizing: border-box; }
@@ -36,6 +36,7 @@ body { background: var(--bg-color); }
   background: #fff; padding: 40px;
   border: 1px solid #d4d4d4; border-radius: 4px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+  /* Overflow visible agar dropdown bisa keluar dari kotak */
   overflow: visible; 
 }
 
@@ -66,10 +67,16 @@ input.detail-readonly {
 
 /* --- TABLE STYLING --- */
 .table-container { 
-    margin-bottom: 0; /* HAPUS MARGIN BESAR */
-    border: 1px solid #ccc; border-radius: 4px 4px 0 0; 
-    overflow-x: auto; width: 100%; position: relative; z-index: 5; background: #fff;
-    padding-bottom: 0; /* HAPUS PADDING BESAR - INI PENYEBABNYA */
+    margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px 4px 0 0; 
+    /* Scroll Horizontal */
+    overflow-x: auto; 
+    /* Pastikan overflow Y visible agar dropdown tdk terpotong */
+    overflow-y: visible;
+    width: 100%; position: relative; z-index: 5; background: #fff;
+    
+    /* Ruang ekstra di bawah untuk dropdown baris terakhir */
+    padding-bottom: 120px; 
+    margin-bottom: -120px; 
 }
 
 table.xero-table { 
@@ -89,10 +96,17 @@ table.xero-table td {
   background: #fff; height: 42px; position: relative;
 }
 
-/* Helper Class untuk angkat layer dropdown */
-.lift-layer { z-index: 500 !important; position: relative; }
+/* ================================================================= */
+/* MAGIC CLASS: DIGUNAKAN JS UNTUK ANGKAT LAYER SAAT DROPDOWN BUKA */
+/* ================================================================= */
+.lift-layer {
+    z-index: 9999 !important; /* Kalahkan semua elemen */
+    position: relative;
+}
 
 /* --- LOCKED COLUMNS (STICKY) --- */
+/* Z-Index kolom sticky adalah 30. Dropdown harus > 30 */
+
 .col-drag, .drag-cell {
     position: sticky !important; left: 0; width: 40px !important; min-width: 40px !important;
     z-index: 30; background-color: var(--locked-bg) !important;
@@ -109,6 +123,7 @@ th.col-drag { z-index: 35; border-bottom: 1px solid #ccc; background-color: var(
 }
 th.col-del { z-index: 35; border-bottom: 1px solid #ccc; background-color: var(--locked-bg); }
 
+/* Shadows */
 .col-drag::after, .drag-cell::after {
     content: ''; position: absolute; top: 0; right: -5px; bottom: 0; width: 5px;
     background: linear-gradient(to right, rgba(0,0,0,0.05), transparent); pointer-events: none;
@@ -128,7 +143,7 @@ table.xero-table input:focus {
 }
 table.xero-table input[readonly] { color: #666; cursor: default; }
 
-/* --- CHOICES JS --- */
+/* --- CHOICES JS FIXES --- */
 .xero-table .choices { margin: 0 !important; padding: 0 !important; height: 100%; width: 100%; overflow: visible; }
 .xero-table .choices__inner {
   border: none !important; background-color: transparent !important;
@@ -138,11 +153,13 @@ table.xero-table input[readonly] { color: #666; cursor: default; }
 .xero-table .is-open .choices__inner, .xero-table .is-focused .choices__inner, .xero-table .choices__inner:hover {
   background-color: #fff !important; box-shadow: inset 0 0 0 1px var(--xero-blue) !important; 
 }
+
+/* Dropdown Box Style */
 .xero-table .choices__list--dropdown { 
     width: 100% !important; left: 0 !important;
     border: 1px solid var(--xero-blue) !important; margin-top: 0 !important;
     border-radius: 0 !important; box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important; 
-    z-index: 9999 !important; 
+    z-index: 100000 !important; /* Pastikan ini sangat tinggi */
 }
 .xero-table .choices__list--single { padding: 0; } 
 
@@ -369,25 +386,21 @@ function addRow() {
       searchEnabled: true, shouldSort: false, itemSelectText:"", placeholder: true, placeholderValue: "Select Item" 
   });
 
-  // JS FIX: LIFT Z-INDEX PARENT TD SAAT DROPDOWN BUKA
+  // ============ MAGIC FIX: LIFT Z-INDEX ON OPEN ============
   const toggleLift = (el, isOpen) => {
       const td = el.closest('td');
-      const tr = el.closest('tr');
       if(td) {
-          if(isOpen) {
-              td.classList.add('lift-layer');
-              if(tr) tr.style.zIndex = '100'; 
-          } else {
-              td.classList.remove('lift-layer');
-              if(tr) tr.style.zIndex = '';
-          }
+          if(isOpen) td.classList.add('lift-layer');
+          else td.classList.remove('lift-layer');
       }
   };
 
+  // Terapkan ke Type DAN Item
   typeSel.addEventListener('showDropdown', (e) => toggleLift(e.target, true));
   typeSel.addEventListener('hideDropdown', (e) => toggleLift(e.target, false));
   itemSel.addEventListener('showDropdown', (e) => toggleLift(e.target, true));
   itemSel.addEventListener('hideDropdown', (e) => toggleLift(e.target, false));
+  // ==========================================================
 
   typeSel.addEventListener("change", () => {
     let list = [];
