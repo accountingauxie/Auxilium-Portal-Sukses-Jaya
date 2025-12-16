@@ -160,19 +160,26 @@ table.xero-table input[readonly] { color: #666; cursor: default; }
     max-height: 250px !important; 
     overflow-y: auto !important; 
     
-    /* HAPUS SCROLLBAR BAWAAN CHOICES.JS YANG MENGGANGGU */
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    /* HAPUS PADDING BAWAAN CHOICES.JS PADA LIST UL */
+    padding: 0 !important; 
     
-    /* Hapus Padding list item bawaan choices agar scroll tidak aneh */
-    padding: 0 !important;
+    /* HAPUS SCROLLBAR BAWAAN CHOICES.JS YANG MENGGANGGU */
+    -ms-overflow-style: none !important;  /* IE and Edge */
+    scrollbar-width: none !important;  /* Firefox */
 }
 
 /* Hapus Scrollbar Choices.js di Chrome/Safari */
 .choices__list--dropdown::-webkit-scrollbar {
-    display: none;
+    display: none !important;
     width: 0 !important;
     height: 0 !important;
+}
+
+/* Pastikan item list tidak memiliki padding yang mengganggu */
+.choices__list--dropdown .choices__item {
+    padding: 10px !important; /* Gunakan padding yang normal */
+    /* Hapus border bawaan choices yang mungkin muncul di antara item list */
+    border-bottom: none !important; 
 }
 /* ======================================================= */
 
@@ -410,6 +417,7 @@ function addRow() {
       
       const rect = container.getBoundingClientRect();
       
+      // Mengubah posisi menjadi Fixed (mengambang di atas segalanya)
       dropdown.style.position = 'fixed';
       dropdown.style.top = rect.bottom + 'px';
       dropdown.style.left = rect.left + 'px';
