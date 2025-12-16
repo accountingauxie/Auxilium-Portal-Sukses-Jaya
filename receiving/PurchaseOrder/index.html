@@ -13,19 +13,16 @@
         :root {
             --primary-bg: #f9fafb;
             --nav-bg: #1f2937;
-            --accent-color: #00878b; /* Warna Teal Odoo */
+            --accent-color: #00878b;
             --btn-create: #00878b;
         }
-
         body { background-color: var(--primary-bg); font-family: 'Inter', sans-serif; color: #374151; }
         
-        /* Navbar Styling */
+        /* Navbar */
         .navbar { background-color: var(--nav-bg) !important; padding: 0.75rem 1rem; }
         .navbar-brand { color: #fff !important; font-weight: 700; font-size: 1.25rem; }
-        .nav-link { color: #d1d5db !important; font-size: 0.9rem; margin-right: 15px; }
-        .nav-link:hover { color: #fff !important; }
         
-        /* Dashboard Cards */
+        /* Cards */
         .kpi-card {
             background: #fff; border-radius: 8px; border: 1px solid #e5e7eb;
             padding: 15px; transition: transform 0.2s;
@@ -34,29 +31,18 @@
         .kpi-value { font-size: 1.5rem; font-weight: 700; color: #111; }
         .kpi-label { font-size: 0.8rem; text-transform: uppercase; color: #6b7280; font-weight: 600; letter-spacing: 0.05em; }
 
-        /* Table Styling */
-        .table-custom { background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .table-custom th { background-color: #f3f4f6; color: #374151; font-weight: 600; border-bottom: 2px solid #e5e7eb; font-size: 0.85rem; text-transform: uppercase; }
-        .table-custom td { padding: 12px 15px; vertical-align: middle; border-bottom: 1px solid #f3f4f6; font-size: 0.95rem; }
-        .table-custom tr:hover td { background-color: #f9fafb; }
-        
-        /* Status Badges */
-        .badge-rfq { background-color: #e0f2fe; color: #0284c7; } /* Biru Muda */
+        /* Status Badges Colors */
+        .badge-rfq { background-color: #e0f2fe; color: #0284c7; } /* Biru */
         .badge-po { background-color: #dcfce7; color: #16a34a; } /* Hijau */
         .badge-waiting { background-color: #fef9c3; color: #854d0e; } /* Kuning */
         .badge-late { background-color: #fee2e2; color: #991b1b; } /* Merah */
 
-        /* Form Styling */
-        .form-section { background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e5e7eb; }
-        .form-label { font-weight: 600; font-size: 0.9rem; color: #374151; }
-        .form-control, .form-select { border-color: #d1d5db; border-radius: 6px; padding: 0.5rem 0.75rem; }
-        .form-control:focus, .form-select:focus { border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(0, 135, 139, 0.1); }
-        
         /* Utilities */
         .hidden { display: none !important; }
         .cursor-pointer { cursor: pointer; }
         .btn-create { background-color: var(--btn-create); color: white; border: none; }
         .btn-create:hover { background-color: #006b6e; color: white; }
+        .table-custom { background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
     </style>
 </head>
 <body>
@@ -65,7 +51,6 @@
         <div class="container-fluid px-4">
             <a class="navbar-brand" href="#"><i class="bi bi-grid-3x3-gap-fill me-2"></i>AUXILIUM PO</a>
             <div class="d-flex align-items-center">
-                <span class="text-white small me-3 d-none d-md-block">user@email.com</span>
                 <span id="connectionStatus" class="badge bg-secondary"><i class="bi bi-hourglass-split"></i> Connecting...</span>
             </div>
         </div>
@@ -109,7 +94,7 @@
                 </div>
                 <div class="col-md-3 col-6">
                     <div class="kpi-card">
-                        <div class="kpi-value text-primary" id="count-waiting">0</div>
+                        <div class="kpi-value text-warning" id="count-waiting">0</div>
                         <div class="kpi-label">Waiting Approval</div>
                     </div>
                 </div>
@@ -131,14 +116,14 @@
 
             <div class="table-custom">
                 <table class="table mb-0 table-hover">
-                    <thead>
+                    <thead class="bg-light">
                         <tr>
-                            <th style="width: 15%;">Reference</th>
-                            <th style="width: 25%;">Vendor</th>
-                            <th style="width: 15%;">Order Date</th>
-                            <th style="width: 15%;">Activity</th>
-                            <th style="width: 10%;">Items</th>
-                            <th style="width: 20%; text-align: center;">Status</th>
+                            <th>Reference</th>
+                            <th>Vendor</th>
+                            <th>Order Date</th>
+                            <th>Activity</th>
+                            <th>Items</th>
+                            <th class="text-center">Status</th>
                         </tr>
                     </thead>
                     <tbody id="poListBody">
@@ -149,67 +134,62 @@
         </div>
 
         <div id="view-create" class="hidden">
-            <div class="form-section">
-                <div class="row g-3 align-items-end mb-3">
+            <div class="card p-4 shadow-sm mb-4 border-0">
+                <div class="row g-3 align-items-end">
                     <div class="col-md-6">
-                        <label class="form-label">Vendor</label>
+                        <label class="form-label fw-bold">Vendor</label>
                         <select class="form-select" id="vendorSelect" onchange="onVendorChange()">
                             <option value="" disabled selected>-- Select Vendor --</option>
                         </select>
-                        <div class="form-text text-danger" id="vendorWarning" style="display:none;">
-                            <i class="bi bi-exclamation-circle"></i> Changing vendor will reset items.
-                        </div>
+                        <small class="text-danger hidden" id="vendorWarning">Changing vendor resets items!</small>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Order Date</label>
+                        <label class="form-label fw-bold">Order Date</label>
                         <input type="date" class="form-control" id="poDate">
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label d-block">&nbsp;</label>
-                        <button class="btn btn-create w-100" id="btnSimpan" onclick="submitPO()">
+                        <button class="btn btn-create w-100 py-2" id="btnSimpan" onclick="submitPO()">
                             <i class="bi bi-cloud-upload me-2"></i> CONFIRM PO
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div class="card border shadow-sm">
-                <div class="card-header bg-light fw-bold text-uppercase small text-muted">Products</div>
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light fw-bold small text-muted">PRODUCTS</div>
                 <div class="table-responsive">
-                    <table class="table table-bordered mb-0 align-middle" id="itemTable">
+                    <table class="table table-bordered mb-0 align-middle">
                         <thead class="bg-light">
                             <tr>
-                                <th style="width: 50px;" class="text-center">#</th>
+                                <th style="width:50px;">#</th>
                                 <th>Product</th>
-                                <th style="width: 120px;">Qty</th>
-                                <th style="width: 100px;">Unit</th>
+                                <th style="width:120px;">Qty</th>
+                                <th style="width:100px;">Unit</th>
                                 <th>Note</th>
-                                <th style="width: 50px;"></th>
+                                <th style="width:50px;"></th>
                             </tr>
                         </thead>
                         <tbody id="tableBody"></tbody>
                     </table>
                 </div>
-                <div class="p-3 bg-light">
+                <div class="p-3">
                     <button class="btn btn-link text-decoration-none fw-bold" onclick="addNewRow()">
-                        <i class="bi bi-plus-circle-fill me-1"></i> Add a product
+                        <i class="bi bi-plus-circle-fill me-1"></i> Add product
                     </button>
                 </div>
             </div>
         </div>
-
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // --- KONFIGURASI URL (PASTIKAN INI SAMA DENGAN WEB APP URL ANDA) ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbz5EBC3cujFBpkmwqfLGl5LIpotUOdYP2U9Pu0WoVsMOImV-y8aJ6WBEbE1iPReD8X_aQ/exec"; 
-        
-        // --- GLOBAL VARIABLES ---
+        // --- URL OTOMATIS (JANGAN DIUBAH) ---
+        // Kode ini akan otomatis mengambil URL script Anda sendiri
+        const API_URL = "https://script.google.com/macros/s/AKfycbx9Phjpbs8D_HNeIuj2apjDJPhB_PLNzjpohpimXo1FYtet4KzZ0I25vfCnwG8nQBi23w/exec"; 
+
         var allVendorData = {};
         var poListCache = [];
 
-        // --- INITIALIZATION ---
         window.onload = function() {
             setDefaultDate();
             loadInitialData();
@@ -221,11 +201,11 @@
             document.getElementById("poDate").value = jakartaDate;
         }
 
-        // --- DATA FETCHING ---
+        // --- FETCH DATA ---
         function loadInitialData() {
             document.getElementById("connectionStatus").className = "badge bg-warning text-dark";
             
-            // 1. Fetch Vendor Data (untuk Dropdown)
+            // 1. Ambil Data Vendor
             fetch(API_URL + "?action=getData")
             .then(res => res.json())
             .then(res => {
@@ -236,9 +216,9 @@
                     document.getElementById("connectionStatus").className = "badge bg-success";
                 }
             })
-            .catch(e => console.error("Vendor fetch error", e));
+            .catch(e => console.error("Error Vendor:", e));
 
-            // 2. Fetch Dashboard Data (List PO)
+            // 2. Ambil List PO
             loadDashboardData();
         }
 
@@ -253,23 +233,21 @@
                     poListCache = res.data;
                     renderDashboardTable(poListCache);
                     updateKPI(poListCache);
+                } else {
+                    throw new Error("Status not success");
                 }
             })
             .catch(e => {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Failed to load PO List. Check connection.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Failed to load PO List. <br> <button class="btn btn-sm btn-outline-danger mt-2" onclick="loadDashboardData()">Try Again</button></td></tr>';
             });
         }
 
-        // --- CORE: LOGIKA KPI & DASHBOARD ---
+        // --- KPI & RENDER TABLE ---
         function updateKPI(data) {
-            // 1. Total Orders
             document.getElementById("count-all").innerText = data.length;
             
-            // Setup Waktu Hari Ini
             let now = new Date();
-            let todayStr = now.toISOString().slice(0,10); // YYYY-MM-DD
-            
-            // Setup Batas Waktu Late (14 Hari lalu)
+            let todayStr = now.toISOString().slice(0,10); 
             let twoWeeksAgo = new Date();
             twoWeeksAgo.setDate(now.getDate() - 14);
 
@@ -278,30 +256,26 @@
             let lateCount = 0;
 
             data.forEach(po => {
-                // 2. Hitung Created Today (Bandingkan createdAt dengan hari ini)
+                // Today Check
                 let createdStr = "";
                 try {
-                    // createdAt diambil dari Script (kolom timestamp)
                     if(po.createdAt) createdStr = new Date(po.createdAt).toISOString().slice(0,10);
                 } catch(e) {}
-                
                 if (createdStr === todayStr) todayCount++;
 
-                // 3. Hitung Waiting Approval
+                // Waiting Check (String harus persis sama dengan di Google Script)
                 if (po.status === "Menunggu Persetujuan") waitingCount++;
 
-                // 4. Hitung Late (PO date < 14 hari lalu DAN Status belum selesai)
-                let poDateParts = po.date.split("/"); // Asumsi dd/MM/yyyy
+                // Late Check
+                let poDateParts = po.date.split("/"); 
                 if(poDateParts.length === 3) {
                     let poDateObj = new Date(poDateParts[2], poDateParts[1] - 1, poDateParts[0]);
-                    
                     if (poDateObj < twoWeeksAgo && po.status !== 'Billed' && po.status !== 'Selesai') {
                         lateCount++;
                     }
                 }
             });
 
-            // Update Angka di Kartu
             document.getElementById("count-today").innerText = todayCount;
             document.getElementById("count-waiting").innerText = waitingCount;
             document.getElementById("count-late").innerText = lateCount;
@@ -312,68 +286,49 @@
             tbody.innerHTML = "";
 
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">No Purchase Orders found. Click "NEW" to create one.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">No Purchase Orders found.</td></tr>';
                 return;
             }
 
             data.forEach(po => {
-                // Tampilan Tanggal
-                let dateDisplay = po.date; 
-
-                // Tampilan Status & Warna Badge
+                // Tentukan Warna Badge
                 let badgeClass = 'bg-secondary';
-                let statusText = po.status;
+                let status = po.status;
 
-                if (statusText === 'Purchase Order' || statusText === 'Approved') {
-                    badgeClass = 'badge-po'; 
-                } else if (statusText === 'Menunggu Persetujuan') {
-                    badgeClass = 'badge-waiting'; // Kuning
-                } else if (statusText === 'Billed' || statusText === 'Selesai') {
-                    badgeClass = 'badge-rfq'; // Biru
-                } else if (statusText === 'Late') {
-                    badgeClass = 'badge-late';
-                }
-
-                // Kolom Activity (Time Ago)
-                let activityText = getTimeAgo(po.createdAt);
+                if (status === 'Menunggu Persetujuan') badgeClass = 'badge-waiting';
+                else if (status === 'Purchase Order' || status === 'Approved') badgeClass = 'badge-po';
+                else if (status === 'Billed' || status === 'Selesai') badgeClass = 'badge-rfq';
+                else if (status === 'Late') badgeClass = 'badge-late';
 
                 let tr = `
                     <tr class="cursor-pointer">
                         <td class="fw-bold text-primary">${po.id}</td>
                         <td class="fw-medium">${po.vendor}</td>
-                        <td>${dateDisplay}</td>
-                        <td><span class="text-muted small"><i class="bi bi-clock me-1"></i> ${activityText}</span></td>
-                        <td>${po.itemsCount} Items</td>
-                        <td class="text-center">
-                            <span class="badge ${badgeClass} rounded-pill px-3 border">${statusText}</span>
-                        </td>
+                        <td>${po.date}</td>
+                        <td><small class="text-muted">${getTimeAgo(po.createdAt)}</small></td>
+                        <td>${po.itemsCount}</td>
+                        <td class="text-center"><span class="badge ${badgeClass} rounded-pill px-3 border">${status}</span></td>
                     </tr>
                 `;
                 tbody.innerHTML += tr;
             });
         }
 
-        // Helper: Menghitung "X minutes ago"
         function getTimeAgo(dateString) {
             if(!dateString) return "-";
             const date = new Date(dateString);
             const now = new Date();
             const seconds = Math.floor((now - date) / 1000);
             
-            let interval = seconds / 31536000;
-            if (interval > 1) return Math.floor(interval) + "y ago";
-            interval = seconds / 2592000;
-            if (interval > 1) return Math.floor(interval) + "m ago";
-            interval = seconds / 86400;
-            if (interval > 1) return Math.floor(interval) + "d ago";
-            interval = seconds / 3600;
-            if (interval > 1) return Math.floor(interval) + "h ago";
-            interval = seconds / 60;
-            if (interval > 1) return Math.floor(interval) + " min ago";
-            return "Just now";
+            if (seconds < 60) return "Just now";
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return minutes + "m ago";
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return hours + "h ago";
+            return Math.floor(hours / 24) + "d ago";
         }
 
-        // --- FILTERING ---
+        // --- FORM & INPUT LOGIC ---
         function filterTable() {
             let input = document.getElementById("searchInput").value.toLowerCase();
             let filtered = poListCache.filter(po => 
@@ -383,14 +338,12 @@
             renderDashboardTable(filtered);
         }
 
-        // --- NAVIGATION ---
         function showDashboard() {
             document.getElementById("view-dashboard").classList.remove("hidden");
             document.getElementById("view-create").classList.add("hidden");
             document.getElementById("btnShowCreate").classList.remove("hidden");
             document.getElementById("btnBackList").classList.add("hidden");
             document.getElementById("pageTitle").innerText = "Purchase Orders";
-            document.getElementById("breadcrumbActive").innerText = "List";
             loadDashboardData(); 
         }
 
@@ -400,14 +353,12 @@
             document.getElementById("btnShowCreate").classList.add("hidden");
             document.getElementById("btnBackList").classList.remove("hidden");
             document.getElementById("pageTitle").innerText = "New Quote";
-            document.getElementById("breadcrumbActive").innerText = "New";
             
             document.getElementById("vendorSelect").value = "";
             document.getElementById("tableBody").innerHTML = "";
             addNewRow(); 
         }
 
-        // --- FORM FUNCTIONS ---
         function populateVendors(data) {
             var select = document.getElementById("vendorSelect");
             select.innerHTML = '<option value="" disabled selected>-- Select Vendor --</option>';
@@ -419,11 +370,10 @@
         }
 
         function onVendorChange() {
-            var tbody = document.getElementById("tableBody");
-            tbody.innerHTML = ""; 
-            addNewRow(); 
-            document.getElementById("vendorWarning").style.display = "block";
-            setTimeout(() => document.getElementById("vendorWarning").style.display = "none", 3000);
+            document.getElementById("tableBody").innerHTML = ""; 
+            addNewRow();
+            document.getElementById("vendorWarning").classList.remove("hidden");
+            setTimeout(() => document.getElementById("vendorWarning").classList.add("hidden"), 3000);
         }
 
         function addNewRow() {
@@ -443,12 +393,8 @@
             var tr = document.createElement("tr");
             tr.innerHTML = `
                 <td class="text-center text-muted">${rowIdx}</td>
-                <td>
-                    <select class="form-select item-select" onchange="updateUnit(this)">${itemOptions}</select>
-                </td>
-                <td>
-                    <input type="number" class="form-control qty-input text-end" placeholder="0.00" min="0">
-                </td>
+                <td><select class="form-select item-select" onchange="updateUnit(this)">${itemOptions}</select></td>
+                <td><input type="number" class="form-control qty-input text-end" placeholder="0.00" min="0"></td>
                 <td><input type="text" class="form-control bg-light unit-input" readonly tabindex="-1"></td>
                 <td><input type="text" class="form-control note-input" placeholder="Note"></td>
                 <td class="text-center"><button class="btn btn-sm text-danger" onclick="this.closest('tr').remove()"><i class="bi bi-trash"></i></button></td>
@@ -460,16 +406,6 @@
             var vendor = document.getElementById("vendorSelect").value;
             var idx = selectElement.value;
             
-            // Cek Duplikat
-            var allSelects = document.querySelectorAll(".item-select");
-            var duplicateCount = 0;
-            allSelects.forEach(el => { if(el.value === idx && idx !== "") duplicateCount++; });
-            if(duplicateCount > 1) {
-                Swal.fire("Duplicate", "Product already added.", "warning");
-                selectElement.value = "";
-                return;
-            }
-
             if(allVendorData[vendor] && allVendorData[vendor][idx]){
                 selectElement.closest("tr").querySelector(".unit-input").value = allVendorData[vendor][idx].unit;
             }
@@ -483,8 +419,7 @@
             
             var rows = document.querySelectorAll("#tableBody tr");
             var itemsToSave = [];
-            var isValid = true;
-
+            
             rows.forEach((row) => {
                 var select = row.querySelector(".item-select");
                 var itemIdx = select.value;
@@ -492,24 +427,17 @@
                 var unit = row.querySelector(".unit-input").value;
                 var note = row.querySelector(".note-input").value;
 
-                if(itemIdx) { 
-                    if(!qty || qty <= 0) {
-                        isValid = false;
-                        row.classList.add("table-danger");
-                    } else {
-                        row.classList.remove("table-danger");
-                        itemsToSave.push({ 
-                            itemName: select.options[select.selectedIndex].text, 
-                            qty: qty, 
-                            unit: unit, 
-                            note: note 
-                        });
-                    }
+                if(itemIdx && qty > 0) { 
+                    itemsToSave.push({ 
+                        itemName: select.options[select.selectedIndex].text, 
+                        qty: qty, 
+                        unit: unit, 
+                        note: note 
+                    });
                 }
             });
 
-            if(itemsToSave.length === 0) return Swal.fire("Empty", "Please add at least one product.", "warning");
-            if(!isValid) return Swal.fire("Invalid Qty", "Check highlighted rows.", "error");
+            if(itemsToSave.length === 0) return Swal.fire("Invalid", "Please add at least one product with Quantity.", "warning");
 
             var btn = document.getElementById("btnSimpan");
             var originalText = btn.innerHTML;
@@ -523,14 +451,7 @@
             .then(res => res.json())
             .then(res => {
                 if(res.status === 'success') {
-                    Swal.fire({
-                        title: 'Saved!',
-                        text: 'PO Reference: ' + res.id,
-                        icon: 'success',
-                        confirmButtonColor: '#00878b'
-                    }).then(() => {
-                        showDashboard(); 
-                    });
+                    Swal.fire('Saved!', 'PO Reference: ' + res.id, 'success').then(() => showDashboard());
                 } else {
                     throw new Error(res.message);
                 }
