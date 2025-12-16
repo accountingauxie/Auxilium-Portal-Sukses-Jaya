@@ -185,7 +185,7 @@
     <script>
         // --- URL OTOMATIS (JANGAN DIUBAH) ---
         // Kode ini akan otomatis mengambil URL script Anda sendiri
-        const API_URL = "https://script.google.com/macros/s/AKfycbx9Phjpbs8D_HNeIuj2apjDJPhB_PLNzjpohpimXo1FYtet4KzZ0I25vfCnwG8nQBi23w/exec"; 
+        const API_URL = "<?!= ScriptApp.getService().getUrl() ?>"; 
 
         var allVendorData = {};
         var poListCache = [];
