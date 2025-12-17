@@ -246,7 +246,7 @@ input[type=number] { -moz-appearance: textfield; }
 
 <script>
 // REPLACE WITH YOUR SCRIPT URL
-const baseURL = "https://script.google.com/macros/s/AKfycbw4FAnag9aNkeDu2ZW8srB3YpDZSEfEuIYa9jTW_5PS1v4S8TIdVrMqL79LnqLQ1kbj-w/exec";
+const baseURL = "https://script.google.com/macros/s/AKfycbzUZkPSsWHLrzjkkzuUSCIKO2QqXdWljTwyaOwD3dP-FrX-Iat_FI-L_9QjVtuD8sFosw/exec";
 
 let customerData=[], listSpandek=[], listNonSpandek=[], priceSpan=[], priceNon=[], unitSpan=[], unitNon=[], stockSpan=[], stockNon=[];
 let choiceCustomer, choiceOrderType;
@@ -269,7 +269,6 @@ window.onload = async function () {
   document.getElementById("estDeliveryDate").value = today;
 
   await loadDropdowns();
-  // removed setOrderNumber() local logic
   for(let i=0; i<3; i++) addRow();
   new Sortable(document.getElementById("itemsBody"), { handle: ".drag-cell", animation: 150 });
   document.getElementById('customerSelect').addEventListener('change', function(e) { fillCustomerDetails(e.target.value); });
@@ -281,7 +280,7 @@ function fillCustomerDetails(name) {
     const a = document.getElementById('detailAddress');
     const k = document.getElementById('detailKec');
     const c = document.getElementById('detailCity');
-    const t = document.getElementById('termPayment'); // NEW
+    const t = document.getElementById('termPayment'); 
 
     if(!name || name === "add_new") { 
         p.value="-"; n.value="-"; a.value="-"; k.value="-"; c.value="-"; t.value="";
@@ -295,7 +294,7 @@ function fillCustomerDetails(name) {
         a.value = data.address||"-"; 
         k.value = data.kecamatan||"-"; 
         c.value = data.kota||"-"; 
-        t.value = data.top ? data.top + " Hari" : "-"; // Fill TOP
+        t.value = data.top ? data.top + " Hari" : "-"; 
     }
 }
 
@@ -431,7 +430,7 @@ function recalcTotals() {
 
 function openCustomerModal() { document.getElementById("modalAddCustomer").style.display="flex"; }
 function closeCustomerModal() { document.getElementById("modalAddCustomer").style.display="none"; }
-function openStockModal() { document.getElementById("modalStockWarning").style.display="flex"; }
+// Stock modal removed logic
 function closeStockModal() { document.getElementById("modalStockWarning").style.display="none"; }
 
 async function submitNewCustomer() {
@@ -464,30 +463,34 @@ async function submitNewCustomer() {
     document.getElementById("modalSpinner").style.display="none";
 }
 
+// LOGIKA KLIK TOMBOL SEND ORDER (STRICT)
 document.querySelector(".approve-btn").addEventListener("click", () => {
-    const cust = document.getElementById("customerSelect").value, type = document.getElementById("orderType").value;
-    if(!cust || cust==="add_new") return showToast("Select Customer", "error");
+    const cust = document.getElementById("customerSelect").value;
+    const type = document.getElementById("orderType").value;
     const oos = document.querySelectorAll(".status-oos").length > 0;
-    if(oos && type !== "Pre-Order") openStockModal(); else forceSubmitOrder();
+
+    if(!cust || cust==="add_new") return showToast("Select Customer", "error");
+
+    // VALIDASI: General Order TIDAK BOLEH ada OOS
+    if (type === "General Order" && oos) {
+        return showToast("General Order harus semua Ready Stock!", "error");
+    }
+
+    // Jika Pre-Order (bebas) atau General Order (aman), proses.
+    forceSubmitOrder();
 });
 
 function forceSubmitOrder() {
-    closeStockModal();
     const btn = document.querySelector(".approve-btn");
     btn.disabled=true; btn.textContent="Processing...";
     
-    // NOTE: Order Number tidak dikirim, server yang generate
     const payload = {
         customer: document.getElementById("customerSelect").value,
         orderType: document.getElementById("orderType").value,
         issueDate: document.getElementById("issueDate").value,
         estDelivery: document.getElementById("estDeliveryDate").value,
-        top: document.getElementById("termPayment").value,
-        // orderNumber: "", // Dikosongkan, biar server yang isi
+        top: document.getElementById("termPayment").value, 
         notes: document.getElementById("notes").value,
-        dpp: document.getElementById("dppDisplay").textContent,
-        ppn: document.getElementById("ppnDisplay").textContent,
-        grandTotal: document.getElementById("grandTotalDisplay").textContent,
         items: []
     };
     document.querySelectorAll("#itemsBody tr").forEach(tr => {
@@ -506,7 +509,6 @@ function forceSubmitOrder() {
     fetch(baseURL + "?action=submitorder&payload=" + encodeURIComponent(JSON.stringify(payload)))
     .then(res => res.text()).then(txt => {
         if(txt.startsWith("OK")) { 
-            // Ambil nomor order dari respon server "OK:GR251000001"
             const generatedOrderNum = txt.split(":")[1] || "";
             document.getElementById("orderNumber").value = generatedOrderNum;
             showToast("Order Sent! ID: " + generatedOrderNum, "success"); 
