@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Purchase Order - Final Fixed Logic</title>
+<title>Purchase Order - Final Middle Align</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -85,28 +85,36 @@ input.detail-readonly {
   background: transparent; border: none; border-bottom: 1px dashed #ccc; color: #555; width: 100%; padding: 5px 0;
 }
 
-/* --- TABLE STYLING --- */
+/* --- TABLE STYLING (UPDATED: VERTICAL ALIGN MIDDLE) --- */
 .table-container { 
     margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px 4px 0 0; 
     overflow-x: auto; width: 100%; position: relative; z-index: 5; background: #fff; padding-bottom: 0; 
 }
 table.xero-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1400px; }
+
 table.xero-table th {
   background: #f8f9fa; text-align: left; padding: 12px 10px; font-size: 12px; font-weight: 700; color: #333;
   border-bottom: 1px solid #ccc; border-right: 1px solid var(--border-light); white-space: nowrap; height: 40px;
+  vertical-align: middle; /* Header Middle */
 }
+
 table.xero-table th.col-price, table.xero-table th.col-disc, table.xero-table th.col-net,
 table.xero-table th.col-total, table.xero-table th.col-stock { text-align: right; }
+
 table.xero-table td {
-  padding: 0 !important; border-bottom: 1px solid var(--border-light); border-right: 1px solid var(--border-light); vertical-align: top;
+  padding: 0 !important; border-bottom: 1px solid var(--border-light); border-right: 1px solid var(--border-light); 
   background: #fff; height: 42px; position: relative;
+  
+  /* --- FIX: VERTICAL ALIGN MIDDLE --- */
+  vertical-align: middle !important; 
 }
+
 .uprice-input, .disc-input, .pqty-input, .total-input, .stock-display { text-align: right !important; }
 
 /* Sticky Cols */
-.col-drag, .drag-cell { position: sticky !important; left: 0; width: 40px !important; min-width: 40px !important; z-index: 30; background-color: var(--locked-bg) !important; border-right: 1px solid #ccc !important; text-align: center; vertical-align: middle !important; cursor: grab; color: #999; font-size: 14px; }
+.col-drag, .drag-cell { position: sticky !important; left: 0; width: 40px !important; min-width: 40px !important; z-index: 30; background-color: var(--locked-bg) !important; border-right: 1px solid #ccc !important; text-align: center; cursor: grab; color: #999; font-size: 14px; }
 th.col-drag { z-index: 35; border-bottom: 1px solid #ccc; background-color: var(--locked-bg); } 
-.col-del, td:last-child { position: sticky !important; right: 0; width: 45px !important; min-width: 45px !important; z-index: 30; background-color: var(--locked-bg) !important; border-left: 1px solid #ccc !important; border-right: none !important; text-align: center; vertical-align: middle !important; }
+.col-del, td:last-child { position: sticky !important; right: 0; width: 45px !important; min-width: 45px !important; z-index: 30; background-color: var(--locked-bg) !important; border-left: 1px solid #ccc !important; border-right: none !important; text-align: center; }
 th.col-del { z-index: 35; border-bottom: 1px solid #ccc; background-color: var(--locked-bg); }
 .col-drag::after, .drag-cell::after { content: ''; position: absolute; top: 0; right: -5px; bottom: 0; width: 5px; background: linear-gradient(to right, rgba(0,0,0,0.05), transparent); pointer-events: none; }
 .col-del::before, td:last-child::before { content: ''; position: absolute; top: 0; left: -5px; bottom: 0; width: 5px; background: linear-gradient(to left, rgba(0,0,0,0.05), transparent); pointer-events: none; }
@@ -152,7 +160,13 @@ input[type=number] { -moz-appearance: textfield; }
 
 .btn-primary { background-color: var(--xero-blue); color: white; border: none; padding: 12px 30px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; margin-top: 20px; }
 
-/* STATUS BADGE FIXED */
+/* STATUS BADGE FIXED MIDDLE */
+.status-container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 .status-badge { 
     padding: 4px 8px; 
     border-radius: 4px; 
@@ -160,10 +174,9 @@ input[type=number] { -moz-appearance: textfield; }
     font-weight: 700; 
     text-transform: uppercase; 
     display: inline-block; 
-    width: auto; /* Width Auto agar muat teks panjang */
+    width: auto; 
     min-width: 80%;
     text-align: center; 
-    margin-top: 12px; 
 }
 .status-ok { background: var(--green-bg); color: var(--green-text); }
 .status-oos { background: var(--red-bg); color: var(--red-text); }
@@ -213,7 +226,6 @@ input[type=number] { -moz-appearance: textfield; }
     <p style="color:#666; font-size:14px; margin-bottom:20px;">
       Apakah data sudah benar dan Anda yakin ingin mengirim order ini?
     </p>
-    
     <div class="modal-actions" style="justify-content: center; display: flex; gap: 10px;">
       <button class="btn-cancel" onclick="closeConfirmModal()">Batal</button>
       <button class="btn-ok" onclick="finalProcessOrder()">Ya, Kirim</button>
@@ -244,9 +256,7 @@ input[type=number] { -moz-appearance: textfield; }
           </select>
       </div>
       <div><span class="field-label">Tanggal</span><input type="date" id="issueDate" class="main-input"></div>
-      
       <div><span class="field-label">Est. Pengiriman</span><input type="date" id="estDeliveryDate" class="main-input"></div>
-      
       <div><span class="field-label">Jatuh Tempo (Due Date)</span><input type="text" id="termPayment" class="main-input" readonly placeholder="-"></div>
     </div>
 
@@ -305,7 +315,7 @@ const baseURL = "https://script.google.com/macros/s/AKfycbxO7lxcyNmQnJI2YBxeFaRM
 
 let customerData=[], listSpandek=[], listNonSpandek=[], priceSpan=[], priceNon=[], unitSpan=[], unitNon=[], stockSpan=[], stockNon=[];
 let choiceCustomer, choiceOrderType;
-let currentCustTOP = 0; // Menyimpan TOP Customer yg dipilih (dalam hari)
+let currentCustTOP = 0; 
 
 function showToast(msg, type="info") {
   const t = document.getElementById("toast"); t.textContent = msg;
@@ -324,14 +334,30 @@ window.onload = async function () {
   document.getElementById("issueDate").value = today;
   document.getElementById("estDeliveryDate").value = today;
 
-  // Event Listener: Jika Tanggal Berubah -> Hitung Ulang Due Date
   document.getElementById("issueDate").addEventListener("change", calculateDueDate);
 
   await loadDropdowns();
+  
+  // FIX: Panggil fetchNextOrderID agar nomor order muncul saat load
+  fetchNextOrderID();
+
   for(let i=0; i<3; i++) addRow();
   new Sortable(document.getElementById("itemsBody"), { handle: ".drag-cell", animation: 150 });
   document.getElementById('customerSelect').addEventListener('change', function(e) { fillCustomerDetails(e.target.value); });
 };
+
+// FUNCTION TO FETCH NEXT ORDER ID
+async function fetchNextOrderID() {
+    const titleEl = document.getElementById("xeroOrderTitle");
+    try {
+        titleEl.textContent = "Memuat..."; 
+        const res = await fetch(baseURL + "?action=getnextid");
+        const nextID = await res.text();
+        titleEl.textContent = "Order #" + nextID; 
+    } catch (e) {
+        titleEl.textContent = "Order #Error";
+    }
+}
 
 function fillCustomerDetails(name) {
     const p = document.getElementById('detailPerson');
@@ -355,13 +381,11 @@ function fillCustomerDetails(name) {
         k.value = data.kecamatan||"-"; 
         c.value = data.kota||"-"; 
         
-        // Simpan TOP (Hari) dan Hitung Tanggal
         currentCustTOP = parseInt(data.top) || 0;
         calculateDueDate();
     }
 }
 
-// FUNGSI BARU: HITUNG TANGGAL JATUH TEMPO (Due Date)
 function calculateDueDate() {
     const issueDateVal = document.getElementById("issueDate").value;
     const termInput = document.getElementById("termPayment");
@@ -371,15 +395,10 @@ function calculateDueDate() {
         return;
     }
 
-    // Parse Tanggal (YYYY-MM-DD)
     const parts = issueDateVal.split('-');
-    // Buat Date Object (Tahun, Bulan-1, Tanggal)
     const dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
-    
-    // Tambah Hari TOP
     dateObj.setDate(dateObj.getDate() + currentCustTOP);
     
-    // Format DD/MM/YYYY
     const dd = String(dateObj.getDate()).padStart(2, '0');
     const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
     const yyyy = dateObj.getFullYear();
@@ -502,7 +521,7 @@ function recalcRow(row) {
       statusCont.innerHTML = "";
       if(req > 0) {
           const badge = document.createElement("span");
-          // LOGIKA BADGE: TERSEDIA (HIJAU) / TIDAK TERSEDIA (MERAH)
+          // LOGIKA STATUS TEXT: TERSEDIA / TIDAK TERSEDIA
           if(stock >= req) {
               badge.className = "status-badge status-ok";
               badge.textContent = "Tersedia";
@@ -556,7 +575,6 @@ async function submitNewCustomer() {
     document.getElementById("modalSpinner").style.display="none";
 }
 
-// LOGIKA TOMBOL KIRIM (INDONESIA)
 document.querySelector(".approve-btn").addEventListener("click", () => {
     const cust = document.getElementById("customerSelect").value;
     const type = document.getElementById("orderType").value;
@@ -572,7 +590,6 @@ document.querySelector(".approve-btn").addEventListener("click", () => {
 });
 
 function openConfirmModal() {
-    // MODAL SIMPEL (LANGSUNG MUNCUL)
     document.getElementById("modalConfirmSubmit").style.display = "flex";
 }
 
@@ -594,7 +611,7 @@ function forceSubmitOrder() {
         orderType: document.getElementById("orderType").value,
         issueDate: document.getElementById("issueDate").value,
         estDelivery: document.getElementById("estDeliveryDate").value,
-        top: document.getElementById("termPayment").value, // Kirim Tanggal Jatuh Tempo
+        top: document.getElementById("termPayment").value, 
         notes: document.getElementById("notes").value,
         items: []
     };
@@ -617,7 +634,6 @@ function forceSubmitOrder() {
         if(txt.startsWith("OK")) { 
             const generatedOrderNum = txt.split(":")[1] || "";
             
-            // Update Header ala Xero
             const xeroTitle = document.getElementById("xeroOrderTitle");
             const xeroBadge = document.getElementById("xeroStatusBadge");
             xeroTitle.textContent = "Order #" + generatedOrderNum;
