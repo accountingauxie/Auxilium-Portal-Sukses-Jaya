@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Purchase Order - Xero Style Header</title>
+<title>Purchase Order - Final Fixed Logic</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -39,46 +39,27 @@ body { background: var(--bg-color); }
   overflow: visible; 
 }
 
-/* --- UPDATED HEADER STYLE (XERO LOOK) --- */
+/* --- HEADER --- */
 .top-header { 
     margin-bottom: 30px; 
     border-bottom: 1px solid #eee; 
     padding-bottom: 20px; 
     display: flex; 
-    justify-content: space-between; /* Kiri Brand, Kanan No Order */
+    justify-content: space-between; 
     align-items: flex-start;
 }
 .brand-section .brand-title { font-size: 20px; font-weight: 500; margin: 0; color: #666; }
 .brand-section .brand-subtitle { color: #999; font-size: 12px; }
 
-/* Area Kanan ala Xero */
-.xero-header-right {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-.xero-order-title {
-    font-size: 28px; /* Huruf Besar */
-    font-weight: 700;
-    color: #222;
-    margin: 0;
-}
-.xero-badge {
-    font-size: 12px;
-    font-weight: 700;
-    padding: 6px 12px;
-    border-radius: 15px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
+.xero-header-right { display: flex; align-items: center; gap: 15px; }
+.xero-order-title { font-size: 28px; font-weight: 700; color: #222; margin: 0; }
+.xero-badge { font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
 .badge-draft { background: #eee; color: #666; border: 1px solid #ccc; }
 .badge-sent { background: var(--green-bg); color: var(--green-text); border: 1px solid #bbf7d0; }
 
-
-/* --- UPDATED HEADER GRID (5 Columns now, No. Order removed) --- */
+/* HEADER GRID */
 .header-grid { 
     display: grid; 
-    /* Kolom dikurangi 1, sisa 5 kolom */
     grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
     gap: 15px; margin-bottom: 20px;
     position: relative; z-index: 200; 
@@ -171,7 +152,19 @@ input[type=number] { -moz-appearance: textfield; }
 
 .btn-primary { background-color: var(--xero-blue); color: white; border: none; padding: 12px 30px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; margin-top: 20px; }
 
-.status-badge { padding: 3px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; display: inline-block; width: 90%; text-align: center; margin-top: 12px; }
+/* STATUS BADGE FIXED */
+.status-badge { 
+    padding: 4px 8px; 
+    border-radius: 4px; 
+    font-size: 10px; 
+    font-weight: 700; 
+    text-transform: uppercase; 
+    display: inline-block; 
+    width: auto; /* Width Auto agar muat teks panjang */
+    min-width: 80%;
+    text-align: center; 
+    margin-top: 12px; 
+}
 .status-ok { background: var(--green-bg); color: var(--green-text); }
 .status-oos { background: var(--red-bg); color: var(--red-text); }
 .stock-display { text-align: right; line-height: 42px; padding-right: 10px; color: #555; }
@@ -214,31 +207,13 @@ input[type=number] { -moz-appearance: textfield; }
   </div>
 </div>
 
-<div id="modalStockWarning" class="modal-overlay">
-  <div class="modal-box" style="width: 400px;">
-    <h3 style="color:var(--red-text)">⚠️ Stok Tidak Cukup</h3>
-    <p>Beberapa barang melebihi stok yang tersedia.<br>Proses sebagai Pre-Order?</p>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeStockModal()">Batalkan</button>
-      <button class="btn-ok" onclick="forceSubmitOrder()">Ya, Pre-Order</button>
-    </div>
-  </div>
-</div>
-
 <div id="modalConfirmSubmit" class="modal-overlay">
   <div class="modal-box" style="width: 450px; text-align:center;">
     <h3 style="margin-top:0; color:var(--xero-blue);">Konfirmasi Pesanan</h3>
     <p style="color:#666; font-size:14px; margin-bottom:20px;">
-      Apakah Anda yakin ingin mengirim order ini?<br>
-      Nomor Order yang akan dibuat adalah:
+      Apakah data sudah benar dan Anda yakin ingin mengirim order ini?
     </p>
     
-    <div style="background:#f0f7fc; padding:15px; border-radius:4px; border:1px dashed var(--xero-blue); margin-bottom:25px;">
-      <span id="previewOrderNumber" style="font-size:24px; font-weight:700; color:var(--xero-blue); letter-spacing:1px;">
-        Memuat...
-      </span>
-    </div>
-
     <div class="modal-actions" style="justify-content: center; display: flex; gap: 10px;">
       <button class="btn-cancel" onclick="closeConfirmModal()">Batal</button>
       <button class="btn-ok" onclick="finalProcessOrder()">Ya, Kirim</button>
@@ -269,9 +244,11 @@ input[type=number] { -moz-appearance: textfield; }
           </select>
       </div>
       <div><span class="field-label">Tanggal</span><input type="date" id="issueDate" class="main-input"></div>
+      
       <div><span class="field-label">Est. Pengiriman</span><input type="date" id="estDeliveryDate" class="main-input"></div>
-      <div><span class="field-label">Termin Pembayaran</span><input type="text" id="termPayment" class="main-input" readonly placeholder="Otomatis"></div>
-      </div>
+      
+      <div><span class="field-label">Jatuh Tempo (Due Date)</span><input type="text" id="termPayment" class="main-input" readonly placeholder="-"></div>
+    </div>
 
     <div class="detail-grid">
         <div><span class="field-label">Kontak Person</span><input type="text" id="detailPerson" class="detail-readonly" readonly placeholder="-"></div>
@@ -323,10 +300,12 @@ input[type=number] { -moz-appearance: textfield; }
 </div>
 
 <script>
+// REPLACE WITH YOUR SCRIPT URL
 const baseURL = "https://script.google.com/macros/s/AKfycbxO7lxcyNmQnJI2YBxeFaRM_X8vkWHoKTIBq45It0eDo7syzfmrrz3v2d1TzHRFoJDPYw/exec";
 
 let customerData=[], listSpandek=[], listNonSpandek=[], priceSpan=[], priceNon=[], unitSpan=[], unitNon=[], stockSpan=[], stockNon=[];
 let choiceCustomer, choiceOrderType;
+let currentCustTOP = 0; // Menyimpan TOP Customer yg dipilih (dalam hari)
 
 function showToast(msg, type="info") {
   const t = document.getElementById("toast"); t.textContent = msg;
@@ -337,7 +316,6 @@ function showToast(msg, type="info") {
 function formatMoney(n) { return (Number(n)||0).toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2}); }
 function parseMoney(s) { return parseFloat((s||"").replace(/,/g,"")) || 0; }
 
-// --- SAAT HALAMAN DIMUAT ---
 window.onload = async function () {
   choiceCustomer = new Choices("#customerSelect", { searchEnabled: true, shouldSort: false, placeholder: true, placeholderValue: "Pilih Pelanggan", itemSelectText:"" });
   choiceOrderType = new Choices("#orderType", { searchEnabled: false, shouldSort: false, itemSelectText:"" });
@@ -346,37 +324,14 @@ window.onload = async function () {
   document.getElementById("issueDate").value = today;
   document.getElementById("estDeliveryDate").value = today;
 
-  // 1. Load Data Dropdown
-  await loadDropdowns();
-  
-  // 2. Fetch Nomor Order Antrian (Agar muncul di Header)
-  fetchNextOrderID();
+  // Event Listener: Jika Tanggal Berubah -> Hitung Ulang Due Date
+  document.getElementById("issueDate").addEventListener("change", calculateDueDate);
 
+  await loadDropdowns();
   for(let i=0; i<3; i++) addRow();
   new Sortable(document.getElementById("itemsBody"), { handle: ".drag-cell", animation: 150 });
   document.getElementById('customerSelect').addEventListener('change', function(e) { fillCustomerDetails(e.target.value); });
 };
-
-// --- FUNGSI BARU: AMBIL NOMOR ANTRIAN ---
-async function fetchNextOrderID() {
-    const titleEl = document.getElementById("xeroOrderTitle");
-    try {
-        titleEl.textContent = "Loading..."; // Feedback user
-        const res = await fetch(baseURL + "?action=getnextid");
-        const nextID = await res.text();
-        
-        // Tampilkan Nomor Order + DRAFT
-        titleEl.textContent = "Order #" + nextID; 
-    } catch (e) {
-        titleEl.textContent = "Order #Error";
-        showToast("Gagal mengambil nomor antrian", "error");
-    }
-}
-
-// ... (Sisa fungsi lain: fillCustomerDetails, loadDropdowns, addRow, dll TETAP SAMA) ...
-// ... (Hanya ganti bagian window.onload dan tambah fetchNextOrderID di atas) ...
-
-// ... (Pastikan copy paste sisa kode di bawah ini agar lengkap) ...
 
 function fillCustomerDetails(name) {
     const p = document.getElementById('detailPerson');
@@ -384,10 +339,11 @@ function fillCustomerDetails(name) {
     const a = document.getElementById('detailAddress');
     const k = document.getElementById('detailKec');
     const c = document.getElementById('detailCity');
-    const t = document.getElementById('termPayment'); 
-
+    
     if(!name || name === "add_new") { 
-        p.value="-"; n.value="-"; a.value="-"; k.value="-"; c.value="-"; t.value="";
+        p.value="-"; n.value="-"; a.value="-"; k.value="-"; c.value="-"; 
+        currentCustTOP = 0;
+        calculateDueDate();
         if(name === "add_new") openCustomerModal(); 
         return; 
     }
@@ -398,8 +354,37 @@ function fillCustomerDetails(name) {
         a.value = data.address||"-"; 
         k.value = data.kecamatan||"-"; 
         c.value = data.kota||"-"; 
-        t.value = data.top ? data.top + " Hari" : "-"; 
+        
+        // Simpan TOP (Hari) dan Hitung Tanggal
+        currentCustTOP = parseInt(data.top) || 0;
+        calculateDueDate();
     }
+}
+
+// FUNGSI BARU: HITUNG TANGGAL JATUH TEMPO (Due Date)
+function calculateDueDate() {
+    const issueDateVal = document.getElementById("issueDate").value;
+    const termInput = document.getElementById("termPayment");
+    
+    if (!issueDateVal) {
+        termInput.value = "-";
+        return;
+    }
+
+    // Parse Tanggal (YYYY-MM-DD)
+    const parts = issueDateVal.split('-');
+    // Buat Date Object (Tahun, Bulan-1, Tanggal)
+    const dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+    
+    // Tambah Hari TOP
+    dateObj.setDate(dateObj.getDate() + currentCustTOP);
+    
+    // Format DD/MM/YYYY
+    const dd = String(dateObj.getDate()).padStart(2, '0');
+    const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const yyyy = dateObj.getFullYear();
+    
+    termInput.value = `${dd}/${mm}/${yyyy}`;
 }
 
 async function loadDropdowns() {
@@ -517,8 +502,14 @@ function recalcRow(row) {
       statusCont.innerHTML = "";
       if(req > 0) {
           const badge = document.createElement("span");
-          badge.className = "status-badge " + (stock>=req ? "status-ok" : "status-oos");
-          badge.textContent = stock>=req ? "OK" : "HABIS";
+          // LOGIKA BADGE: TERSEDIA (HIJAU) / TIDAK TERSEDIA (MERAH)
+          if(stock >= req) {
+              badge.className = "status-badge status-ok";
+              badge.textContent = "Tersedia";
+          } else {
+              badge.className = "status-badge status-oos";
+              badge.textContent = "Tidak Tersedia";
+          }
           statusCont.appendChild(badge);
       }
   }
@@ -534,7 +525,6 @@ function recalcTotals() {
 
 function openCustomerModal() { document.getElementById("modalAddCustomer").style.display="flex"; }
 function closeCustomerModal() { document.getElementById("modalAddCustomer").style.display="none"; }
-function closeStockModal() { document.getElementById("modalStockWarning").style.display="none"; }
 
 async function submitNewCustomer() {
     const data = {
@@ -566,6 +556,7 @@ async function submitNewCustomer() {
     document.getElementById("modalSpinner").style.display="none";
 }
 
+// LOGIKA TOMBOL KIRIM (INDONESIA)
 document.querySelector(".approve-btn").addEventListener("click", () => {
     const cust = document.getElementById("customerSelect").value;
     const type = document.getElementById("orderType").value;
@@ -573,30 +564,16 @@ document.querySelector(".approve-btn").addEventListener("click", () => {
 
     if(!cust || cust==="add_new") return showToast("Pilih Pelanggan Dulu", "error");
 
-    // VALIDASI: General Order TIDAK BOLEH ada OOS
     if (type === "General Order" && oos) {
-        return showToast("General Order harus semua Ready Stock!", "error");
+        return showToast("General Order harus semua Tersedia!", "error");
     }
 
     openConfirmModal();
 });
 
-async function openConfirmModal() {
-    const modal = document.getElementById("modalConfirmSubmit");
-    const previewText = document.getElementById("previewOrderNumber");
-    
-    modal.style.display = "flex";
-    previewText.textContent = "Memuat...";
-
-    try {
-        const res = await fetch(baseURL + "?action=getnextid");
-        const nextID = await res.text();
-        // Preview Nomor di Modal
-        previewText.textContent = nextID;
-    } catch (e) {
-        previewText.textContent = "Gagal mengambil ID";
-        showToast("Gagal mengambil nomor antrian", "error");
-    }
+function openConfirmModal() {
+    // MODAL SIMPEL (LANGSUNG MUNCUL)
+    document.getElementById("modalConfirmSubmit").style.display = "flex";
 }
 
 function closeConfirmModal() {
@@ -609,7 +586,6 @@ function finalProcessOrder() {
 }
 
 function forceSubmitOrder() {
-    closeStockModal();
     const btn = document.querySelector(".approve-btn");
     btn.disabled=true; btn.textContent="Memproses...";
     
@@ -618,7 +594,7 @@ function forceSubmitOrder() {
         orderType: document.getElementById("orderType").value,
         issueDate: document.getElementById("issueDate").value,
         estDelivery: document.getElementById("estDeliveryDate").value,
-        top: document.getElementById("termPayment").value, 
+        top: document.getElementById("termPayment").value, // Kirim Tanggal Jatuh Tempo
         notes: document.getElementById("notes").value,
         items: []
     };
@@ -641,10 +617,9 @@ function forceSubmitOrder() {
         if(txt.startsWith("OK")) { 
             const generatedOrderNum = txt.split(":")[1] || "";
             
-            // --- UPDATE TAMPILAN HEADER ALA XERO ---
+            // Update Header ala Xero
             const xeroTitle = document.getElementById("xeroOrderTitle");
             const xeroBadge = document.getElementById("xeroStatusBadge");
-            
             xeroTitle.textContent = "Order #" + generatedOrderNum;
             xeroBadge.textContent = "TERKIRIM";
             xeroBadge.classList.remove("badge-draft");
@@ -652,14 +627,12 @@ function forceSubmitOrder() {
 
             showToast("Berhasil! No. Order: " + generatedOrderNum, "success"); 
             btn.textContent="Terkirim";
-
-            // Opsional: Reload setelah beberapa detik
             setTimeout(()=>location.reload(), 3000); 
 
         } else { throw new Error(txt); }
     }).catch(e => { showToast("Gagal: " + e.message, "error"); btn.disabled=false; btn.textContent="Kirim Pesanan"; });
 }
 </script>
-  
+
 </body>
 </html>
