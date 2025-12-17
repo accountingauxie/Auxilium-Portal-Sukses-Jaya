@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Purchase Order - Final Compact Notes</title>
+<title>Purchase Order - Xero Style Header</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -39,14 +39,47 @@ body { background: var(--bg-color); }
   overflow: visible; 
 }
 
-/* --- HEADER --- */
-.top-header { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
-.brand-title { font-size: 24px; font-weight: 500; margin: 0; color: #333; }
+/* --- UPDATED HEADER STYLE (XERO LOOK) --- */
+.top-header { 
+    margin-bottom: 30px; 
+    border-bottom: 1px solid #eee; 
+    padding-bottom: 20px; 
+    display: flex; 
+    justify-content: space-between; /* Kiri Brand, Kanan No Order */
+    align-items: flex-start;
+}
+.brand-section .brand-title { font-size: 20px; font-weight: 500; margin: 0; color: #666; }
+.brand-section .brand-subtitle { color: #999; font-size: 12px; }
 
-/* HEADER GRID */
+/* Area Kanan ala Xero */
+.xero-header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.xero-order-title {
+    font-size: 28px; /* Huruf Besar */
+    font-weight: 700;
+    color: #222;
+    margin: 0;
+}
+.xero-badge {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.badge-draft { background: #eee; color: #666; border: 1px solid #ccc; }
+.badge-sent { background: var(--green-bg); color: var(--green-text); border: 1px solid #bbf7d0; }
+
+
+/* --- UPDATED HEADER GRID (5 Columns now, No. Order removed) --- */
 .header-grid { 
     display: grid; 
-    grid-template-columns: 2fr 1fr 1fr 1fr 0.8fr 1.2fr;
+    /* Kolom dikurangi 1, sisa 5 kolom */
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
     gap: 15px; margin-bottom: 20px;
     position: relative; z-index: 200; 
 }
@@ -129,12 +162,11 @@ input[type=number] { -moz-appearance: textfield; }
 
 .footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 20px; position: relative; z-index: 1; align-items: start; }
 
-/* === NEW SUMMARY STYLING === */
+/* SUMMARY STYLING */
 .summary-box { width: 100%; max-width: 350px; margin-left: auto; }
 .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 14px; color: #333; }
 .summary-row .label { font-weight: 400; color: #222; }
 .summary-row .value { font-weight: 500; text-align: right; }
-/* Garis pemisah khusus sebelum Total */
 .grand-total-row { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #999; margin-top: 10px; padding-top: 15px; font-size: 18px; font-weight: 700; color: #000; }
 
 .btn-primary { background-color: var(--xero-blue); color: white; border: none; padding: 12px 30px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; margin-top: 20px; }
@@ -217,8 +249,14 @@ input[type=number] { -moz-appearance: textfield; }
 <div class="page-wrap">
   <div class="invoice-card">
     <div class="top-header">
-      <h1 class="brand-title">Pesanan Baru (New Order)</h1>
-      <span style="color:#888;">AUXILIUM Accounting Services</span>
+      <div class="brand-section">
+          <h1 class="brand-title">Pesanan Penjualan</h1>
+          <span class="brand-subtitle">AUXILIUM Accounting Services</span>
+      </div>
+      <div class="xero-header-right">
+          <h1 id="xeroOrderTitle" class="xero-order-title">Pesanan Baru</h1>
+          <span id="xeroStatusBadge" class="xero-badge badge-draft">Draft</span>
+      </div>
     </div>
 
     <div class="header-grid">
@@ -233,8 +271,7 @@ input[type=number] { -moz-appearance: textfield; }
       <div><span class="field-label">Tanggal</span><input type="date" id="issueDate" class="main-input"></div>
       <div><span class="field-label">Est. Pengiriman</span><input type="date" id="estDeliveryDate" class="main-input"></div>
       <div><span class="field-label">Termin Pembayaran</span><input type="text" id="termPayment" class="main-input" readonly placeholder="Otomatis"></div>
-      <div><span class="field-label">No. Order</span><input type="text" id="orderNumber" class="main-input" value="Otomatis" readonly style="background:#f9f9f9; color:#888; font-style:italic;"></div>
-    </div>
+      </div>
 
     <div class="detail-grid">
         <div><span class="field-label">Kontak Person</span><input type="text" id="detailPerson" class="detail-readonly" readonly placeholder="-"></div>
@@ -274,22 +311,10 @@ input[type=number] { -moz-appearance: textfield; }
       
       <div style="text-align: right;">
         <div class="summary-box">
-            <div class="summary-row">
-                <span class="label">DPP</span>
-                <span class="value" id="dppDisplay">0.00</span>
-            </div>
-            
-            <div class="summary-row">
-                <span class="label">PPN (11%)</span>
-                <span class="value" id="ppnDisplay">0.00</span>
-            </div>
-            
-            <div class="grand-total-row">
-                <span>Total</span>
-                <span id="grandTotalDisplay">0.00</span>
-            </div>
+            <div class="summary-row"><span class="label">DPP</span><span class="value" id="dppDisplay">0.00</span></div>
+            <div class="summary-row"><span class="label">PPN (11%)</span><span class="value" id="ppnDisplay">0.00</span></div>
+            <div class="grand-total-row"><span>Total</span><span id="grandTotalDisplay">0.00</span></div>
         </div>
-        
         <button class="btn-primary approve-btn" type="button">Kirim Pesanan</button>
       </div>
 
@@ -299,7 +324,7 @@ input[type=number] { -moz-appearance: textfield; }
 
 <script>
 // REPLACE WITH YOUR SCRIPT URL
-const baseURL = "https://script.google.com/macros/s/AKfycbzUZkPSsWHLrzjkkzuUSCIKO2QqXdWljTwyaOwD3dP-FrX-Iat_FI-L_9QjVtuD8sFosw/exec";
+const baseURL = "https://script.google.com/macros/s/AKfycbwxjvXC4_3Px0kK06qOjTra5WXhp-a_fFoyDB79VAhb54f_apvKZdy9St_58dc38ORJPQ/exec";
 
 let customerData=[], listSpandek=[], listNonSpandek=[], priceSpan=[], priceNon=[], unitSpan=[], unitNon=[], stockSpan=[], stockNon=[];
 let choiceCustomer, choiceOrderType;
@@ -541,6 +566,7 @@ async function openConfirmModal() {
     try {
         const res = await fetch(baseURL + "?action=getnextid");
         const nextID = await res.text();
+        // Preview Nomor di Modal
         previewText.textContent = nextID;
     } catch (e) {
         previewText.textContent = "Gagal mengambil ID";
@@ -589,9 +615,22 @@ function forceSubmitOrder() {
     .then(res => res.text()).then(txt => {
         if(txt.startsWith("OK")) { 
             const generatedOrderNum = txt.split(":")[1] || "";
-            document.getElementById("orderNumber").value = generatedOrderNum;
+            
+            // --- UPDATE TAMPILAN HEADER ALA XERO ---
+            const xeroTitle = document.getElementById("xeroOrderTitle");
+            const xeroBadge = document.getElementById("xeroStatusBadge");
+            
+            xeroTitle.textContent = "Order #" + generatedOrderNum;
+            xeroBadge.textContent = "TERKIRIM";
+            xeroBadge.classList.remove("badge-draft");
+            xeroBadge.classList.add("badge-sent");
+
             showToast("Berhasil! No. Order: " + generatedOrderNum, "success"); 
-            setTimeout(()=>location.reload(), 2000); 
+            btn.textContent="Terkirim";
+
+            // Opsional: Reload setelah beberapa detik
+            setTimeout(()=>location.reload(), 3000); 
+
         } else { throw new Error(txt); }
     }).catch(e => { showToast("Gagal: " + e.message, "error"); btn.disabled=false; btn.textContent="Kirim Pesanan"; });
 }
