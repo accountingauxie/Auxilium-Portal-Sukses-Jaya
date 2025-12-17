@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Purchase Order - Bahasa Indonesia</title>
+<title>Purchase Order - Final Style</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -128,10 +128,41 @@ input[type=number] { -moz-appearance: textfield; }
 .add-row-btn:hover { background-color: #f0f7fc; }
 
 .footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 20px; position: relative; z-index: 1;}
-.summary-row { display: flex; justify-content: flex-end; gap: 30px; padding: 8px 0; font-size: 14px; }
-.summary-row .label { color: #666; font-weight: 500; }
-.summary-row .value { color: #222; font-weight: 600; min-width: 120px; text-align: right; }
-.grand-total { font-size: 20px; font-weight: 700; margin-top: 15px; padding-top: 15px; border-top: 2px solid #ddd; color: var(--text-color); }
+
+/* === NEW SUMMARY STYLING === */
+.summary-box {
+    width: 100%;
+    max-width: 350px; /* Batasi lebar agar rapi ke kanan */
+    margin-left: auto; /* Push ke kanan */
+}
+.summary-row {
+    display: flex;
+    justify-content: space-between; /* Label Kiri, Nilai Kanan */
+    align-items: center;
+    padding: 6px 0;
+    font-size: 14px;
+    color: #333;
+}
+.summary-row .label {
+    font-weight: 400;
+    color: #222;
+}
+.summary-row .value {
+    font-weight: 500;
+    text-align: right;
+}
+/* Garis pemisah khusus sebelum Total */
+.grand-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #999; /* Garis abu-abu tegas */
+    margin-top: 10px;
+    padding-top: 15px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #000;
+}
 
 .btn-primary { background-color: var(--xero-blue); color: white; border: none; padding: 12px 30px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; margin-top: 20px; }
 
@@ -267,19 +298,35 @@ input[type=number] { -moz-appearance: textfield; }
 
     <div class="footer-grid">
       <div><span class="field-label">Catatan (Notes)</span><textarea id="notes" class="main-input" style="height:200px; resize:vertical;"></textarea></div>
+      
       <div style="text-align: right;">
-        <div class="summary-row"><span class="label">Subtotal (DPP)</span><span class="value" id="dppDisplay">0.00</span></div>
-        <div class="summary-row"><span class="label">PPN (11%)</span><span class="value" id="ppnDisplay">0.00</span></div>
-        <div class="summary-row grand-total"><span class="label">TOTAL</span><span class="value" id="grandTotalDisplay">0.00</span></div>
+        <div class="summary-box">
+            <div class="summary-row">
+                <span class="label">DPP</span>
+                <span class="value" id="dppDisplay">0.00</span>
+            </div>
+            
+            <div class="summary-row">
+                <span class="label">PPN (11%)</span>
+                <span class="value" id="ppnDisplay">0.00</span>
+            </div>
+            
+            <div class="grand-total-row">
+                <span>Total</span>
+                <span id="grandTotalDisplay">0.00</span>
+            </div>
+        </div>
+        
         <button class="btn-primary approve-btn" type="button">Kirim Pesanan</button>
       </div>
+
     </div>
   </div>
 </div>
 
 <script>
 // REPLACE WITH YOUR SCRIPT URL
-const baseURL = "https://script.google.com/macros/s/AKfycbzUZkPSsWHLrzjkkzuUSCIKO2QqXdWljTwyaOwD3dP-FrX-Iat_FI-L_9QjVtuD8sFosw/exec";
+const baseURL = "https://script.google.com/macros/s/AKfycbziCHr18tSbheMZ9rPIv8sfvZxK-lHzN8SxeOOHRFlKJP8VkNAYdMwOrklHzWeaDciyFg/exec";
 
 let customerData=[], listSpandek=[], listNonSpandek=[], priceSpan=[], priceNon=[], unitSpan=[], unitNon=[], stockSpan=[], stockNon=[];
 let choiceCustomer, choiceOrderType;
@@ -290,11 +337,6 @@ function showToast(msg, type="info") {
   t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2500);
 }
 
-function formatMoney(n) { return (Number(n)||0).toLocaleString("id-ID", {minimumFractionDigits:2, maximumFractionDigits:2}); }
-function parseMoney(s) { return parseFloat((s||"").replace(/\./g,"").replace(/,/g,".")) || 0; }
-// Override formatMoney for US Style if prefered, but header asks for Indo. 
-// Assuming database uses standard number. Let's revert to US format for calculation safety but display logic.
-// REVERT TO US FORMAT FOR SAFETY (Backend expects standard numbers)
 function formatMoney(n) { return (Number(n)||0).toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2}); }
 function parseMoney(s) { return parseFloat((s||"").replace(/,/g,"")) || 0; }
 
