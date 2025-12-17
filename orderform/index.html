@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Purchase Order - Xero Final NPWP</title>
+<title>Purchase Order - Centralized</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -43,8 +43,11 @@ body { background: var(--bg-color); }
 .top-header { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
 .brand-title { font-size: 24px; font-weight: 500; margin: 0; color: #333; }
 
+/* UPDATED HEADER GRID: 6 COLUMNS (Added TOP) */
 .header-grid { 
-    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;
+    display: grid; 
+    grid-template-columns: 2fr 1fr 1fr 1fr 0.8fr 1.2fr; /* Adjusted widths */
+    gap: 15px; margin-bottom: 20px;
     position: relative; z-index: 200; 
 }
 .field-label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 700; color: #444; }
@@ -55,10 +58,8 @@ input.main-input {
 }
 input.main-input:focus { border-color: var(--xero-blue); outline: none; }
 
-/* UPDATED DETAIL GRID (5 COLUMNS FOR NPWP) */
 .detail-grid {
   display: grid; 
-  /* CP, NPWP, Address, Kec, Kota */
   grid-template-columns: 1.2fr 1.2fr 2fr 1fr 1fr; 
   gap: 15px; padding: 15px;
   background: #fbfbfb; border: 1px solid #e5e5e5; margin-bottom: 25px; border-radius: 3px;
@@ -71,72 +72,38 @@ input.detail-readonly {
 
 /* --- TABLE STYLING --- */
 .table-container { 
-    margin-bottom: 15px; 
-    border: 1px solid #ccc; 
-    border-radius: 4px 4px 0 0; 
-    overflow-x: auto; 
-    width: 100%; 
-    position: relative; 
-    z-index: 5; 
-    background: #fff;
-    padding-bottom: 0; 
+    margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px 4px 0 0; 
+    overflow-x: auto; width: 100%; position: relative; z-index: 5; background: #fff; padding-bottom: 0; 
 }
-
-table.xero-table { 
-    width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1400px; 
-}
-
+table.xero-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1400px; }
 table.xero-table th {
-  background: #f8f9fa; text-align: left; padding: 12px 10px;
-  font-size: 12px; font-weight: 700; color: #333;
-  border-bottom: 1px solid #ccc; border-right: 1px solid var(--border-light);
-  white-space: nowrap; height: 40px;
+  background: #f8f9fa; text-align: left; padding: 12px 10px; font-size: 12px; font-weight: 700; color: #333;
+  border-bottom: 1px solid #ccc; border-right: 1px solid var(--border-light); white-space: nowrap; height: 40px;
 }
-
 table.xero-table th.col-price, table.xero-table th.col-disc, table.xero-table th.col-net,
 table.xero-table th.col-total, table.xero-table th.col-stock { text-align: right; }
-
 table.xero-table td {
-  padding: 0 !important; border-bottom: 1px solid var(--border-light); 
-  border-right: 1px solid var(--border-light); vertical-align: top;
+  padding: 0 !important; border-bottom: 1px solid var(--border-light); border-right: 1px solid var(--border-light); vertical-align: top;
   background: #fff; height: 42px; position: relative;
 }
-
 .uprice-input, .disc-input, .pqty-input, .total-input, .stock-display { text-align: right !important; }
 
-/* --- LOCKED COLUMNS (STICKY) --- */
-.col-drag, .drag-cell {
-    position: sticky !important; left: 0; width: 40px !important; min-width: 40px !important;
-    z-index: 30; background-color: var(--locked-bg) !important;
-    border-right: 1px solid #ccc !important; text-align: center;
-    vertical-align: middle !important; cursor: grab; color: #999; font-size: 14px;
-}
+/* Sticky Cols */
+.col-drag, .drag-cell { position: sticky !important; left: 0; width: 40px !important; min-width: 40px !important; z-index: 30; background-color: var(--locked-bg) !important; border-right: 1px solid #ccc !important; text-align: center; vertical-align: middle !important; cursor: grab; color: #999; font-size: 14px; }
 th.col-drag { z-index: 35; border-bottom: 1px solid #ccc; background-color: var(--locked-bg); } 
-
-.col-del, td:last-child {
-    position: sticky !important; right: 0; width: 45px !important; min-width: 45px !important;
-    z-index: 30; background-color: var(--locked-bg) !important;
-    border-left: 1px solid #ccc !important; border-right: none !important;
-    text-align: center; vertical-align: middle !important;
-}
+.col-del, td:last-child { position: sticky !important; right: 0; width: 45px !important; min-width: 45px !important; z-index: 30; background-color: var(--locked-bg) !important; border-left: 1px solid #ccc !important; border-right: none !important; text-align: center; vertical-align: middle !important; }
 th.col-del { z-index: 35; border-bottom: 1px solid #ccc; background-color: var(--locked-bg); }
-
-/* Shadows */
 .col-drag::after, .drag-cell::after { content: ''; position: absolute; top: 0; right: -5px; bottom: 0; width: 5px; background: linear-gradient(to right, rgba(0,0,0,0.05), transparent); pointer-events: none; }
 .col-del::before, td:last-child::before { content: ''; position: absolute; top: 0; left: -5px; bottom: 0; width: 5px; background: linear-gradient(to left, rgba(0,0,0,0.05), transparent); pointer-events: none; }
 
-/* INPUT STYLING */
-table.xero-table input {
-  width: 100%; height: 100%; padding: 0 10px; border: none !important;
-  background: transparent; font-size: 13px; color: #333; display: block;
-}
+/* INPUTS */
+table.xero-table input { width: 100%; height: 100%; padding: 0 10px; border: none !important; background: transparent; font-size: 13px; color: #333; display: block; }
 table.xero-table input:focus { background: #fff; outline: none; box-shadow: inset 0 0 0 1px var(--xero-blue) !important; }
 table.xero-table input[readonly] { color: #666; cursor: default; }
-
 input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 input[type=number] { -moz-appearance: textfield; }
 
-/* --- CHOICES JS FIXES --- */
+/* CHOICES JS */
 .xero-table .choices { margin: 0 !important; padding: 0 !important; height: 100%; width: 100%; overflow: visible; }
 .xero-table .choices__inner { border: none !important; background-color: transparent !important; border-radius: 0 !important; min-height: 100% !important; height: 100% !important; display: flex !important; align-items: center !important; padding: 0 10px !important; margin: 0 !important; }
 .xero-table .is-open .choices__inner, .xero-table .is-focused .choices__inner, .xero-table .choices__inner:hover { background-color: #fff !important; box-shadow: inset 0 0 0 1px var(--xero-blue) !important; }
@@ -144,8 +111,6 @@ input[type=number] { -moz-appearance: textfield; }
 .choices__list--dropdown::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
 .xero-table .choices__list--single { padding: 0; } 
 .choices__list--dropdown .choices__item { padding: 10px !important; border-bottom: none !important; }
-
-/* Header Dropdown */
 .header-grid .choices__inner, .header-grid input.main-input, .header-grid select { background-color: #fff !important; border: 1px solid #ccc !important; border-radius: 3px !important; min-height: 38px !important; height: 38px !important; display: flex; align-items: center; }
 .header-grid .is-focused .choices__inner { border-color: var(--xero-blue) !important; }
 
@@ -165,14 +130,11 @@ input[type=number] { -moz-appearance: textfield; }
 .summary-row .label { color: #666; font-weight: 500; }
 .summary-row .value { color: #222; font-weight: 600; min-width: 120px; text-align: right; }
 .grand-total { font-size: 20px; font-weight: 700; margin-top: 15px; padding-top: 15px; border-top: 2px solid #ddd; color: var(--text-color); }
-
 .btn-primary { background-color: var(--xero-blue); color: white; border: none; padding: 12px 30px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; margin-top: 20px; }
 .status-badge { padding: 3px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; display: inline-block; width: 90%; text-align: center; margin-top: 12px; }
 .status-ok { background: var(--green-bg); color: var(--green-text); }
 .status-oos { background: var(--red-bg); color: var(--red-text); }
 .stock-display { text-align: right; line-height: 42px; padding-right: 10px; color: #555; }
-
-/* Modals */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 99999; }
 .modal-box { background: #fff; padding: 30px; width: 600px; border-radius: 6px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); } 
 .modal-actions { margin-top: 25px; text-align: right; }
@@ -182,7 +144,6 @@ input[type=number] { -moz-appearance: textfield; }
 @keyframes spin { to {transform: rotate(360deg);} }
 .toast { position: fixed; bottom: 30px; right: 30px; padding: 15px 25px; background: #333; color: white; border-radius: 5px; opacity: 0; transform: translateY(20px); transition: 0.3s; z-index: 100000; }
 .toast.show { opacity: 1; transform: translateY(0); }
-
 .cust-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
 .cust-full-width { grid-column: span 2; }
 </style>
@@ -195,42 +156,15 @@ input[type=number] { -moz-appearance: textfield; }
 <div id="modalAddCustomer" class="modal-overlay">
   <div class="modal-box">
     <h3 style="margin-top:0; border-bottom:1px solid #eee; padding-bottom:10px;">Tambah Customer Baru</h3>
-    
     <div class="cust-form-grid">
-        <div class="cust-full-width">
-            <span class="field-label">Nama Perusahaan / Customer</span>
-            <input id="ncName" type="text" class="main-input" placeholder="Nama Lengkap">
-        </div>
-        
-        <div>
-            <span class="field-label">Contact Person</span>
-            <input id="ncPerson" type="text" class="main-input" placeholder="Nama CP">
-        </div>
-        <div>
-            <span class="field-label">NIK / NPWP</span>
-            <input id="ncNPWP" type="text" class="main-input" placeholder="Nomor Identitas">
-        </div>
-
-        <div class="cust-full-width">
-            <span class="field-label">Alamat Lengkap</span>
-            <input id="ncAddress" type="text" class="main-input" placeholder="Jalan, No, RT/RW">
-        </div>
-
-        <div>
-            <span class="field-label">Kecamatan</span>
-            <input id="ncKec" type="text" class="main-input">
-        </div>
-        <div>
-            <span class="field-label">Kota / Kab</span>
-            <input id="ncCity" type="text" class="main-input">
-        </div>
-
-        <div class="cust-full-width">
-            <span class="field-label">Term of Payment (Hari)</span>
-            <input id="ncTOP" type="number" class="main-input" placeholder="Contoh: 30">
-        </div>
+        <div class="cust-full-width"><span class="field-label">Nama Perusahaan / Customer</span><input id="ncName" type="text" class="main-input" placeholder="Nama Lengkap"></div>
+        <div><span class="field-label">Contact Person</span><input id="ncPerson" type="text" class="main-input" placeholder="Nama CP"></div>
+        <div><span class="field-label">NIK / NPWP</span><input id="ncNPWP" type="text" class="main-input" placeholder="Nomor Identitas"></div>
+        <div class="cust-full-width"><span class="field-label">Alamat Lengkap</span><input id="ncAddress" type="text" class="main-input" placeholder="Jalan, No, RT/RW"></div>
+        <div><span class="field-label">Kecamatan</span><input id="ncKec" type="text" class="main-input"></div>
+        <div><span class="field-label">Kota / Kab</span><input id="ncCity" type="text" class="main-input"></div>
+        <div class="cust-full-width"><span class="field-label">Term of Payment (Hari)</span><input id="ncTOP" type="number" class="main-input" placeholder="Contoh: 30"></div>
     </div>
-
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeCustomerModal()">Cancel</button>
       <button class="btn-ok" onclick="submitNewCustomer()">Save Customer <span id="modalSpinner" class="spinner" style="display:none"></span></button>
@@ -251,7 +185,6 @@ input[type=number] { -moz-appearance: textfield; }
 
 <div class="page-wrap">
   <div class="invoice-card">
-    
     <div class="top-header">
       <h1 class="brand-title">New Order</h1>
       <span style="color:#888;">AUXILIUM Accounting Services</span>
@@ -262,7 +195,8 @@ input[type=number] { -moz-appearance: textfield; }
       <div><span class="field-label">Order Type</span><select id="orderType"><option value="General Order" selected>General Order</option><option value="Pre-Order">Pre-Order</option></select></div>
       <div><span class="field-label">Date</span><input type="date" id="issueDate" class="main-input"></div>
       <div><span class="field-label">Est. Delivery</span><input type="date" id="estDeliveryDate" class="main-input"></div>
-      <div><span class="field-label">Order #</span><input type="text" id="orderNumber" class="main-input" readonly></div>
+      <div><span class="field-label">Term of Payment</span><input type="text" id="termPayment" class="main-input" readonly placeholder="Auto"></div>
+      <div><span class="field-label">Order #</span><input type="text" id="orderNumber" class="main-input" value="Auto-Generated" readonly style="background:#f9f9f9; color:#888; font-style:italic;"></div>
     </div>
 
     <div class="detail-grid">
@@ -307,12 +241,12 @@ input[type=number] { -moz-appearance: textfield; }
         <button class="btn-primary approve-btn" type="button">Send Order</button>
       </div>
     </div>
-
   </div>
 </div>
 
 <script>
-const baseURL = "https://script.google.com/macros/s/AKfycbziCHr18tSbheMZ9rPIv8sfvZxK-lHzN8SxeOOHRFlKJP8VkNAYdMwOrklHzWeaDciyFg/exec";
+// REPLACE WITH YOUR SCRIPT URL
+const baseURL = "https://script.google.com/macros/s/AKfycbwWmTgCYlLSxeqlDinYIjEqDa77E33QRhNfJ99tehJpnGthlaffGvGP7GAUnLx3a0Py7Q/exec";
 
 let customerData=[], listSpandek=[], listNonSpandek=[], priceSpan=[], priceNon=[], unitSpan=[], unitNon=[], stockSpan=[], stockNon=[];
 let choiceCustomer, choiceOrderType;
@@ -323,13 +257,7 @@ function showToast(msg, type="info") {
   t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2500);
 }
 
-// FORMAT MONEY STRICT 2 DECIMAL PLACES
-function formatMoney(n) { 
-    return (Number(n)||0).toLocaleString("en-US", {
-        minimumFractionDigits:2, 
-        maximumFractionDigits:2
-    }); 
-}
+function formatMoney(n) { return (Number(n)||0).toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2}); }
 function parseMoney(s) { return parseFloat((s||"").replace(/,/g,"")) || 0; }
 
 window.onload = async function () {
@@ -341,41 +269,34 @@ window.onload = async function () {
   document.getElementById("estDeliveryDate").value = today;
 
   await loadDropdowns();
-  setOrderNumber();
+  // removed setOrderNumber() local logic
   for(let i=0; i<3; i++) addRow();
   new Sortable(document.getElementById("itemsBody"), { handle: ".drag-cell", animation: 150 });
-  
   document.getElementById('customerSelect').addEventListener('change', function(e) { fillCustomerDetails(e.target.value); });
 };
 
-// UPDATED: Fill NPWP
 function fillCustomerDetails(name) {
     const p = document.getElementById('detailPerson');
-    const n = document.getElementById('detailNPWP'); // BARU
+    const n = document.getElementById('detailNPWP');
     const a = document.getElementById('detailAddress');
     const k = document.getElementById('detailKec');
     const c = document.getElementById('detailCity');
+    const t = document.getElementById('termPayment'); // NEW
 
     if(!name || name === "add_new") { 
-        p.value="-"; n.value="-"; a.value="-"; k.value="-"; c.value="-"; 
+        p.value="-"; n.value="-"; a.value="-"; k.value="-"; c.value="-"; t.value="";
         if(name === "add_new") openCustomerModal(); 
         return; 
     }
     const data = customerData.find(x => x.name === name);
     if(data) { 
         p.value = data.person||"-"; 
-        n.value = data.npwp||"-"; // Isi NPWP
+        n.value = data.npwp||"-"; 
         a.value = data.address||"-"; 
         k.value = data.kecamatan||"-"; 
         c.value = data.kota||"-"; 
+        t.value = data.top ? data.top + " Hari" : "-"; // Fill TOP
     }
-}
-
-function setOrderNumber() {
-    let last = localStorage.getItem("LAST_ORDER_NUM") || "1000000";
-    let next = parseInt(last) + 1;
-    localStorage.setItem("LAST_ORDER_NUM", next);
-    document.getElementById("orderNumber").value = next;
 }
 
 async function loadDropdowns() {
@@ -413,49 +334,25 @@ function addRow() {
   `;
   document.getElementById("itemsBody").appendChild(tr);
 
-  const typeSel = tr.querySelector(".type-select");
-  const itemSel = tr.querySelector(".item-select");
-  const meterInp = tr.querySelector(".meter-input");
+  const typeSel = tr.querySelector(".type-select"), itemSel = tr.querySelector(".item-select"), meterInp = tr.querySelector(".meter-input");
   
-  const choiceType = new Choices(typeSel, { 
-      searchEnabled: false, shouldSort: false, itemSelectText:"", placeholder: true, placeholderValue: "Type",
-      choices: [ { value: 'Spandek', label: 'Spandek' }, { value: 'Non Spandek', label: 'Non Spandek' } ]
-  });
-  
-  const choiceItem = new Choices(itemSel, { 
-      searchEnabled: true, shouldSort: false, itemSelectText:"", placeholder: true, placeholderValue: "Select Item" 
-  });
+  const choiceType = new Choices(typeSel, { searchEnabled: false, shouldSort: false, itemSelectText:"", placeholder: true, placeholderValue: "Type", choices: [ { value: 'Spandek', label: 'Spandek' }, { value: 'Non Spandek', label: 'Non Spandek' } ] });
+  const choiceItem = new Choices(itemSel, { searchEnabled: true, shouldSort: false, itemSelectText:"", placeholder: true, placeholderValue: "Select Item" });
 
   const fixDropdownPos = (event) => {
       const container = event.target.closest('.choices');
       const dropdown = container.querySelector('.choices__list--dropdown');
       const rect = container.getBoundingClientRect();
-      dropdown.style.position = 'fixed';
-      dropdown.style.top = rect.bottom + 'px';
-      dropdown.style.left = rect.left + 'px';
-      dropdown.style.width = rect.width + 'px'; 
-      dropdown.style.zIndex = '999999';
+      dropdown.style.position = 'fixed'; dropdown.style.top = rect.bottom + 'px'; dropdown.style.left = rect.left + 'px'; dropdown.style.width = rect.width + 'px'; dropdown.style.zIndex = '999999';
   };
-
-  const closeAllDropdowns = () => {
-      document.querySelectorAll('.choices__list--dropdown').forEach(dropdown => {
-          if (dropdown.style.position === 'fixed') {
-              const container = dropdown.closest('.choices');
-              if (container && container.choices) container.choices.hideDropdown();
-          }
-      });
-  };
+  const closeAllDropdowns = () => { document.querySelectorAll('.choices__list--dropdown').forEach(d => { if(d.style.position==='fixed') d.closest('.choices').choices.hideDropdown(); }); };
   window.addEventListener('scroll', closeAllDropdowns, true); 
-  typeSel.addEventListener('showDropdown', fixDropdownPos);
-  itemSel.addEventListener('showDropdown', fixDropdownPos);
+  typeSel.addEventListener('showDropdown', fixDropdownPos); itemSel.addEventListener('showDropdown', fixDropdownPos);
 
   typeSel.addEventListener("change", () => {
     let list = [];
-    if (typeSel.value === "Spandek") {
-        list = listSpandek; meterInp.disabled=false; meterInp.style.background="transparent";
-    } else {
-        list = listNonSpandek; meterInp.disabled=true; meterInp.style.background="#f9f9f9"; meterInp.value="";
-    }
+    if (typeSel.value === "Spandek") { list = listSpandek; meterInp.disabled=false; meterInp.style.background="transparent"; } 
+    else { list = listNonSpandek; meterInp.disabled=true; meterInp.style.background="#f9f9f9"; meterInp.value=""; }
     choiceItem.clearChoices();
     choiceItem.setChoices(list.map(n => ({ value: n, label: n })), "value", "label", true);
     tr.querySelector(".unit-input").value = ""; tr.querySelector(".uprice-input").value = "";
@@ -473,9 +370,7 @@ function addRow() {
   });
 
   tr.querySelectorAll(".meter-input, .qty-input").forEach(inp => {
-      inp.addEventListener("keydown", function(e) {
-          if (e.key === "-" || e.key === "Subtract" || e.keyCode === 189 || e.keyCode === 109) { e.preventDefault(); }
-      });
+      inp.addEventListener("keydown", function(e) { if (e.key === "-" || e.key === "Subtract" || e.keyCode === 189 || e.keyCode === 109) { e.preventDefault(); } });
       inp.addEventListener("input", function() {
           if (this.value.includes("-")) { this.value = this.value.replace(/-/g, ""); }
           if (this.value !== "" && parseFloat(this.value) < 0) { this.value = Math.abs(parseFloat(this.value)); }
@@ -483,34 +378,21 @@ function addRow() {
       });
   });
 
-  const discInput = tr.querySelector(".disc-input");
-  discInput.addEventListener("blur", function() {
-      this.value = formatMoney(parseMoney(this.value));
-  });
-
-  tr.querySelectorAll("input").forEach(i => {
-      if(!i.classList.contains("meter-input") && !i.classList.contains("qty-input")) {
-          i.addEventListener("input", () => { recalcRow(tr); recalcTotals(); });
-      }
-  });
+  tr.querySelector(".disc-input").addEventListener("blur", function() { this.value = formatMoney(parseMoney(this.value)); });
+  tr.querySelectorAll("input").forEach(i => { if(!i.classList.contains("meter-input") && !i.classList.contains("qty-input")) { i.addEventListener("input", () => { recalcRow(tr); recalcTotals(); }); } });
 }
 
 function deleteRow(btn) { btn.closest("tr").remove(); recalcTotals(); }
 
 function recalcRow(row) {
-  const type = row.querySelector(".type-select").value;
-  const item = row.querySelector(".item-select").value;
+  const type = row.querySelector(".type-select").value, item = row.querySelector(".item-select").value;
   let meter = parseFloat(row.querySelector(".meter-input").value) || 0;
   if (type === "Non Spandek") meter = 1;
-
   const qty = parseFloat(row.querySelector(".qty-input").value) || 0;
   const unitPrice = parseMoney(row.querySelector(".uprice-input").value);
   let disc = parseMoney(row.querySelector(".disc-input").value);
   
-  if(unitPrice > 0 && disc > unitPrice) {
-      disc = unitPrice;
-      row.querySelector(".disc-input").value = formatMoney(unitPrice);
-  }
+  if(unitPrice > 0 && disc > unitPrice) { disc = unitPrice; row.querySelector(".disc-input").value = formatMoney(unitPrice); }
 
   const netPrice = (unitPrice - disc);
   const priceQty = netPrice * meter; 
@@ -528,7 +410,6 @@ function recalcRow(row) {
   
   if(item) {
       stockDisp.textContent = (Number(stock)||0).toLocaleString("en-US", {maximumFractionDigits:2});
-      
       let req = (type==="Spandek") ? (meter*qty) : qty;
       statusCont.innerHTML = "";
       if(req > 0) {
@@ -563,37 +444,23 @@ async function submitNewCustomer() {
         kota: document.getElementById("ncCity").value,
         top: document.getElementById("ncTOP").value
     };
-
     if(!data.name) return showToast("Nama Customer Wajib Diisi", "error");
 
     document.getElementById("modalSpinner").style.display="inline-block";
-    
-    // Kirim Data Lengkap ke Backend
     try { 
         await fetch(baseURL + "?action=addcustomer&payload=" + encodeURIComponent(JSON.stringify(data))); 
-        
-        // Update Local State (Force Uppercase di sini juga agar sama dgn backend)
         const newEntry = {
-            name: data.name.toUpperCase(), 
-            person: data.person.toUpperCase(), 
-            npwp: data.npwp.toUpperCase(),
-            address: data.address.toUpperCase(), 
-            kecamatan: data.kecamatan.toUpperCase(), 
-            kota: data.kota.toUpperCase()
+            name: data.name.toUpperCase(), person: data.person.toUpperCase(), npwp: data.npwp.toUpperCase(),
+            address: data.address.toUpperCase(), kecamatan: data.kecamatan.toUpperCase(), kota: data.kota.toUpperCase(),
+            top: data.top
         };
         customerData.push(newEntry);
-        
         choiceCustomer.setChoices([{value: newEntry.name, label: newEntry.name}], "value", "label", false);
         choiceCustomer.setChoiceByValue(newEntry.name);
         fillCustomerDetails(newEntry.name);
-        
-        closeCustomerModal(); 
-        showToast("Customer Saved!", "success"); 
-        
-        // Reset Form
+        closeCustomerModal(); showToast("Customer Saved!", "success"); 
         document.querySelectorAll("#modalAddCustomer input").forEach(i => i.value = "");
-    }
-    catch(e) { showToast("Error connecting", "error"); }
+    } catch(e) { showToast("Error connecting", "error"); }
     document.getElementById("modalSpinner").style.display="none";
 }
 
@@ -608,13 +475,17 @@ function forceSubmitOrder() {
     closeStockModal();
     const btn = document.querySelector(".approve-btn");
     btn.disabled=true; btn.textContent="Processing...";
+    
+    // NOTE: Order Number tidak dikirim, server yang generate
     const payload = {
         customer: document.getElementById("customerSelect").value,
         orderType: document.getElementById("orderType").value,
         issueDate: document.getElementById("issueDate").value,
         estDelivery: document.getElementById("estDeliveryDate").value,
-        orderNumber: document.getElementById("orderNumber").value,
+        // orderNumber: "", // Dikosongkan, biar server yang isi
         notes: document.getElementById("notes").value,
+        dpp: document.getElementById("dppDisplay").textContent,
+        ppn: document.getElementById("ppnDisplay").textContent,
         grandTotal: document.getElementById("grandTotalDisplay").textContent,
         items: []
     };
@@ -630,10 +501,16 @@ function forceSubmitOrder() {
             });
         }
     });
+
     fetch(baseURL + "?action=submitorder&payload=" + encodeURIComponent(JSON.stringify(payload)))
     .then(res => res.text()).then(txt => {
-        if(txt.includes("OK")) { showToast("Order Sent!", "success"); setTimeout(()=>location.reload(), 1500); }
-        else throw new Error(txt);
+        if(txt.startsWith("OK")) { 
+            // Ambil nomor order dari respon server "OK:GR251000001"
+            const generatedOrderNum = txt.split(":")[1] || "";
+            document.getElementById("orderNumber").value = generatedOrderNum;
+            showToast("Order Sent! ID: " + generatedOrderNum, "success"); 
+            setTimeout(()=>location.reload(), 2000); 
+        } else { throw new Error(txt); }
     }).catch(e => { showToast("Failed: " + e.message, "error"); btn.disabled=false; btn.textContent="Send Order"; });
 }
 </script>
