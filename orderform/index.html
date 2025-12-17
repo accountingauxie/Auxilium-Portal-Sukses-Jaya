@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Purchase Order - Xero Final Strict (Aligned)</title>
+<title>Purchase Order - Xero Validated</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -339,7 +339,7 @@ function showToast(msg, type="info") {
   t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2500);
 }
 
-// FIX: FORMAT MONEY STRICT 2 DECIMAL PLACES
+// FORMAT MONEY STRICT 2 DECIMAL PLACES
 function formatMoney(n) { 
     return (Number(n)||0).toLocaleString("en-US", {
         minimumFractionDigits:2, 
@@ -510,8 +510,15 @@ function recalcRow(row) {
 
   const qty = parseFloat(row.querySelector(".qty-input").value) || 0;
   const unitPrice = parseMoney(row.querySelector(".uprice-input").value);
-  const disc = parseMoney(row.querySelector(".disc-input").value);
+  let disc = parseMoney(row.querySelector(".disc-input").value);
   
+  // --- VALIDATION: DISCOUNT CANNOT EXCEED UNIT PRICE ---
+  if(disc > unitPrice) {
+      disc = unitPrice;
+      row.querySelector(".disc-input").value = formatMoney(unitPrice);
+  }
+  // -----------------------------------------------------
+
   const netPrice = (unitPrice - disc);
   const priceQty = netPrice * meter; 
   const total = priceQty * qty;
@@ -527,7 +534,7 @@ function recalcRow(row) {
   const statusCont = row.querySelector(".status-container");
   
   if(item) {
-      // FIX: STOCK DISPLAY MAX 2 DECIMALS, ALIGNED RIGHT
+      // STOCK DISPLAY MAX 2 DECIMALS, ALIGNED RIGHT
       stockDisp.textContent = (Number(stock)||0).toLocaleString("en-US", {maximumFractionDigits:2});
       
       let req = (type==="Spandek") ? (meter*qty) : qty;
