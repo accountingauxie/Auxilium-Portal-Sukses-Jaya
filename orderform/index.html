@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Purchase Order - Xero Validated</title>
+<title>Sales Order - Sukses Jaya</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -221,7 +221,12 @@ input[type=number] {
 .summary-row .label { color: #666; font-weight: 500; }
 .summary-row .value { color: #222; font-weight: 600; min-width: 120px; text-align: right; }
 .grand-total { font-size: 20px; font-weight: 700; margin-top: 15px; padding-top: 15px; border-top: 2px solid #ddd; color: var(--text-color); }
-.btn-primary { background-color: #3fba13; color: white; border: none; padding: 12px 30px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; margin-top: 20px; }
+
+/* --- UPDATE BUTTON COLOR --- */
+.btn-primary { 
+    background-color: var(--xero-blue); /* Updated Color */
+    color: white; border: none; padding: 12px 30px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; margin-top: 20px; 
+}
 .status-badge { padding: 3px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; display: inline-block; width: 90%; text-align: center; margin-top: 12px; }
 .status-ok { background: var(--green-bg); color: var(--green-text); }
 .status-oos { background: var(--red-bg); color: var(--red-text); }
@@ -270,8 +275,8 @@ input[type=number] {
   <div class="invoice-card">
     
     <div class="top-header">
-      <h1 class="brand-title">New Order</h1>
-      <span style="color:#888;">AUXILIUM Accounting Services</span>
+      <h1 class="brand-title">SALES ORDER</h1>
+      <span style="color:#888;">CV. Sukses Jaya Makmur Lestari</span>
     </div>
 
     <div class="header-grid">
@@ -320,7 +325,7 @@ input[type=number] {
         <div class="summary-row"><span class="label">Subtotal (DPP)</span><span class="value" id="dppDisplay">0.00</span></div>
         <div class="summary-row"><span class="label">Tax (11%)</span><span class="value" id="ppnDisplay">0.00</span></div>
         <div class="summary-row grand-total"><span class="label">TOTAL</span><span class="value" id="grandTotalDisplay">0.00</span></div>
-        <button class="btn-primary approve-btn" type="button">Approve</button>
+        <button class="btn-primary approve-btn" type="button">Send Order</button>
       </div>
     </div>
 
@@ -512,12 +517,12 @@ function recalcRow(row) {
   const unitPrice = parseMoney(row.querySelector(".uprice-input").value);
   let disc = parseMoney(row.querySelector(".disc-input").value);
   
-  // --- VALIDATION: DISCOUNT CANNOT EXCEED UNIT PRICE ---
-  if(disc > unitPrice) {
+  // --- VALIDASI KETAT: JIKA DISC > UNIT PRICE, FORCE RESET ---
+  if(unitPrice > 0 && disc > unitPrice) {
       disc = unitPrice;
-      row.querySelector(".disc-input").value = formatMoney(unitPrice);
+      row.querySelector(".disc-input").value = formatMoney(unitPrice); // Langsung ubah tampilan input
   }
-  // -----------------------------------------------------
+  // -----------------------------------------------------------
 
   const netPrice = (unitPrice - disc);
   const priceQty = netPrice * meter; 
@@ -611,7 +616,7 @@ function forceSubmitOrder() {
     .then(res => res.text()).then(txt => {
         if(txt.includes("OK")) { showToast("Approved!", "success"); setTimeout(()=>location.reload(), 1500); }
         else throw new Error(txt);
-    }).catch(e => { showToast("Failed: " + e.message, "error"); btn.disabled=false; btn.textContent="Approve"; });
+    }).catch(e => { showToast("Failed: " + e.message, "error"); btn.disabled=false; btn.textContent="Send Order"; });
 }
 </script>
 
