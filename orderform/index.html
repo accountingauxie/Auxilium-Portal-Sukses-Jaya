@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Sales Order - Sukses Jaya</title>
+<title>Purchase Order - Xero Customer Complete</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -88,14 +88,8 @@ table.xero-table th {
   white-space: nowrap; height: 40px;
 }
 
-/* Header Alignment Specifics */
-table.xero-table th.col-price,
-table.xero-table th.col-disc,
-table.xero-table th.col-net,
-table.xero-table th.col-total,
-table.xero-table th.col-stock {
-    text-align: right; /* Header align right */
-}
+table.xero-table th.col-price, table.xero-table th.col-disc, table.xero-table th.col-net,
+table.xero-table th.col-total, table.xero-table th.col-stock { text-align: right; }
 
 table.xero-table td {
   padding: 0 !important; border-bottom: 1px solid var(--border-light); 
@@ -103,13 +97,7 @@ table.xero-table td {
   background: #fff; height: 42px; position: relative;
 }
 
-/* --- ALIGNMENT FIX FOR INPUTS --- */
-.uprice-input, .disc-input, .pqty-input, .total-input, .stock-display {
-    text-align: right !important;
-}
-
-/* CLASS MAGIC: Angkat layer cell saat dropdown aktif */
-.lift-layer { z-index: 500 !important; position: relative; }
+.uprice-input, .disc-input, .pqty-input, .total-input, .stock-display { text-align: right !important; }
 
 /* --- LOCKED COLUMNS (STICKY) --- */
 .col-drag, .drag-cell {
@@ -129,80 +117,31 @@ th.col-drag { z-index: 35; border-bottom: 1px solid #ccc; background-color: var(
 th.col-del { z-index: 35; border-bottom: 1px solid #ccc; background-color: var(--locked-bg); }
 
 /* Shadows */
-.col-drag::after, .drag-cell::after {
-    content: ''; position: absolute; top: 0; right: -5px; bottom: 0; width: 5px;
-    background: linear-gradient(to right, rgba(0,0,0,0.05), transparent); pointer-events: none;
-}
-.col-del::before, td:last-child::before {
-    content: ''; position: absolute; top: 0; left: -5px; bottom: 0; width: 5px;
-    background: linear-gradient(to left, rgba(0,0,0,0.05), transparent); pointer-events: none;
-}
+.col-drag::after, .drag-cell::after { content: ''; position: absolute; top: 0; right: -5px; bottom: 0; width: 5px; background: linear-gradient(to right, rgba(0,0,0,0.05), transparent); pointer-events: none; }
+.col-del::before, td:last-child::before { content: ''; position: absolute; top: 0; left: -5px; bottom: 0; width: 5px; background: linear-gradient(to left, rgba(0,0,0,0.05), transparent); pointer-events: none; }
 
 /* INPUT STYLING */
 table.xero-table input {
   width: 100%; height: 100%; padding: 0 10px; border: none !important;
   background: transparent; font-size: 13px; color: #333; display: block;
 }
-table.xero-table input:focus {
-  background: #fff; outline: none; box-shadow: inset 0 0 0 1px var(--xero-blue) !important; 
-}
+table.xero-table input:focus { background: #fff; outline: none; box-shadow: inset 0 0 0 1px var(--xero-blue) !important; }
 table.xero-table input[readonly] { color: #666; cursor: default; }
 
-/* Menghilangkan tombol spin minus (Opsional, min=0 di HTML yang utama) */
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-    -webkit-appearance: none; 
-    margin: 0; 
-}
-input[type=number] {
-    -moz-appearance: textfield; /* Firefox */
-}
-
+input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] { -moz-appearance: textfield; }
 
 /* --- CHOICES JS FIXES --- */
 .xero-table .choices { margin: 0 !important; padding: 0 !important; height: 100%; width: 100%; overflow: visible; }
-.xero-table .choices__inner {
-  border: none !important; background-color: transparent !important;
-  border-radius: 0 !important; min-height: 100% !important; height: 100% !important;
-  display: flex !important; align-items: center !important; padding: 0 10px !important; margin: 0 !important;
-}
-.xero-table .is-open .choices__inner, .xero-table .is-focused .choices__inner, .xero-table .choices__inner:hover {
-  background-color: #fff !important; box-shadow: inset 0 0 0 1px var(--xero-blue) !important; 
-}
-
-/* FIX UTAMA: SCROLL DROPDOWN + SINGLE SCROLLBAR */
-.choices__list--dropdown { 
-    border: 1px solid var(--xero-blue) !important; 
-    border-radius: 0 !important; 
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important; 
-    z-index: 100000 !important; 
-    background: #fff;
-    max-height: 250px !important; 
-    overflow-y: auto !important; 
-    
-    /* HAPUS SCROLLBAR BAWAAN CHOICES.JS YANG MENGGANGGU */
-    -ms-overflow-style: none !important;  /* IE and Edge */
-    scrollbar-width: none !important;  /* Firefox */
-    
-    padding: 0 !important;
-}
-
-/* Hapus Scrollbar Choices.js di Chrome/Safari */
-.choices__list--dropdown::-webkit-scrollbar {
-    display: none !important;
-    width: 0 !important;
-    height: 0 !important;
-}
-
+.xero-table .choices__inner { border: none !important; background-color: transparent !important; border-radius: 0 !important; min-height: 100% !important; height: 100% !important; display: flex !important; align-items: center !important; padding: 0 10px !important; margin: 0 !important; }
+.xero-table .is-open .choices__inner, .xero-table .is-focused .choices__inner, .xero-table .choices__inner:hover { background-color: #fff !important; box-shadow: inset 0 0 0 1px var(--xero-blue) !important; }
+.choices__list--dropdown { border: 1px solid var(--xero-blue) !important; border-radius: 0 !important; box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important; z-index: 100000 !important; background: #fff; max-height: 250px !important; overflow-y: auto !important; -ms-overflow-style: none !important; scrollbar-width: none !important; padding: 0 !important; }
+.choices__list--dropdown::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
 .xero-table .choices__list--single { padding: 0; } 
-.choices__list--dropdown .choices__item { padding: 10px !important; border-bottom: none !important; } /* Padding Item List */
+.choices__list--dropdown .choices__item { padding: 10px !important; border-bottom: none !important; }
 
 /* Header Dropdown */
-.header-grid .choices__inner, .header-grid input.main-input, .header-grid select {
-    background-color: #fff !important; border: 1px solid #ccc !important;
-    border-radius: 3px !important; min-height: 38px !important; height: 38px !important;
-    display: flex; align-items: center;
-}
+.header-grid .choices__inner, .header-grid input.main-input, .header-grid select { background-color: #fff !important; border: 1px solid #ccc !important; border-radius: 3px !important; min-height: 38px !important; height: 38px !important; display: flex; align-items: center; }
 .header-grid .is-focused .choices__inner { border-color: var(--xero-blue) !important; }
 
 /* Columns */
@@ -222,11 +161,7 @@ input[type=number] {
 .summary-row .value { color: #222; font-weight: 600; min-width: 120px; text-align: right; }
 .grand-total { font-size: 20px; font-weight: 700; margin-top: 15px; padding-top: 15px; border-top: 2px solid #ddd; color: var(--text-color); }
 
-/* --- UPDATE BUTTON COLOR --- */
-.btn-primary { 
-    background-color: var(--xero-blue); /* Updated Color */
-    color: white; border: none; padding: 12px 30px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; margin-top: 20px; 
-}
+.btn-primary { background-color: var(--xero-blue); color: white; border: none; padding: 12px 30px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; margin-top: 20px; }
 .status-badge { padding: 3px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; display: inline-block; width: 90%; text-align: center; margin-top: 12px; }
 .status-ok { background: var(--green-bg); color: var(--green-text); }
 .status-oos { background: var(--red-bg); color: var(--red-text); }
@@ -234,7 +169,7 @@ input[type=number] {
 
 /* Modals */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 99999; }
-.modal-box { background: #fff; padding: 30px; width: 400px; border-radius: 6px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+.modal-box { background: #fff; padding: 30px; width: 600px; border-radius: 6px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); } /* WIDTH LEBIH LEBAR */
 .modal-actions { margin-top: 25px; text-align: right; }
 .btn-ok { background: var(--xero-blue); color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-left: 10px; }
 .btn-cancel { background: #eee; color: #333; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
@@ -242,6 +177,10 @@ input[type=number] {
 @keyframes spin { to {transform: rotate(360deg);} }
 .toast { position: fixed; bottom: 30px; right: 30px; padding: 15px 25px; background: #333; color: white; border-radius: 5px; opacity: 0; transform: translateY(20px); transition: 0.3s; z-index: 100000; }
 .toast.show { opacity: 1; transform: translateY(0); }
+
+/* NEW GRID FOR CUSTOMER MODAL */
+.cust-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+.cust-full-width { grid-column: span 2; }
 </style>
 </head>
 
@@ -251,17 +190,52 @@ input[type=number] {
 
 <div id="modalAddCustomer" class="modal-overlay">
   <div class="modal-box">
-    <h3 style="margin-top:0">Tambah Customer Baru</h3>
-    <input id="newCustomerName" type="text" placeholder="Nama Customer" class="main-input" style="margin-top:10px" />
+    <h3 style="margin-top:0; border-bottom:1px solid #eee; padding-bottom:10px;">Tambah Customer Baru</h3>
+    
+    <div class="cust-form-grid">
+        <div class="cust-full-width">
+            <span class="field-label">Nama Perusahaan / Customer</span>
+            <input id="ncName" type="text" class="main-input" placeholder="Nama Lengkap">
+        </div>
+        
+        <div>
+            <span class="field-label">Contact Person</span>
+            <input id="ncPerson" type="text" class="main-input" placeholder="Nama CP">
+        </div>
+        <div>
+            <span class="field-label">NIK / NPWP</span>
+            <input id="ncNPWP" type="text" class="main-input" placeholder="Nomor Identitas">
+        </div>
+
+        <div class="cust-full-width">
+            <span class="field-label">Alamat Lengkap</span>
+            <input id="ncAddress" type="text" class="main-input" placeholder="Jalan, No, RT/RW">
+        </div>
+
+        <div>
+            <span class="field-label">Kecamatan</span>
+            <input id="ncKec" type="text" class="main-input">
+        </div>
+        <div>
+            <span class="field-label">Kota / Kab</span>
+            <input id="ncCity" type="text" class="main-input">
+        </div>
+
+        <div class="cust-full-width">
+            <span class="field-label">Term of Payment (Hari)</span>
+            <input id="ncTOP" type="number" class="main-input" placeholder="Contoh: 30">
+        </div>
+    </div>
+
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeCustomerModal()">Cancel</button>
-      <button class="btn-ok" onclick="submitNewCustomer()">Save <span id="modalSpinner" class="spinner" style="display:none"></span></button>
+      <button class="btn-ok" onclick="submitNewCustomer()">Save Customer <span id="modalSpinner" class="spinner" style="display:none"></span></button>
     </div>
   </div>
 </div>
 
 <div id="modalStockWarning" class="modal-overlay">
-  <div class="modal-box">
+  <div class="modal-box" style="width: 400px;">
     <h3 style="color:var(--red-text)">⚠️ Stok Tidak Cukup</h3>
     <p>Beberapa item melebihi stok.<br>Proses sebagai Pre-Order?</p>
     <div class="modal-actions">
@@ -275,8 +249,8 @@ input[type=number] {
   <div class="invoice-card">
     
     <div class="top-header">
-      <h1 class="brand-title">SALES ORDER</h1>
-      <span style="color:#888;">CV. Sukses Jaya Makmur Lestari</span>
+      <h1 class="brand-title">New Order</h1>
+      <span style="color:#888;">AUXILIUM Accounting Services</span>
     </div>
 
     <div class="header-grid">
@@ -432,7 +406,6 @@ function addRow() {
       searchEnabled: true, shouldSort: false, itemSelectText:"", placeholder: true, placeholderValue: "Select Item" 
   });
 
-  // FIX: Dropdown Positioning
   const fixDropdownPos = (event) => {
       const container = event.target.closest('.choices');
       const dropdown = container.querySelector('.choices__list--dropdown');
@@ -479,7 +452,6 @@ function addRow() {
     recalcRow(tr);
   });
 
-  // INPUT LOGIC
   tr.querySelectorAll(".meter-input, .qty-input").forEach(inp => {
       inp.addEventListener("keydown", function(e) {
           if (e.key === "-" || e.key === "Subtract" || e.keyCode === 189 || e.keyCode === 109) { e.preventDefault(); }
@@ -491,13 +463,11 @@ function addRow() {
       });
   });
 
-  // FIX: DISCOUNT FORMATTING ON BLUR
   const discInput = tr.querySelector(".disc-input");
   discInput.addEventListener("blur", function() {
       this.value = formatMoney(parseMoney(this.value));
   });
 
-  // Validasi umum untuk input lain
   tr.querySelectorAll("input").forEach(i => {
       if(!i.classList.contains("meter-input") && !i.classList.contains("qty-input")) {
           i.addEventListener("input", () => { recalcRow(tr); recalcTotals(); });
@@ -517,12 +487,10 @@ function recalcRow(row) {
   const unitPrice = parseMoney(row.querySelector(".uprice-input").value);
   let disc = parseMoney(row.querySelector(".disc-input").value);
   
-  // --- VALIDASI KETAT: JIKA DISC > UNIT PRICE, FORCE RESET ---
   if(unitPrice > 0 && disc > unitPrice) {
       disc = unitPrice;
-      row.querySelector(".disc-input").value = formatMoney(unitPrice); // Langsung ubah tampilan input
+      row.querySelector(".disc-input").value = formatMoney(unitPrice);
   }
-  // -----------------------------------------------------------
 
   const netPrice = (unitPrice - disc);
   const priceQty = netPrice * meter; 
@@ -539,7 +507,6 @@ function recalcRow(row) {
   const statusCont = row.querySelector(".status-container");
   
   if(item) {
-      // STOCK DISPLAY MAX 2 DECIMALS, ALIGNED RIGHT
       stockDisp.textContent = (Number(stock)||0).toLocaleString("en-US", {maximumFractionDigits:2});
       
       let req = (type==="Spandek") ? (meter*qty) : qty;
@@ -567,14 +534,41 @@ function openStockModal() { document.getElementById("modalStockWarning").style.d
 function closeStockModal() { document.getElementById("modalStockWarning").style.display="none"; }
 
 async function submitNewCustomer() {
-    const name = document.getElementById("newCustomerName").value;
-    if(!name) return showToast("Invalid Name", "error");
+    const data = {
+        name: document.getElementById("ncName").value,
+        person: document.getElementById("ncPerson").value,
+        npwp: document.getElementById("ncNPWP").value,
+        address: document.getElementById("ncAddress").value,
+        kecamatan: document.getElementById("ncKec").value,
+        kota: document.getElementById("ncCity").value,
+        top: document.getElementById("ncTOP").value
+    };
+
+    if(!data.name) return showToast("Nama Customer Wajib Diisi", "error");
+
     document.getElementById("modalSpinner").style.display="inline-block";
-    customerData.push({name:name, person:'-', address:'-', kecamatan:'-', kota:'-'});
-    choiceCustomer.setChoices([{value:name, label:name}], "value", "label", false);
-    choiceCustomer.setChoiceByValue(name);
-    fillCustomerDetails(name);
-    try { await fetch(baseURL + "?action=addcustomer&name=" + encodeURIComponent(name)); closeCustomerModal(); showToast("Added!", "success"); }
+    
+    // Kirim Data Lengkap ke Backend
+    try { 
+        await fetch(baseURL + "?action=addcustomer&payload=" + encodeURIComponent(JSON.stringify(data))); 
+        
+        // Update Local State (Agar bisa langsung dipake tanpa refresh)
+        const newEntry = {
+            name: data.name, person: data.person, address: data.address, 
+            kecamatan: data.kecamatan, kota: data.kota
+        };
+        customerData.push(newEntry);
+        
+        choiceCustomer.setChoices([{value: data.name, label: data.name}], "value", "label", false);
+        choiceCustomer.setChoiceByValue(data.name);
+        fillCustomerDetails(data.name);
+        
+        closeCustomerModal(); 
+        showToast("Customer Saved!", "success"); 
+        
+        // Reset Form
+        document.querySelectorAll("#modalAddCustomer input").forEach(i => i.value = "");
+    }
     catch(e) { showToast("Error connecting", "error"); }
     document.getElementById("modalSpinner").style.display="none";
 }
@@ -614,7 +608,7 @@ function forceSubmitOrder() {
     });
     fetch(baseURL + "?action=submitorder&payload=" + encodeURIComponent(JSON.stringify(payload)))
     .then(res => res.text()).then(txt => {
-        if(txt.includes("OK")) { showToast("Approved!", "success"); setTimeout(()=>location.reload(), 1500); }
+        if(txt.includes("OK")) { showToast("Order Sent!", "success"); setTimeout(()=>location.reload(), 1500); }
         else throw new Error(txt);
     }).catch(e => { showToast("Failed: " + e.message, "error"); btn.disabled=false; btn.textContent="Send Order"; });
 }
