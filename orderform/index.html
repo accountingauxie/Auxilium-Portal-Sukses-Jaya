@@ -323,8 +323,7 @@ input[type=number] { -moz-appearance: textfield; }
 </div>
 
 <script>
-// REPLACE WITH YOUR SCRIPT URL
-const baseURL = "https://script.google.com/macros/s/AKfycbwxjvXC4_3Px0kK06qOjTra5WXhp-a_fFoyDB79VAhb54f_apvKZdy9St_58dc38ORJPQ/exec";
+const baseURL = "https://script.google.com/macros/s/AKfycbxO7lxcyNmQnJI2YBxeFaRM_X8vkWHoKTIBq45It0eDo7syzfmrrz3v2d1TzHRFoJDPYw/exec";
 
 let customerData=[], listSpandek=[], listNonSpandek=[], priceSpan=[], priceNon=[], unitSpan=[], unitNon=[], stockSpan=[], stockNon=[];
 let choiceCustomer, choiceOrderType;
@@ -338,6 +337,7 @@ function showToast(msg, type="info") {
 function formatMoney(n) { return (Number(n)||0).toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2}); }
 function parseMoney(s) { return parseFloat((s||"").replace(/,/g,"")) || 0; }
 
+// --- SAAT HALAMAN DIMUAT ---
 window.onload = async function () {
   choiceCustomer = new Choices("#customerSelect", { searchEnabled: true, shouldSort: false, placeholder: true, placeholderValue: "Pilih Pelanggan", itemSelectText:"" });
   choiceOrderType = new Choices("#orderType", { searchEnabled: false, shouldSort: false, itemSelectText:"" });
@@ -346,11 +346,37 @@ window.onload = async function () {
   document.getElementById("issueDate").value = today;
   document.getElementById("estDeliveryDate").value = today;
 
+  // 1. Load Data Dropdown
   await loadDropdowns();
+  
+  // 2. Fetch Nomor Order Antrian (Agar muncul di Header)
+  fetchNextOrderID();
+
   for(let i=0; i<3; i++) addRow();
   new Sortable(document.getElementById("itemsBody"), { handle: ".drag-cell", animation: 150 });
   document.getElementById('customerSelect').addEventListener('change', function(e) { fillCustomerDetails(e.target.value); });
 };
+
+// --- FUNGSI BARU: AMBIL NOMOR ANTRIAN ---
+async function fetchNextOrderID() {
+    const titleEl = document.getElementById("xeroOrderTitle");
+    try {
+        titleEl.textContent = "Loading..."; // Feedback user
+        const res = await fetch(baseURL + "?action=getnextid");
+        const nextID = await res.text();
+        
+        // Tampilkan Nomor Order + DRAFT
+        titleEl.textContent = "Order #" + nextID; 
+    } catch (e) {
+        titleEl.textContent = "Order #Error";
+        showToast("Gagal mengambil nomor antrian", "error");
+    }
+}
+
+// ... (Sisa fungsi lain: fillCustomerDetails, loadDropdowns, addRow, dll TETAP SAMA) ...
+// ... (Hanya ganti bagian window.onload dan tambah fetchNextOrderID di atas) ...
+
+// ... (Pastikan copy paste sisa kode di bawah ini agar lengkap) ...
 
 function fillCustomerDetails(name) {
     const p = document.getElementById('detailPerson');
@@ -540,7 +566,6 @@ async function submitNewCustomer() {
     document.getElementById("modalSpinner").style.display="none";
 }
 
-// LOGIKA TOMBOL KIRIM (INDONESIA)
 document.querySelector(".approve-btn").addEventListener("click", () => {
     const cust = document.getElementById("customerSelect").value;
     const type = document.getElementById("orderType").value;
@@ -635,6 +660,6 @@ function forceSubmitOrder() {
     }).catch(e => { showToast("Gagal: " + e.message, "error"); btn.disabled=false; btn.textContent="Kirim Pesanan"; });
 }
 </script>
-
+  
 </body>
 </html>
