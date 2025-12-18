@@ -32,7 +32,7 @@ body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background:
 .aux-menu a { text-decoration: none; color: #555; font-weight: 600; margin-right: 20px; font-size: 14px; }
 .aux-menu a.active { color: var(--primary-color); }
 
-/* --- DASHBOARD LAYOUT (LEBAR 98%) --- */
+/* --- DASHBOARD LAYOUT --- */
 .page-wrap { 
     padding: 30px 40px; 
     max-width: 98%; 
@@ -94,13 +94,12 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 .btn-approve { background: #10b981; }
 .btn-pdf { background: #2563eb; }
 
-/* --- 3. HIDDEN PDF STYLE (CLEAN STYLE) --- */
+/* --- 3. HIDDEN PDF STYLE --- */
 #pdf-hidden-container { position: absolute; left: -9999px; top: 0; }
 #pdfContent { 
     background: #fff; 
-    /* Lebar konten 100% agar mengikuti margin yang diset di JS */
     width: 100%; 
-    padding: 0; /* Padding dihilangkan karena Margin sudah diatur di JS */
+    padding: 0; 
     font-family: "Arial", sans-serif; 
     color: #000; 
 }
@@ -122,10 +121,13 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 .pdf-meta-row { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 4px; width: 100%; }
 .pdf-meta-key { font-weight: 700; color:#000; }
 
-/* --- TABLE PDF (MINIMALIST CLEAN) --- */
-table.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+/* --- TABLE PDF (FIXED CUTOFF) --- */
+table.pdf-table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-bottom: 20px; 
+}
 
-/* Header Minimalis: Garis Hitam Biasa (1px) Atas Bawah */
 table.pdf-table th { 
     font-size: 9px; 
     font-weight: 800; 
@@ -134,36 +136,51 @@ table.pdf-table th {
     color: #000;
     border-top: 1px solid #000; 
     border-bottom: 1px solid #000; 
-    letter-spacing: 0.5px;
 }
 
-/* Isi Tabel Clean */
+/* FIX: Mencegah Baris Terpotong di Tengah Halaman */
+table.pdf-table tr {
+    page-break-inside: avoid; /* Baris tidak boleh putus */
+    page-break-after: auto;
+}
+
 table.pdf-table td { 
     padding: 8px 4px; 
     font-size: 10px; 
     vertical-align: top; 
 }
 
-/* Sub-text item */
 .item-name-main { font-weight: 800; color: #000; display:block; font-size: 11px; }
 .item-sub { font-size: 9px; color: #666; font-weight: normal; margin-top: 2px; display: block; }
 
-/* TOTALS PDF (CLEAN & PROFESSIONAL) */
-.pdf-totals-area { display: flex; justify-content: flex-end; margin-top: 5px; }
-.pdf-total-box { width: 280px; }
-.pdf-total-row { display: flex; justify-content: space-between; font-size: 10px; padding: 4px 0; color: #333; }
+/* TOTALS PDF (ALIGNMENT FIXED) */
+.pdf-totals-area { 
+    display: flex; 
+    justify-content: flex-end; /* Memastikan rata kanan */
+    margin-top: 5px; 
+    page-break-inside: avoid; /* Box total tidak boleh terpotong */
+}
+.pdf-total-box { 
+    width: 280px; 
+    text-align: right; /* Text rata kanan */
+}
+.pdf-total-row { 
+    display: flex; 
+    justify-content: space-between; 
+    font-size: 10px; 
+    padding: 4px 0; 
+    color: #333; 
+}
 
-/* Grand Total dengan garis putus-putus di atasnya (Dotted) */
 .pdf-total-row.grand { 
     font-size: 15px; 
     font-weight: 900; 
-    color: #116999; /* BIRU */
+    color: #116999; 
     margin-top: 10px; 
     padding-top: 10px;
     border-top: 1px dotted #999; 
 }
 
-/* Footer Notes Dotted */
 .pdf-notes { font-size: 9px; color: #555; margin-top: 40px; border-top: 1px dotted #ccc; padding-top: 10px; }
 
 .skeleton { height: 20px; background: #eee; width: 100%; border-radius: 4px; animation: pulse 1s infinite; }
@@ -523,9 +540,9 @@ async function updateStatus(id, stat) {
 function dlPDF(id) {
     const el = document.getElementById('pdfContent');
     const opt = {
-        margin:       [1.91, 0.90], // v=1.91cm (T/B), h=0.90cm (L/R)
+        margin:       [1.5, 0.75], // Top/Bottom 1.5cm, Left/Right 0.75cm
         filename:     `Invoice_${id}.pdf`,
-        image:        { type: 'png', quality: 0.98 },
+        image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2 },
         jsPDF:        { unit: 'cm', format: 'a5', orientation: 'landscape' }
     };
