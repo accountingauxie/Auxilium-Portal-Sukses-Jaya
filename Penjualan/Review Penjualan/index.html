@@ -147,8 +147,8 @@ table.modal-items td { padding: 8px 12px; border-bottom: 1px solid #f3f4f6; }
 </div>
 
 <script>
-// PASTIKAN SCRIPT ID INI SESUAI DENGAN BACKEND KAMU
-const baseURL = "https://script.google.com/macros/s/AKfycbwf8B72oLLDTxbxZJSc0awy76bbp5EVje8ryK3KmfNq0KFrOJyekmmnKPDzYNebew8k_Q/exec"; 
+// PENTING: Jika deploy versi baru, link exec kadang berubah. Pastikan pakai link terbaru.
+const baseURL = "https://script.google.com/macros/s/AKfycbxQeIfsyP6_CWLs9BWYZVqP37-lp_0J97IhVcL6LPOvrFsO7pEbExUp5bGdYW1H5Z2bdA/exec"; 
 let allOrders = []; 
 let currentCategory = 'General Order';
 
@@ -156,20 +156,49 @@ window.onload = function() { fetchData(); };
 
 async function fetchData() {
     const tbody = document.getElementById('invoiceTableBody');
+    // Tampilkan Loading (Skeleton)
     tbody.innerHTML = '<tr><td colspan="8"><span class="skeleton-bar" style="margin:10px;"></span></td></tr>';
+    
     try {
         const res = await fetch(baseURL + "?action=getorders");
+        
+        // Cek jika response gagal
+        if (!res.ok) throw new Error("Gagal menghubungi server Apps Script.");
+
         const data = await res.json();
+        
+        // Cek jika Apps Script mengembalikan error logical
+        if (data.result === 'error') throw new Error(data.message || "Unknown Error from Script");
+
+        // Jika array kosong atau bukan array
+        if (!Array.isArray(data)) {
+             // Jika datanya cuma {result: "error"}, anggap error
+             if(data.result) throw new Error(data.message);
+        }
+
         allOrders = data.filter(o => o.status === "Awaiting Approval"); 
         renderTable();
         showToast("Data Refreshed", "success");
-    } catch (e) { console.error(e); }
+
+    } catch (e) { 
+        console.error("Fetch Error:", e);
+        // Tampilkan Pesan Error di Tabel (Biar tidak loading terus)
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px; color:red;">
+            <strong>Gagal memuat data!</strong><br>
+            <small>${e.message}</small><br>
+            <button onclick="fetchData()" style="margin-top:10px; cursor:pointer;">Coba Lagi</button>
+        </td></tr>`;
+        showToast("Error loading data", "error");
+    }
 }
 
 function renderTable() {
     const tbody = document.getElementById('invoiceTableBody');
     const searchVal = document.getElementById('searchInput').value.toLowerCase();
     tbody.innerHTML = '';
+    
+    if(!allOrders) allOrders = []; // Safety check
+
     const filtered = allOrders.filter(o => {
         if((o.type || "").toLowerCase() !== currentCategory.toLowerCase()) return false;
         if(searchVal && !String(o.id).toLowerCase().includes(searchVal) && !String(o.customer).toLowerCase().includes(searchVal)) return false;
@@ -205,7 +234,7 @@ function openOrderDetails(id) {
     document.getElementById('modalStatus').textContent = order.status;
     document.getElementById('modalDelivery').textContent = order.estDelivery;
     
-    // UPDATE SCRIPT: Tampilkan Submitted By
+    // MENAMPILKAN DATA "SUBMITTED BY"
     document.getElementById('modalSubmitted').textContent = order.submittedBy || '-';
     
     document.getElementById('modalDue').textContent = order.dueDate;
@@ -250,7 +279,7 @@ async function processStatus(id, newStatus) {
         await fetch(baseURL, { method: 'POST', body: JSON.stringify({ action: "updatestatus", id: id, status: newStatus }) });
         showToast("Success", "success");
         closeModal(); fetchData(); 
-    } catch(e) { alert("Error"); closeModal(); }
+    } catch(e) { alert("Error updating status"); closeModal(); }
 }
 </script>
 </body>
