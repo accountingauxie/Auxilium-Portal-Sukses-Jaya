@@ -184,39 +184,22 @@ input.main-input, textarea.main-input {
 input.main-input { height: 38px; }
 input.main-input:focus, textarea.main-input:focus { border-color: var(--xero-blue); outline: none; }
 
-/* --- PERBAIKAN DATE INPUT ALA XERO (BASE64 ICON) --- */
+/* --- PERBAIKAN: HAPUS ICON CUSTOM (KEMBALI KE STANDARD) --- */
 input[type="date"].main-input {
-    position: relative;
-    /* Base64 Encoded Icon (Lebih Stabil) */
-    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM1NTU1NTUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSIzIiB5PSI0IiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHJ4PSIyIiByeT0iMiI+PC9yZWN0PjxsaW5lIHgxPSIxNiIgeTE9IjIiIHgyPSIxNiIgeTI9IjYiPjwvbGluZT48bGluZSB4MT0iOCIgeTE9IjIiIHgyPSI4IiB5Mj0iNiI+PC9saW5lPjxsaW5lIHgxPSIzIiB5TE9IjEwIiB4Mj0iMjEiIHkyPSIxMCI+PC9saW5lPjwvc3ZnPg==");
-    background-repeat: no-repeat;
-    background-position: 10px center;
-    background-size: 16px;
-    padding-left: 38px !important;
-    color: var(--text-color);
+    /* Reset padding menjadi standard (sama seperti input text biasa) */
+    padding: 10px !important; 
+    background-image: none !important;
     background-color: #fff;
-    -webkit-appearance: none;
-    appearance: none;
+    color: var(--text-color);
 }
-
-input[type="date"].main-input:focus {
-    border-color: #777 !important;
-    box-shadow: 0 0 0 3px rgba(17, 105, 153, 0.1) !important;
-    outline: none;
-}
-
-/* Trik agar klik dimana saja (termasuk icon) memicu kalender */
+/* Membiarkan indikator native browser muncul (biasanya panah kecil/kalender di kanan) */
 input[type="date"].main-input::-webkit-calendar-picker-indicator {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
     cursor: pointer;
-    margin: 0; padding: 0;
+    /* Jika ingin icon bawaan browser terlihat, biarkan default. 
+       Jika ingin dihapus juga, uncomment baris display:none di bawah ini */
+    /* display: none; */ 
 }
-/* ------------------------------------------------ */
+/* ----------------------------------------------------------- */
 
 .detail-grid {
   display: grid; 
