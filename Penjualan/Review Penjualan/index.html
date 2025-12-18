@@ -9,26 +9,17 @@
 
 <style>
 /* --- 1. SYSTEM STYLE (Main Web UI) --- */
-:root { 
-    --primary-color: #116999; 
-    --bg-color: #f4f7f6;
-    --text-color: #333;
-}
+:root { --primary-color: #116999; --bg-color: #f4f7f6; --text-color: #333; }
 * { box-sizing: border-box; }
 body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background: var(--bg-color); color: var(--text-color); }
 
-/* Utility Classes */
+/* Utility Alignment */
 .t-left { text-align: left; }
 .t-center { text-align: center; }
 .t-right { text-align: right; }
 
-/* Currency Trick: Rp Kiri, Angka Kanan */
-.currency-cell {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    white-space: nowrap;
-}
+/* Currency Flex Trick (Rp Kiri, Angka Kanan) */
+.currency-cell { display: flex; justify-content: space-between; width: 100%; white-space: nowrap; }
 
 /* Navbar */
 .aux-navbar { background: #fff; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
@@ -36,7 +27,7 @@ body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background:
 .aux-menu a { text-decoration: none; color: #555; font-weight: 600; margin-right: 20px; font-size: 14px; }
 .aux-menu a.active { color: var(--primary-color); }
 
-/* Main Layout */
+/* Layout */
 .page-wrap { padding: 30px 40px; max-width: 1400px; margin: 0 auto; }
 .category-tabs { margin-bottom: 20px; border-bottom: 2px solid #ddd; }
 .cat-btn { background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; }
@@ -49,10 +40,9 @@ table.xero-table { width: 100%; border-collapse: collapse; }
 table.xero-table th { text-align: left; padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; color: #555; font-size: 12px; text-transform: uppercase; font-weight: bold; }
 table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; }
 
-/* INTERACTION FIX: Efek Klik & Hover yang Jelas */
+/* Interaction Style */
 table.xero-table tr.data-row { cursor: pointer; transition: background-color 0.2s; }
-table.xero-table tr.data-row:hover { background-color: #e0f2fe; } /* Warna Biru Muda saat Hover */
-table.xero-table tr.data-row:active { background-color: #bae6fd; } /* Warna saat diklik */
+table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 
 /* Badges */
 .badge { padding: 5px 12px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; display: inline-block; letter-spacing: 0.5px; }
@@ -71,7 +61,7 @@ table.xero-table tr.data-row:active { background-color: #bae6fd; } /* Warna saat
 .web-label { font-size: 11px; color: #888; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 5px; }
 .web-value { font-size: 14px; color: #333; font-weight: bold; }
 
-/* Web Table */
+/* Web Table Preview */
 table.web-items { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
 table.web-items th { text-align: left; padding: 10px; background: #f9fafb; font-size: 11px; color: #555; text-transform: uppercase; border-bottom: 1px solid #eee; font-weight: bold; }
 table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
@@ -293,6 +283,7 @@ table.pdf-table tr:last-child td { border-bottom: 2px solid #000; }
 </div>
 
 <script>
+// PASTIKAN LINK BACKEND BENAR
 const baseURL = "https://script.google.com/macros/s/AKfycbwfXZG-xWzjp2_PC68tniPhZkArpQfnZ4ipnmNU-QI1mp-cRCRbLVmDGdp2VEaNGLmG0w/exec";
 let allOrders = [];
 let currentFilter = 'All';
@@ -305,14 +296,27 @@ async function fetchData() {
     try {
         const res = await fetch(baseURL + "?action=getorders");
         const data = await res.json();
-        if(Array.isArray(data)) { allOrders = data; renderTable(); }
-    } catch(e) { console.error(e); }
+        // Cek apakah data array
+        if(Array.isArray(data)) { 
+            allOrders = data; 
+            renderTable(); 
+        } else {
+             console.error("Data invalid:", data);
+             tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px; color:red;">Gagal memuat data (Format Salah)</td></tr>';
+        }
+    } catch(e) { 
+        console.error(e);
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px; color:red;">Gagal memuat data (Koneksi Error)</td></tr>';
+    }
 }
 
 function renderTable() {
     const tbody = document.getElementById('tableBody');
     const search = document.getElementById('searchInput').value.toLowerCase();
     tbody.innerHTML = '';
+    
+    if (!allOrders) allOrders = [];
+
     const filtered = allOrders.filter(o => {
         if (currentFilter !== 'All') {
             if (currentFilter === 'Approved Order') {
@@ -334,8 +338,10 @@ function renderTable() {
         if(o.status.includes('Completed') || o.status.includes('Production')) badge = 'badge-success';
 
         let tr = document.createElement('tr');
-        tr.className = 'data-row'; // FIX: Enable Hover & Click Style
-        tr.onclick = () => openModal(o.id); // FIX: Click Event
+        tr.className = 'data-row';
+        // FUNGSI KLIK ROW UTAMA
+        tr.onclick = function() { openModal(o.id); };
+        
         tr.innerHTML = `
             <td><strong>${o.id}</strong></td>
             <td>${o.customer}</td>
@@ -349,93 +355,97 @@ function renderTable() {
     });
 }
 
+// SAFE TEXT SETTER (Mencegah Error jika elemen tidak ada)
+function setTxt(id, val) {
+    const el = document.getElementById(id);
+    if(el) el.textContent = val || "-";
+}
+
 function openModal(id) {
-    const o = allOrders.find(x => x.id == id);
-    if(!o) return;
-
-    // --- POPULATE HEADER ---
-    document.getElementById('webOrderNo').textContent = o.id;
-    document.getElementById('webStatusBadge').textContent = o.status;
-    document.getElementById('webStatusBadge').className = 'badge ' + (o.status.includes('Cancel') ? 'badge-danger' : (o.status.includes('Awaiting Approval') ? 'badge-approve' : 'badge-success'));
-    
-    // --- POPULATE INFO ---
-    ['web','pdf'].forEach(prefix => {
-        document.getElementById(prefix+'Customer').textContent = o.customer;
-        document.getElementById(prefix+'CustName').textContent = o.customer;
-        document.getElementById(prefix+'Address').textContent = (o.address||"") + " " + (o.kec||"") + " " + (o.city||"");
-        document.getElementById(prefix+'Addr').textContent = o.address||"";
-        document.getElementById(prefix+'Region').textContent = (o.kec||"") + ", " + (o.city||"");
-        document.getElementById(prefix+'Date').textContent = o.date;
-        document.getElementById(prefix+'Est').textContent = o.estDelivery;
-        document.getElementById(prefix+'Due').textContent = o.dueDate;
-        document.getElementById(prefix+'CP').textContent = o.cp || "-";
-        document.getElementById(prefix+'NPWP').textContent = o.npwp || "-";
-        document.getElementById(prefix+'Notes').textContent = o.notes;
-        
-        if(document.getElementById(prefix+'OrderNo')) document.getElementById(prefix+'OrderNo').textContent = o.id;
-    });
-
-    // --- POPULATE TABLES ---
-    const webTbody = document.getElementById('webItemsBody');
-    const pdfTbody = document.getElementById('pdfItemsBody');
-    webTbody.innerHTML = '';
-    pdfTbody.innerHTML = '';
-
-    o.items.forEach(item => {
-        let net = item.net || 0; // Menggunakan data NET dari backend
-        
-        // Template baris dengan Currency Trick (Flexbox)
-        let rowHtml = `
-            <tr>
-                <td class="t-left"><strong>${item.name}</strong><br><small style="color:#888;">${item.type}</small></td>
-                <td class="t-center">${item.meter || '-'}</td>
-                <td class="t-center">${item.qty}</td>
-                <td class="t-center">${item.unit || '-'}</td>
-                <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.price)}</span></div></td>
-                <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.disc)}</span></div></td>
-                <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(net)}</span></div></td>
-                <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.total)}</span></div></td>
-            </tr>`;
-        
-        // Render Web (Preview)
-        webTbody.innerHTML += rowHtml;
-
-        // Render PDF (Pakai template yg sama tapi style mungkin beda dikit di CSS)
-        // Utk PDF kita buat sedikit beda di Nama Barang (font size type)
-        pdfTbody.innerHTML += `
-            <tr>
-                <td class="t-left"><strong>${item.name}</strong><br><span style="font-size:9px; color:#666;">${item.type}</span></td>
-                <td class="t-center">${item.meter || '-'}</td>
-                <td class="t-center">${item.qty}</td>
-                <td class="t-center">${item.unit || '-'}</td>
-                <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.price)}</span></div></td>
-                <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.disc)}</span></div></td>
-                <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(net)}</span></div></td>
-                <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.total)}</span></div></td>
-            </tr>`;
-    });
-
-    // --- TOTALS ---
-    ['web','pdf'].forEach(prefix => {
-        document.getElementById(prefix+'DPP').textContent = fmtMoneySimple(o.totalDPP);
-        document.getElementById(prefix+'PPN').textContent = fmtMoneySimple(o.totalPPN);
-        document.getElementById(prefix+'Total').textContent = fmtMoneySimple(o.grandTotal);
-    });
-
-    // --- BUTTONS ---
-    let btns = `<button class="btn-action btn-close" onclick="closeModal()">Close</button>`;
-    if(o.status === 'Awaiting Approval') {
-        btns += `<button class="btn-action btn-reject" onclick="updateStatus('${o.id}', 'Cancel Order')">Reject</button>
-                 <button class="btn-action btn-approve" onclick="updateStatus('${o.id}', 'Awaiting Production')">Approve</button>`;
-    } else if (o.status !== 'Cancel Order') {
-        btns += `<button class="btn-action btn-pdf" onclick="dlPDF('${o.id}')">Download PDF</button>`;
-    }
-    document.getElementById('modalActions').innerHTML = btns;
-    
-    // Safety check open modal
     try {
+        const o = allOrders.find(x => String(x.id) === String(id));
+        if(!o) { alert("Order not found in memory!"); return; }
+
+        // --- POPULATE HEADER & INFO (Safe Set) ---
+        setTxt('webOrderNo', o.id);
+        setTxt('webStatusBadge', o.status);
+        const badgeEl = document.getElementById('webStatusBadge');
+        if(badgeEl) badgeEl.className = 'badge ' + (o.status.includes('Cancel') ? 'badge-danger' : (o.status.includes('Awaiting Approval') ? 'badge-approve' : 'badge-success'));
+        
+        ['web','pdf'].forEach(prefix => {
+            setTxt(prefix+'Customer', o.customer);
+            setTxt(prefix+'CustName', o.customer);
+            setTxt(prefix+'Address', (o.address||"") + " " + (o.kec||"") + " " + (o.city||""));
+            setTxt(prefix+'Addr', o.address||"");
+            setTxt(prefix+'Region', (o.kec||"") + ", " + (o.city||""));
+            setTxt(prefix+'Date', o.date);
+            setTxt(prefix+'Est', o.estDelivery);
+            setTxt(prefix+'Due', o.dueDate);
+            setTxt(prefix+'CP', o.cp);
+            setTxt(prefix+'NPWP', o.npwp);
+            setTxt(prefix+'Notes', o.notes);
+            setTxt(prefix+'OrderNo', o.id);
+        });
+
+        // --- POPULATE TABLES ---
+        const webTbody = document.getElementById('webItemsBody');
+        const pdfTbody = document.getElementById('pdfItemsBody');
+        webTbody.innerHTML = '';
+        pdfTbody.innerHTML = '';
+
+        o.items.forEach(item => {
+            let net = item.net || 0;
+            
+            // Render Web
+            webTbody.innerHTML += `
+                <tr>
+                    <td class="t-left"><strong>${item.name}</strong><br><small style="color:#888;">${item.type}</small></td>
+                    <td class="t-center">${item.meter || '-'}</td>
+                    <td class="t-center">${item.qty}</td>
+                    <td class="t-center">${item.unit || '-'}</td>
+                    <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.price)}</span></div></td>
+                    <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.disc)}</span></div></td>
+                    <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(net)}</span></div></td>
+                    <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.total)}</span></div></td>
+                </tr>`;
+
+            // Render PDF
+            pdfTbody.innerHTML += `
+                <tr>
+                    <td class="t-left"><strong>${item.name}</strong><br><span style="font-size:9px; color:#666;">${item.type}</span></td>
+                    <td class="t-center">${item.meter || '-'}</td>
+                    <td class="t-center">${item.qty}</td>
+                    <td class="t-center">${item.unit || '-'}</td>
+                    <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.price)}</span></div></td>
+                    <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.disc)}</span></div></td>
+                    <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(net)}</span></div></td>
+                    <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.total)}</span></div></td>
+                </tr>`;
+        });
+
+        // --- TOTALS ---
+        ['web','pdf'].forEach(prefix => {
+            setTxt(prefix+'DPP', fmtMoneySimple(o.totalDPP));
+            setTxt(prefix+'PPN', fmtMoneySimple(o.totalPPN));
+            setTxt(prefix+'Total', fmtMoneySimple(o.grandTotal));
+        });
+
+        // --- BUTTONS ---
+        let btns = `<button class="btn-action btn-close" onclick="closeModal()">Close</button>`;
+        if(o.status === 'Awaiting Approval') {
+            btns += `<button class="btn-action btn-reject" onclick="updateStatus('${o.id}', 'Cancel Order')">Reject</button>
+                     <button class="btn-action btn-approve" onclick="updateStatus('${o.id}', 'Awaiting Production')">Approve</button>`;
+        } else if (o.status !== 'Cancel Order') {
+            btns += `<button class="btn-action btn-pdf" onclick="dlPDF('${o.id}')">Download PDF</button>`;
+        }
+        document.getElementById('modalActions').innerHTML = btns;
+        
         document.getElementById('orderModal').style.display = 'flex';
-    } catch(e) { console.error("Error opening modal", e); }
+
+    } catch (err) {
+        console.error("Error opening modal:", err);
+        alert("Gagal membuka detail order. Cek console.");
+    }
 }
 
 function closeModal() { document.getElementById('orderModal').style.display = 'none'; }
@@ -446,7 +456,6 @@ function setFilter(f) {
     renderTable(); 
 }
 
-// Helpers Formatter
 function fmtNum(n) { return (Number(n)||0).toLocaleString('id-ID', {minimumFractionDigits:0}); }
 function fmtMoneySimple(n) { return (Number(n)||0).toLocaleString('id-ID', {style:'currency', currency:'IDR', minimumFractionDigits:0}); }
 
