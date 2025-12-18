@@ -288,6 +288,57 @@ input[type=number] { -moz-appearance: textfield; }
 .toast.show { opacity: 1; transform: translateY(0); }
 .cust-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
 .cust-full-width { grid-column: span 2; }
+
+/* --- UPDATE: XERO DATE STYLE --- */
+
+/* 1. Target khusus input tipe date */
+input[type="date"].main-input {
+  /* Pastikan relative positioning untuk trik klik */
+  position: relative;
+  
+  /* Menambahkan Icon Kalender di sebelah KIRI menggunakan SVG Background */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23222222' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 10px 50%; /* Posisi icon (10px dari kiri, tengah vertikal) */
+  background-size: 15px; /* Ukuran icon disesuaikan */
+  
+  /* Memberi jarak teks agar tidak menumpuk dengan icon */
+  padding-left: 36px !important; 
+  
+  /* Style border saat normal */
+  border: 1px solid #cccccc;
+  border-radius: 3px;
+  
+  /* Menjaga warna font tetap sesuai aslinya */
+  color: var(--text-color); 
+}
+
+/* 2. Style saat Focus (Diklik) agar mirip screenshot (Glow abu-abu/biru tipis) */
+input[type="date"].main-input:focus {
+  border-color: #777 !important; /* Border sedikit lebih gelap */
+  box-shadow: 0 0 0 3px rgba(17, 105, 153, 0.1) !important; /* Efek glow Xero halus */
+  outline: none;
+}
+
+/* 3. Trik untuk Icon Bawaan Browser (biasanya panah di kanan) */
+/* Kita sembunyikan icon bawaan tapi lebarkan areanya agar KLIK DIMANAPUN memicu kalender */
+input[type="date"].main-input::-webkit-calendar-picker-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0; /* Membuat transparan */
+  cursor: pointer;
+}
+
+/* (Opsional) Menghapus icon 'X' (clear) di Chrome agar lebih bersih seperti Xero */
+input[type="date"].main-input::-webkit-clear-button {
+  display: none;
+  -webkit-appearance: none;
+}
 </style>
 </head>
 
