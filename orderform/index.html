@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Purchase Order - Final Logo GitHub</title>
+<title>Purchase Order - Xero Navigation</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -12,6 +12,7 @@
 /* --- VARIABLES --- */
 :root {
   --xero-blue: #116999;
+  --xero-nav-bg: #0b76ba; /* Warna biru navbar Xero */
   --border-color: #cccccc;
   --bg-color: #f4f5f6;
   --text-color: #222;
@@ -27,8 +28,83 @@ body, input, select, textarea, button, .choices, .choices__inner, .brand-title, 
   margin: 0; font-family: Arial, sans-serif !important; font-size: 13px; color: var(--text-color);
 }
 
-body { background: var(--bg-color); }
+body { background: var(--bg-color); margin: 0; padding: 0; }
 
+/* --- XERO TOP NAVIGATION BAR --- */
+.xero-navbar {
+    background-color: var(--xero-nav-bg);
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+    color: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+}
+
+.nav-left { display: flex; align-items: center; height: 100%; }
+
+.xero-logo-text {
+    font-size: 20px;
+    font-weight: 700;
+    margin-right: 20px;
+    letter-spacing: -0.5px;
+}
+
+.company-selector {
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border: none;
+    color: white;
+}
+.company-selector:hover { background-color: rgba(0, 0, 0, 0.2); }
+
+.nav-links { display: flex; height: 100%; }
+.nav-item {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+.nav-item:hover { background-color: rgba(255, 255, 255, 0.1); }
+.nav-item.active { background-color: rgba(0, 0, 0, 0.2); font-weight: 700; }
+
+.nav-right { display: flex; align-items: center; gap: 15px; }
+.nav-icon {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 50%;
+    font-size: 16px;
+    font-weight: 300;
+}
+.nav-icon:hover { background-color: rgba(255, 255, 255, 0.1); }
+.user-profile {
+    width: 30px; height: 30px; background: #ddd; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; color: #555; font-size: 12px;
+}
+
+/* --- PAGE LAYOUT --- */
 .page-wrap { padding: 40px 20px; display: flex; justify-content: center; }
 
 .invoice-card {
@@ -39,7 +115,7 @@ body { background: var(--bg-color); }
   overflow: visible; 
 }
 
-/* --- HEADER --- */
+/* --- HEADER INVOICE --- */
 .top-header { 
     margin-bottom: 30px; 
     border-bottom: 1px solid #eee; 
@@ -51,7 +127,7 @@ body { background: var(--bg-color); }
 
 /* Style Logo */
 .brand-section .brand-logo {
-    max-height: 80px; /* Atur tinggi logo */
+    max-height: 80px; 
     width: auto;      
     display: block;
 }
@@ -189,6 +265,28 @@ input[type=number] { -moz-appearance: textfield; }
 
 <div id="toast" class="toast">Notifikasi</div>
 
+<div class="xero-navbar">
+    <div class="nav-left">
+        <span class="xero-logo-text">xero</span>
+        <button class="company-selector">CV Sukses Jaya Makmur Lestari <span>▼</span></button>
+        <div class="nav-links">
+            <a href="../inventory/" class="nav-item">Inventory</a>
+            <a href="../orderform/" class="nav-item active">Order Form</a>
+            <a href="../production/" class="nav-item">Production</a>
+            <a href="../receiving/" class="nav-item">Receiving</a>
+            <a href="../reviewinvoice/" class="nav-item">Review Invoice</a>
+        </div>
+    </div>
+    <div class="nav-right">
+        <span class="nav-icon" title="Create New">＋</span>
+        <span class="nav-icon" title="Search">🔍</span>
+        <span class="nav-icon" title="Notifications">🔔</span>
+        <span class="nav-icon" title="Help">❓</span>
+        <span class="nav-icon" title="Apps">▦</span>
+        <div class="user-profile" title="User Profile">U</div>
+    </div>
+</div>
+
 <div id="modalAddCustomer" class="modal-overlay">
   <div class="modal-box">
     <h3 style="margin-top:0; border-bottom:1px solid #eee; padding-bottom:10px;">Tambah Pelanggan Baru</h3>
@@ -225,7 +323,7 @@ input[type=number] { -moz-appearance: textfield; }
   <div class="invoice-card">
     <div class="top-header">
       <div class="brand-section">
-          <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/Screenshot_2025-12-17_161250-removebg-preview.png" alt="Logo Perusahaan" class="brand-logo">
+          <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/main/assets/Screenshot_2025-12-17_161250-removebg-preview.png" alt="Logo Perusahaan" class="brand-logo">
       </div>
       <div class="xero-header-right">
           <h1 id="xeroOrderTitle" class="xero-order-title">Pesanan Baru</h1>
