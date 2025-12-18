@@ -24,12 +24,9 @@
   --badge-approve-bg: #fff4e5; --badge-approve-text: #b75900;
 
   /* Button Colors (Bright & Modern) */
-  --btn-approve-bg: #10b981; /* Emerald Green */
-  --btn-approve-hover: #059669;
-  --btn-reject-bg: #f43f5e; /* Rose Red */
-  --btn-reject-hover: #e11d48;
-  --btn-complete-bg: #3b82f6; /* Blue */
-  --btn-complete-hover: #2563eb;
+  --btn-approve-bg: #10b981; --btn-approve-hover: #059669;
+  --btn-reject-bg: #f43f5e; --btn-reject-hover: #e11d48;
+  --btn-complete-bg: #3b82f6; --btn-complete-hover: #2563eb;
 }
 
 * { box-sizing: border-box; }
@@ -48,19 +45,10 @@ body { margin: 0; font-family: 'Arial', sans-serif; font-size: 13px; color: var(
 .user-role { font-size: 11px; color: #888; }
 .user-avatar { width: 36px; height: 36px; background-color: var(--xero-blue); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; }
 
-/* --- PAGE LAYOUT & TABS --- */
+/* --- LAYOUT --- */
 .page-wrap { padding: 20px 40px; }
-
-.category-tabs { 
-    display: flex; gap: 20px; margin-bottom: 0; 
-    border-bottom: 1px solid #ccc; padding-bottom: 0;
-}
-.cat-btn { 
-    background: none; border: none; padding: 10px 15px; 
-    font-size: 16px; font-weight: 600; color: #666; 
-    cursor: pointer; border-bottom: 4px solid transparent; 
-    transition: 0.2s; margin-bottom: -1px;
-}
+.category-tabs { display: flex; gap: 20px; margin-bottom: 0; border-bottom: 1px solid #ccc; padding-bottom: 0; }
+.cat-btn { background: none; border: none; padding: 10px 15px; font-size: 16px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 4px solid transparent; transition: 0.2s; margin-bottom: -1px; }
 .cat-btn:hover { color: var(--xero-blue); }
 .cat-btn.active { color: var(--xero-blue); border-bottom-color: var(--xero-blue); }
 
@@ -69,15 +57,11 @@ body { margin: 0; font-family: 'Arial', sans-serif; font-size: 13px; color: var(
 .status-link:hover { text-decoration: underline; }
 .status-link.active { font-weight: 700; color: #222; text-decoration: none; cursor: default; }
 
-.search-area {
-    background: #fff; padding: 10px; border: 1px solid #ccc; border-radius: 3px;
-    display: flex; align-items: center; margin-bottom: 20px;
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
-}
+.search-area { background: #fff; padding: 10px; border: 1px solid #ccc; border-radius: 3px; display: flex; align-items: center; margin-bottom: 20px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); }
 .search-icon { color: #999; font-size: 16px; margin-right: 10px; margin-left: 5px; }
 .search-input { border: none; width: 100%; font-size: 13px; outline: none; background: transparent; color: #333; }
 
-/* --- TABLE STYLE --- */
+/* --- TABLE --- */
 .table-card { background: #fff; border: 1px solid #ccc; border-radius: 3px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; }
 table.xero-table { width: 100%; border-collapse: collapse; min-width: 1000px; }
 table.xero-table th { text-align: left; padding: 10px 15px; border-bottom: 1px solid #ccc; background: #fff; font-weight: 600; color: #444; font-size: 13px; white-space: nowrap; }
@@ -96,55 +80,52 @@ table.xero-table tr:hover { background-color: var(--xero-hover); }
 .badge-done { background: var(--badge-paid-bg); color: var(--badge-paid-text); }
 .badge-cancel { background: var(--badge-cancel-bg); color: var(--badge-cancel-text); }
 
-/* --- MODAL DETAIL (UPDATED) --- */
+/* --- MODAL DETAIL (SUPER WIDE) --- */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 10000; backdrop-filter: blur(2px); }
-.modal-box { background: #fff; width: 800px; max-width: 95%; border-radius: 8px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); display: flex; flex-direction: column; overflow: hidden; max-height: 90vh; }
+.modal-box { 
+    background: #fff; width: 1100px; /* Lebih lebar untuk muat banyak kolom */
+    max-width: 95%; border-radius: 8px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); 
+    display: flex; flex-direction: column; overflow: hidden; max-height: 95vh; 
+}
 
-.modal-header { padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fafafa; }
+.modal-header { padding: 15px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fafafa; }
 .modal-title { font-size: 18px; font-weight: 800; color: #1f2937; margin: 0; }
-.modal-close { background: none; border: none; font-size: 24px; color: #999; cursor: pointer; transition: 0.2s; }
-.modal-close:hover { color: #333; }
+.modal-close { background: none; border: none; font-size: 24px; color: #999; cursor: pointer; }
 
-.modal-body { padding: 30px; overflow-y: auto; }
+.modal-body { padding: 25px 30px; overflow-y: auto; flex: 1; }
 
-/* Modal Info Grid */
-.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+/* Modal Info Grid (3 Columns) */
+.info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
 .info-item { display: flex; flex-direction: column; }
 .info-label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: #6b7280; letter-spacing: 0.5px; margin-bottom: 4px; }
-.info-value { font-size: 14px; font-weight: 500; color: #111; }
+.info-value { font-size: 14px; font-weight: 600; color: #111; }
+.notes-box { grid-column: span 3; background: #f9fafb; padding: 10px; border-radius: 4px; border: 1px dashed #ccc; margin-top: 5px; font-size: 13px; color: #555; }
 
-/* Modal Items Table */
-.items-table-container { border: 1px solid #e5e7eb; border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
-table.modal-items { width: 100%; border-collapse: collapse; }
-table.modal-items th { background: #f9fafb; text-align: left; padding: 10px 15px; font-size: 12px; font-weight: 700; color: #374151; border-bottom: 1px solid #e5e7eb; }
-table.modal-items td { padding: 10px 15px; font-size: 13px; color: #333; border-bottom: 1px solid #f3f4f6; }
-table.modal-items tr:last-child td { border-bottom: none; }
+/* Modal Items Table (Compact) */
+.items-table-container { border: 1px solid #e5e7eb; border-radius: 6px; overflow-x: auto; margin-bottom: 20px; }
+table.modal-items { width: 100%; border-collapse: collapse; min-width: 900px; }
+table.modal-items th { background: #f9fafb; text-align: left; padding: 8px 12px; font-size: 11px; font-weight: 700; color: #374151; border-bottom: 1px solid #e5e7eb; text-transform: uppercase; }
+table.modal-items td { padding: 8px 12px; font-size: 12px; color: #333; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
 .t-right { text-align: right; }
+.t-center { text-align: center; }
 
-.total-section { display: flex; justify-content: flex-end; align-items: center; margin-top: 10px; padding-right: 10px; }
-.total-label { font-size: 14px; font-weight: 600; color: #374151; margin-right: 20px; }
-.total-amount { font-size: 20px; font-weight: 800; color: var(--xero-blue); }
+/* Summary Section */
+.summary-container { display: flex; justify-content: flex-end; }
+.summary-box { width: 300px; }
+.summary-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13px; color: #555; }
+.summary-row.grand { border-top: 2px solid #eee; margin-top: 5px; padding-top: 10px; font-size: 16px; font-weight: 800; color: var(--xero-blue); }
 
-/* Modal Footer & Buttons */
-.modal-footer { padding: 20px 30px; border-top: 1px solid #eee; background: #f9fafb; text-align: right; }
-
+/* Modal Footer */
+.modal-footer { padding: 15px 30px; border-top: 1px solid #eee; background: #f9fafb; text-align: right; }
 .btn-action { padding: 10px 24px; border-radius: 6px; font-weight: 600; border: none; cursor: pointer; margin-left: 10px; font-size: 13px; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-.btn-action:disabled { opacity: 0.7; cursor: not-allowed; }
-
-/* Attractive Colors */
 .btn-approve { background-color: var(--btn-approve-bg); color: white; } 
-.btn-approve:hover { background-color: var(--btn-approve-hover); transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2); }
-
+.btn-approve:hover { background-color: var(--btn-approve-hover); transform: translateY(-1px); }
 .btn-reject { background-color: var(--btn-reject-bg); color: white; } 
-.btn-reject:hover { background-color: var(--btn-reject-hover); transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(244, 63, 94, 0.2); }
-
+.btn-reject:hover { background-color: var(--btn-reject-hover); transform: translateY(-1px); }
 .btn-complete { background-color: var(--btn-complete-bg); color: white; }
-.btn-complete:hover { background-color: var(--btn-complete-hover); transform: translateY(-1px); }
-
 .btn-close { background: #fff; color: #374151; border: 1px solid #d1d5db; }
-.btn-close:hover { background: #f3f4f6; }
 
-/* Toast & Loading */
+/* Skeleton */
 @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
 .skeleton-bar { height: 16px; width: 100%; background: #f0f0f0; background-image: linear-gradient(to right, #f0f0f0 0%, #e0e0e0 20%, #f0f0f0 40%, #f0f0f0 100%); background-size: 1000px 100%; animation: shimmer 1.5s infinite linear; border-radius: 3px; display:block; }
 .toast { position: fixed; bottom: 30px; right: 30px; padding: 15px 25px; background: #333; color: white; border-radius: 5px; opacity: 0; transform: translateY(20px); transition: 0.3s; z-index: 100000; }
@@ -190,7 +171,7 @@ table.modal-items tr:last-child td { border-bottom: none; }
 
     <div class="search-area">
         <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" class="search-input" placeholder="Enter a contact, amount, or order number" onkeyup="renderTable()">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search Order Number, Customer..." onkeyup="renderTable()">
     </div>
 
     <div class="table-card">
@@ -199,7 +180,7 @@ table.modal-items tr:last-child td { border-bottom: none; }
                 <thead>
                     <tr>
                         <th class="col-view">View</th>
-                        <th>Order Number</th>
+                        <th>Order #</th>
                         <th>Customer</th>
                         <th>Order Date</th>
                         <th>Est. Delivery</th>
@@ -220,9 +201,10 @@ table.modal-items tr:last-child td { border-bottom: none; }
 <div id="orderModal" class="modal-overlay">
     <div class="modal-box">
         <div class="modal-header">
-            <h3 class="modal-title" id="modalTitle">Order #251000000</h3>
+            <h3 class="modal-title" id="modalTitle">Order Detail</h3>
             <button class="modal-close" onclick="closeModal()">×</button>
         </div>
+        
         <div class="modal-body">
             <div class="info-grid">
                 <div class="info-item">
@@ -234,12 +216,25 @@ table.modal-items tr:last-child td { border-bottom: none; }
                     <span class="info-value" id="modalDate">-</span>
                 </div>
                 <div class="info-item">
-                    <span class="info-label">Current Status</span>
+                    <span class="info-label">Status</span>
                     <span class="info-value" id="modalStatus">-</span>
                 </div>
-                <div class="info-item">
+                
+                <div class="info-item" style="margin-top:15px;">
+                    <span class="info-label">Est. Delivery</span>
+                    <span class="info-value" id="modalDelivery">-</span>
+                </div>
+                <div class="info-item" style="margin-top:15px;">
+                    <span class="info-label">Term of Payment</span>
+                    <span class="info-value" id="modalTerm">-</span>
+                </div>
+                <div class="info-item" style="margin-top:15px;">
                     <span class="info-label">Due Date</span>
                     <span class="info-value" id="modalDue">-</span>
+                </div>
+
+                <div class="notes-box" id="modalNotes">
+                    <strong>Notes:</strong> <span>-</span>
                 </div>
             </div>
 
@@ -248,21 +243,37 @@ table.modal-items tr:last-child td { border-bottom: none; }
                     <thead>
                         <tr>
                             <th>Item Name</th>
+                            <th class="t-right">Meter</th>
                             <th class="t-right">Qty</th>
                             <th class="t-right">Price</th>
+                            <th class="t-right">Disc</th>
+                            <th class="t-right">DPP</th>
+                            <th class="t-right">PPN</th>
                             <th class="t-right">Total</th>
                         </tr>
                     </thead>
-                    <tbody id="modalItemsBody">
-                        </tbody>
+                    <tbody id="modalItemsBody"></tbody>
                 </table>
             </div>
 
-            <div class="total-section">
-                <span class="total-label">Total Amount</span>
-                <span class="total-amount" id="modalTotal">Rp 0</span>
+            <div class="summary-container">
+                <div class="summary-box">
+                    <div class="summary-row">
+                        <span>Total DPP</span>
+                        <span id="summaryDPP">0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Total PPN (11%)</span>
+                        <span id="summaryPPN">0</span>
+                    </div>
+                    <div class="summary-row grand">
+                        <span>Grand Total</span>
+                        <span id="summaryTotal">0</span>
+                    </div>
+                </div>
             </div>
         </div>
+
         <div class="modal-footer" id="modalActions">
             </div>
     </div>
@@ -270,9 +281,9 @@ table.modal-items tr:last-child td { border-bottom: none; }
 
 <script>
 // =========================================================================
-// !!! PASTIKAN URL INI BENAR (Sama dengan Apps Script yang baru dideploy) !!!
+// !!! PASTIKAN URL INI BENAR (URL Web App dari Apps Script Anda) !!!
 // =========================================================================
-const baseURL = "https://script.google.com/macros/s/AKfycbypPZq_5xUgUF358RCvZrKbG2l9FCCNcgYgVCiDweun58D6p1967wgHHUz9F9hyw1wUGA/exec"; 
+const baseURL = "https://script.google.com/macros/s/AKfycbzwlWFTTuqe84_-kL4jd7UK8jSMw40-HuFbO9VxiLogzfkdvCmhBwsG_uUAID2Zpmk9Cg/exec"; 
 
 let allOrders = []; 
 let currentCategory = 'General Order';
@@ -283,18 +294,7 @@ window.onload = function() { fetchData(); };
 async function fetchData() {
     const tbody = document.getElementById('invoiceTableBody');
     let skeleton = '';
-    for(let i=0; i<6; i++) {
-        skeleton += `<tr>
-            <td><span class="skeleton-bar" style="width:20px; margin:auto;"></span></td>
-            <td><span class="skeleton-bar" style="width:80px;"></span></td>
-            <td><span class="skeleton-bar" style="width:150px;"></span></td>
-            <td><span class="skeleton-bar" style="width:90px;"></span></td>
-            <td><span class="skeleton-bar" style="width:90px;"></span></td>
-            <td><span class="skeleton-bar" style="width:90px;"></span></td>
-            <td><span class="skeleton-bar" style="width:100px; float:right;"></span></td>
-            <td><span class="skeleton-bar" style="width:80px; margin:auto;"></span></td>
-        </tr>`;
-    }
+    for(let i=0; i<6; i++) skeleton += `<tr><td><span class="skeleton-bar" style="width:20px;"></span></td><td><span class="skeleton-bar"></span></td><td><span class="skeleton-bar"></span></td><td><span class="skeleton-bar"></span></td><td><span class="skeleton-bar"></span></td><td><span class="skeleton-bar"></span></td><td><span class="skeleton-bar"></span></td><td><span class="skeleton-bar"></span></td></tr>`;
     tbody.innerHTML = skeleton;
     
     try {
@@ -303,11 +303,10 @@ async function fetchData() {
         if(Array.isArray(data)) {
             allOrders = data;
             renderTable();
-            showToast("Data synced with Sheet", "success");
-        } else { throw new Error("Format Data Invalid"); }
+            showToast("Data refreshed", "success");
+        } else { throw new Error("Format Invalid"); }
     } catch (e) {
-        console.error(e);
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:red;">Failed to load data. Check Apps Script.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:red;">Failed to load data. Check Apps Script URL.</td></tr>`;
     }
 }
 
@@ -321,9 +320,7 @@ function setCategory(cat) {
 
 function setStatusFilter(status) {
     currentStatusFilter = status;
-    document.querySelectorAll('.status-link').forEach(l => {
-        l.classList.toggle('active', l.textContent.trim() === status);
-    });
+    document.querySelectorAll('.status-link').forEach(l => l.classList.toggle('active', l.textContent.trim() === status));
     renderTable();
 }
 
@@ -347,7 +344,6 @@ function renderTable() {
     filtered.forEach(o => {
         const tr = document.createElement('tr');
         const status = o.status || 'Awaiting Approval';
-        
         let badgeClass = 'badge-approve'; 
         if(status === 'Awaiting Production') badgeClass = 'badge-prod'; 
         else if(status === 'Completed Order') badgeClass = 'badge-done'; 
@@ -355,16 +351,16 @@ function renderTable() {
 
         tr.innerHTML = `
             <td class="col-view">
-                <button class="btn-view" onclick="openOrderDetails('${o.id}')" title="View Details">
+                <button class="btn-view" onclick="openOrderDetails('${o.id}')" title="View Detail">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                 </button>
             </td>
-            <td><a href="#" onclick="openOrderDetails('${o.id}')" style="color:var(--xero-blue); text-decoration:none; font-weight:600;">${o.id}</a></td>
+            <td><a href="#" onclick="openOrderDetails('${o.id}')" style="color:var(--xero-blue); text-decoration:none; font-weight:700;">${o.id}</a></td>
             <td>${o.customer}</td>
             <td>${o.date}</td>
-            <td>${o.dueDate}</td>
-            <td>${o.dueDate}</td> 
-            <td class="col-right" style="font-weight:600;">${formatMoney(o.total)}</td>
+            <td>${o.estDelivery}</td>
+            <td>${o.dueDate || '-'}</td> 
+            <td class="col-right" style="font-weight:700;">${formatMoney(o.grandTotal)}</td>
             <td class="col-center"><span class="badge ${badgeClass}">${status}</span></td>
         `;
         tbody.appendChild(tr);
@@ -373,16 +369,27 @@ function renderTable() {
 
 function openOrderDetails(id) {
     const order = allOrders.find(x => String(x.id) === String(id));
-    if(!order) { showToast("Order not found", "error"); return; }
+    if(!order) return;
 
+    // 1. Populate Header Info
     document.getElementById('modalTitle').textContent = "Order #" + order.id;
     document.getElementById('modalCustomer').textContent = order.customer;
     document.getElementById('modalDate').textContent = order.date;
-    document.getElementById('modalDue').textContent = order.dueDate;
-    document.getElementById('modalStatus').textContent = order.status || "Awaiting Approval";
-    document.getElementById('modalTotal').textContent = formatMoney(order.total);
+    document.getElementById('modalStatus').textContent = order.status;
+    document.getElementById('modalDelivery').textContent = order.estDelivery;
+    document.getElementById('modalDue').textContent = order.dueDate || '-';
+    document.getElementById('modalTerm').textContent = order.term || '-';
+    
+    // Notes
+    const notesEl = document.getElementById('modalNotes');
+    if(order.notes) {
+        notesEl.style.display = 'block';
+        notesEl.innerHTML = `<strong>Notes:</strong> ${order.notes}`;
+    } else {
+        notesEl.style.display = 'none';
+    }
 
-    // --- POPULATE ITEMS TABLE ---
+    // 2. Populate Items Table
     const itemsBody = document.getElementById('modalItemsBody');
     itemsBody.innerHTML = '';
     
@@ -390,18 +397,25 @@ function openOrderDetails(id) {
         order.items.forEach(item => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${item.name}</td>
-                <td class="t-right">${item.qty} ${item.unit || ''}</td>
+                <td>${item.name}<br><small style="color:#888;">${item.type}</small></td>
+                <td class="t-right">${Number(item.meter) > 0 ? item.meter : '-'}</td>
+                <td class="t-right">${item.qty} ${item.unit}</td>
                 <td class="t-right">${formatMoney(item.price)}</td>
-                <td class="t-right" style="font-weight:600;">${formatMoney(item.lineTotal)}</td>
+                <td class="t-right" style="color:#d33;">${Number(item.disc) > 0 ? formatMoney(item.disc) : '-'}</td>
+                <td class="t-right">${formatMoney(item.dpp)}</td>
+                <td class="t-right">${formatMoney(item.ppn)}</td>
+                <td class="t-right" style="font-weight:600;">${formatMoney(item.total)}</td>
             `;
             itemsBody.appendChild(tr);
         });
-    } else {
-        itemsBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#888;">No items detail available</td></tr>';
     }
 
-    // --- BUTTON ACTIONS ---
+    // 3. Populate Summary
+    document.getElementById('summaryDPP').textContent = formatMoney(order.totalDPP);
+    document.getElementById('summaryPPN').textContent = formatMoney(order.totalPPN);
+    document.getElementById('summaryTotal').textContent = formatMoney(order.grandTotal);
+
+    // 4. Buttons Logic
     const footer = document.getElementById('modalActions');
     const status = order.status || 'Awaiting Approval';
     let btns = `<button class="btn-action btn-close" onclick="closeModal()">Close</button>`;
@@ -424,15 +438,11 @@ function openOrderDetails(id) {
     document.getElementById('orderModal').style.display = 'flex';
 }
 
-function closeModal() {
-    document.getElementById('orderModal').style.display = 'none';
-}
+function closeModal() { document.getElementById('orderModal').style.display = 'none'; }
 
 async function processStatus(id, newStatus) {
     if(!confirm("Change status to " + newStatus + "?")) return;
-    
-    const footer = document.getElementById('modalActions');
-    footer.innerHTML = '<span style="color:#666; font-weight:600;">Processing update...</span>';
+    document.getElementById('modalActions').innerHTML = '<span style="color:#666;">Updating status...</span>';
 
     try {
         const payload = JSON.stringify({ action: "updatestatus", id: id, status: newStatus });
@@ -440,20 +450,15 @@ async function processStatus(id, newStatus) {
         const result = await res.json();
 
         if(result.result === "success") {
-            showToast("Success! Order updated.", "success");
+            showToast("Success! Status Updated.", "success");
             const idx = allOrders.findIndex(x => String(x.id) === String(id));
             if(idx >= 0) allOrders[idx].status = newStatus;
             closeModal();
             renderTable();
         } else {
-            alert("Failed to update status on server.");
-            closeModal();
+            alert("Update Failed"); closeModal();
         }
-    } catch(e) {
-        console.error(e);
-        alert("Connection Error");
-        closeModal();
-    }
+    } catch(e) { console.error(e); alert("Connection Error"); closeModal(); }
 }
 
 function showToast(msg, type="info") {
