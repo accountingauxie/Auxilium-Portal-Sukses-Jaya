@@ -184,6 +184,40 @@ input.main-input, textarea.main-input {
 input.main-input { height: 38px; }
 input.main-input:focus, textarea.main-input:focus { border-color: var(--xero-blue); outline: none; }
 
+/* --- PERBAIKAN DATE INPUT ALA XERO (BASE64 ICON) --- */
+input[type="date"].main-input {
+    position: relative;
+    /* Base64 Encoded Icon (Lebih Stabil) */
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM1NTU1NTUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSIzIiB5PSI0IiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHJ4PSIyIiByeT0iMiI+PC9yZWN0PjxsaW5lIHgxPSIxNiIgeTE9IjIiIHgyPSIxNiIgeTI9IjYiPjwvbGluZT48bGluZSB4MT0iOCIgeTE9IjIiIHgyPSI4IiB5Mj0iNiI+PC9saW5lPjxsaW5lIHgxPSIzIiB5TE9IjEwIiB4Mj0iMjEiIHkyPSIxMCI+PC9saW5lPjwvc3ZnPg==");
+    background-repeat: no-repeat;
+    background-position: 10px center;
+    background-size: 16px;
+    padding-left: 38px !important;
+    color: var(--text-color);
+    background-color: #fff;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+input[type="date"].main-input:focus {
+    border-color: #777 !important;
+    box-shadow: 0 0 0 3px rgba(17, 105, 153, 0.1) !important;
+    outline: none;
+}
+
+/* Trik agar klik dimana saja (termasuk icon) memicu kalender */
+input[type="date"].main-input::-webkit-calendar-picker-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    margin: 0; padding: 0;
+}
+/* ------------------------------------------------ */
+
 .detail-grid {
   display: grid; 
   grid-template-columns: 1.2fr 1.2fr 2fr 1fr 1fr; 
@@ -288,83 +322,6 @@ input[type=number] { -moz-appearance: textfield; }
 .toast.show { opacity: 1; transform: translateY(0); }
 .cust-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
 .cust-full-width { grid-column: span 2; }
-
-/* --- UPDATE: XERO DATE STYLE --- */
-
-/* 1. Target khusus input tipe date */
-input[type="date"].main-input {
-  position: relative;
-  
-  /* GANTI BAGIAN INI: Menggunakan format Base64 yang lebih stabil */
-  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM1NTU1NTUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSIzIiB5PSI0IiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHJ4PSIyIiByeT0iMiI+PC9yZWN0PjxsaW5lIHgxPSIxNiIgeTE9IjIiIHgyPSIxNiIgeTI9IjYiPjwvbGluZT48bGluZSB4MT0iOCIgeTE9IjIiIHgyPSI4IiB5Mj0iNiI+PC9saW5lPjxsaW5lIHgxPSIzIiB5TE9IjEwIiB4Mj0iMjEiIHkyPSIxMCI+PC9saW5lPjwvc3ZnPg==");
-  
-  background-repeat: no-repeat;
-  background-position: 10px center; /* Posisi icon di kiri tengah */
-  background-size: 16px; /* Ukuran icon */
-  
-  /* Padding kiri diperbesar agar teks tanggal tidak menimpa icon */
-  padding-left: 40px !important; 
-  
-  /* Reset appearance untuk browser tertentu */
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  
-  /* Style border standar */
-  border: 1px solid #cccccc;
-  border-radius: 3px;
-  color: var(--text-color);
-  height: 38px; /* Pastikan tinggi konsisten */
-  background-color: #fff; /* Pastikan background putih */
-}
-
-/* Style saat diklik/fokus */
-input[type="date"].main-input:focus {
-  border-color: #777 !important;
-  box-shadow: 0 0 0 3px rgba(17, 105, 153, 0.1) !important;
-  outline: none;
-}
-
-/* Menyembunyikan icon bawaan browser (segitiga/kalender bawaan) */
-/* Kita sembunyikan tapi lebarkan areanya supaya bisa diklik */
-input[type="date"].main-input::-webkit-calendar-picker-indicator {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  opacity: 0; /* Transparan */
-  cursor: pointer;
-}
-
-/* 2. Style saat Focus (Diklik) agar mirip screenshot (Glow abu-abu/biru tipis) */
-input[type="date"].main-input:focus {
-  border-color: #777 !important; /* Border sedikit lebih gelap */
-  box-shadow: 0 0 0 3px rgba(17, 105, 153, 0.1) !important; /* Efek glow Xero halus */
-  outline: none;
-}
-
-/* 3. Trik untuk Icon Bawaan Browser (biasanya panah di kanan) */
-/* Kita sembunyikan icon bawaan tapi lebarkan areanya agar KLIK DIMANAPUN memicu kalender */
-input[type="date"].main-input::-webkit-calendar-picker-indicator {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0; /* Membuat transparan */
-  cursor: pointer;
-}
-
-/* (Opsional) Menghapus icon 'X' (clear) di Chrome agar lebih bersih seperti Xero */
-input[type="date"].main-input::-webkit-clear-button {
-  display: none;
-  -webkit-appearance: none;
-}
 </style>
 </head>
 
