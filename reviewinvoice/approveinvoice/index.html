@@ -8,82 +8,46 @@
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
 
 <style>
-/* --- VARIABLES & RESET (SAMA DENGAN ORDER FORM) --- */
-:root {
-  --xero-blue: #116999;
-  --xero-light-blue: #e5f4fa;
-  --aux-text: #222;
-  --border-color: #cccccc;
-  --bg-color: #f4f5f6;
-  --green-bg: #dcfce7; --green-text: #166534;
-  --red-bg: #fee2e2; --red-text: #991b1b;
-  --orange-bg: #ffedd5; --orange-text: #9a3412;
-  --blue-bg: #dbeafe; --blue-text: #1e40af;
-  --border-light: #e0e0e0;
-}
-
+/* --- VARIABLES & STYLES (XERO THEME) --- */
+:root { --xero-blue: #116999; --xero-light-blue: #e5f4fa; --aux-text: #222; --border-color: #cccccc; --bg-color: #f4f5f6; --green-bg: #dcfce7; --green-text: #166534; --red-bg: #fee2e2; --red-text: #991b1b; --orange-bg: #ffedd5; --orange-text: #9a3412; --blue-bg: #dbeafe; --blue-text: #1e40af; }
 * { box-sizing: border-box; }
 body { margin: 0; font-family: 'Arial', sans-serif; font-size: 13px; color: var(--aux-text); background: var(--bg-color); }
-
-/* --- NAVBAR (KONSISTEN) --- */
-.aux-navbar {
-    background-color: #ffffff; height: 70px; display: flex; align-items: center; justify-content: space-between;
-    padding: 0 40px; box-shadow: 0 1px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 9999;
-}
+.aux-navbar { background-color: #ffffff; height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; box-shadow: 0 1px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 9999; }
 .aux-logo img { height: 40px; width: auto; display: block; }
 .aux-menu { display: flex; gap: 25px; align-items: center; }
 .aux-link { text-decoration: none; color: #666; font-weight: 600; font-size: 14px; padding: 8px 12px; border-radius: 4px; transition: all 0.2s; }
 .aux-link:hover { color: var(--xero-blue); background-color: #f5f9fc; }
 .aux-link.active { color: var(--xero-blue); background-color: #e6f0fa; font-weight: 700; }
-
 .user-panel { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid #eee; }
 .user-details { display: flex; flex-direction: column; text-align: right; line-height: 1.3; }
 .user-name { font-weight: 700; font-size: 13px; color: #333; }
 .user-role { font-size: 11px; color: #888; }
 .user-avatar { width: 36px; height: 36px; background-color: var(--xero-blue); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; }
-
-/* --- DASHBOARD LAYOUT (XERO STYLE) --- */
 .page-wrap { padding: 30px 40px; }
-
-/* 1. TOP TABS (General vs Pre-Order) */
 .main-tabs { display: flex; border-bottom: 1px solid #ddd; margin-bottom: 20px; background: transparent; }
-.main-tab-btn {
-    padding: 12px 24px; font-size: 16px; font-weight: 600; color: #555; cursor: pointer; border: none; background: transparent; border-bottom: 3px solid transparent; transition: 0.2s;
-}
+.main-tab-btn { padding: 12px 24px; font-size: 16px; font-weight: 600; color: #555; cursor: pointer; border: none; background: transparent; border-bottom: 3px solid transparent; transition: 0.2s; }
 .main-tab-btn:hover { color: var(--xero-blue); }
 .main-tab-btn.active { color: var(--xero-blue); border-bottom: 3px solid var(--xero-blue); }
-
-/* 2. CARD CONTAINER */
 .dashboard-card { background: #fff; border: 1px solid #d4d4d4; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); min-height: 500px; display: flex; flex-direction: column; }
-
-/* 3. STATUS FILTER BAR (All | Awaiting | etc) */
 .status-bar { padding: 0 20px; border-bottom: 1px solid #eee; display: flex; gap: 30px; height: 50px; align-items: center; }
 .status-link { text-decoration: none; color: #116999; font-size: 13px; cursor: pointer; position: relative; padding: 14px 0; }
 .status-link:hover { text-decoration: underline; }
 .status-link.active { font-weight: 700; color: #222; text-decoration: none; border-bottom: 4px solid var(--xero-blue); }
-
-/* 4. SEARCH & ACTION BAR */
 .action-bar { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: #fff; }
 .search-wrapper { position: relative; width: 300px; }
 .search-input { width: 100%; padding: 8px 10px 8px 35px; border: 1px solid #ccc; border-radius: 3px; font-size: 13px; }
 .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #999; font-size: 14px; }
 .btn-new { background-color: var(--xero-blue); color: white; border: none; padding: 8px 16px; border-radius: 3px; font-weight: 600; cursor: pointer; text-decoration: none; font-size: 13px; }
-
-/* 5. TABLE STYLE (XERO LIST) */
 .table-responsive { width: 100%; overflow-x: auto; }
 table.xero-list { width: 100%; border-collapse: collapse; min-width: 1000px; }
 table.xero-list th { text-align: left; padding: 10px 15px; border-bottom: 1px solid #ccc; background: #f8f9fa; font-weight: 700; color: #444; font-size: 12px; }
 table.xero-list td { padding: 12px 15px; border-bottom: 1px solid #eee; color: #333; vertical-align: middle; font-size: 13px; }
 table.xero-list tr:hover { background-color: #f5f9fc; }
-
-/* Status Badges */
 .badge { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; display: inline-block; }
-.badge-approve { background: var(--orange-bg); color: var(--orange-text); } /* Awaiting Approval */
-.badge-prod { background: var(--blue-bg); color: var(--blue-text); } /* Production */
-.badge-done { background: var(--green-bg); color: var(--green-text); } /* Completed */
-.badge-cancel { background: var(--red-bg); color: var(--red-text); } /* Cancelled */
-
-/* Action Buttons Small */
+.badge-approve { background: var(--orange-bg); color: var(--orange-text); } 
+.badge-prod { background: var(--blue-bg); color: var(--blue-text); } 
+.badge-done { background: var(--green-bg); color: var(--green-text); } 
+.badge-cancel { background: var(--red-bg); color: var(--red-text); } 
 .action-btn-group { display: flex; gap: 5px; }
 .btn-act { padding: 4px 8px; border: 1px solid #ccc; border-radius: 3px; background: #fff; cursor: pointer; font-size: 11px; font-weight: 600; color: #555; }
 .btn-act:hover { background: #eee; }
@@ -91,14 +55,13 @@ table.xero-list tr:hover { background-color: #f5f9fc; }
 .btn-act.approve:hover { background: var(--xero-light-blue); }
 .btn-act.cancel { color: #d33; }
 .btn-act.cancel:hover { background: #fee2e2; border-color: #d33; }
-
-/* Utils */
 .text-right { text-align: right; }
 .empty-state { padding: 50px; text-align: center; color: #888; }
-
-/* Toast */
 .toast { position: fixed; bottom: 30px; right: 30px; padding: 15px 25px; background: #333; color: white; border-radius: 5px; opacity: 0; transform: translateY(20px); transition: 0.3s; z-index: 100000; }
 .toast.show { opacity: 1; transform: translateY(0); }
+/* Spinner */
+.spinner { display:inline-block; width:12px; height:12px; border:2px solid #ccc; border-top-color: var(--xero-blue); border-radius:50%; animation:spin 1s linear infinite; margin-right:5px; }
+@keyframes spin { to {transform: rotate(360deg);} }
 </style>
 </head>
 
@@ -121,7 +84,7 @@ table.xero-list tr:hover { background-color: #f5f9fc; }
     <div class="user-panel">
         <div class="user-details">
             <span class="user-name">Manager</span>
-            <span class="user-role">Approver</span>
+            <span class="user-role">CV Sukses Jaya</span>
         </div>
         <div class="user-avatar">MG</div>
     </div>
@@ -130,7 +93,8 @@ table.xero-list tr:hover { background-color: #f5f9fc; }
 <div class="page-wrap">
     
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-        <h1 style="font-size:24px; margin:0; color:#222;">Invoices / Orders</h1>
+        <h1 style="font-size:24px; margin:0; color:#222;">Review Invoices / Orders</h1>
+        <button onclick="fetchData()" style="padding:8px 15px; cursor:pointer; background:#fff; border:1px solid #ccc; border-radius:4px; font-weight:600; color:#555;">Refresh Data</button>
     </div>
 
     <div class="main-tabs">
@@ -162,7 +126,7 @@ table.xero-list tr:hover { background-color: #f5f9fc; }
                         <th style="width:120px;">Number</th>
                         <th>Customer</th>
                         <th style="width:120px;">Date</th>
-                        <th style="width:120px;">Due Date</th>
+                        <th style="width:120px;">Est. Delivery</th>
                         <th class="text-right" style="width:150px;">Total Amount</th>
                         <th style="width:150px; text-align:center;">Status</th>
                         <th style="width:180px; text-align:center;">Action</th>
@@ -180,56 +144,62 @@ table.xero-list tr:hover { background-color: #f5f9fc; }
 </div>
 
 <script>
-// --- DUMMY DATA ---
-// Statuses: 'Awaiting Approval', 'Awaiting Production', 'Completed Order', 'Cancel Order'
-// Categories: 'General Order', 'Pre-Order'
+// =========================================================================
+// !!! PENTING: GANTI URL DI BAWAH INI DENGAN URL DEPLOY ANDA !!!
+// =========================================================================
+const baseURL = "https://script.google.com/macros/s/AKfycby-ZuXJyPv-4G9zTPh4r0s2LfdtH39jYkMR18sexKltSikYgWHcwJqGirEzGf_sY3Pg6Q/exec"; 
 
-let orders = [
-    { id: 'INV-001', customer: 'PT. SUMBER MAKMUR', date: '2025-12-16', due: '2026-01-15', total: 15000000, status: 'Awaiting Approval', type: 'General Order' },
-    { id: 'INV-002', customer: 'CV. BESI JAYA', date: '2025-12-17', due: '2026-01-16', total: 5400000, status: 'Awaiting Production', type: 'General Order' },
-    { id: 'INV-003', customer: 'TOKO BANGUNAN ABADI', date: '2025-12-17', due: '2026-01-16', total: 2300000, status: 'Completed Order', type: 'General Order' },
-    { id: 'PO-001', customer: 'PT. KONSTRUKSI RAYA', date: '2025-12-18', due: '2026-02-18', total: 45000000, status: 'Awaiting Approval', type: 'Pre-Order' },
-    { id: 'PO-002', customer: 'BAPAK BUDI', date: '2025-12-18', due: '2025-12-25', total: 1200000, status: 'Cancel Order', type: 'Pre-Order' }
-];
-
+let allOrders = []; 
 let currentCategory = 'General Order';
 let currentStatusFilter = 'All';
 
 // --- INITIALIZATION ---
 window.onload = function() {
-    renderTable();
+    fetchData();
 };
 
-// --- FUNCTIONS ---
+async function fetchData() {
+    const tbody = document.getElementById('invoiceTableBody');
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px;"><div class="spinner"></div> Mengambil data dari Google Sheet...</td></tr>';
+    
+    try {
+        const res = await fetch(baseURL + "?action=getorders");
+        const data = await res.json();
+        
+        if(Array.isArray(data)) {
+            allOrders = data;
+            renderTable();
+            showToast("Data berhasil dimuat", "success");
+        } else {
+            throw new Error("Format data salah");
+        }
+    } catch (e) {
+        console.error(e);
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#d33; padding:20px;">Gagal mengambil data. <br>Periksa koneksi internet atau URL App Script.</td></tr>';
+    }
+}
 
 function formatMoney(n) { return (Number(n)||0).toLocaleString("id-ID", {style:"currency", currency:"IDR"}); }
 
 function setCategory(cat) {
     currentCategory = cat;
-    
-    // Update UI Tabs
     document.querySelectorAll('.main-tab-btn').forEach(b => {
         b.classList.toggle('active', b.textContent.trim() === cat);
     });
-
-    // Reset status filter to All when changing category (Optional, feels smoother)
+    // Reset status filter to All for better UX
     setStatusFilter('All');
 }
 
 function setStatusFilter(status) {
     currentStatusFilter = status;
-
-    // Update UI Status Links
     document.querySelectorAll('.status-link').forEach(l => {
         let txt = l.textContent.trim();
-        // Handle mapping link text to data status if needed, but here simple matching works
         if(status === 'All' && txt === 'All Order') l.classList.add('active');
         else if(status === 'Completed Order' && txt === 'Completed') l.classList.add('active');
         else if(status === 'Cancel Order' && txt === 'Cancelled') l.classList.add('active');
         else if(txt === status) l.classList.add('active');
         else l.classList.remove('active');
     });
-
     renderTable();
 }
 
@@ -240,15 +210,17 @@ function renderTable() {
     
     tbody.innerHTML = '';
 
-    const filtered = orders.filter(o => {
-        // 1. Filter Category
+    const filtered = allOrders.filter(o => {
+        // 1. Filter Category (pastikan data di sheet konsisten: 'General Order' / 'Pre-Order')
         if(o.type !== currentCategory) return false;
 
         // 2. Filter Status
-        if(currentStatusFilter !== 'All' && o.status !== currentStatusFilter) return false;
+        // Default status jika kosong di sheet dianggap 'Awaiting Approval'
+        const itemStatus = o.status || 'Awaiting Approval'; 
+        if(currentStatusFilter !== 'All' && itemStatus !== currentStatusFilter) return false;
 
         // 3. Filter Search
-        if(searchVal && !o.id.toLowerCase().includes(searchVal) && !o.customer.toLowerCase().includes(searchVal)) return false;
+        if(searchVal && !String(o.id).toLowerCase().includes(searchVal) && !String(o.customer).toLowerCase().includes(searchVal)) return false;
 
         return true;
     });
@@ -261,36 +233,38 @@ function renderTable() {
 
     filtered.forEach(o => {
         const tr = document.createElement('tr');
-        
-        let badgeClass = '';
-        if(o.status === 'Awaiting Approval') badgeClass = 'badge-approve';
-        else if(o.status === 'Awaiting Production') badgeClass = 'badge-prod';
-        else if(o.status === 'Completed Order') badgeClass = 'badge-done';
-        else if(o.status === 'Cancel Order') badgeClass = 'badge-cancel';
+        const status = o.status || 'Awaiting Approval';
 
-        // Action Buttons Logic
+        let badgeClass = '';
+        if(status === 'Awaiting Approval') badgeClass = 'badge-approve';
+        else if(status === 'Awaiting Production') badgeClass = 'badge-prod';
+        else if(status === 'Completed Order') badgeClass = 'badge-done';
+        else if(status === 'Cancel Order') badgeClass = 'badge-cancel';
+        else badgeClass = 'badge-approve'; 
+
+        // Tentukan Tombol Aksi Berdasarkan Workflow
         let actions = '';
-        if(o.status === 'Awaiting Approval') {
+        if(status === 'Awaiting Approval') {
             actions = `
-                <button class="btn-act approve" onclick="changeStatus('${o.id}', 'Awaiting Production')">Approve</button>
-                <button class="btn-act cancel" onclick="changeStatus('${o.id}', 'Cancel Order')">Reject</button>
+                <button class="btn-act approve" onclick="updateStatus('${o.id}', 'Awaiting Production')">Approve</button>
+                <button class="btn-act cancel" onclick="updateStatus('${o.id}', 'Cancel Order')">Reject</button>
             `;
-        } else if (o.status === 'Awaiting Production') {
+        } else if (status === 'Awaiting Production') {
             actions = `
-                <button class="btn-act approve" onclick="changeStatus('${o.id}', 'Completed Order')">Complete</button>
-                <button class="btn-act cancel" onclick="changeStatus('${o.id}', 'Cancel Order')">Cancel</button>
+                <button class="btn-act approve" onclick="updateStatus('${o.id}', 'Completed Order')">Complete</button>
+                <button class="btn-act cancel" onclick="updateStatus('${o.id}', 'Cancel Order')">Cancel</button>
             `;
         } else {
-            actions = `<span style="color:#aaa; font-size:11px;">No actions</span>`;
+            actions = `<span style="color:#aaa; font-size:11px;">Locked</span>`;
         }
 
         tr.innerHTML = `
             <td><a href="#" style="color:var(--xero-blue); font-weight:700; text-decoration:none;">${o.id}</a></td>
             <td>${o.customer}</td>
             <td>${o.date}</td>
-            <td>${o.due}</td>
+            <td>${o.dueDate}</td>
             <td class="text-right">${formatMoney(o.total)}</td>
-            <td style="text-align:center;"><span class="badge ${badgeClass}">${o.status}</span></td>
+            <td style="text-align:center;"><span class="badge ${badgeClass}">${status}</span></td>
             <td style="text-align:center;">
                 <div class="action-btn-group" style="justify-content:center;">${actions}</div>
             </td>
@@ -299,15 +273,45 @@ function renderTable() {
     });
 }
 
-function changeStatus(id, newStatus) {
-    // Di real app, ini akan fetch ke server/Google Script
-    const idx = orders.findIndex(x => x.id === id);
-    if(idx >= 0) {
-        const oldStatus = orders[idx].status;
-        orders[idx].status = newStatus;
+// FUNGSI UPDATE STATUS KE GOOGLE SHEET
+async function updateStatus(id, newStatus) {
+    if(!confirm(`Apakah Anda yakin mengubah status ${id} menjadi ${newStatus}?`)) return;
+
+    // Tampilkan loading sementara di tombol (optional, simple logic here)
+    showToast("Updating status...", "info");
+
+    try {
+        const payload = JSON.stringify({
+            action: "updatestatus",
+            id: id,
+            status: newStatus
+        });
+
+        // Gunakan method POST (no-cors agar tidak error di browser, tapi kita tidak bisa baca responsenya secara langsung di mode no-cors standar tanpa setting header yg rumit. 
+        // Namun, Apps Script Web App biasanya support TextOutput via POST redirect.)
+        // Kita pakai fetch standard, script doPost akan handle.
+        const res = await fetch(baseURL, {
+            method: 'POST',
+            body: payload
+        });
         
-        showToast(`Order ${id} moved to ${newStatus}`, "success");
-        renderTable(); // Re-render table to move item to correct tab or update badge
+        const result = await res.json();
+
+        if(result.result === "success") {
+            showToast(`Order ${id} updated to ${newStatus}`, "success");
+            
+            // Update data lokal biar cepat (tanpa reload full)
+            const idx = allOrders.findIndex(x => x.id === id);
+            if(idx >= 0) allOrders[idx].status = newStatus;
+            
+            renderTable(); // Refresh tampilan tabel
+        } else {
+            showToast("Gagal update status di server", "error");
+        }
+
+    } catch (e) {
+        console.error(e);
+        showToast("Error koneksi update", "error");
     }
 }
 
