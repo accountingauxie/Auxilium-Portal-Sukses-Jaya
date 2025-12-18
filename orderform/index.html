@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Purchase Order - Final + Home Menu</title>
+<title>Purchase Order - User Profile Header</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -12,7 +12,7 @@
 /* --- VARIABLES --- */
 :root {
   --xero-blue: #116999;
-  --aux-text: #555555; /* Warna teks menu */
+  --aux-text: #555555;
   --border-color: #cccccc;
   --bg-color: #f4f5f6;
   --text-color: #222;
@@ -37,7 +37,7 @@ body { background: var(--bg-color); margin: 0; padding: 0; }
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 40px; /* Padding kiri kanan */
+    padding: 0 40px;
     box-shadow: 0 1px 5px rgba(0,0,0,0.05);
     position: sticky;
     top: 0;
@@ -45,14 +45,14 @@ body { background: var(--bg-color); margin: 0; padding: 0; }
     font-family: sans-serif;
 }
 
-/* Logo Area (Kiri) - Auxilium */
+/* Logo Area (Kiri) */
 .aux-logo img {
-    height: 40px; /* Tinggi logo header */
+    height: 40px;
     width: auto;
     display: block;
 }
 
-/* Menu Links (Tengah) - Menu Aplikasi */
+/* Menu Links (Tengah) */
 .aux-menu {
     display: flex;
     gap: 25px;
@@ -69,29 +69,70 @@ body { background: var(--bg-color); margin: 0; padding: 0; }
     transition: all 0.2s;
 }
 
-.aux-link:hover { 
-    color: var(--xero-blue); 
-    background-color: #f5f9fc;
+.aux-link:hover { color: var(--xero-blue); background-color: #f5f9fc; }
+.aux-link.active { color: var(--xero-blue); background-color: #e6f0fa; font-weight: 700; }
+
+/* USER PANEL (KANAN - PENGGANTI LET'S TALK) */
+.user-panel {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-left: 20px;
+    border-left: 1px solid #eee;
 }
 
-.aux-link.active {
-    color: var(--xero-blue);
-    background-color: #e6f0fa;
+.user-details {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+    line-height: 1.3;
+}
+
+.user-name {
     font-weight: 700;
+    font-size: 13px;
+    color: #333;
 }
 
-/* CTA Button (Kanan) */
-.aux-cta {
-    background-color: #000;
-    color: #fff;
-    text-decoration: none;
-    padding: 10px 20px;
-    font-weight: 600;
-    font-size: 13px;
-    border-radius: 4px;
-    transition: opacity 0.2s;
+.user-role {
+    font-size: 11px;
+    color: #888;
 }
-.aux-cta:hover { opacity: 0.8; }
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    background-color: var(--xero-blue);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+    user-select: none;
+}
+
+.logout-btn {
+    background: none;
+    border: 1px solid #ddd;
+    color: #666;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 14px;
+}
+
+.logout-btn:hover {
+    background-color: var(--red-bg);
+    color: var(--red-text);
+    border-color: var(--red-bg);
+}
 
 
 /* --- PAGE LAYOUT --- */
@@ -105,7 +146,7 @@ body { background: var(--bg-color); margin: 0; padding: 0; }
   overflow: visible; 
 }
 
-/* --- HEADER INVOICE (Bagian dalam form) --- */
+/* --- HEADER INVOICE --- */
 .top-header { 
     margin-bottom: 30px; 
     border-bottom: 1px solid #eee; 
@@ -115,7 +156,6 @@ body { background: var(--bg-color); margin: 0; padding: 0; }
     align-items: flex-start;
 }
 
-/* Logo Sukses Jaya (Dalam Form) */
 .brand-section .brand-logo {
     max-height: 80px; 
     width: auto;      
@@ -269,7 +309,19 @@ input[type=number] { -moz-appearance: textfield; }
         <a href="../reviewinvoice/" class="aux-link">Review Invoice</a>
     </div>
 
-    <a href="#" class="aux-cta">Let's talk</a>
+    <div class="user-panel">
+        <div class="user-details">
+            <span class="user-name">Admin Gudang</span>
+            <span class="user-role">CV Sukses Jaya</span>
+        </div>
+        <div class="user-avatar">AG</div>
+        <button class="logout-btn" onclick="doLogout()" title="Keluar Akun">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M7.5 1v7h1V1h-1z"/>
+              <path d="M3 8.812a4.999 4.999 0 0 1 2.578-4.375l-.485-.874A6 6 0 1 0 11 3.616l-.501.865A5 5 0 1 1 3 8.812z"/>
+            </svg>
+        </button>
+    </div>
 </div>
 
 <div id="modalAddCustomer" class="modal-overlay">
@@ -380,7 +432,6 @@ input[type=number] { -moz-appearance: textfield; }
 </div>
 
 <script>
-// SCRIPT URL BARU (Sesuai yg Anda kasih)
 const baseURL = "https://script.google.com/macros/s/AKfycbxO7lxcyNmQnJI2YBxeFaRM_X8vkWHoKTIBq45It0eDo7syzfmrrz3v2d1TzHRFoJDPYw/exec";
 
 let customerData=[], listSpandek=[], listNonSpandek=[], priceSpan=[], priceNon=[], unitSpan=[], unitNon=[], stockSpan=[], stockNon=[];
@@ -408,7 +459,6 @@ window.onload = async function () {
 
   await loadDropdowns();
   
-  // Panggil fungsi untuk ambil nomor order saat load
   fetchNextOrderID();
 
   for(let i=0; i<3; i++) addRow();
@@ -416,7 +466,6 @@ window.onload = async function () {
   document.getElementById('customerSelect').addEventListener('change', function(e) { fillCustomerDetails(e.target.value); });
 };
 
-// FUNCTION TO FETCH NEXT ORDER ID
 async function fetchNextOrderID() {
     const titleEl = document.getElementById("xeroOrderTitle");
     try {
@@ -644,6 +693,7 @@ async function submitNewCustomer() {
     document.getElementById("modalSpinner").style.display="none";
 }
 
+// LOGIKA TOMBOL KIRIM (INDONESIA)
 document.querySelector(".approve-btn").addEventListener("click", () => {
     const cust = document.getElementById("customerSelect").value;
     const type = document.getElementById("orderType").value;
@@ -716,6 +766,15 @@ function forceSubmitOrder() {
 
         } else { throw new Error(txt); }
     }).catch(e => { showToast("Gagal: " + e.message, "error"); btn.disabled=false; btn.textContent="Kirim Pesanan"; });
+}
+
+// SIMULASI LOGOUT
+function doLogout() {
+    // Di lingkungan nyata, ini akan menghapus session/cookie.
+    // Di sini kita hanya mengarahkan ke halaman login atau home.
+    if(confirm("Apakah Anda yakin ingin keluar?")) {
+        window.location.href = "https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/";
+    }
 }
 </script>
 
