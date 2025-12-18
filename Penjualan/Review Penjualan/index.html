@@ -15,7 +15,7 @@
         --badge-danger-bg: #fee2e2; --badge-danger-text: #991b1b;
         --btn-approve-bg: #10b981; --btn-approve-hover: #059669; 
         --btn-reject-bg: #f43f5e; --btn-reject-hover: #e11d48;
-        --btn-pdf-bg: #6366f1; --btn-pdf-hover: #4f46e5; } /* Warna Tombol PDF (Indigo) */
+        --btn-pdf-bg: #6366f1; --btn-pdf-hover: #4f46e5; }
 
 * { box-sizing: border-box; }
 body { margin: 0; font-family: 'Arial', sans-serif; font-size: 13px; color: var(--aux-text); background: var(--bg-color); }
@@ -49,7 +49,6 @@ table.xero-table td { padding: 12px 15px; border-bottom: 1px solid #e0e0e0; colo
 table.xero-table tr:hover { background-color: var(--xero-hover); }
 .btn-view { background: none; border: none; cursor: pointer; color: var(--xero-blue); font-size: 16px; }
 
-/* Status Badges */
 .badge { padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 10px; text-transform: uppercase; }
 .badge-approve { background: var(--badge-approve-bg); color: var(--badge-approve-text); }
 .badge-success { background: var(--badge-success-bg); color: var(--badge-success-text); }
@@ -60,7 +59,6 @@ table.xero-table tr:hover { background-color: var(--xero-hover); }
 .modal-box { background: #fff; width: 1100px; max-width: 95%; border-radius: 8px; box-shadow: 0 20px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; max-height: 95vh; }
 .modal-header { padding: 15px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fafafa; }
 .modal-body { padding: 25px 30px; overflow-y: auto; flex: 1; }
-/* ID untuk Print PDF */
 #pdfContent { padding: 10px; } 
 
 .info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
@@ -112,7 +110,9 @@ table.modal-items td { padding: 8px 12px; border-bottom: 1px solid #f3f4f6; }
     <div class="category-tabs">
         <button class="cat-btn active" onclick="setFilter('All')">All Order</button>
         <button class="cat-btn" onclick="setFilter('Awaiting Approval')">Awaiting Approval</button>
-        <button class="cat-btn" onclick="setFilter('Approved Order')">Approved Order</button> <button class="cat-btn" onclick="setFilter('Cancel Order')">Cancelled Order</button> </div>
+        <button class="cat-btn" onclick="setFilter('Approved Order')">Approved Order</button> 
+        <button class="cat-btn" onclick="setFilter('Cancel Order')">Cancelled Order</button> 
+    </div>
 
     <div class="search-area">
         <span class="search-icon">🔍</span>
@@ -122,7 +122,7 @@ table.modal-items td { padding: 8px 12px; border-bottom: 1px solid #f3f4f6; }
     <div class="table-card">
         <div style="overflow-x: auto;">
             <table class="xero-table">
-                <thead><tr><th style="width:50px; text-align:center;">View</th><th>Order #</th><th>Customer</th><th>Submitted By</th><th>Order Date</th><th>Est. Delivery</th><th>Jatuh Tempo/Term</th><th class="t-right">Total Amount</th><th style="text-align:center;">Status</th></tr></thead>
+                <thead><tr><th style="width:50px; text-align:center;">View</th><th>Order #</th><th>Customer</th><th>Order Date</th><th>Est. Delivery</th><th>Jatuh Tempo/Term</th><th class="t-right">Total Amount</th><th style="text-align:center;">Status</th></tr></thead>
                 <tbody id="invoiceTableBody"></tbody>
             </table>
         </div>
@@ -141,10 +141,9 @@ table.modal-items td { padding: 8px 12px; border-bottom: 1px solid #f3f4f6; }
                 <div class="info-item"><span class="info-label">Status</span><span class="info-value" id="modalStatus">-</span></div>
                 
                 <div class="info-item"><span class="info-label">Est. Delivery</span><span class="info-value" id="modalDelivery">-</span></div>
-                <div class="info-item"><span class="info-label">Submitted By</span><span class="info-value" id="modalSubmitted">-</span></div>
-                
                 <div class="info-item"><span class="info-label">Due Date/Term</span><span class="info-value" id="modalDue">-</span></div>
-                <div class="notes-box" id="modalNotes"><strong>Notes:</strong> <span>-</span></div>
+                
+                <div class="info-item"></div> <div class="notes-box" id="modalNotes"><strong>Notes:</strong> <span>-</span></div>
             </div>
             <div class="items-table-container">
                 <table class="modal-items">
@@ -166,16 +165,16 @@ table.modal-items td { padding: 8px 12px; border-bottom: 1px solid #f3f4f6; }
 </div>
 
 <script>
-// Pastikan Link URL Backend benar
-const baseURL = "https://script.google.com/macros/s/AKfycbxQeIfsyP6_CWLs9BWYZVqP37-lp_0J97IhVcL6LPOvrFsO7pEbExUp5bGdYW1H5Z2bdA/exec"; 
+// UPDATE LINK BACKEND DISINI JIKA PERLU
+const baseURL = "https://script.google.com/macros/s/AKfycby9l5J3BFqW2eQUDkZHXsTz0leuqWCuWcMqzZbfdW1Isr3ZkMlFfm0lEOSp1MkbJ3wH/exec"; 
 let allOrders = []; 
-let currentStatusFilter = 'All'; // Default filter
+let currentStatusFilter = 'All'; 
 
 window.onload = function() { fetchData(); };
 
 async function fetchData() {
     const tbody = document.getElementById('invoiceTableBody');
-    tbody.innerHTML = '<tr><td colspan="9"><span class="skeleton-bar" style="margin:10px;"></span></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8"><span class="skeleton-bar" style="margin:10px;"></span></td></tr>';
     
     try {
         const res = await fetch(baseURL + "?action=getorders");
@@ -185,14 +184,12 @@ async function fetchData() {
         if (data.result === 'error') throw new Error(data.message);
         if (!Array.isArray(data)) throw new Error("Format data salah");
 
-        // KITA AMBIL SEMUA DATA (Jangan difilter disini)
         allOrders = data; 
-        
         renderTable();
         showToast("Data Updated", "success");
     } catch (e) { 
         console.error(e);
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:20px; color:red;">Error: ${e.message}<br><button onclick="fetchData()">Retry</button></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px; color:red;">Error: ${e.message}<br><button onclick="fetchData()">Retry</button></td></tr>`;
     }
 }
 
@@ -204,25 +201,14 @@ function renderTable() {
     if(!allOrders) allOrders = [];
 
     const filtered = allOrders.filter(o => {
-        // FILTER BERDASARKAN TOMBOL TABS
         if (currentStatusFilter !== 'All') {
-            // Logic khusus: "Approved Order" di frontend mungkin status aslinya "Awaiting Production" atau "Completed"
-            // Mari kita samakan persepsi. 
-            // Jika Tab = 'Approved Order', kita cari yang TIDAK 'Awaiting Approval' dan TIDAK 'Cancel Order'
-            // ATAU sesuaikan dengan nama status persis dari backend.
-            
-            // Asumsi: Backend mengirim status: "Awaiting Approval", "Awaiting Production", "Cancel Order"
-            
             if (currentStatusFilter === 'Approved Order') {
                 if (o.status === 'Awaiting Approval' || o.status === 'Cancel Order') return false;
             } else {
                 if (o.status !== currentStatusFilter) return false;
             }
         }
-
-        // FILTER SEARCH
         if(searchVal && !String(o.id).toLowerCase().includes(searchVal) && !String(o.customer).toLowerCase().includes(searchVal)) return false;
-        
         return true;
     });
 
@@ -230,8 +216,7 @@ function renderTable() {
     document.getElementById('emptyState').style.display = 'none';
 
     filtered.forEach(o => {
-        // Tentukan Warna Badge
-        let badgeClass = 'badge-approve'; // Default Kuning
+        let badgeClass = 'badge-approve'; 
         if (o.status === 'Cancel Order') badgeClass = 'badge-danger';
         if (o.status === 'Awaiting Production' || o.status === 'Completed') badgeClass = 'badge-success';
 
@@ -240,7 +225,6 @@ function renderTable() {
             <td style="text-align:center;"><button class="btn-view" onclick="openOrderDetails('${o.id}')">👁️</button></td>
             <td><strong>${o.id}</strong></td>
             <td>${o.customer}</td>
-            <td style="color:#555; font-size:12px;">${o.submittedBy || '-'}</td>
             <td>${o.date}</td>
             <td>${o.estDelivery}</td>
             <td>${o.dueDate}</td>
@@ -255,13 +239,11 @@ function openOrderDetails(id) {
     const order = allOrders.find(x => String(x.id) === String(id));
     if(!order) return;
 
-    // Isi Data Modal
     document.getElementById('modalTitle').textContent = "Order #" + order.id;
     document.getElementById('modalCustomer').textContent = order.customer;
     document.getElementById('modalDate').textContent = order.date;
     document.getElementById('modalStatus').textContent = order.status;
     document.getElementById('modalDelivery').textContent = order.estDelivery;
-    document.getElementById('modalSubmitted').textContent = order.submittedBy || '-';
     document.getElementById('modalDue').textContent = order.dueDate;
     document.getElementById('modalNotes').style.display = order.notes ? 'block' : 'none';
     document.querySelector('#modalNotes span').textContent = order.notes;
@@ -283,17 +265,14 @@ function openOrderDetails(id) {
     document.getElementById('summaryPPN').textContent = formatMoney(order.totalPPN);
     document.getElementById('summaryTotal').textContent = formatMoney(order.grandTotal);
 
-    // --- LOGIKA TOMBOL BERDASARKAN STATUS ---
     let actionHTML = `<button class="btn-action btn-close" onclick="closeModal()">Close</button>`;
     
-    // Jika Status Awaiting Approval -> Tampilkan Reject & Approve
     if (order.status === 'Awaiting Approval') {
         actionHTML += `
             <button class="btn-action btn-reject" onclick="processStatus('${order.id}', 'Cancel Order')">Reject</button>
             <button class="btn-action btn-approve" onclick="processStatus('${order.id}', 'Awaiting Production')">Approve Order</button>
         `;
     }
-    // Jika Status Approved (Awaiting Production) -> Tampilkan Download PDF
     else if (order.status === 'Awaiting Production' || order.status === 'Completed') {
         actionHTML += `
             <button class="btn-action btn-pdf" onclick="generatePDF('${order.id}')">Download PDF</button>
@@ -307,7 +286,6 @@ function openOrderDetails(id) {
 function closeModal() { document.getElementById('orderModal').style.display = 'none'; }
 function setFilter(status) { 
     currentStatusFilter = status; 
-    // Update UI Tabs
     document.querySelectorAll('.cat-btn').forEach(b => {
         b.classList.remove('active');
         if(b.textContent.includes(status) || (status === 'All' && b.textContent === 'All Order')) b.classList.add('active');
@@ -324,11 +302,10 @@ async function processStatus(id, newStatus) {
     try {
         await fetch(baseURL, { method: 'POST', body: JSON.stringify({ action: "updatestatus", id: id, status: newStatus }) });
         showToast("Success", "success");
-        closeModal(); fetchData(); // Reload data
+        closeModal(); fetchData(); 
     } catch(e) { alert("Error updating status"); closeModal(); }
 }
 
-// FUNGSI DOWNLOAD PDF
 function generatePDF(orderId) {
     const element = document.getElementById('pdfContent');
     const opt = {
@@ -339,7 +316,6 @@ function generatePDF(orderId) {
       jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
     };
     
-    // Ubah text tombol jadi Loading
     const btn = document.querySelector('.btn-pdf');
     if(btn) btn.textContent = "Generating...";
 
