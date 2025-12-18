@@ -7,7 +7,7 @@
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
 
 <style>
-/* --- STYLE SAMA PERSIS (XERO THEME) --- */
+/* --- STYLE XERO THEME --- */
 :root { --xero-blue: #116999; --xero-hover: #f5f9fc; --aux-text: #222; --border-color: #e0e0e0; --bg-color: #f4f5f6; --badge-approve-bg: #fff4e5; --badge-approve-text: #b75900; --btn-approve-bg: #10b981; --btn-approve-hover: #059669; --btn-reject-bg: #f43f5e; --btn-reject-hover: #e11d48; }
 * { box-sizing: border-box; }
 body { margin: 0; font-family: 'Arial', sans-serif; font-size: 13px; color: var(--aux-text); background: var(--bg-color); }
@@ -121,8 +121,10 @@ table.modal-items td { padding: 8px 12px; border-bottom: 1px solid #f3f4f6; }
                 <div class="info-item"><span class="info-label">Customer</span><span class="info-value" id="modalCustomer">-</span></div>
                 <div class="info-item"><span class="info-label">Order Date</span><span class="info-value" id="modalDate">-</span></div>
                 <div class="info-item"><span class="info-label">Status</span><span class="info-value" id="modalStatus">-</span></div>
+                
                 <div class="info-item"><span class="info-label">Est. Delivery</span><span class="info-value" id="modalDelivery">-</span></div>
-                <div class="info-item"></div>
+                <div class="info-item"><span class="info-label">Submitted By</span><span class="info-value" id="modalSubmitted">-</span></div>
+                
                 <div class="info-item"><span class="info-label">Due Date</span><span class="info-value" id="modalDue">-</span></div>
                 <div class="notes-box" id="modalNotes"><strong>Notes:</strong> <span>-</span></div>
             </div>
@@ -145,6 +147,7 @@ table.modal-items td { padding: 8px 12px; border-bottom: 1px solid #f3f4f6; }
 </div>
 
 <script>
+// PASTIKAN SCRIPT ID INI SESUAI DENGAN BACKEND KAMU
 const baseURL = "https://script.google.com/macros/s/AKfycbx_1qg2FqICGnZh8l-ZIawiwyyOfLKWklU6sAKC2j6V-RRfETs1Z2P-xaMizZpjHszR/exec"; 
 let allOrders = []; 
 let currentCategory = 'General Order';
@@ -157,7 +160,7 @@ async function fetchData() {
     try {
         const res = await fetch(baseURL + "?action=getorders");
         const data = await res.json();
-        allOrders = data.filter(o => o.status === "Awaiting Approval"); // FILTER HANYA AWAITING APPROVAL
+        allOrders = data.filter(o => o.status === "Awaiting Approval"); 
         renderTable();
         showToast("Data Refreshed", "success");
     } catch (e) { console.error(e); }
@@ -201,6 +204,10 @@ function openOrderDetails(id) {
     document.getElementById('modalDate').textContent = order.date;
     document.getElementById('modalStatus').textContent = order.status;
     document.getElementById('modalDelivery').textContent = order.estDelivery;
+    
+    // UPDATE SCRIPT: Tampilkan Submitted By
+    document.getElementById('modalSubmitted').textContent = order.submittedBy || '-';
+    
     document.getElementById('modalDue').textContent = order.dueDate;
     document.getElementById('modalNotes').style.display = order.notes ? 'block' : 'none';
     document.querySelector('#modalNotes span').textContent = order.notes;
@@ -222,7 +229,6 @@ function openOrderDetails(id) {
     document.getElementById('summaryPPN').textContent = formatMoney(order.totalPPN);
     document.getElementById('summaryTotal').textContent = formatMoney(order.grandTotal);
 
-    // TOMBOL APPROVAL (Hanya Reject & Approve)
     document.getElementById('modalActions').innerHTML = `
         <button class="btn-action btn-close" onclick="closeModal()">Close</button>
         <button class="btn-action btn-reject" onclick="processStatus('${order.id}', 'Cancel Order')">Reject</button>
@@ -243,7 +249,7 @@ async function processStatus(id, newStatus) {
     try {
         await fetch(baseURL, { method: 'POST', body: JSON.stringify({ action: "updatestatus", id: id, status: newStatus }) });
         showToast("Success", "success");
-        closeModal(); fetchData(); // Reload data to remove item from list
+        closeModal(); fetchData(); 
     } catch(e) { alert("Error"); closeModal(); }
 }
 </script>
