@@ -51,8 +51,8 @@
                 <span class="font-normal text-sm text-slate-500 tracking-tight">Bill List V2</span>
             </div>
         </div>
-        <button onclick="fetchData()" class="w-10 h-10 bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center text-slate-500 hover:text-primary hover:bg-teal-50 transition">
-            <i class="fas fa-sync-alt"></i>
+        <button onclick="fetchData()" class="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-600 hover:text-primary hover:bg-teal-50 hover:border-primary/30 transition shadow-sm" title="Refresh App">
+            <i class="fa-solid fa-rotate text-sm"></i>
         </button>
     </nav>
 
@@ -68,8 +68,8 @@
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fa-solid fa-magnifying-glass"></i></span>
                     <input type="text" id="searchInput" onkeyup="applyFilters()" placeholder="Search PO, Vendor, or Invoice..." class="w-full pl-10 pr-4 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none shadow-sm">
                 </div>
-                <button onclick="fetchData()" class="h-[38px] w-[38px] bg-white border border-slate-300 rounded-lg flex items-center justify-center text-slate-500 hover:text-primary hover:bg-slate-50 transition shadow-sm" title="Refresh Data">
-                    <i class="fas fa-sync-alt"></i>
+                <button onclick="fetchData()" class="h-[38px] w-[38px] bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-600 hover:text-primary hover:bg-slate-50 hover:border-primary/30 transition shadow-sm" title="Refresh Data">
+                    <i class="fa-solid fa-rotate text-sm"></i>
                 </button>
             </div>
 
@@ -335,12 +335,10 @@
             const filtered = allData.filter(p => {
                 const matchSearch = p.id.toLowerCase().includes(searchVal) || p.vendor.toLowerCase().includes(searchVal) || (p.invNumber && p.invNumber.toLowerCase().includes(searchVal));
                 
-                // Logic Filter Status Lebih Akurat (String Match)
                 let matchStatus = true;
                 const statusLower = (p.status || "").toLowerCase();
 
                 if (currentFilterStatus === 'billed') {
-                    // Match 'billed' atau 'import' jika itu dianggap sama
                     matchStatus = statusLower.includes('billed') || statusLower.includes('imported');
                 } else if (currentFilterStatus === 'rejected') {
                     matchStatus = statusLower.includes('rejected') || statusLower.includes('batal');
@@ -375,20 +373,18 @@
             }
 
             data.forEach(po => {
-                // LOGIC STATUS BADGE (Mengikuti Teks Asli dari Sheet)
                 const rawStatus = po.status || "Pending";
                 const statusLower = rawStatus.toLowerCase();
                 let badgeClass = "badge-pending";
 
                 if (statusLower.includes('billed')) badgeClass = "badge-billed";
                 else if (statusLower.includes('rejected') || statusLower.includes('batal')) badgeClass = "badge-rejected";
-                else if (statusLower.includes('imported')) badgeClass = "badge-imported"; // Khusus Imported (Locked)
+                else if (statusLower.includes('imported')) badgeClass = "badge-imported"; 
 
                 const statusBadge = `<span class="${badgeClass} px-2 py-1 rounded text-xs font-bold capitalize">${rawStatus}</span>`;
                 
                 let viewBtn = po.fileUrl ? `<a href="${po.fileUrl}" target="_blank" class="text-red-500 hover:text-red-700"><i class="fas fa-file-pdf text-xl"></i></a>` : `<span class="text-slate-300">-</span>`;
                 
-                // Logic Button Edit/View
                 let btnLabel = po.invNumber ? "Edit" : "Entry";
                 let btnIcon = po.invNumber ? "fa-edit" : "fa-plus";
                 if (statusLower.includes('rejected')) { btnLabel = "View/Revise"; btnIcon = "fa-eye"; }
@@ -424,7 +420,6 @@
             currentPOId = po.id;
             originalInvNumber = po.invNumber || ""; 
             
-            // Populate Fields
             document.getElementById('bill-po-id').innerText = po.id;
             document.getElementById('bill-vendor').value = po.vendor;
             document.getElementById('bill-inv-number').value = po.invNumber || '';
@@ -438,7 +433,6 @@
             document.getElementById('tax-mode').value = po.taxMode || 'exclusive';
             document.getElementById('check-force-close').checked = (po.status || "").toLowerCase().includes('billed');
             
-            // File Handling
             document.getElementById('bill-file').value = ""; 
             const fileLinkDiv = document.getElementById('existing-file-link');
             if(po.fileUrl) {
@@ -450,35 +444,23 @@
                 currentFileUrl = "";
             }
 
-            // Items
             currentItems = po.items.map(i => ({...i, checked: true}));
             renderBillItems();
 
-            // === LOGIC LOCKING (REJECTED / IMPORTED) ===
             const statusLower = (po.status || "").toLowerCase();
             const isLocked = statusLower.includes('rejected') || statusLower.includes('imported');
             
             if (isLocked) {
-                // MODE TERKUNCI
                 document.getElementById('locked-banner').classList.remove('hidden');
                 document.getElementById('locked-status-text').innerText = po.status;
-                
-                // Disable Semua Input
                 document.querySelectorAll('.bill-input').forEach(el => el.disabled = true);
                 document.querySelectorAll('.action-btn').forEach(el => el.disabled = true);
-                
-                // Sembunyikan Tombol Aksi Utama
                 document.getElementById('btn-save').classList.add('hidden');
                 document.getElementById('btn-reject').classList.add('hidden');
             } else {
-                // MODE EDIT (BILLED / PENDING)
                 document.getElementById('locked-banner').classList.add('hidden');
-                
-                // Enable Input
                 document.querySelectorAll('.bill-input').forEach(el => el.disabled = false);
                 document.querySelectorAll('.action-btn').forEach(el => el.disabled = false);
-                
-                // Tampilkan Tombol
                 document.getElementById('btn-save').classList.remove('hidden');
                 document.getElementById('btn-reject').classList.remove('hidden');
             }
@@ -486,30 +468,20 @@
             document.getElementById('billModal').classList.remove('hidden');
         }
 
-        // Fungsi untuk Membuka Kunci (Revisi)
         function enableRevision() {
             if(confirm("Apakah Anda yakin ingin merevisi data ini? Status akan berubah setelah disimpan.")) {
                 document.getElementById('locked-banner').classList.add('hidden');
-                
-                // Enable All
                 document.querySelectorAll('.bill-input').forEach(el => el.disabled = false);
                 document.querySelectorAll('.action-btn').forEach(el => el.disabled = false);
-                
-                // Show Save Button
                 document.getElementById('btn-save').classList.remove('hidden');
                 document.getElementById('btn-reject').classList.remove('hidden');
-                
-                // Render ulang items agar checkbox/tombol hapus aktif
                 renderBillItems();
             }
         }
 
-        // --- ITEM RENDERING (SAMA SEPERTI SEBELUMNYA) ---
         function renderBillItems() {
             const tbody = document.getElementById('bill-items-body');
             tbody.innerHTML = '';
-            
-            // Cek apakah sedang dalam mode locked untuk mendisable tombol baris
             const isGlobalLocked = document.getElementById('btn-save').classList.contains('hidden');
 
             currentItems.forEach((item, index) => {
@@ -702,7 +674,6 @@
 
         async function submitBill(customStatus = null) {
             const invNum = document.getElementById('bill-inv-number').value;
-            // Validasi: Invoice Wajib isi kecuali user mau me-reject (bisa opsional tergantung kebijakan, disini diwajibkan saja agar aman)
             if(!invNum) { showNotification("Invoice Number wajib diisi!"); return; }
 
             const activeItems = currentItems.filter(i => i.checked);
