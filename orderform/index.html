@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Purchase Order - Final Middle Align</title>
+<title>Purchase Order - Final Logo GitHub</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -48,10 +48,15 @@ body { background: var(--bg-color); }
     justify-content: space-between; 
     align-items: flex-start;
 }
-.brand-section .brand-title { font-size: 20px; font-weight: 500; margin: 0; color: #666; }
-.brand-section .brand-subtitle { color: #999; font-size: 12px; }
 
-.xero-header-right { display: flex; align-items: center; gap: 15px; }
+/* Style Logo */
+.brand-section .brand-logo {
+    max-height: 80px; /* Atur tinggi logo */
+    width: auto;      
+    display: block;
+}
+
+.xero-header-right { display: flex; align-items: center; gap: 15px; height: 80px; }
 .xero-order-title { font-size: 28px; font-weight: 700; color: #222; margin: 0; }
 .xero-badge { font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
 .badge-draft { background: #eee; color: #666; border: 1px solid #ccc; }
@@ -85,7 +90,7 @@ input.detail-readonly {
   background: transparent; border: none; border-bottom: 1px dashed #ccc; color: #555; width: 100%; padding: 5px 0;
 }
 
-/* --- TABLE STYLING (UPDATED: VERTICAL ALIGN MIDDLE) --- */
+/* --- TABLE STYLING --- */
 .table-container { 
     margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px 4px 0 0; 
     overflow-x: auto; width: 100%; position: relative; z-index: 5; background: #fff; padding-bottom: 0; 
@@ -95,7 +100,7 @@ table.xero-table { width: 100%; border-collapse: separate; border-spacing: 0; mi
 table.xero-table th {
   background: #f8f9fa; text-align: left; padding: 12px 10px; font-size: 12px; font-weight: 700; color: #333;
   border-bottom: 1px solid #ccc; border-right: 1px solid var(--border-light); white-space: nowrap; height: 40px;
-  vertical-align: middle; /* Header Middle */
+  vertical-align: middle;
 }
 
 table.xero-table th.col-price, table.xero-table th.col-disc, table.xero-table th.col-net,
@@ -104,8 +109,6 @@ table.xero-table th.col-total, table.xero-table th.col-stock { text-align: right
 table.xero-table td {
   padding: 0 !important; border-bottom: 1px solid var(--border-light); border-right: 1px solid var(--border-light); 
   background: #fff; height: 42px; position: relative;
-  
-  /* --- FIX: VERTICAL ALIGN MIDDLE --- */
   vertical-align: middle !important; 
 }
 
@@ -160,24 +163,9 @@ input[type=number] { -moz-appearance: textfield; }
 
 .btn-primary { background-color: var(--xero-blue); color: white; border: none; padding: 12px 30px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; margin-top: 20px; }
 
-/* STATUS BADGE FIXED MIDDLE */
-.status-container {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.status-badge { 
-    padding: 4px 8px; 
-    border-radius: 4px; 
-    font-size: 10px; 
-    font-weight: 700; 
-    text-transform: uppercase; 
-    display: inline-block; 
-    width: auto; 
-    min-width: 80%;
-    text-align: center; 
-}
+/* STATUS BADGE */
+.status-container { height: 100%; display: flex; align-items: center; justify-content: center; }
+.status-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; display: inline-block; width: auto; min-width: 80%; text-align: center; }
 .status-ok { background: var(--green-bg); color: var(--green-text); }
 .status-oos { background: var(--red-bg); color: var(--red-text); }
 .stock-display { text-align: right; line-height: 42px; padding-right: 10px; color: #555; }
@@ -237,8 +225,7 @@ input[type=number] { -moz-appearance: textfield; }
   <div class="invoice-card">
     <div class="top-header">
       <div class="brand-section">
-          <h1 class="brand-title">Pesanan Penjualan</h1>
-          <span class="brand-subtitle">AUXILIUM Accounting Services</span>
+          <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/Screenshot_2025-12-17_161250-removebg-preview.png" alt="Logo Perusahaan" class="brand-logo">
       </div>
       <div class="xero-header-right">
           <h1 id="xeroOrderTitle" class="xero-order-title">Pesanan Baru</h1>
@@ -311,7 +298,7 @@ input[type=number] { -moz-appearance: textfield; }
 
 <script>
 // REPLACE WITH YOUR SCRIPT URL
-const baseURL = "https://script.google.com/macros/s/AKfycbxO7lxcyNmQnJI2YBxeFaRM_X8vkWHoKTIBq45It0eDo7syzfmrrz3v2d1TzHRFoJDPYw/exec";
+const baseURL = "https://script.google.com/macros/s/AKfycbziCHr18tSbheMZ9rPIv8sfvZxK-lHzN8SxeOOHRFlKJP8VkNAYdMwOrklHzWeaDciyFg/exec";
 
 let customerData=[], listSpandek=[], listNonSpandek=[], priceSpan=[], priceNon=[], unitSpan=[], unitNon=[], stockSpan=[], stockNon=[];
 let choiceCustomer, choiceOrderType;
@@ -338,7 +325,7 @@ window.onload = async function () {
 
   await loadDropdowns();
   
-  // FIX: Panggil fetchNextOrderID agar nomor order muncul saat load
+  // Panggil fungsi untuk ambil nomor order saat load
   fetchNextOrderID();
 
   for(let i=0; i<3; i++) addRow();
@@ -521,7 +508,6 @@ function recalcRow(row) {
       statusCont.innerHTML = "";
       if(req > 0) {
           const badge = document.createElement("span");
-          // LOGIKA STATUS TEXT: TERSEDIA / TIDAK TERSEDIA
           if(stock >= req) {
               badge.className = "status-badge status-ok";
               badge.textContent = "Tersedia";
