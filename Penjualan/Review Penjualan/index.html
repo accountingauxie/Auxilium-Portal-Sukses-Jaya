@@ -106,41 +106,39 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 
 /* Header PDF */
 .pdf-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
-.pdf-title { font-size: 32px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-top: 5px; color:#000; }
+/* Font Weight 700 (Bold) Standard */
+.pdf-title { font-size: 32px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-top: 5px; color:#000; }
 .company-details { text-align: right; font-size: 10px; color: #333; line-height: 1.4; }
 .company-logo img { height: 50px; margin-bottom: 5px; }
-.company-name { font-weight: 800; font-size: 12px; color: #F59E0B; text-transform: uppercase; margin-bottom: 2px; }
+.company-name { font-weight: 700; font-size: 12px; color: #F59E0B; text-transform: uppercase; margin-bottom: 2px; }
 
 /* Info PDF */
 .pdf-info { display: flex; justify-content: space-between; margin-bottom: 25px; }
 .bill-to { width: 60%; }
-.pdf-bill-label { font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; color:#000; }
-.pdf-cust-name { font-size: 14px; font-weight: 800; text-transform: uppercase; margin-bottom: 4px; color:#000; }
+.pdf-bill-label { font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; color:#000; }
+.pdf-cust-name { font-size: 14px; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; color:#000; }
 .pdf-cust-addr { font-size: 10px; line-height: 1.5; color: #444; }
 .meta-data { width: 35%; }
 .pdf-meta-row { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 4px; width: 100%; }
 .pdf-meta-key { font-weight: 700; color:#000; }
 
-/* --- TABLE PDF (FIXED CUTOFF) --- */
-table.pdf-table { 
-    width: 100%; 
-    border-collapse: collapse; 
-    margin-bottom: 20px; 
-}
+/* TABLE PDF */
+table.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
 
+/* Header: Bold Standard (700) */
 table.pdf-table th { 
     font-size: 9px; 
-    font-weight: 800; 
+    font-weight: 700; 
     text-transform: uppercase; 
     padding: 8px 4px; 
     color: #000;
     border-top: 1px solid #000; 
     border-bottom: 1px solid #000; 
+    letter-spacing: 0.5px;
 }
 
-/* FIX: Mencegah Baris Terpotong di Tengah Halaman */
 table.pdf-table tr {
-    page-break-inside: avoid; /* Baris tidak boleh putus */
+    page-break-inside: avoid;
     page-break-after: auto;
 }
 
@@ -150,32 +148,33 @@ table.pdf-table td {
     vertical-align: top; 
 }
 
-.item-name-main { font-weight: 800; color: #000; display:block; font-size: 11px; }
+/* Item Name: Bold Standard */
+.item-name-main { font-weight: 700; color: #000; display:block; font-size: 11px; }
 .item-sub { font-size: 9px; color: #666; font-weight: normal; margin-top: 2px; display: block; }
 
-/* TOTALS PDF (ALIGNMENT FIXED) */
+/* TOTALS PDF (FIX ALIGNMENT) */
 .pdf-totals-area { 
     display: flex; 
-    justify-content: flex-end; /* Memastikan rata kanan */
+    justify-content: flex-end; 
     margin-top: 5px; 
-    page-break-inside: avoid; /* Box total tidak boleh terpotong */
+    page-break-inside: avoid;
 }
 .pdf-total-box { 
     width: 280px; 
-    text-align: right; /* Text rata kanan */
 }
 .pdf-total-row { 
     display: flex; 
-    justify-content: space-between; 
+    justify-content: space-between; /* Kiri Teks, Kanan Angka */
     font-size: 10px; 
     padding: 4px 0; 
     color: #333; 
 }
 
+/* Grand Total: Bold Standard (700) & Dotted Line */
 .pdf-total-row.grand { 
     font-size: 15px; 
-    font-weight: 900; 
-    color: #116999; 
+    font-weight: 700; 
+    color: #116999; /* BIRU */
     margin-top: 10px; 
     padding-top: 10px;
     border-top: 1px dotted #999; 
@@ -348,7 +347,10 @@ table.pdf-table td {
             <div class="pdf-total-box">
                 <div class="pdf-total-row"><span>Total DPP</span><span id="pdfDPP">0</span></div>
                 <div class="pdf-total-row"><span>Total PPN (11%)</span><span id="pdfPPN">0</span></div>
-                <div class="pdf-total-row grand"><span>Grand Total <span id="pdfTotal" style="margin-left:5px;">0</span></span></div>
+                <div class="pdf-total-row grand">
+                    <span>Grand Total</span>
+                    <span id="pdfTotal">0</span>
+                </div>
             </div>
         </div>
 
