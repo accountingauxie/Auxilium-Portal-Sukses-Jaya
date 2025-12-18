@@ -79,7 +79,8 @@
 
     .header {
       background: rgba(255, 255, 255, 0.9);
-      padding: 20px 40px;
+      padding: 0 40px; /* Adjusted padding specifically for nav height */
+      height: 70px; /* Fixed height for header */
       border-bottom: 1px solid #eaecf0;
       font-size: 18px;
       font-weight: 700;
@@ -90,16 +91,94 @@
       z-index: 40;
       backdrop-filter: blur(10px);
       display: flex;
-      justify-content: space-between;
+      align-items: center;
+      /* Changed from space-between to allow navbar in middle */
+      gap: 40px; 
+    }
+
+    .company-name {
+      white-space: nowrap;
+    }
+
+    /* ========== TOP NAVIGATION (NEW) ========== */
+    .top-nav {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex: 1; /* Takes available space */
+      height: 100%;
+    }
+
+    .nav-item {
+      position: relative;
+      height: 100%;
+      display: flex;
       align-items: center;
     }
 
+    .nav-link {
+      text-decoration: none;
+      color: #475467;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-link:hover, .nav-item:hover .nav-link {
+      background-color: #f2f4f7;
+      color: #101828;
+    }
+
+    /* Dropdown Styling */
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 60px; /* Just below header */
+      left: 0;
+      background: white;
+      min-width: 220px;
+      border: 1px solid #eaecf0;
+      border-radius: 8px;
+      box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03);
+      padding: 6px;
+      z-index: 100;
+      animation: fadeIn 0.15s ease;
+    }
+
+    .nav-item:hover .dropdown-menu {
+      display: block;
+    }
+
+    .dropdown-item {
+      display: block;
+      padding: 10px 12px;
+      color: #344054;
+      text-decoration: none;
+      font-size: 14px;
+      border-radius: 6px;
+      transition: background 0.2s;
+      font-weight: 400;
+    }
+
+    .dropdown-item:hover {
+      background-color: #f9fafb;
+      color: #2f54eb;
+    }
+
+    /* ========== LOGOUT BTN ========== */
     .logout-btn {
       cursor: pointer;
       color: #667085;
       transition: color 0.2s;
       padding: 8px;
       border-radius: 8px;
+      margin-left: auto; /* Push to far right */
     }
 
     .logout-btn:hover {
@@ -335,7 +414,58 @@
 
   <div class="main">
     <div class="header">
-      CV. SUKSES JAYA
+      <div class="company-name">CV. SUKSES JAYA</div>
+      
+      <nav class="top-nav">
+        <div class="nav-item">
+            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/" class="nav-link">Home</a>
+        </div>
+
+        <div class="nav-item">
+            <div class="nav-link">
+                Penjualan <i data-feather="chevron-down" style="width:14px; margin-left:2px;"></i>
+            </div>
+            <div class="dropdown-menu">
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Order%20Penjualan/" class="dropdown-item">Order Penjualan</a>
+                <a href="Penjualan/Review%20Penjualan/" class="dropdown-item">Review Penjualan</a>
+            </div>
+        </div>
+
+        <div class="nav-item">
+            <div class="nav-link">
+                Pembelian <i data-feather="chevron-down" style="width:14px; margin-left:2px;"></i>
+            </div>
+            <div class="dropdown-menu">
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/PurchaseOrder/index.html" class="dropdown-item">Pemesanan Pembelian</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/CreateBill/index.html" class="dropdown-item">Daftar Tagihan</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/entry/index.html" class="dropdown-item">Penerimaan Pemesanan</a>
+            </div>
+        </div>
+
+        <div class="nav-item">
+            <div class="nav-link">
+                Produksi <i data-feather="chevron-down" style="width:14px; margin-left:2px;"></i>
+            </div>
+            <div class="dropdown-menu">
+                <a href="#" onclick="alert('Modul belum tersedia')" class="dropdown-item">Persiapan Pemesanan</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/" class="dropdown-item">Produksi Barang Jadi</a>
+                <a href="#" onclick="alert('Modul belum tersedia')" class="dropdown-item">Retur Penjualan</a>
+            </div>
+        </div>
+
+        <div class="nav-item">
+            <div class="nav-link">
+                Persediaan <i data-feather="chevron-down" style="width:14px; margin-left:2px;"></i>
+            </div>
+            <div class="dropdown-menu">
+                <a href="#" onclick="alert('Stok KPC')" class="dropdown-item">KPC</a>
+                <a href="#" onclick="alert('Stok Spandek')" class="dropdown-item">Spandek</a>
+                <a href="#" onclick="alert('Stok Non Spandek')" class="dropdown-item">Non Spandek</a>
+                <a href="#" onclick="alert('List Pre Order')" class="dropdown-item">Pre Order</a>
+                <a href="#" onclick="alert('Gudang BS')" class="dropdown-item">Gudang BS</a>
+            </div>
+        </div>
+      </nav>
       <div class="logout-btn" onclick="showLogoutModal()" title="Logout">
         <i data-feather="log-out"></i>
       </div>
@@ -487,7 +617,7 @@
       setTile("tile-finished-goods", !!user.access.finished_goods);
       setTile("tile-order-form", !!user.access.order_form);
       setTile("tile-review-invoice", !!user.access.review_invoice);
-      setTile("tile-inventory", !!user.access.inventory); // Added Inventory Access Check
+      setTile("tile-inventory", !!user.access.inventory);
     })();
   </script>
 </body>
