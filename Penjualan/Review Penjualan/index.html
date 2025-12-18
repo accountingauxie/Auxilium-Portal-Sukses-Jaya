@@ -8,13 +8,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-/* --- SYSTEM STYLE (UI Web) --- */
+/* --- 1. SYSTEM STYLE (Main Web UI) --- */
 :root { 
     --primary-color: #116999; 
     --bg-color: #f4f7f6;
     --text-color: #333;
 }
-
 * { box-sizing: border-box; }
 body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 13px; background: var(--bg-color); color: var(--text-color); }
 
@@ -24,16 +23,15 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Ro
 .aux-menu a { text-decoration: none; color: #555; font-weight: 600; margin-right: 20px; font-size: 14px; }
 .aux-menu a.active { color: var(--primary-color); }
 
-/* Layout */
+/* Main Layout */
 .page-wrap { padding: 30px 40px; max-width: 1400px; margin: 0 auto; }
 .category-tabs { margin-bottom: 20px; border-bottom: 2px solid #ddd; }
 .cat-btn { background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; }
 .cat-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
-
-.table-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; }
 .search-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 15px; }
 
-/* Table UI */
+/* Table Dashboard */
+.table-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; }
 table.xero-table { width: 100%; border-collapse: collapse; }
 table.xero-table th { text-align: left; padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; color: #555; font-size: 12px; text-transform: uppercase; }
 table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; }
@@ -45,92 +43,88 @@ table.xero-table tr:hover { background: #f0f8ff; }
 .badge-success { background: #ecfdf5; color: #047857; }
 .badge-danger { background: #fef2f2; color: #b91c1c; }
 
-/* --- MODAL STYLE --- */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 9999; backdrop-filter: blur(2px); }
-.modal-box { background: #fff; width: 1100px; max-width: 95%; height: 90vh; display: flex; flex-direction: column; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-.modal-header { padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-.modal-body { flex: 1; overflow-y: auto; background: #888; padding: 20px; display: flex; justify-content: center; } 
-/* Background Abu-abu di modal body biar kelihatan kertas PDF-nya */
 
-.modal-footer { padding: 15px 20px; background: #fff; border-top: 1px solid #eee; text-align: right; }
-.btn-action { padding: 10px 20px; border-radius: 5px; border: none; cursor: pointer; color: white; font-weight: bold; margin-left: 10px; }
+/* --- 2. PREVIEW MODAL STYLE (Modern Web Look) --- */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 9000; backdrop-filter: blur(2px); }
+.modal-box { background: #fff; width: 1100px; max-width: 95%; height: 90vh; display: flex; flex-direction: column; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+
+.modal-header { padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
+.modal-body { flex: 1; overflow-y: auto; padding: 30px; background: #fff; }
+
+/* Web Grid Info (Untuk Preview) */
+.web-info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px; margin-bottom: 30px; border-bottom: 1px solid #f0f0f0; padding-bottom: 20px; }
+.web-label { font-size: 11px; color: #888; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 5px; }
+.web-value { font-size: 14px; color: #333; font-weight: 600; }
+
+/* Web Table (Untuk Preview) */
+table.web-items { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+table.web-items th { text-align: left; padding: 10px; background: #f9fafb; font-size: 11px; color: #555; text-transform: uppercase; border-bottom: 1px solid #eee; }
+table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+.t-right { text-align: right; }
+
+.web-totals { display: flex; justify-content: flex-end; }
+.web-total-box { width: 300px; background: #f9fafb; padding: 15px; border-radius: 8px; }
+.web-total-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 13px; }
+.web-total-row.grand { font-size: 18px; color: var(--primary-color); font-weight: 800; border-top: 1px solid #ddd; margin-top: 10px; padding-top: 10px; }
+
+.modal-footer { padding: 15px 30px; background: #f9fafb; border-top: 1px solid #eee; text-align: right; }
+.btn-action { padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; color: white; font-weight: bold; margin-left: 10px; transition: 0.2s; }
 .btn-close { background: #fff; color: #333; border: 1px solid #ccc; }
 .btn-reject { background: #dc2626; }
 .btn-approve { background: #10b981; }
 .btn-pdf { background: #2563eb; }
 
-/* --- PDF DESIGN (A5 LANDSCAPE - SUKSES JAYA STYLE) --- */
+
+/* --- 3. HIDDEN PDF STYLE (Sukses Jaya A5 Landscape) --- */
+/* Disembunyikan dari layar user, tapi bisa dibaca html2pdf */
+#pdf-hidden-container { 
+    position: absolute; 
+    left: -9999px; 
+    top: 0; 
+}
+
 #pdfContent { 
     background: #fff; 
-    width: 210mm; /* Lebar A5 Landscape kurang lebih */
-    min-height: 148mm; 
+    width: 210mm; /* A5 Width Landscape */
     padding: 10mm 15mm; 
     font-family: 'Arial', sans-serif; 
     color: #000;
-    box-shadow: 0 0 15px rgba(0,0,0,0.2); 
-    position: relative;
 }
 
-/* 1. Header Area */
-.pdf-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 15px; }
-.pdf-title { font-size: 36px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; margin-top: 10px; }
-
+/* PDF Header */
+.pdf-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+.pdf-title { font-size: 36px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; margin-top: 5px; }
 .company-details { text-align: right; font-size: 10px; color: #333; line-height: 1.4; }
 .company-logo img { height: 45px; margin-bottom: 5px; }
-.company-name { font-weight: 800; font-size: 12px; color: #F59E0B; text-transform: uppercase; margin-bottom: 2px; } /* Warna Oranye Sukses Jaya */
-.company-address { max-width: 250px; margin-left: auto; }
+.company-name { font-weight: 800; font-size: 12px; color: #F59E0B; text-transform: uppercase; }
 
-/* 2. Info Section */
-.pdf-info { display: flex; justify-content: space-between; margin-bottom: 25px; }
-.bill-to { width: 55%; }
-.bill-label { font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; color: #000; }
-.customer-name { font-size: 14px; font-weight: 800; margin-bottom: 3px; text-transform: uppercase; }
-.customer-address { font-size: 10px; line-height: 1.4; color: #444; max-width: 90%; }
+/* PDF Info */
+.pdf-info { display: flex; justify-content: space-between; margin-bottom: 20px; }
+.pdf-bill-label { font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; }
+.pdf-cust-name { font-size: 14px; font-weight: 800; text-transform: uppercase; margin-bottom: 3px; }
+.pdf-cust-addr { font-size: 10px; line-height: 1.4; color: #444; }
+.pdf-meta-row { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 3px; width: 220px; }
+.pdf-meta-key { font-weight: 700; }
 
-.meta-data { width: 35%; }
-.meta-row { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 4px; }
-.meta-key { font-weight: 700; }
-.meta-val { text-align: right; }
-
-/* 3. Table Section (Garis Tebal) */
-.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-.pdf-table th { 
-    text-align: left; 
-    font-size: 9px; 
-    font-weight: 800; 
-    text-transform: uppercase; 
-    padding: 8px 5px; 
-    border-top: 2px solid #000; 
-    border-bottom: 2px solid #000; 
+/* PDF Table (Thick Borders) */
+table.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+table.pdf-table th { 
+    text-align: left; font-size: 9px; font-weight: 800; text-transform: uppercase; 
+    padding: 6px 4px; border-top: 2px solid #000; border-bottom: 2px solid #000; 
 }
-.pdf-table td { 
-    padding: 8px 5px; 
-    font-size: 10px; 
-    vertical-align: top;
-    border-bottom: 1px solid #ddd;
+table.pdf-table td { 
+    padding: 6px 4px; font-size: 10px; vertical-align: top; border-bottom: 1px solid #ddd; 
 }
-/* Hilangkan border bawah untuk baris terakhir item */
-.pdf-table tbody tr:last-child td { border-bottom: 2px solid #000; }
+table.pdf-table tr:last-child td { border-bottom: 2px solid #000; }
 
-.t-right { text-align: right; }
-.item-sub { font-size: 9px; color: #666; margin-top: 2px; display: block; }
+/* PDF Totals */
+.pdf-totals-area { display: flex; justify-content: flex-end; }
+.pdf-total-box { width: 250px; }
+.pdf-total-row { display: flex; justify-content: space-between; font-size: 10px; padding: 2px 0; }
+.pdf-total-row.grand { font-size: 14px; font-weight: 800; color: #116999; margin-top: 5px; border-top: 1px dotted #ccc; padding-top: 5px; }
+.pdf-notes { font-size: 9px; color: #555; margin-top: 15px; border-top: 1px dotted #ccc; padding-top: 5px; }
 
-/* 4. Totals */
-.pdf-totals { display: flex; justify-content: flex-end; margin-top: 5px; }
-.total-box { width: 250px; }
-.total-row { display: flex; justify-content: space-between; font-size: 10px; padding: 3px 0; }
-.total-row.grand { 
-    font-size: 14px; 
-    font-weight: 800; 
-    color: #116999; /* Biru */
-    margin-top: 5px; 
-    padding-top: 5px; 
-}
-
-/* 5. Notes & Footer */
-.pdf-notes { font-size: 9px; color: #555; margin-top: 20px; border-top: 1px dotted #ccc; padding-top: 5px; }
-
-/* Helper */
+/* Skeleton Loading */
 .skeleton { height: 20px; background: #eee; width: 100%; border-radius: 4px; animation: pulse 1s infinite; }
 @keyframes pulse { 0% {opacity: 0.6;} 50% {opacity: 1;} 100% {opacity: 0.6;} }
 </style>
@@ -179,80 +173,130 @@ table.xero-table tr:hover { background: #f0f8ff; }
 <div id="orderModal" class="modal-overlay">
     <div class="modal-box">
         <div class="modal-header">
-            <h3 style="margin:0;">Preview Order & Invoice</h3>
-            <button class="btn-close" onclick="closeModal()" style="border:none; background:none; font-size:20px; cursor:pointer;">&times;</button>
+            <div>
+                <h3 style="margin:0; font-size: 18px;">Order #<span id="webOrderNo"></span></h3>
+                <span id="webStatusBadge" class="badge"></span>
+            </div>
+            <button class="btn-close" onclick="closeModal()" style="border:none; background:none; font-size:24px; cursor:pointer;">&times;</button>
         </div>
         
         <div class="modal-body">
-            <div id="pdfContent">
-                
-                <div class="pdf-header">
-                    <div class="pdf-title">INVOICE</div>
-                    <div class="company-details">
-                        <div class="company-logo">
-                            <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/Screenshot_2025-12-17_161250-removebg-preview.png" alt="SJ Logo">
-                        </div>
-                        <div class="company-name">CV. SUKSES JAYA MAKMUR LESTARI</div>
-                        <div class="company-address">
-                            JL. D.I Panjaitan, RT/RW. 008/003<br>
-                            Kel. Wundudopi, Kec. Baruga, Kendari<br>
-                            Sulawesi Tenggara<br>
-                            Telp. 0822 4708 4908
-                        </div>
-                    </div>
+            <div class="web-info-grid">
+                <div>
+                    <span class="web-label">Customer</span>
+                    <div class="web-value" id="webCustomer">-</div>
+                    <div style="font-size:12px; color:#666; margin-top:5px;" id="webAddress">-</div>
                 </div>
-
-                <div class="pdf-info">
-                    <div class="bill-to">
-                        <div class="bill-label">BILLED TO</div>
-                        <div class="customer-name" id="pdfCustomer">CUSTOMER NAME</div>
-                        <div class="customer-address">
-                            <span id="pdfAddress">Alamat...</span><br>
-                            <span id="pdfCityKec">Kota, Kecamatan</span><br>
-                            Attn: <span id="pdfCP">-</span> | NPWP: <span id="pdfNPWP">-</span>
-                        </div>
-                    </div>
-                    <div class="meta-data">
-                        <div class="meta-row"><span class="meta-key">Invoice Date</span><span class="meta-val" id="pdfDate">-</span></div>
-                        <div class="meta-row"><span class="meta-key">Est. Delivery</span><span class="meta-val" id="pdfEst">-</span></div>
-                        <div class="meta-row"><span class="meta-key">Due Date</span><span class="meta-val" id="pdfDue">-</span></div>
-                        <div class="meta-row"><span class="meta-key">Order Number</span><span class="meta-val" id="pdfOrderNo">-</span></div>
-                    </div>
+                <div>
+                    <span class="web-label">Order Details</span>
+                    <div style="font-size:13px; margin-bottom:4px;">Date: <strong id="webDate">-</strong></div>
+                    <div style="font-size:13px; margin-bottom:4px;">Est. Del: <strong id="webEst">-</strong></div>
+                    <div style="font-size:13px;">Due/Term: <strong id="webDue">-</strong></div>
                 </div>
-
-                <table class="pdf-table">
-                    <thead>
-                        <tr>
-                            <th style="width:25%;">NAMA BARANG</th>
-                            <th style="width:8%;" class="t-right">SATUAN</th>
-                            <th style="width:8%;" class="t-right">METER</th>
-                            <th style="width:8%;" class="t-right">JML (QTY)</th>
-                            <th style="width:13%;" class="t-right">HARGA SATUAN</th>
-                            <th style="width:12%;" class="t-right">DISKON</th>
-                            <th style="width:13%;" class="t-right">HARGA NET</th>
-                            <th style="width:13%;" class="t-right">TOTAL</th>
-                        </tr>
-                    </thead>
-                    <tbody id="pdfItemsBody">
-                        </tbody>
-                </table>
-
-                <div class="pdf-totals">
-                    <div class="total-box">
-                        <div class="total-row"><span>Total DPP</span><span id="pdfDPP">0</span></div>
-                        <div class="total-row"><span>Total PPN (11%)</span><span id="pdfPPN">0</span></div>
-                        <div class="total-row grand"><span>Grand Total <span id="pdfTotal" style="margin-left:5px;">0</span></span></div>
-                    </div>
+                <div>
+                    <span class="web-label">Additional Info</span>
+                    <div style="font-size:13px; margin-bottom:4px;">CP: <span id="webCP">-</span></div>
+                    <div style="font-size:13px; margin-bottom:4px;">NPWP: <span id="webNPWP">-</span></div>
+                    <div style="font-size:13px; color:#888;">Submitted by: <span id="webSubmitted">-</span></div>
                 </div>
-
-                <div class="pdf-notes">
-                    <strong>Notes:</strong> <span id="pdfNotes">-</span>
-                </div>
-
             </div>
+
+            <table class="web-items">
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th class="t-right">Satuan</th>
+                        <th class="t-right">Meter</th>
+                        <th class="t-right">Qty</th>
+                        <th class="t-right">Harga</th>
+                        <th class="t-right">Disc</th>
+                        <th class="t-right">Net</th>
+                        <th class="t-right">Total</th>
+                    </tr>
+                </thead>
+                <tbody id="webItemsBody"></tbody>
+            </table>
+
+            <div class="web-totals">
+                <div class="web-total-box">
+                    <div class="web-total-row"><span>Total DPP</span><span id="webDPP">0</span></div>
+                    <div class="web-total-row"><span>PPN (11%)</span><span id="webPPN">0</span></div>
+                    <div class="web-total-row grand"><span>Grand Total</span><span id="webTotal">0</span></div>
+                </div>
             </div>
+            
+            <div style="margin-top:20px; padding:10px; background:#fdfdfd; border:1px dashed #ddd; border-radius:4px;">
+                <strong style="font-size:11px; color:#555;">NOTES:</strong>
+                <span id="webNotes" style="font-size:12px; color:#333; margin-left:5px;">-</span>
+            </div>
+        </div>
 
         <div class="modal-footer" id="modalActions"></div>
+    </div>
+</div>
+
+<div id="pdf-hidden-container">
+    <div id="pdfContent">
+        <div class="pdf-header">
+            <div class="pdf-title">INVOICE</div>
+            <div class="company-details">
+                <div class="company-logo">
+                    <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/Screenshot_2025-12-17_161250-removebg-preview.png" alt="SJ">
+                </div>
+                <div class="company-name">CV. SUKSES JAYA MAKMUR LESTARI</div>
+                <div>
+                    JL. D.I Panjaitan, RT/RW. 008/003<br>
+                    Kel. Wundudopi, Kec. Baruga, Kendari<br>
+                    Sulawesi Tenggara | Telp. 0822 4708 4908
+                </div>
+            </div>
+        </div>
+
+        <div class="pdf-info">
+            <div class="bill-to" style="width: 60%;">
+                <div class="pdf-bill-label">BILLED TO</div>
+                <div class="pdf-cust-name" id="pdfCustName">CUSTOMER NAME</div>
+                <div class="pdf-cust-addr">
+                    <span id="pdfAddr">Alamat...</span><br>
+                    <span id="pdfRegion">Kota, Kec</span><br>
+                    Attn: <span id="pdfCP">-</span> | NPWP: <span id="pdfNPWP">-</span>
+                </div>
+            </div>
+            <div class="meta-data" style="width: 35%;">
+                <div class="pdf-meta-row"><span class="pdf-meta-key">Invoice Date</span><span id="pdfDate">-</span></div>
+                <div class="pdf-meta-row"><span class="pdf-meta-key">Est. Delivery</span><span id="pdfEst">-</span></div>
+                <div class="pdf-meta-row"><span class="pdf-meta-key">Due Date</span><span id="pdfDue">-</span></div>
+                <div class="pdf-meta-row"><span class="pdf-meta-key">Order Number</span><span id="pdfOrderNo">-</span></div>
+            </div>
+        </div>
+
+        <table class="pdf-table">
+            <thead>
+                <tr>
+                    <th style="width:25%;">NAMA BARANG</th>
+                    <th style="width:8%;" class="t-right">SATUAN</th>
+                    <th style="width:8%;" class="t-right">METER</th>
+                    <th style="width:8%;" class="t-right">JML (QTY)</th>
+                    <th style="width:13%;" class="t-right">HARGA SATUAN</th>
+                    <th style="width:12%;" class="t-right">DISKON</th>
+                    <th style="width:13%;" class="t-right">HARGA NET</th>
+                    <th style="width:13%;" class="t-right">TOTAL</th>
+                </tr>
+            </thead>
+            <tbody id="pdfItemsBody"></tbody>
+        </table>
+
+        <div class="pdf-totals-area">
+            <div class="pdf-total-box">
+                <div class="pdf-total-row"><span>Total DPP</span><span id="pdfDPP">0</span></div>
+                <div class="pdf-total-row"><span>Total PPN (11%)</span><span id="pdfPPN">0</span></div>
+                <div class="pdf-total-row grand"><span>Grand Total <span id="pdfTotal" style="margin-left:5px;">0</span></span></div>
+            </div>
+        </div>
+
+        <div class="pdf-notes">
+            <strong>Notes:</strong> <span id="pdfNotes">-</span>
+        </div>
     </div>
 </div>
 
@@ -321,28 +365,48 @@ function openModal(id) {
     const o = allOrders.find(x => x.id == id);
     if(!o) return;
 
-    // Fill PDF Data
+    // --- 1. POPULATE VISIBLE MODAL (WEB PREVIEW) ---
+    document.getElementById('webOrderNo').textContent = o.id;
+    document.getElementById('webStatusBadge').textContent = o.status;
+    document.getElementById('webStatusBadge').className = 'badge ' + (o.status.includes('Cancel') ? 'badge-danger' : (o.status.includes('Awaiting Approval') ? 'badge-approve' : 'badge-success'));
+    
+    document.getElementById('webCustomer').textContent = o.customer;
+    document.getElementById('webAddress').textContent = (o.address || "") + " " + (o.kec || "") + " " + (o.city || "");
+    document.getElementById('webDate').textContent = o.date;
+    document.getElementById('webEst').textContent = o.estDelivery;
+    document.getElementById('webDue').textContent = o.dueDate;
+    document.getElementById('webCP').textContent = o.cp;
+    document.getElementById('webNPWP').textContent = o.npwp;
+    document.getElementById('webNotes').textContent = o.notes;
+    // (Optional: Submitted By di hapus dari view sesuai request sebelumnya, tapi jika ada di data bisa diisi)
+    document.getElementById('webSubmitted').textContent = "-"; 
+
+    const webTbody = document.getElementById('webItemsBody');
+    webTbody.innerHTML = '';
+    
+    // --- 2. POPULATE HIDDEN PDF (SUKSES JAYA STYLE) ---
     document.getElementById('pdfOrderNo').textContent = o.id;
     document.getElementById('pdfDate').textContent = o.date;
     document.getElementById('pdfEst').textContent = o.estDelivery;
     document.getElementById('pdfDue').textContent = o.dueDate;
-    
-    document.getElementById('pdfCustomer').textContent = o.customer;
-    document.getElementById('pdfAddress').textContent = o.address || "";
-    document.getElementById('pdfCityKec').textContent = (o.kec || "") + ", " + (o.city || "");
+    document.getElementById('pdfCustName').textContent = o.customer;
+    document.getElementById('pdfAddr').textContent = o.address || "";
+    document.getElementById('pdfRegion').textContent = (o.kec || "") + ", " + (o.city || "");
     document.getElementById('pdfCP').textContent = o.cp || "-";
     document.getElementById('pdfNPWP').textContent = o.npwp || "-";
+    document.getElementById('pdfNotes').textContent = o.notes || "-";
 
-    const tbody = document.getElementById('pdfItemsBody');
-    tbody.innerHTML = '';
+    const pdfTbody = document.getElementById('pdfItemsBody');
+    pdfTbody.innerHTML = '';
+
+    // --- LOOP ITEMS FOR BOTH ---
     o.items.forEach(item => {
         let net = (item.price || 0) - (item.disc || 0);
-        tbody.innerHTML += `
+        
+        // Render to Web Preview
+        webTbody.innerHTML += `
             <tr>
-                <td>
-                    <strong>${item.name}</strong>
-                    <span class="item-sub">${item.type}</span>
-                </td>
+                <td><strong>${item.name}</strong><br><small style="color:#888;">${item.type}</small></td>
                 <td class="t-right">${item.unit || '-'}</td>
                 <td class="t-right">${item.meter || '-'}</td>
                 <td class="t-right">${item.qty}</td>
@@ -350,16 +414,33 @@ function openModal(id) {
                 <td class="t-right">${fmtMoney(item.disc)}</td>
                 <td class="t-right">${fmtMoney(net)}</td>
                 <td class="t-right"><strong>${fmtMoney(item.total)}</strong></td>
-            </tr>
-        `;
+            </tr>`;
+
+        // Render to Hidden PDF
+        pdfTbody.innerHTML += `
+            <tr>
+                <td><strong>${item.name}</strong><br><span style="font-size:9px; color:#666;">${item.type}</span></td>
+                <td class="t-right">${item.unit || '-'}</td>
+                <td class="t-right">${item.meter || '-'}</td>
+                <td class="t-right">${item.qty}</td>
+                <td class="t-right">${fmtMoney(item.price)}</td>
+                <td class="t-right">${fmtMoney(item.disc)}</td>
+                <td class="t-right">${fmtMoney(net)}</td>
+                <td class="t-right"><strong>${fmtMoney(item.total)}</strong></td>
+            </tr>`;
     });
 
+    // Totals for Web
+    document.getElementById('webDPP').textContent = fmtMoney(o.totalDPP);
+    document.getElementById('webPPN').textContent = fmtMoney(o.totalPPN);
+    document.getElementById('webTotal').textContent = fmtMoney(o.grandTotal);
+
+    // Totals for PDF
     document.getElementById('pdfDPP').textContent = fmtMoney(o.totalDPP);
     document.getElementById('pdfPPN').textContent = fmtMoney(o.totalPPN);
     document.getElementById('pdfTotal').textContent = fmtMoney(o.grandTotal);
-    document.getElementById('pdfNotes').textContent = o.notes || "-";
 
-    // Action Buttons
+    // Buttons
     let btns = `<button class="btn-action btn-close" onclick="closeModal()">Close</button>`;
     if(o.status === 'Awaiting Approval') {
         btns += `<button class="btn-action btn-reject" onclick="updateStatus('${o.id}', 'Cancel Order')">Reject</button>
@@ -389,13 +470,14 @@ async function updateStatus(id, stat) {
 }
 
 function dlPDF(id) {
+    // KITA DOWNLOAD ELEMEN YG DISEMBUNYIKAN (#pdfContent) BUKAN YG DITAMPILKAN
     const el = document.getElementById('pdfContent');
     const opt = {
-        margin: 0.2,
+        margin: 0,
         filename: `Invoice_${id}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 3 }, // Scale 3 biar tajam
-        jsPDF: { unit: 'in', format: 'a5', orientation: 'landscape' }
+        html2canvas: { scale: 3 },
+        jsPDF: { unit: 'mm', format: [210, 148], orientation: 'landscape' } // A5 Landscape Exact
     };
     const btn = document.querySelector('.btn-pdf');
     btn.textContent = "Generating...";
