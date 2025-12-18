@@ -475,7 +475,7 @@ input[type=number] { -moz-appearance: textfield; }
 </div>
 
 <script>
-const baseURL = "https://script.google.com/macros/s/AKfycbxO7lxcyNmQnJI2YBxeFaRM_X8vkWHoKTIBq45It0eDo7syzfmrrz3v2d1TzHRFoJDPYw/exec";
+const baseURL = "https://script.google.com/macros/s/AKfycbxcGFxvruKFp1UHyppLAq9qC9KOOzN6PbV8t6BBl42Khtm2zJ9rJ9lgosbo1h365OibDQ/exec";
 
 let customerData=[], listSpandek=[], listNonSpandek=[], priceSpan=[], priceNon=[], unitSpan=[], unitNon=[], stockSpan=[], stockNon=[];
 let choiceCustomer, choiceOrderType;
@@ -768,6 +768,7 @@ function forceSubmitOrder() {
     const btn = document.querySelector(".approve-btn");
     btn.disabled=true; btn.textContent="Memproses...";
     
+    // --- UPDATE: Mengambil data detail pelanggan ---
     const payload = {
         customer: document.getElementById("customerSelect").value,
         orderType: document.getElementById("orderType").value,
@@ -775,6 +776,12 @@ function forceSubmitOrder() {
         estDelivery: document.getElementById("estDeliveryDate").value,
         top: document.getElementById("termPayment").value, 
         notes: document.getElementById("notes").value,
+        // Data Tambahan diambil dari input readonly
+        person: document.getElementById("detailPerson").value,
+        npwp: document.getElementById("detailNPWP").value,
+        address: document.getElementById("detailAddress").value,
+        kecamatan: document.getElementById("detailKec").value,
+        kota: document.getElementById("detailCity").value,
         items: []
     };
 
