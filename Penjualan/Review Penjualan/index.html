@@ -8,7 +8,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-/* --- SYSTEM STYLE --- */
+/* --- 1. SYSTEM STYLE (Main Web UI) --- */
 :root { 
     --primary-color: #116999; 
     --bg-color: #f4f7f6;
@@ -17,12 +17,12 @@
 * { box-sizing: border-box; }
 body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background: var(--bg-color); color: var(--text-color); }
 
-/* Utility Alignment Classes */
+/* Utility Classes */
 .t-left { text-align: left; }
 .t-center { text-align: center; }
 .t-right { text-align: right; }
 
-/* TRICK: Currency Alignment (Rp Left | Number Right) */
+/* Currency Trick: Rp Kiri, Angka Kanan */
 .currency-cell {
     display: flex;
     justify-content: space-between;
@@ -36,19 +36,23 @@ body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background:
 .aux-menu a { text-decoration: none; color: #555; font-weight: 600; margin-right: 20px; font-size: 14px; }
 .aux-menu a.active { color: var(--primary-color); }
 
-/* Layout */
+/* Main Layout */
 .page-wrap { padding: 30px 40px; max-width: 1400px; margin: 0 auto; }
 .category-tabs { margin-bottom: 20px; border-bottom: 2px solid #ddd; }
 .cat-btn { background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; }
 .cat-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
 .search-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 15px; }
 
-/* Dashboard Table */
+/* Table Dashboard */
 .table-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; }
 table.xero-table { width: 100%; border-collapse: collapse; }
 table.xero-table th { text-align: left; padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; color: #555; font-size: 12px; text-transform: uppercase; font-weight: bold; }
-table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; }
-table.xero-table tr:hover { background: #f0f8ff; }
+table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; }
+
+/* INTERACTION FIX: Efek Klik & Hover yang Jelas */
+table.xero-table tr.data-row { cursor: pointer; transition: background-color 0.2s; }
+table.xero-table tr.data-row:hover { background-color: #e0f2fe; } /* Warna Biru Muda saat Hover */
+table.xero-table tr.data-row:active { background-color: #bae6fd; } /* Warna saat diklik */
 
 /* Badges */
 .badge { padding: 5px 12px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; display: inline-block; letter-spacing: 0.5px; }
@@ -56,23 +60,22 @@ table.xero-table tr:hover { background: #f0f8ff; }
 .badge-success { background: #ecfdf5; color: #047857; border: 1px solid #d1fae5; }
 .badge-danger { background: #fef2f2; color: #b91c1c; border: 1px solid #fee2e2; }
 
-/* --- MODAL (WEB PREVIEW) --- */
+/* --- 2. PREVIEW MODAL STYLE --- */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 9000; backdrop-filter: blur(2px); }
 .modal-box { background: #fff; width: 1100px; max-width: 95%; height: 90vh; display: flex; flex-direction: column; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
 .modal-header { padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
-.header-left { display: flex; align-items: center; gap: 15px; } 
+.header-left { display: flex; align-items: center; gap: 15px; }
 .modal-body { flex: 1; overflow-y: auto; padding: 30px; background: #fff; }
 
 .web-info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px; margin-bottom: 30px; border-bottom: 1px solid #f0f0f0; padding-bottom: 20px; }
 .web-label { font-size: 11px; color: #888; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 5px; }
 .web-value { font-size: 14px; color: #333; font-weight: bold; }
 
-/* Web Table (Preview) */
+/* Web Table */
 table.web-items { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-table.web-items th { background: #f9fafb; font-size: 11px; color: #555; text-transform: uppercase; border-bottom: 1px solid #eee; font-weight: bold; padding: 10px; }
+table.web-items th { text-align: left; padding: 10px; background: #f9fafb; font-size: 11px; color: #555; text-transform: uppercase; border-bottom: 1px solid #eee; font-weight: bold; }
 table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
 
-/* Totals Preview */
 .web-totals { display: flex; justify-content: flex-end; }
 .web-total-box { width: 300px; background: #f9fafb; padding: 15px; border-radius: 8px; }
 .web-total-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 13px; }
@@ -85,14 +88,11 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 .btn-approve { background: #10b981; }
 .btn-pdf { background: #2563eb; }
 
-/* --- HIDDEN PDF (A5 LANDSCAPE) --- */
+/* --- 3. HIDDEN PDF STYLE --- */
 #pdf-hidden-container { position: absolute; left: -9999px; top: 0; }
-#pdfContent { 
-    background: #fff; width: 210mm; padding: 10mm 15mm; 
-    font-family: "Arial", sans-serif; color: #000; 
-}
+#pdfContent { background: #fff; width: 210mm; padding: 10mm 15mm; font-family: "Arial", sans-serif; color: #000; }
 .pdf-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
-.pdf-title { font-size: 36px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-top: 5px; } 
+.pdf-title { font-size: 36px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-top: 5px; }
 .company-details { text-align: right; font-size: 10px; color: #333; line-height: 1.4; }
 .company-logo img { height: 45px; margin-bottom: 5px; }
 .company-name { font-weight: 800; font-size: 12px; color: #F59E0B; text-transform: uppercase; }
@@ -106,12 +106,8 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 .pdf-meta-row { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 3px; width: 100%; }
 .pdf-meta-key { font-weight: 700; }
 
-/* PDF Table */
 table.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-table.pdf-table th { 
-    font-size: 9px; font-weight: 800; text-transform: uppercase; 
-    padding: 6px 4px; border-top: 2px solid #000; border-bottom: 2px solid #000; 
-}
+table.pdf-table th { font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 6px 4px; border-top: 2px solid #000; border-bottom: 2px solid #000; }
 table.pdf-table td { padding: 6px 4px; font-size: 10px; vertical-align: top; border-bottom: 1px solid #ddd; }
 table.pdf-table tr:last-child td { border-bottom: 2px solid #000; }
 
@@ -338,7 +334,8 @@ function renderTable() {
         if(o.status.includes('Completed') || o.status.includes('Production')) badge = 'badge-success';
 
         let tr = document.createElement('tr');
-        tr.onclick = () => openModal(o.id);
+        tr.className = 'data-row'; // FIX: Enable Hover & Click Style
+        tr.onclick = () => openModal(o.id); // FIX: Click Event
         tr.innerHTML = `
             <td><strong>${o.id}</strong></td>
             <td>${o.customer}</td>
@@ -364,10 +361,10 @@ function openModal(id) {
     // --- POPULATE INFO ---
     ['web','pdf'].forEach(prefix => {
         document.getElementById(prefix+'Customer').textContent = o.customer;
-        document.getElementById(prefix+'CustName').textContent = o.customer; // PDF Only
-        document.getElementById(prefix+'Address').textContent = (o.address||"") + " " + (o.kec||"") + " " + (o.city||""); // Web
-        document.getElementById(prefix+'Addr').textContent = o.address||""; // PDF
-        document.getElementById(prefix+'Region').textContent = (o.kec||"") + ", " + (o.city||""); // PDF
+        document.getElementById(prefix+'CustName').textContent = o.customer;
+        document.getElementById(prefix+'Address').textContent = (o.address||"") + " " + (o.kec||"") + " " + (o.city||"");
+        document.getElementById(prefix+'Addr').textContent = o.address||"";
+        document.getElementById(prefix+'Region').textContent = (o.kec||"") + ", " + (o.city||"");
         document.getElementById(prefix+'Date').textContent = o.date;
         document.getElementById(prefix+'Est').textContent = o.estDelivery;
         document.getElementById(prefix+'Due').textContent = o.dueDate;
@@ -385,10 +382,10 @@ function openModal(id) {
     pdfTbody.innerHTML = '';
 
     o.items.forEach(item => {
-        let net = item.net || 0; // Ambil dari Kolom O yang sudah diambil backend
+        let net = item.net || 0; // Menggunakan data NET dari backend
         
-        // Render Web (Preview)
-        webTbody.innerHTML += `
+        // Template baris dengan Currency Trick (Flexbox)
+        let rowHtml = `
             <tr>
                 <td class="t-left"><strong>${item.name}</strong><br><small style="color:#888;">${item.type}</small></td>
                 <td class="t-center">${item.meter || '-'}</td>
@@ -399,8 +396,12 @@ function openModal(id) {
                 <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(net)}</span></div></td>
                 <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.total)}</span></div></td>
             </tr>`;
+        
+        // Render Web (Preview)
+        webTbody.innerHTML += rowHtml;
 
-        // Render PDF (Hidden)
+        // Render PDF (Pakai template yg sama tapi style mungkin beda dikit di CSS)
+        // Utk PDF kita buat sedikit beda di Nama Barang (font size type)
         pdfTbody.innerHTML += `
             <tr>
                 <td class="t-left"><strong>${item.name}</strong><br><span style="font-size:9px; color:#666;">${item.type}</span></td>
@@ -430,7 +431,11 @@ function openModal(id) {
         btns += `<button class="btn-action btn-pdf" onclick="dlPDF('${o.id}')">Download PDF</button>`;
     }
     document.getElementById('modalActions').innerHTML = btns;
-    document.getElementById('orderModal').style.display = 'flex';
+    
+    // Safety check open modal
+    try {
+        document.getElementById('orderModal').style.display = 'flex';
+    } catch(e) { console.error("Error opening modal", e); }
 }
 
 function closeModal() { document.getElementById('orderModal').style.display = 'none'; }
