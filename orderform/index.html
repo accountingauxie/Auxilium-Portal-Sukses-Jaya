@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Purchase Order - Date Style Fixed</title>
+<title>Purchase Order - User Profile Header</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -30,7 +30,7 @@ body, input, select, textarea, button, .choices, .choices__inner, .brand-title, 
 
 body { background: var(--bg-color); margin: 0; padding: 0; }
 
-/* --- NAVIGATION --- */
+/* --- AUXILIUM NAVIGATION BAR (HYBRID) --- */
 .aux-navbar {
     background-color: #ffffff;
     height: 70px;
@@ -44,28 +44,124 @@ body { background: var(--bg-color); margin: 0; padding: 0; }
     z-index: 9999;
     font-family: sans-serif;
 }
-.aux-logo img { height: 40px; width: auto; display: block; }
-.aux-menu { display: flex; gap: 25px; align-items: center; }
-.aux-link { text-decoration: none; color: #666; font-weight: 600; font-size: 14px; padding: 8px 12px; border-radius: 4px; transition: all 0.2s; }
+
+/* Logo Area (Kiri) */
+.aux-logo img {
+    height: 40px;
+    width: auto;
+    display: block;
+}
+
+/* Menu Links (Tengah) */
+.aux-menu {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+}
+
+.aux-link {
+    text-decoration: none;
+    color: #666;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
 .aux-link:hover { color: var(--xero-blue); background-color: #f5f9fc; }
 .aux-link.active { color: var(--xero-blue); background-color: #e6f0fa; font-weight: 700; }
 
-/* USER PANEL */
-.user-panel { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid #eee; }
-.user-details { display: flex; flex-direction: column; text-align: right; line-height: 1.3; }
-.user-name { font-weight: 700; font-size: 13px; color: #333; }
-.user-role { font-size: 11px; color: #888; }
-.user-avatar { width: 36px; height: 36px; background-color: var(--xero-blue); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; user-select: none; }
-.logout-btn { background: none; border: 1px solid #ddd; color: #666; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 14px; }
-.logout-btn:hover { background-color: var(--red-bg); color: var(--red-text); border-color: var(--red-bg); }
+/* USER PANEL (KANAN - PENGGANTI LET'S TALK) */
+.user-panel {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-left: 20px;
+    border-left: 1px solid #eee;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+    line-height: 1.3;
+}
+
+.user-name {
+    font-weight: 700;
+    font-size: 13px;
+    color: #333;
+}
+
+.user-role {
+    font-size: 11px;
+    color: #888;
+}
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    background-color: var(--xero-blue);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+    user-select: none;
+}
+
+.logout-btn {
+    background: none;
+    border: 1px solid #ddd;
+    color: #666;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 14px;
+}
+
+.logout-btn:hover {
+    background-color: var(--red-bg);
+    color: var(--red-text);
+    border-color: var(--red-bg);
+}
+
 
 /* --- PAGE LAYOUT --- */
 .page-wrap { padding: 40px 20px; display: flex; justify-content: center; }
-.invoice-card { width: 100%; max-width: 1600px; background: #fff; padding: 40px; border: 1px solid #d4d4d4; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); overflow: visible; }
 
-/* --- HEADER --- */
-.top-header { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-start; }
-.brand-section .brand-logo { max-height: 80px; width: auto; display: block; }
+.invoice-card {
+  width: 100%; max-width: 1600px;
+  background: #fff; padding: 40px;
+  border: 1px solid #d4d4d4; border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+  overflow: visible; 
+}
+
+/* --- HEADER INVOICE --- */
+.top-header { 
+    margin-bottom: 30px; 
+    border-bottom: 1px solid #eee; 
+    padding-bottom: 20px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: flex-start;
+}
+
+.brand-section .brand-logo {
+    max-height: 80px; 
+    width: auto;      
+    display: block;
+}
+
 .xero-header-right { display: flex; align-items: center; gap: 15px; height: 80px; }
 .xero-order-title { font-size: 28px; font-weight: 700; color: #222; margin: 0; }
 .xero-badge { font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -73,51 +169,55 @@ body { background: var(--bg-color); margin: 0; padding: 0; }
 .badge-sent { background: var(--green-bg); color: var(--green-text); border: 1px solid #bbf7d0; }
 
 /* HEADER GRID */
-.header-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; position: relative; z-index: 200; }
+.header-grid { 
+    display: grid; 
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: 15px; margin-bottom: 20px;
+    position: relative; z-index: 200; 
+}
 .field-label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 700; color: #444; }
 
-/* --- STYLING INPUT BARU (MIRIP IMAGE) --- */
 input.main-input, textarea.main-input {
-  width: 100%; 
-  padding: 8px 12px; 
-  border: 1px solid #b3b3b3; /* Border abu-abu tegas */
-  border-radius: 3px; 
-  font-size: 14px; 
-  height: 38px;
-  color: #333;
-  transition: border-color 0.2s;
+  width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 3px; 
+  font-size: 13px;
+}
+input.main-input { height: 38px; }
+input.main-input:focus, textarea.main-input:focus { border-color: var(--xero-blue); outline: none; }
+
+.detail-grid {
+  display: grid; 
+  grid-template-columns: 1.2fr 1.2fr 2fr 1fr 1fr; 
+  gap: 15px; padding: 15px;
+  background: #fbfbfb; border: 1px solid #e5e5e5; margin-bottom: 25px; border-radius: 3px;
+  position: relative; z-index: 10;
 }
 
-input.main-input:focus, textarea.main-input:focus { 
-    border-color: var(--xero-blue); 
-    outline: none; 
+input.detail-readonly {
+  background: transparent; border: none; border-bottom: 1px dashed #ccc; color: #555; width: 100%; padding: 5px 0;
 }
 
-/* KHUSUS INPUT TANGGAL & JATUH TEMPO (Teks Biru) */
-input[type="date"], input#termPayment {
-    color: var(--xero-blue); /* Warna Teks Biru Xero */
-    font-family: 'Arial', sans-serif;
-    font-weight: 500;
+/* --- TABLE STYLING --- */
+.table-container { 
+    margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px 4px 0 0; 
+    overflow-x: auto; width: 100%; position: relative; z-index: 5; background: #fff; padding-bottom: 0; 
 }
-
-/* Memperbaiki tampilan date picker di browser */
-input[type="date"]::-webkit-calendar-picker-indicator {
-    cursor: pointer;
-    opacity: 0.6;
-}
-input[type="date"]::-webkit-calendar-picker-indicator:hover {
-    opacity: 1;
-}
-
-.detail-grid { display: grid; grid-template-columns: 1.2fr 1.2fr 2fr 1fr 1fr; gap: 15px; padding: 15px; background: #fbfbfb; border: 1px solid #e5e5e5; margin-bottom: 25px; border-radius: 3px; position: relative; z-index: 10; }
-input.detail-readonly { background: transparent; border: none; border-bottom: 1px dashed #ccc; color: #555; width: 100%; padding: 5px 0; }
-
-/* --- TABLE --- */
-.table-container { margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px 4px 0 0; overflow-x: auto; width: 100%; position: relative; z-index: 5; background: #fff; padding-bottom: 0; }
 table.xero-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1400px; }
-table.xero-table th { background: #f8f9fa; text-align: left; padding: 12px 10px; font-size: 12px; font-weight: 700; color: #333; border-bottom: 1px solid #ccc; border-right: 1px solid var(--border-light); white-space: nowrap; height: 40px; vertical-align: middle; }
-table.xero-table th.col-price, table.xero-table th.col-disc, table.xero-table th.col-net, table.xero-table th.col-total, table.xero-table th.col-stock { text-align: right; }
-table.xero-table td { padding: 0 !important; border-bottom: 1px solid var(--border-light); border-right: 1px solid var(--border-light); background: #fff; height: 42px; position: relative; vertical-align: middle !important; }
+
+table.xero-table th {
+  background: #f8f9fa; text-align: left; padding: 12px 10px; font-size: 12px; font-weight: 700; color: #333;
+  border-bottom: 1px solid #ccc; border-right: 1px solid var(--border-light); white-space: nowrap; height: 40px;
+  vertical-align: middle;
+}
+
+table.xero-table th.col-price, table.xero-table th.col-disc, table.xero-table th.col-net,
+table.xero-table th.col-total, table.xero-table th.col-stock { text-align: right; }
+
+table.xero-table td {
+  padding: 0 !important; border-bottom: 1px solid var(--border-light); border-right: 1px solid var(--border-light); 
+  background: #fff; height: 42px; position: relative;
+  vertical-align: middle !important; 
+}
+
 .uprice-input, .disc-input, .pqty-input, .total-input, .stock-display { text-align: right !important; }
 
 /* Sticky Cols */
@@ -128,17 +228,29 @@ th.col-del { z-index: 35; border-bottom: 1px solid #ccc; background-color: var(-
 .col-drag::after, .drag-cell::after { content: ''; position: absolute; top: 0; right: -5px; bottom: 0; width: 5px; background: linear-gradient(to right, rgba(0,0,0,0.05), transparent); pointer-events: none; }
 .col-del::before, td:last-child::before { content: ''; position: absolute; top: 0; left: -5px; bottom: 0; width: 5px; background: linear-gradient(to left, rgba(0,0,0,0.05), transparent); pointer-events: none; }
 
-/* Inputs in table */
+/* INPUTS */
 table.xero-table input { width: 100%; height: 100%; padding: 0 10px; border: none !important; background: transparent; font-size: 13px; color: #333; display: block; }
 table.xero-table input:focus { background: #fff; outline: none; box-shadow: inset 0 0 0 1px var(--xero-blue) !important; }
 table.xero-table input[readonly] { color: #666; cursor: default; }
 input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 input[type=number] { -moz-appearance: textfield; }
 
-/* Choices */
-.xero-table .choices, .xero-table .choices__inner { height: 100%; min-height: 100%; border: none !important; background: transparent !important; padding: 0 10px !important; display: flex; align-items: center; }
-.header-grid .choices__inner { background-color: #fff !important; border: 1px solid #b3b3b3 !important; border-radius: 3px !important; height: 38px !important; display: flex; align-items: center; }
+/* CHOICES JS */
+.xero-table .choices { margin: 0 !important; padding: 0 !important; height: 100%; width: 100%; overflow: visible; }
+.xero-table .choices__inner { border: none !important; background-color: transparent !important; border-radius: 0 !important; min-height: 100% !important; height: 100% !important; display: flex !important; align-items: center !important; padding: 0 10px !important; margin: 0 !important; }
+.xero-table .is-open .choices__inner, .xero-table .is-focused .choices__inner, .xero-table .choices__inner:hover { background-color: #fff !important; box-shadow: inset 0 0 0 1px var(--xero-blue) !important; }
+.choices__list--dropdown { border: 1px solid var(--xero-blue) !important; border-radius: 0 !important; box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important; z-index: 100000 !important; background: #fff; max-height: 250px !important; overflow-y: auto !important; -ms-overflow-style: none !important; scrollbar-width: none !important; padding: 0 !important; }
+.choices__list--dropdown::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+.xero-table .choices__list--single { padding: 0; } 
+.choices__list--dropdown .choices__item { padding: 10px !important; border-bottom: none !important; }
+.header-grid .choices__inner, .header-grid input.main-input, .header-grid select { background-color: #fff !important; border: 1px solid #ccc !important; border-radius: 3px !important; min-height: 38px !important; height: 38px !important; display: flex; align-items: center; }
 .header-grid .is-focused .choices__inner { border-color: var(--xero-blue) !important; }
+
+/* Columns Width */
+.col-type { width: 150px; } .col-item { width: 320px; } .col-unit { width: 80px; }
+.col-meter { width: 70px; } .col-qty { width: 70px; } .col-price { width: 120px; }
+.col-disc { width: 80px; } .col-net { width: 120px; } .col-total { width: 140px; }
+.col-stock { width: 90px; } .col-status { width: 90px; }
 
 /* Utils */
 .delete-btn { border: none; background: none; color: #999; font-size: 18px; cursor: pointer; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
@@ -147,20 +259,24 @@ input[type=number] { -moz-appearance: textfield; }
 .add-row-btn:hover { background-color: #f0f7fc; }
 
 .footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 20px; position: relative; z-index: 1; align-items: start; }
+
+/* SUMMARY STYLING */
 .summary-box { width: 100%; max-width: 350px; margin-left: auto; }
 .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 14px; color: #333; }
 .summary-row .label { font-weight: 400; color: #222; }
 .summary-row .value { font-weight: 500; text-align: right; }
 .grand-total-row { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #999; margin-top: 10px; padding-top: 15px; font-size: 18px; font-weight: 700; color: #000; }
+
 .btn-primary { background-color: var(--xero-blue); color: white; border: none; padding: 12px 30px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; margin-top: 20px; }
 
-/* Status Badge */
+/* STATUS BADGE */
 .status-container { height: 100%; display: flex; align-items: center; justify-content: center; }
 .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; display: inline-block; width: auto; min-width: 80%; text-align: center; }
 .status-ok { background: var(--green-bg); color: var(--green-text); }
 .status-oos { background: var(--red-bg); color: var(--red-text); }
 .stock-display { text-align: right; line-height: 42px; padding-right: 10px; color: #555; }
 
+/* Modals */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 99999; }
 .modal-box { background: #fff; padding: 30px; width: 600px; border-radius: 6px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); } 
 .modal-actions { margin-top: 25px; text-align: right; }
@@ -389,7 +505,6 @@ function fillCustomerDetails(name) {
     }
 }
 
-// LOGIKA UPDATE: FORMAT TANGGAL JATUH TEMPO MENJADI '17 Dec 2025'
 function calculateDueDate() {
     const issueDateVal = document.getElementById("issueDate").value;
     const termInput = document.getElementById("termPayment");
@@ -403,9 +518,11 @@ function calculateDueDate() {
     const dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
     dateObj.setDate(dateObj.getDate() + currentCustTOP);
     
-    // Format Tanggal ala Xero: "17 Dec 2025"
-    const options = { year: 'numeric', month: 'short', day: 'numeric' };
-    termInput.value = dateObj.toLocaleDateString('en-GB', options);
+    const dd = String(dateObj.getDate()).padStart(2, '0');
+    const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const yyyy = dateObj.getFullYear();
+    
+    termInput.value = `${dd}/${mm}/${yyyy}`;
 }
 
 async function loadDropdowns() {
@@ -576,6 +693,7 @@ async function submitNewCustomer() {
     document.getElementById("modalSpinner").style.display="none";
 }
 
+// LOGIKA TOMBOL KIRIM (INDONESIA)
 document.querySelector(".approve-btn").addEventListener("click", () => {
     const cust = document.getElementById("customerSelect").value;
     const type = document.getElementById("orderType").value;
@@ -650,7 +768,10 @@ function forceSubmitOrder() {
     }).catch(e => { showToast("Gagal: " + e.message, "error"); btn.disabled=false; btn.textContent="Kirim Pesanan"; });
 }
 
+// SIMULASI LOGOUT
 function doLogout() {
+    // Di lingkungan nyata, ini akan menghapus session/cookie.
+    // Di sini kita hanya mengarahkan ke halaman login atau home.
     if(confirm("Apakah Anda yakin ingin keluar?")) {
         window.location.href = "https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/";
     }
