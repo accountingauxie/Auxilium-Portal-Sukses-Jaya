@@ -32,10 +32,10 @@ body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background:
 .aux-menu a { text-decoration: none; color: #555; font-weight: 600; margin-right: 20px; font-size: 14px; }
 .aux-menu a.active { color: var(--primary-color); }
 
-/* --- DASHBOARD LAYOUT (DIPERLEBAR) --- */
+/* --- DASHBOARD LAYOUT --- */
 .page-wrap { 
     padding: 30px 40px; 
-    max-width: 98%; /* Diperlebar jadi 98% layar */
+    max-width: 98%; 
     margin: 0 auto; 
 }
 
@@ -58,7 +58,7 @@ table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 .badge-success { background: #ecfdf5; color: #047857; border: 1px solid #d1fae5; }
 .badge-danger { background: #fef2f2; color: #b91c1c; border: 1px solid #fee2e2; }
 
-/* Type Badge (Agar tidak menumpuk) */
+/* Type Badge */
 .type-badge { 
     font-size: 10px; padding: 4px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; 
     display: inline-block; white-space: nowrap; 
@@ -66,7 +66,7 @@ table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 .type-gen { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; } 
 .type-pre { background: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe; } 
 
-/* --- 2. PREVIEW MODAL STYLE --- */
+/* --- 2. PREVIEW MODAL STYLE (WEB) --- */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 9000; backdrop-filter: blur(2px); }
 .modal-box { background: #fff; width: 1100px; max-width: 95%; height: 90vh; display: flex; flex-direction: column; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
 .modal-header { padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
@@ -94,19 +94,19 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 .btn-approve { background: #10b981; }
 .btn-pdf { background: #2563eb; }
 
-/* --- 3. HIDDEN PDF STYLE (STYLE SUKSES JAYA) --- */
+/* --- 3. HIDDEN PDF STYLE (MINIMALIST CLEAN STYLE) --- */
 #pdf-hidden-container { position: absolute; left: -9999px; top: 0; }
 #pdfContent { 
     background: #fff; 
     width: 210mm; 
     padding: 10mm 15mm; 
-    font-family: "Arial", sans-serif; /* Font Arial Biasa */
+    font-family: "Arial", sans-serif; 
     color: #000; 
 }
 
 /* Header PDF */
 .pdf-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; border-bottom: 2px solid #000; padding-bottom: 15px; }
-.pdf-title { font-size: 36px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-top: 10px; color:#000; }
+.pdf-title { font-size: 32px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-top: 10px; color:#000; }
 .company-details { text-align: right; font-size: 10px; color: #333; line-height: 1.4; }
 .company-logo img { height: 50px; margin-bottom: 5px; }
 .company-name { font-weight: 800; font-size: 12px; color: #F59E0B; text-transform: uppercase; margin-bottom: 2px; }
@@ -121,40 +121,44 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 .pdf-meta-row { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 4px; width: 100%; }
 .pdf-meta-key { font-weight: 700; color:#000; }
 
-/* TABLE PDF - SUKSES JAYA STYLE (GARIS TEBAL) */
+/* --- TABLE PDF (MINIMALIST STYLE) --- */
 table.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+
+/* Header Minimalis: Garis Hitam Biasa (1px) Atas Bawah */
 table.pdf-table th { 
     font-size: 9px; 
-    font-weight: 800; /* Bold biasa, bukan black */
+    font-weight: 800; 
     text-transform: uppercase; 
     padding: 10px 5px; 
     color: #000;
-    /* GARIS TEBAL ATAS BAWAH HEADER */
-    border-top: 3px solid #000; 
-    border-bottom: 3px solid #000; 
-    letter-spacing: 0.5px;
+    border-top: 1px solid #000; 
+    border-bottom: 1px solid #000; 
 }
+
+/* Isi Tabel Clean */
 table.pdf-table td { 
     padding: 8px 5px; 
     font-size: 10px; 
     vertical-align: top; 
-    /* Tidak ada garis vertikal, hanya spacing */
 }
-/* Style Sub-Text (Misal: Spandek) */
-.item-name-main { font-weight: 800; color: #000; display:block; }
-.item-sub { font-size: 9px; color: #666; font-weight: normal; margin-top: 2px; display: block; }
 
-/* TOTALS PDF (CLEAN STYLE) */
+/* Sub-text item */
+.item-name-main { font-weight: 800; color: #000; display:block; font-size: 11px; }
+.item-sub { font-size: 9px; color: #666; font-weight: normal; margin-top: 3px; display: block; }
+
+/* TOTALS PDF (CLEAN & PROFESSIONAL) */
 .pdf-totals-area { display: flex; justify-content: flex-end; margin-top: 5px; }
 .pdf-total-box { width: 280px; }
 .pdf-total-row { display: flex; justify-content: space-between; font-size: 10px; padding: 4px 0; color: #333; }
+
+/* Grand Total dengan garis putus-putus di atasnya (Dotted) */
 .pdf-total-row.grand { 
     font-size: 15px; 
-    font-weight: 800; 
+    font-weight: 900; 
     color: #116999; /* BIRU */
     margin-top: 10px; 
-    padding-top: 10px; 
-    /* TIDAK ADA KOTAK */
+    padding-top: 10px;
+    border-top: 1px dotted #999; 
 }
 
 /* Footer Notes Dotted */
@@ -312,15 +316,15 @@ table.pdf-table td {
                     <th class="t-center" style="width:8%;">METER</th>
                     <th class="t-center" style="width:8%;">QTY</th>
                     <th class="t-center" style="width:10%;">SATUAN</th>
-                    <th class="t-left" style="width:13%;">HARGA SATUAN</th>
-                    <th class="t-left" style="width:12%;">DISKON</th>
-                    <th class="t-left" style="width:12%;">HARGA NET</th>
-                    <th class="t-left" style="width:12%;">TOTAL</th>
+                    <th class="t-right" style="width:13%;">HARGA SATUAN</th>
+                    <th class="t-right" style="width:12%;">DISKON</th>
+                    <th class="t-right" style="width:12%;">HARGA NET</th>
+                    <th class="t-right" style="width:12%;">TOTAL</th>
                 </tr>
             </thead>
             <tbody id="pdfItemsBody"></tbody>
         </table>
-
+        
         <div class="pdf-totals-area">
             <div class="pdf-total-box">
                 <div class="pdf-total-row"><span>Total DPP</span><span id="pdfDPP">0</span></div>
@@ -444,7 +448,7 @@ function openModal(id) {
         o.items.forEach(item => {
             let net = item.net || 0;
             
-            // WEB PREVIEW: Menggunakan Currency Trick (Flex)
+            // WEB PREVIEW (Dengan Currency Trick)
             webTbody.innerHTML += `
                 <tr>
                     <td class="t-left"><strong>${item.name}</strong><br><small style="color:#888;">${item.type}</small></td>
@@ -457,7 +461,7 @@ function openModal(id) {
                     <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.total)}</span></div></td>
                 </tr>`;
 
-            // PDF RENDER: Menggunakan Currency Trick JUGA agar "Rp" dikiri dan angka dikanan
+            // PDF RENDER (STYLE KHUSUS PDF MINIMALIS)
             pdfTbody.innerHTML += `
                 <tr>
                     <td class="t-left">
@@ -488,7 +492,6 @@ function openModal(id) {
             btns += `<button class="btn-action btn-pdf" onclick="dlPDF('${o.id}')">Download PDF</button>`;
         }
         document.getElementById('modalActions').innerHTML = btns;
-        
         document.getElementById('orderModal').style.display = 'flex';
 
     } catch(err) {
