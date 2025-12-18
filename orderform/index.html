@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Purchase Order - Auxilium Style</title>
+<title>Purchase Order - Final Auxilium Style</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -30,14 +30,14 @@ body, input, select, textarea, button, .choices, .choices__inner, .brand-title, 
 
 body { background: var(--bg-color); margin: 0; padding: 0; }
 
-/* --- AUXILIUM NAVIGATION BAR --- */
+/* --- AUXILIUM NAVIGATION BAR (HYBRID) --- */
 .aux-navbar {
     background-color: #ffffff;
-    height: 80px;
+    height: 70px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 5%; /* Padding kiri kanan */
+    padding: 0 40px; /* Padding kiri kanan */
     box-shadow: 0 1px 5px rgba(0,0,0,0.05);
     position: sticky;
     top: 0;
@@ -45,17 +45,17 @@ body { background: var(--bg-color); margin: 0; padding: 0; }
     font-family: sans-serif;
 }
 
-/* Logo Area */
+/* Logo Area (Kiri) - Auxilium */
 .aux-logo img {
-    height: 50px; /* Sesuaikan tinggi logo */
+    height: 40px; /* Tinggi logo header */
     width: auto;
     display: block;
 }
 
-/* Menu Links (Center) */
+/* Menu Links (Tengah) - Menu Aplikasi */
 .aux-menu {
     display: flex;
-    gap: 30px;
+    gap: 25px;
     align-items: center;
 }
 
@@ -63,28 +63,32 @@ body { background: var(--bg-color); margin: 0; padding: 0; }
     text-decoration: none;
     color: #666;
     font-weight: 600;
-    font-size: 15px;
-    transition: color 0.2s;
-    position: relative;
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: all 0.2s;
 }
 
-.aux-link:hover { color: #000; }
-.aux-link.has-dropdown::after {
-    content: ' v'; /* Simbol panah bawah simpel */
-    font-size: 10px;
-    margin-left: 3px;
-    vertical-align: middle;
+.aux-link:hover { 
+    color: var(--xero-blue); 
+    background-color: #f5f9fc;
 }
 
-/* CTA Button (Right) */
+.aux-link.active {
+    color: var(--xero-blue);
+    background-color: #e6f0fa;
+    font-weight: 700;
+}
+
+/* CTA Button (Kanan) */
 .aux-cta {
     background-color: #000;
     color: #fff;
     text-decoration: none;
-    padding: 12px 25px;
-    font-weight: 700;
-    font-size: 14px;
-    border-radius: 2px; /* Sedikit rounded atau kotak */
+    padding: 10px 20px;
+    font-weight: 600;
+    font-size: 13px;
+    border-radius: 4px;
     transition: opacity 0.2s;
 }
 .aux-cta:hover { opacity: 0.8; }
@@ -111,6 +115,7 @@ body { background: var(--bg-color); margin: 0; padding: 0; }
     align-items: flex-start;
 }
 
+/* Logo Sukses Jaya (Dalam Form) */
 .brand-section .brand-logo {
     max-height: 80px; 
     width: auto;      
@@ -256,13 +261,11 @@ input[type=number] { -moz-appearance: textfield; }
     </div>
     
     <div class="aux-menu">
-        <a href="#" class="aux-link">Home</a>
-        <a href="#" class="aux-link">About Us</a>
-        <a href="#" class="aux-link">Team</a>
-        <a href="#" class="aux-link has-dropdown">Service</a>
-        <a href="#" class="aux-link">Software</a>
-        <a href="#" class="aux-link">Blog</a>
-        <a href="#" class="aux-link">Contact Us</a>
+        <a href="../inventory/" class="aux-link">Inventory</a>
+        <a href="../orderform/" class="aux-link active">Order Form</a>
+        <a href="../production/" class="aux-link">Production</a>
+        <a href="../receiving/" class="aux-link">Receiving</a>
+        <a href="../reviewinvoice/" class="aux-link">Review Invoice</a>
     </div>
 
     <a href="#" class="aux-cta">Let's talk</a>
@@ -304,7 +307,7 @@ input[type=number] { -moz-appearance: textfield; }
   <div class="invoice-card">
     <div class="top-header">
       <div class="brand-section">
-          <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png" alt="Logo Perusahaan" class="brand-logo">
+          <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/Screenshot_2025-12-17_161250-removebg-preview.png" alt="Logo Perusahaan" class="brand-logo">
       </div>
       <div class="xero-header-right">
           <h1 id="xeroOrderTitle" class="xero-order-title">Pesanan Baru</h1>
@@ -376,7 +379,7 @@ input[type=number] { -moz-appearance: textfield; }
 </div>
 
 <script>
-// UPDATED SCRIPT URL
+// SCRIPT URL BARU (Sesuai yg Anda kasih)
 const baseURL = "https://script.google.com/macros/s/AKfycbxO7lxcyNmQnJI2YBxeFaRM_X8vkWHoKTIBq45It0eDo7syzfmrrz3v2d1TzHRFoJDPYw/exec";
 
 let customerData=[], listSpandek=[], listNonSpandek=[], priceSpan=[], priceNon=[], unitSpan=[], unitNon=[], stockSpan=[], stockNon=[];
