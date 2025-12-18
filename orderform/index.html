@@ -184,47 +184,45 @@ input.main-input, textarea.main-input {
 input.main-input { height: 38px; }
 input.main-input:focus, textarea.main-input:focus { border-color: var(--xero-blue); outline: none; }
 
-/* === CSS KHUSUS DATE PICKER (ICON DI KIRI) === 
-   Ini teknik untuk memindahkan icon ke kiri:
-   1. Pakai background-image untuk icon custom di kiri.
-   2. Beri padding-left supaya teks tidak menabrak icon.
-   3. Sembunyikan icon asli browser (opacity 0) tapi lebarkan (width 100%) biar bisa diklik dimana saja.
-*/
-
+/* --- PERBAIKAN DATE INPUT: ICON DI KIRI (Fixed) --- */
 input[type="date"].main-input {
     position: relative;
-    /* Gambar Icon Kalender Hitam (Base64) */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23333333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
+    
+    /* URL Encoded SVG (Lebih Aman/Stabil daripada Base64) - Warna Abu Gelap */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23555555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E") !important;
+    
     background-repeat: no-repeat;
-    background-position: 10px center; /* Posisi di kiri (10px dari tepi) */
+    background-position: 10px center; /* Posisi di KIRI */
     background-size: 16px; /* Ukuran icon */
     
-    /* Padding kiri 38px agar teks bergeser ke kanan setelah icon */
-    padding-left: 38px !important; 
+    /* Padding KIRI besar untuk tempat icon */
+    padding-left: 40px !important; 
+    /* Padding kanan standard */
+    padding-right: 10px !important;
     
     background-color: #fff;
     color: var(--text-color);
 }
 
-/* Style saat diklik (Focus) */
-input[type="date"].main-input:focus {
-    border-color: #777 !important;
-    box-shadow: 0 0 0 3px rgba(17, 105, 153, 0.1) !important;
-    outline: none;
-}
-
-/* Trik menyembunyikan icon bawaan (kanan) tapi tetap bisa diklik */
+/* Trik: Sembunyikan icon bawaan browser (di kanan), tapi lebarkan areanya agar bisa diklik */
 input[type="date"].main-input::-webkit-calendar-picker-indicator {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    opacity: 0; /* Transparan total */
+    opacity: 0; /* Transparan */
     cursor: pointer;
     margin: 0; padding: 0;
 }
-/* ================================================= */
+
+/* Style Focus */
+input[type="date"].main-input:focus {
+    border-color: #777 !important;
+    box-shadow: 0 0 0 3px rgba(17, 105, 153, 0.1) !important;
+    outline: none;
+}
+/* ---------------------------------------------------- */
 
 .detail-grid {
   display: grid; 
