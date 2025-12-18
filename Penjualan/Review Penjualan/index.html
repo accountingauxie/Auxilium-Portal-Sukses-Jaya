@@ -2,13 +2,21 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Awaiting Approval - Auxilium</title>
+<title>Review Penjualan - Auxilium</title>
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
 /* --- STYLE XERO THEME --- */
-:root { --xero-blue: #116999; --xero-hover: #f5f9fc; --aux-text: #222; --border-color: #e0e0e0; --bg-color: #f4f5f6; --badge-approve-bg: #fff4e5; --badge-approve-text: #b75900; --btn-approve-bg: #10b981; --btn-approve-hover: #059669; --btn-reject-bg: #f43f5e; --btn-reject-hover: #e11d48; }
+:root { --xero-blue: #116999; --xero-hover: #f5f9fc; --aux-text: #222; --border-color: #e0e0e0; --bg-color: #f4f5f6; 
+        --badge-approve-bg: #fff4e5; --badge-approve-text: #b75900; 
+        --badge-success-bg: #d1fae5; --badge-success-text: #065f46;
+        --badge-danger-bg: #fee2e2; --badge-danger-text: #991b1b;
+        --btn-approve-bg: #10b981; --btn-approve-hover: #059669; 
+        --btn-reject-bg: #f43f5e; --btn-reject-hover: #e11d48;
+        --btn-pdf-bg: #6366f1; --btn-pdf-hover: #4f46e5; } /* Warna Tombol PDF (Indigo) */
+
 * { box-sizing: border-box; }
 body { margin: 0; font-family: 'Arial', sans-serif; font-size: 13px; color: var(--aux-text); background: var(--bg-color); }
 
@@ -26,7 +34,7 @@ body { margin: 0; font-family: 'Arial', sans-serif; font-size: 13px; color: var(
 
 .page-wrap { padding: 20px 40px; }
 .category-tabs { display: flex; gap: 20px; margin-bottom: 20px; border-bottom: 1px solid #ccc; padding-bottom: 0; }
-.cat-btn { background: none; border: none; padding: 10px 15px; font-size: 16px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 4px solid transparent; transition: 0.2s; margin-bottom: -1px; }
+.cat-btn { background: none; border: none; padding: 10px 15px; font-size: 14px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 4px solid transparent; transition: 0.2s; margin-bottom: -1px; }
 .cat-btn:hover { color: var(--xero-blue); }
 .cat-btn.active { color: var(--xero-blue); border-bottom-color: var(--xero-blue); }
 
@@ -40,13 +48,21 @@ table.xero-table th { text-align: left; padding: 12px 15px; border-bottom: 1px s
 table.xero-table td { padding: 12px 15px; border-bottom: 1px solid #e0e0e0; color: #222; vertical-align: middle; }
 table.xero-table tr:hover { background-color: var(--xero-hover); }
 .btn-view { background: none; border: none; cursor: pointer; color: var(--xero-blue); font-size: 16px; }
-.badge-approve { background: var(--badge-approve-bg); color: var(--badge-approve-text); padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 10px; text-transform: uppercase; }
+
+/* Status Badges */
+.badge { padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 10px; text-transform: uppercase; }
+.badge-approve { background: var(--badge-approve-bg); color: var(--badge-approve-text); }
+.badge-success { background: var(--badge-success-bg); color: var(--badge-success-text); }
+.badge-danger { background: var(--badge-danger-bg); color: var(--badge-danger-text); }
 
 /* MODAL STYLE */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 10000; backdrop-filter: blur(2px); }
 .modal-box { background: #fff; width: 1100px; max-width: 95%; border-radius: 8px; box-shadow: 0 20px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; max-height: 95vh; }
 .modal-header { padding: 15px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fafafa; }
 .modal-body { padding: 25px 30px; overflow-y: auto; flex: 1; }
+/* ID untuk Print PDF */
+#pdfContent { padding: 10px; } 
+
 .info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
 .info-label { font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; }
 .info-value { font-size: 14px; font-weight: 600; color: #111; }
@@ -67,6 +83,7 @@ table.modal-items td { padding: 8px 12px; border-bottom: 1px solid #f3f4f6; }
 .btn-action { padding: 10px 24px; border-radius: 6px; font-weight: 600; border: none; cursor: pointer; margin-left: 10px; transition: 0.2s; color: white; }
 .btn-approve { background-color: var(--btn-approve-bg); } .btn-approve:hover { background-color: var(--btn-approve-hover); }
 .btn-reject { background-color: var(--btn-reject-bg); } .btn-reject:hover { background-color: var(--btn-reject-hover); }
+.btn-pdf { background-color: var(--btn-pdf-bg); } .btn-pdf:hover { background-color: var(--btn-pdf-hover); }
 .btn-close { background: #fff; color: #333; border: 1px solid #ddd; }
 
 /* Toast & Loading */
@@ -83,19 +100,19 @@ table.modal-items td { padding: 8px 12px; border-bottom: 1px solid #f3f4f6; }
 <div class="aux-navbar">
     <div class="aux-logo"><img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png" alt="Auxilium Logo"></div>
     <div class="aux-menu">
-        <a href="#" class="aux-link active">Awaiting Approval</a> <a href="production_dashboard.html" class="aux-link">Production</a>
+        <a href="#" class="aux-link active">Review Penjualan</a> <a href="production_dashboard.html" class="aux-link">Production</a>
     </div>
     <div class="user-panel"><div class="user-details"><span class="user-name">Manager</span><span class="user-role">Approver</span></div><div class="user-avatar">MG</div></div>
 </div>
 
 <div class="page-wrap">
-    <h2 style="color:#222; margin-bottom: 5px;">Approval Queue</h2>
-    <p style="color:#666; margin-bottom: 20px; font-size:12px;">Halaman ini khusus untuk menyetujui order yang baru masuk.</p>
+    <h2 style="color:#222; margin-bottom: 5px;">Review Penjualan</h2>
+    <p style="color:#666; margin-bottom: 20px; font-size:12px;">Kelola semua status pesanan di sini.</p>
     
     <div class="category-tabs">
-        <button class="cat-btn active" onclick="setCategory('General Order')">General Order</button>
-        <button class="cat-btn" onclick="setCategory('Pre-Order')">Pre-Order</button>
-    </div>
+        <button class="cat-btn active" onclick="setFilter('All')">All Order</button>
+        <button class="cat-btn" onclick="setFilter('Awaiting Approval')">Awaiting Approval</button>
+        <button class="cat-btn" onclick="setFilter('Approved Order')">Approved Order</button> <button class="cat-btn" onclick="setFilter('Cancel Order')">Cancelled Order</button> </div>
 
     <div class="search-area">
         <span class="search-icon">🔍</span>
@@ -105,18 +122,19 @@ table.modal-items td { padding: 8px 12px; border-bottom: 1px solid #f3f4f6; }
     <div class="table-card">
         <div style="overflow-x: auto;">
             <table class="xero-table">
-                <thead><tr><th style="width:50px; text-align:center;">View</th><th>Order #</th><th>Customer</th><th>Order Date</th><th>Est. Delivery</th><th>Jatuh Tempo</th><th class="t-right">Total Amount</th><th style="text-align:center;">Status</th></tr></thead>
+                <thead><tr><th style="width:50px; text-align:center;">View</th><th>Order #</th><th>Customer</th><th>Submitted By</th><th>Order Date</th><th>Est. Delivery</th><th>Jatuh Tempo/Term</th><th class="t-right">Total Amount</th><th style="text-align:center;">Status</th></tr></thead>
                 <tbody id="invoiceTableBody"></tbody>
             </table>
         </div>
-        <div id="emptyState" style="display:none; text-align:center; padding:50px; color:#888;">No pending approvals found.</div>
+        <div id="emptyState" style="display:none; text-align:center; padding:50px; color:#888;">No orders found.</div>
     </div>
 </div>
 
 <div id="orderModal" class="modal-overlay">
     <div class="modal-box">
         <div class="modal-header"><h3 class="modal-title" id="modalTitle">Order #</h3><button class="modal-close" onclick="closeModal()">×</button></div>
-        <div class="modal-body">
+        
+        <div class="modal-body" id="pdfContent">
             <div class="info-grid">
                 <div class="info-item"><span class="info-label">Customer</span><span class="info-value" id="modalCustomer">-</span></div>
                 <div class="info-item"><span class="info-label">Order Date</span><span class="info-value" id="modalDate">-</span></div>
@@ -125,7 +143,7 @@ table.modal-items td { padding: 8px 12px; border-bottom: 1px solid #f3f4f6; }
                 <div class="info-item"><span class="info-label">Est. Delivery</span><span class="info-value" id="modalDelivery">-</span></div>
                 <div class="info-item"><span class="info-label">Submitted By</span><span class="info-value" id="modalSubmitted">-</span></div>
                 
-                <div class="info-item"><span class="info-label">Due Date</span><span class="info-value" id="modalDue">-</span></div>
+                <div class="info-item"><span class="info-label">Due Date/Term</span><span class="info-value" id="modalDue">-</span></div>
                 <div class="notes-box" id="modalNotes"><strong>Notes:</strong> <span>-</span></div>
             </div>
             <div class="items-table-container">
@@ -142,53 +160,39 @@ table.modal-items td { padding: 8px 12px; border-bottom: 1px solid #f3f4f6; }
                 </div>
             </div>
         </div>
+
         <div class="modal-footer" id="modalActions"></div>
     </div>
 </div>
 
 <script>
-// PENTING: Jika deploy versi baru, link exec kadang berubah. Pastikan pakai link terbaru.
+// Pastikan Link URL Backend benar
 const baseURL = "https://script.google.com/macros/s/AKfycbxQeIfsyP6_CWLs9BWYZVqP37-lp_0J97IhVcL6LPOvrFsO7pEbExUp5bGdYW1H5Z2bdA/exec"; 
 let allOrders = []; 
-let currentCategory = 'General Order';
+let currentStatusFilter = 'All'; // Default filter
 
 window.onload = function() { fetchData(); };
 
 async function fetchData() {
     const tbody = document.getElementById('invoiceTableBody');
-    // Tampilkan Loading (Skeleton)
-    tbody.innerHTML = '<tr><td colspan="8"><span class="skeleton-bar" style="margin:10px;"></span></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9"><span class="skeleton-bar" style="margin:10px;"></span></td></tr>';
     
     try {
         const res = await fetch(baseURL + "?action=getorders");
-        
-        // Cek jika response gagal
-        if (!res.ok) throw new Error("Gagal menghubungi server Apps Script.");
-
+        if (!res.ok) throw new Error("Gagal menghubungi server");
         const data = await res.json();
         
-        // Cek jika Apps Script mengembalikan error logical
-        if (data.result === 'error') throw new Error(data.message || "Unknown Error from Script");
+        if (data.result === 'error') throw new Error(data.message);
+        if (!Array.isArray(data)) throw new Error("Format data salah");
 
-        // Jika array kosong atau bukan array
-        if (!Array.isArray(data)) {
-             // Jika datanya cuma {result: "error"}, anggap error
-             if(data.result) throw new Error(data.message);
-        }
-
-        allOrders = data.filter(o => o.status === "Awaiting Approval"); 
+        // KITA AMBIL SEMUA DATA (Jangan difilter disini)
+        allOrders = data; 
+        
         renderTable();
-        showToast("Data Refreshed", "success");
-
+        showToast("Data Updated", "success");
     } catch (e) { 
-        console.error("Fetch Error:", e);
-        // Tampilkan Pesan Error di Tabel (Biar tidak loading terus)
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px; color:red;">
-            <strong>Gagal memuat data!</strong><br>
-            <small>${e.message}</small><br>
-            <button onclick="fetchData()" style="margin-top:10px; cursor:pointer;">Coba Lagi</button>
-        </td></tr>`;
-        showToast("Error loading data", "error");
+        console.error(e);
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:20px; color:red;">Error: ${e.message}<br><button onclick="fetchData()">Retry</button></td></tr>`;
     }
 }
 
@@ -197,11 +201,28 @@ function renderTable() {
     const searchVal = document.getElementById('searchInput').value.toLowerCase();
     tbody.innerHTML = '';
     
-    if(!allOrders) allOrders = []; // Safety check
+    if(!allOrders) allOrders = [];
 
     const filtered = allOrders.filter(o => {
-        if((o.type || "").toLowerCase() !== currentCategory.toLowerCase()) return false;
+        // FILTER BERDASARKAN TOMBOL TABS
+        if (currentStatusFilter !== 'All') {
+            // Logic khusus: "Approved Order" di frontend mungkin status aslinya "Awaiting Production" atau "Completed"
+            // Mari kita samakan persepsi. 
+            // Jika Tab = 'Approved Order', kita cari yang TIDAK 'Awaiting Approval' dan TIDAK 'Cancel Order'
+            // ATAU sesuaikan dengan nama status persis dari backend.
+            
+            // Asumsi: Backend mengirim status: "Awaiting Approval", "Awaiting Production", "Cancel Order"
+            
+            if (currentStatusFilter === 'Approved Order') {
+                if (o.status === 'Awaiting Approval' || o.status === 'Cancel Order') return false;
+            } else {
+                if (o.status !== currentStatusFilter) return false;
+            }
+        }
+
+        // FILTER SEARCH
         if(searchVal && !String(o.id).toLowerCase().includes(searchVal) && !String(o.customer).toLowerCase().includes(searchVal)) return false;
+        
         return true;
     });
 
@@ -209,16 +230,22 @@ function renderTable() {
     document.getElementById('emptyState').style.display = 'none';
 
     filtered.forEach(o => {
+        // Tentukan Warna Badge
+        let badgeClass = 'badge-approve'; // Default Kuning
+        if (o.status === 'Cancel Order') badgeClass = 'badge-danger';
+        if (o.status === 'Awaiting Production' || o.status === 'Completed') badgeClass = 'badge-success';
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td style="text-align:center;"><button class="btn-view" onclick="openOrderDetails('${o.id}')">👁️</button></td>
             <td><strong>${o.id}</strong></td>
             <td>${o.customer}</td>
+            <td style="color:#555; font-size:12px;">${o.submittedBy || '-'}</td>
             <td>${o.date}</td>
             <td>${o.estDelivery}</td>
             <td>${o.dueDate}</td>
             <td class="t-right"><strong>${formatMoney(o.grandTotal)}</strong></td>
-            <td style="text-align:center;"><span class="badge badge-approve">AWAITING APPROVAL</span></td>
+            <td style="text-align:center;"><span class="badge ${badgeClass}">${o.status}</span></td>
         `;
         tbody.appendChild(tr);
     });
@@ -228,15 +255,13 @@ function openOrderDetails(id) {
     const order = allOrders.find(x => String(x.id) === String(id));
     if(!order) return;
 
+    // Isi Data Modal
     document.getElementById('modalTitle').textContent = "Order #" + order.id;
     document.getElementById('modalCustomer').textContent = order.customer;
     document.getElementById('modalDate').textContent = order.date;
     document.getElementById('modalStatus').textContent = order.status;
     document.getElementById('modalDelivery').textContent = order.estDelivery;
-    
-    // MENAMPILKAN DATA "SUBMITTED BY"
     document.getElementById('modalSubmitted').textContent = order.submittedBy || '-';
-    
     document.getElementById('modalDue').textContent = order.dueDate;
     document.getElementById('modalNotes').style.display = order.notes ? 'block' : 'none';
     document.querySelector('#modalNotes span').textContent = order.notes;
@@ -258,17 +283,38 @@ function openOrderDetails(id) {
     document.getElementById('summaryPPN').textContent = formatMoney(order.totalPPN);
     document.getElementById('summaryTotal').textContent = formatMoney(order.grandTotal);
 
-    document.getElementById('modalActions').innerHTML = `
-        <button class="btn-action btn-close" onclick="closeModal()">Close</button>
-        <button class="btn-action btn-reject" onclick="processStatus('${order.id}', 'Cancel Order')">Reject</button>
-        <button class="btn-action btn-approve" onclick="processStatus('${order.id}', 'Awaiting Production')">Approve Order</button>
-    `;
+    // --- LOGIKA TOMBOL BERDASARKAN STATUS ---
+    let actionHTML = `<button class="btn-action btn-close" onclick="closeModal()">Close</button>`;
     
+    // Jika Status Awaiting Approval -> Tampilkan Reject & Approve
+    if (order.status === 'Awaiting Approval') {
+        actionHTML += `
+            <button class="btn-action btn-reject" onclick="processStatus('${order.id}', 'Cancel Order')">Reject</button>
+            <button class="btn-action btn-approve" onclick="processStatus('${order.id}', 'Awaiting Production')">Approve Order</button>
+        `;
+    }
+    // Jika Status Approved (Awaiting Production) -> Tampilkan Download PDF
+    else if (order.status === 'Awaiting Production' || order.status === 'Completed') {
+        actionHTML += `
+            <button class="btn-action btn-pdf" onclick="generatePDF('${order.id}')">Download PDF</button>
+        `;
+    }
+
+    document.getElementById('modalActions').innerHTML = actionHTML;
     document.getElementById('orderModal').style.display = 'flex';
 }
 
 function closeModal() { document.getElementById('orderModal').style.display = 'none'; }
-function setCategory(cat) { currentCategory = cat; document.querySelectorAll('.cat-btn').forEach(b => b.classList.toggle('active', b.textContent === cat)); renderTable(); }
+function setFilter(status) { 
+    currentStatusFilter = status; 
+    // Update UI Tabs
+    document.querySelectorAll('.cat-btn').forEach(b => {
+        b.classList.remove('active');
+        if(b.textContent.includes(status) || (status === 'All' && b.textContent === 'All Order')) b.classList.add('active');
+    });
+    renderTable(); 
+}
+
 function formatMoney(n) { return (Number(n)||0).toLocaleString("id-ID", {style:"currency", currency:"IDR"}); }
 function showToast(msg, type) { const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2500); }
 
@@ -278,8 +324,29 @@ async function processStatus(id, newStatus) {
     try {
         await fetch(baseURL, { method: 'POST', body: JSON.stringify({ action: "updatestatus", id: id, status: newStatus }) });
         showToast("Success", "success");
-        closeModal(); fetchData(); 
+        closeModal(); fetchData(); // Reload data
     } catch(e) { alert("Error updating status"); closeModal(); }
+}
+
+// FUNGSI DOWNLOAD PDF
+function generatePDF(orderId) {
+    const element = document.getElementById('pdfContent');
+    const opt = {
+      margin:       0.5,
+      filename:     `Order_${orderId}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2 },
+      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    
+    // Ubah text tombol jadi Loading
+    const btn = document.querySelector('.btn-pdf');
+    if(btn) btn.textContent = "Generating...";
+
+    html2pdf().set(opt).from(element).save().then(() => {
+        if(btn) btn.textContent = "Download PDF";
+        showToast("PDF Downloaded", "success");
+    });
 }
 </script>
 </body>
