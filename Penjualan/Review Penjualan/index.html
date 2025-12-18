@@ -523,9 +523,9 @@ async function updateStatus(id, stat) {
 function dlPDF(id) {
     const el = document.getElementById('pdfContent');
     const opt = {
-        margin:       [2.54, 1.91], // v=2.54cm (T/B), h=1.91cm (L/R)
+        margin:       [1.91, 0.90], // v=1.91cm (T/B), h=0.90cm (L/R)
         filename:     `Invoice_${id}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
+        image:        { type: 'png', quality: 0.98 },
         html2canvas:  { scale: 2 },
         jsPDF:        { unit: 'cm', format: 'a5', orientation: 'landscape' }
     };
