@@ -8,419 +8,400 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-/* --- STYLE XERO THEME --- */
+/* --- SYSTEM STYLE (UI Web) --- */
 :root { 
-    --xero-blue: #116999; 
-    --xero-hover: #eef7fc; 
-    --aux-text: #333; 
-    --bg-color: #f4f5f6; 
-    --badge-approve-bg: #fff7e6; --badge-approve-text: #b75900; 
-    --badge-success-bg: #ecfdf5; --badge-success-text: #047857;
-    --badge-danger-bg: #fef2f2; --badge-danger-text: #b91c1c;
-    --btn-approve-bg: #10b981; --btn-approve-hover: #059669; 
-    --btn-reject-bg: #ef4444; --btn-reject-hover: #dc2626;
-    --btn-pdf-bg: #4f46e5; --btn-pdf-hover: #4338ca; 
+    --primary-color: #116999; 
+    --bg-color: #f4f7f6;
+    --text-color: #333;
 }
 
 * { box-sizing: border-box; }
-body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 13px; color: var(--aux-text); background: var(--bg-color); -webkit-font-smoothing: antialiased; }
+body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 13px; background: var(--bg-color); color: var(--text-color); }
 
 /* Navbar */
-.aux-navbar { background-color: #ffffff; height: 65px; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); position: sticky; top: 0; z-index: 999; }
-.aux-logo img { height: 36px; width: auto; display: block; }
-.aux-menu { display: flex; gap: 20px; align-items: center; }
-.aux-link { text-decoration: none; color: #555; font-weight: 600; font-size: 14px; padding: 8px 12px; border-radius: 6px; transition: all 0.2s ease; }
-.aux-link:hover { color: var(--xero-blue); background-color: var(--xero-hover); }
-.aux-link.active { color: var(--xero-blue); background-color: #e0f2fe; }
-.user-panel { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid #eee; }
-.user-avatar { width: 34px; height: 34px; background-color: var(--xero-blue); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; box-shadow: 0 2px 5px rgba(17, 105, 153, 0.3); }
+.aux-navbar { background: #fff; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
+.aux-logo img { height: 32px; }
+.aux-menu a { text-decoration: none; color: #555; font-weight: 600; margin-right: 20px; font-size: 14px; }
+.aux-menu a.active { color: var(--primary-color); }
 
-/* Main Layout */
+/* Layout */
 .page-wrap { padding: 30px 40px; max-width: 1400px; margin: 0 auto; }
-.category-tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #e5e7eb; padding-bottom: 0; }
-.cat-btn { background: none; border: none; padding: 12px 20px; font-size: 14px; font-weight: 600; color: #6b7280; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; margin-bottom: -2px; }
-.cat-btn:hover { color: var(--xero-blue); background: rgba(0,0,0,0.02); border-radius: 5px 5px 0 0; }
-.cat-btn.active { color: var(--xero-blue); border-bottom-color: var(--xero-blue); background: transparent; }
+.category-tabs { margin-bottom: 20px; border-bottom: 2px solid #ddd; }
+.cat-btn { background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; }
+.cat-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
 
-.search-area { background: #fff; padding: 12px 15px; border: 1px solid #e5e7eb; border-radius: 8px; display: flex; align-items: center; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-.search-icon { color: #9ca3af; font-size: 16px; margin-right: 12px; }
-.search-input { border: none; width: 100%; font-size: 14px; outline: none; color: #374151; }
+.table-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; }
+.search-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 15px; }
 
-.table-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); overflow: hidden; min-height: 400px; }
-table.xero-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1000px; }
-table.xero-table th { text-align: left; padding: 16px 20px; background: #f9fafb; font-weight: 600; color: #4b5563; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e5e7eb; }
-table.xero-table td { padding: 16px 20px; border-bottom: 1px solid #f3f4f6; color: #1f2937; vertical-align: middle; }
-table.xero-table tr.data-row { cursor: pointer; transition: all 0.2s ease; }
-table.xero-table tr.data-row:hover { background-color: #f0f9ff; transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; z-index: 10; }
+/* Table UI */
+table.xero-table { width: 100%; border-collapse: collapse; }
+table.xero-table th { text-align: left; padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; color: #555; font-size: 12px; text-transform: uppercase; }
+table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; }
+table.xero-table tr:hover { background: #f0f8ff; }
 
-.t-right { text-align: right; }
-.badge { padding: 5px 12px; border-radius: 20px; font-weight: 700; font-size: 11px; text-transform: uppercase; display: inline-block; letter-spacing: 0.3px; }
-.badge-approve { background: var(--badge-approve-bg); color: var(--badge-approve-text); border: 1px solid rgba(183, 89, 0, 0.1); }
-.badge-success { background: var(--badge-success-bg); color: var(--badge-success-text); border: 1px solid rgba(4, 120, 87, 0.1); }
-.badge-danger { background: var(--badge-danger-bg); color: var(--badge-danger-text); border: 1px solid rgba(185, 28, 28, 0.1); }
+/* Badges */
+.badge { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+.badge-approve { background: #fff7e6; color: #b75900; }
+.badge-success { background: #ecfdf5; color: #047857; }
+.badge-danger { background: #fef2f2; color: #b91c1c; }
 
 /* --- MODAL STYLE --- */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 10000; backdrop-filter: blur(3px); }
-.modal-box { background: #fff; width: 1100px; max-width: 95%; border-radius: 12px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); display: flex; flex-direction: column; overflow: hidden; max-height: 95vh; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 9999; backdrop-filter: blur(2px); }
+.modal-box { background: #fff; width: 1100px; max-width: 95%; height: 90vh; display: flex; flex-direction: column; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+.modal-header { padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+.modal-body { flex: 1; overflow-y: auto; background: #888; padding: 20px; display: flex; justify-content: center; } 
+/* Background Abu-abu di modal body biar kelihatan kertas PDF-nya */
 
-.modal-header { padding: 15px 30px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; background: #fff; }
-.modal-title { font-size: 16px; font-weight: 700; color: #111; margin: 0; }
+.modal-footer { padding: 15px 20px; background: #fff; border-top: 1px solid #eee; text-align: right; }
+.btn-action { padding: 10px 20px; border-radius: 5px; border: none; cursor: pointer; color: white; font-weight: bold; margin-left: 10px; }
+.btn-close { background: #fff; color: #333; border: 1px solid #ccc; }
+.btn-reject { background: #dc2626; }
+.btn-approve { background: #10b981; }
+.btn-pdf { background: #2563eb; }
 
-/* --- PDF INVOICE STYLE --- */
-#pdfContent { background: #fff; padding: 40px; color: #111; font-family: 'Arial', sans-serif; position: relative; }
+/* --- PDF DESIGN (A5 LANDSCAPE - SUKSES JAYA STYLE) --- */
+#pdfContent { 
+    background: #fff; 
+    width: 210mm; /* Lebar A5 Landscape kurang lebih */
+    min-height: 148mm; 
+    padding: 10mm 15mm; 
+    font-family: 'Arial', sans-serif; 
+    color: #000;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2); 
+    position: relative;
+}
 
-/* Header Layout */
-.invoice-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 2px solid #000; }
-.invoice-title { font-size: 32px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #000; line-height: 1; }
-.invoice-logo img { height: 50px; width: auto; display: block; }
+/* 1. Header Area */
+.pdf-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 15px; }
+.pdf-title { font-size: 36px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; margin-top: 10px; }
 
-/* Info Grid */
-.invoice-info-grid { display: flex; justify-content: space-between; gap: 40px; margin-bottom: 30px; }
-.bill-to-section { flex: 1; }
-.bill-to-title { font-size: 11px; font-weight: 700; color: #000; text-transform: uppercase; margin-bottom: 8px; }
-.customer-name { font-size: 15px; font-weight: 700; margin-bottom: 4px; color: #000; }
-.customer-details { font-size: 11px; line-height: 1.4; color: #333; }
+.company-details { text-align: right; font-size: 10px; color: #333; line-height: 1.4; }
+.company-logo img { height: 45px; margin-bottom: 5px; }
+.company-name { font-weight: 800; font-size: 12px; color: #F59E0B; text-transform: uppercase; margin-bottom: 2px; } /* Warna Oranye Sukses Jaya */
+.company-address { max-width: 250px; margin-left: auto; }
 
-.meta-section { flex: 0 0 240px; }
-.meta-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 11px; }
-.meta-label { font-weight: 700; color: #000; }
-.meta-value { text-align: right; color: #333; }
+/* 2. Info Section */
+.pdf-info { display: flex; justify-content: space-between; margin-bottom: 25px; }
+.bill-to { width: 55%; }
+.bill-label { font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; color: #000; }
+.customer-name { font-size: 14px; font-weight: 800; margin-bottom: 3px; text-transform: uppercase; }
+.customer-address { font-size: 10px; line-height: 1.4; color: #444; max-width: 90%; }
 
-/* Table Style Update (8 Columns) */
-.invoice-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; table-layout: fixed; }
-.invoice-table th:nth-child(1) { width: 25%; } /* Nama Barang */
-.invoice-table th:nth-child(2) { width: 8%; }  /* Satuan */
-.invoice-table th:nth-child(3) { width: 8%; }  /* Meter */
-.invoice-table th:nth-child(4) { width: 8%; }  /* Qty */
-.invoice-table th:nth-child(5) { width: 13%; } /* Harga */
-.invoice-table th:nth-child(6) { width: 10%; } /* Disc */
-.invoice-table th:nth-child(7) { width: 13%; } /* Net */
-.invoice-table th:nth-child(8) { width: 15%; } /* Total */
+.meta-data { width: 35%; }
+.meta-row { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 4px; }
+.meta-key { font-weight: 700; }
+.meta-val { text-align: right; }
 
-.invoice-table th { text-align: left; padding: 8px 4px; border-bottom: 2px solid #000; font-size: 10px; font-weight: 800; text-transform: uppercase; color: #000; white-space: nowrap; }
-.invoice-table td { padding: 8px 4px; border-bottom: 1px solid #ddd; font-size: 11px; color: #333; vertical-align: top; word-wrap: break-word; }
-.invoice-table td.t-right { text-align: right; }
-.invoice-table tr:last-child td { border-bottom: 2px solid #000; }
+/* 3. Table Section (Garis Tebal) */
+.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+.pdf-table th { 
+    text-align: left; 
+    font-size: 9px; 
+    font-weight: 800; 
+    text-transform: uppercase; 
+    padding: 8px 5px; 
+    border-top: 2px solid #000; 
+    border-bottom: 2px solid #000; 
+}
+.pdf-table td { 
+    padding: 8px 5px; 
+    font-size: 10px; 
+    vertical-align: top;
+    border-bottom: 1px solid #ddd;
+}
+/* Hilangkan border bawah untuk baris terakhir item */
+.pdf-table tbody tr:last-child td { border-bottom: 2px solid #000; }
 
-/* Totals */
-.invoice-totals { display: flex; justify-content: flex-end; margin-top: 10px; }
-.totals-box { width: 240px; }
-.total-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 11px; }
-.total-row.grand { font-size: 15px; font-weight: 800; color: #116999; border-top: 1px solid #ccc; padding-top: 8px; margin-top: 4px; }
+.t-right { text-align: right; }
+.item-sub { font-size: 9px; color: #666; margin-top: 2px; display: block; }
 
-/* Footer & Buttons */
-.modal-footer { padding: 20px 30px; border-top: 1px solid #e5e7eb; background: #f9fafb; text-align: right; display: flex; justify-content: flex-end; gap: 10px; }
-.btn-action { padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 13px; border: none; cursor: pointer; color: white; transition: 0.2s; }
-.btn-approve { background-color: var(--btn-approve-bg); }
-.btn-reject { background-color: var(--btn-reject-bg); }
-.btn-pdf { background-color: var(--btn-pdf-bg); }
-.btn-close { background: #fff; color: #374151; border: 1px solid #d1d5db; }
+/* 4. Totals */
+.pdf-totals { display: flex; justify-content: flex-end; margin-top: 5px; }
+.total-box { width: 250px; }
+.total-row { display: flex; justify-content: space-between; font-size: 10px; padding: 3px 0; }
+.total-row.grand { 
+    font-size: 14px; 
+    font-weight: 800; 
+    color: #116999; /* Biru */
+    margin-top: 5px; 
+    padding-top: 5px; 
+}
 
-/* Skeleton & Toast */
-.skeleton-bar { height: 20px; width: 100%; background: #f0f0f0; display:block; border-radius:4px; }
-.toast { position: fixed; bottom: 30px; right: 30px; padding: 15px 25px; background: #1f2937; color: white; border-radius: 8px; opacity: 0; transition: 0.3s; z-index: 100000; }
-.toast.show { opacity: 1; transform: translateY(-20px); }
+/* 5. Notes & Footer */
+.pdf-notes { font-size: 9px; color: #555; margin-top: 20px; border-top: 1px dotted #ccc; padding-top: 5px; }
+
+/* Helper */
+.skeleton { height: 20px; background: #eee; width: 100%; border-radius: 4px; animation: pulse 1s infinite; }
+@keyframes pulse { 0% {opacity: 0.6;} 50% {opacity: 1;} 100% {opacity: 0.6;} }
 </style>
 </head>
 <body>
 
-<div id="toast" class="toast">Notifikasi</div>
-
 <div class="aux-navbar">
-    <div class="aux-logo"><img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png" alt="Auxilium Logo"></div>
+    <div class="aux-logo"><img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png" alt="Auxilium"></div>
     <div class="aux-menu">
-        <a href="#" class="aux-link active">Review Penjualan</a> <a href="production_dashboard.html" class="aux-link">Production</a>
+        <a href="#" class="active">Review Penjualan</a>
+        <a href="production_dashboard.html">Production</a>
     </div>
-    <div class="user-panel"><div class="user-avatar">MG</div></div>
 </div>
 
 <div class="page-wrap">
-    <div style="margin-bottom: 25px;">
-        <h2 style="color:#111; margin: 0 0 5px 0; font-size: 24px;">Review Penjualan</h2>
-        <p style="color:#6b7280; margin: 0; font-size:13px;">Kelola pesanan masuk dan cetak invoice.</p>
-    </div>
+    <h2>Review Penjualan</h2>
     
     <div class="category-tabs">
         <button class="cat-btn active" onclick="setFilter('All')">All Order</button>
         <button class="cat-btn" onclick="setFilter('Awaiting Approval')">Awaiting Approval</button>
-        <button class="cat-btn" onclick="setFilter('Approved Order')">Approved Order</button> 
-        <button class="cat-btn" onclick="setFilter('Cancel Order')">Cancelled Order</button> 
+        <button class="cat-btn" onclick="setFilter('Approved Order')">Approved Order</button>
+        <button class="cat-btn" onclick="setFilter('Cancel Order')">Cancelled</button>
     </div>
 
-    <div class="search-area">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" class="search-input" placeholder="Search Order #, Customer..." onkeyup="renderTable()">
-    </div>
+    <input type="text" id="searchInput" class="search-input" placeholder="Cari No Order / Customer..." onkeyup="renderTable()">
 
     <div class="table-card">
-        <div style="overflow-x: auto;">
-            <table class="xero-table">
-                <thead><tr><th>Order #</th><th>Customer</th><th>Order Date</th><th>Est. Delivery</th><th>Jatuh Tempo</th><th class="t-right">Total Amount</th><th style="text-align:center;">Status</th></tr></thead>
-                <tbody id="invoiceTableBody"></tbody>
-            </table>
-        </div>
-        <div id="emptyState" style="display:none; text-align:center; padding:60px; color:#9ca3af;">No orders found.</div>
+        <table class="xero-table">
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Customer</th>
+                    <th>Order Date</th>
+                    <th>Est. Delivery</th>
+                    <th>Jatuh Tempo</th>
+                    <th style="text-align:right;">Total Amount</th>
+                    <th style="text-align:center;">Status</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+        <div id="emptyState" style="display:none; text-align:center; padding:50px; color:#999;">Tidak ada data.</div>
     </div>
 </div>
 
 <div id="orderModal" class="modal-overlay">
     <div class="modal-box">
         <div class="modal-header">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <h3 class="modal-title" id="modalTitleRef">Order #</h3>
-                <span id="modalStatusBadge" class="badge"></span>
-            </div>
-            <button class="btn-action btn-close" onclick="closeModal()" style="padding: 6px 12px; font-size: 18px; line-height: 1;">×</button>
+            <h3 style="margin:0;">Preview Order & Invoice</h3>
+            <button class="btn-close" onclick="closeModal()" style="border:none; background:none; font-size:20px; cursor:pointer;">&times;</button>
         </div>
         
         <div class="modal-body">
             <div id="pdfContent">
                 
-                <div class="invoice-header">
-                    <div class="invoice-title">INVOICE</div>
-                    <div class="invoice-logo">
-                        <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/Screenshot_2025-12-17_161250-removebg-preview.png" alt="Sukses Jaya">
-                    </div>
-                </div>
-
-                <div class="invoice-info-grid">
-                    <div class="bill-to-section">
-                        <div class="bill-to-title">Billed To</div>
-                        <div class="customer-name" id="invCustomer">PT CUSTOMER</div>
-                        <div class="customer-details">
-                            <div id="invAddress">Alamat...</div>
-                            <div><span id="invKec">-</span>, <span id="invCity">-</span></div>
-                            <div style="margin-top:5px;">Attn: <span id="invCP" style="font-weight:600">-</span></div>
-                            <div>NPWP: <span id="invNPWP">-</span></div>
+                <div class="pdf-header">
+                    <div class="pdf-title">INVOICE</div>
+                    <div class="company-details">
+                        <div class="company-logo">
+                            <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/Screenshot_2025-12-17_161250-removebg-preview.png" alt="SJ Logo">
+                        </div>
+                        <div class="company-name">CV. SUKSES JAYA MAKMUR LESTARI</div>
+                        <div class="company-address">
+                            JL. D.I Panjaitan, RT/RW. 008/003<br>
+                            Kel. Wundudopi, Kec. Baruga, Kendari<br>
+                            Sulawesi Tenggara<br>
+                            Telp. 0822 4708 4908
                         </div>
                     </div>
-                    <div class="meta-section">
-                        <div class="meta-row"><span class="meta-label">Invoice Date</span><span class="meta-value" id="invDate">-</span></div>
-                        <div class="meta-row"><span class="meta-label">Est. Delivery</span><span class="meta-value" id="invDelivery">-</span></div>
-                        <div class="meta-row"><span class="meta-label">Due Date</span><span class="meta-value" id="invDue">-</span></div>
-                        <div class="meta-row"><span class="meta-label">Order Number</span><span class="meta-value" id="invNumber">-</span></div>
+                </div>
+
+                <div class="pdf-info">
+                    <div class="bill-to">
+                        <div class="bill-label">BILLED TO</div>
+                        <div class="customer-name" id="pdfCustomer">CUSTOMER NAME</div>
+                        <div class="customer-address">
+                            <span id="pdfAddress">Alamat...</span><br>
+                            <span id="pdfCityKec">Kota, Kecamatan</span><br>
+                            Attn: <span id="pdfCP">-</span> | NPWP: <span id="pdfNPWP">-</span>
+                        </div>
+                    </div>
+                    <div class="meta-data">
+                        <div class="meta-row"><span class="meta-key">Invoice Date</span><span class="meta-val" id="pdfDate">-</span></div>
+                        <div class="meta-row"><span class="meta-key">Est. Delivery</span><span class="meta-val" id="pdfEst">-</span></div>
+                        <div class="meta-row"><span class="meta-key">Due Date</span><span class="meta-val" id="pdfDue">-</span></div>
+                        <div class="meta-row"><span class="meta-key">Order Number</span><span class="meta-val" id="pdfOrderNo">-</span></div>
                     </div>
                 </div>
 
-                <table class="invoice-table">
+                <table class="pdf-table">
                     <thead>
                         <tr>
-                            <th>Nama Barang</th>
-                            <th class="t-right">Satuan</th>
-                            <th class="t-right">Meter</th>
-                            <th class="t-right">Jml (Qty)</th>
-                            <th class="t-right">Harga Satuan</th>
-                            <th class="t-right">Diskon</th>
-                            <th class="t-right">Harga Net</th>
-                            <th class="t-right">Total</th>
+                            <th style="width:25%;">NAMA BARANG</th>
+                            <th style="width:8%;" class="t-right">SATUAN</th>
+                            <th style="width:8%;" class="t-right">METER</th>
+                            <th style="width:8%;" class="t-right">JML (QTY)</th>
+                            <th style="width:13%;" class="t-right">HARGA SATUAN</th>
+                            <th style="width:12%;" class="t-right">DISKON</th>
+                            <th style="width:13%;" class="t-right">HARGA NET</th>
+                            <th style="width:13%;" class="t-right">TOTAL</th>
                         </tr>
                     </thead>
-                    <tbody id="invItemsBody"></tbody>
+                    <tbody id="pdfItemsBody">
+                        </tbody>
                 </table>
 
-                <div class="invoice-totals">
-                    <div class="totals-box">
-                        <div class="total-row"><span>Total DPP</span><span id="invDPP">0</span></div>
-                        <div class="total-row"><span>Total PPN (11%)</span><span id="invPPN">0</span></div>
-                        <div class="total-row grand"><span>Grand Total</span><span id="invTotal">0</span></div>
+                <div class="pdf-totals">
+                    <div class="total-box">
+                        <div class="total-row"><span>Total DPP</span><span id="pdfDPP">0</span></div>
+                        <div class="total-row"><span>Total PPN (11%)</span><span id="pdfPPN">0</span></div>
+                        <div class="total-row grand"><span>Grand Total <span id="pdfTotal" style="margin-left:5px;">0</span></span></div>
                     </div>
                 </div>
-                
-                <div style="margin-top:20px; font-size:11px; color:#555; border-top:1px dashed #ccc; padding-top:10px;">
-                    <strong>Notes:</strong> <span id="invNotes">-</span>
+
+                <div class="pdf-notes">
+                    <strong>Notes:</strong> <span id="pdfNotes">-</span>
                 </div>
 
             </div>
-        </div>
+            </div>
 
         <div class="modal-footer" id="modalActions"></div>
     </div>
 </div>
 
 <script>
-// PASTIKAN URL SCRIPT INI BENAR
-const baseURL = "https://script.google.com/macros/s/AKfycbw0T1WqJ82RL6qx3WhoI0fIKcGQzarEBKLYK0H-h4B4vBLOarbDv_zIjxNJQ8FcLh8jEQ/exec"; 
-let allOrders = []; 
-let currentStatusFilter = 'All'; 
+const baseURL = "https://script.google.com/macros/s/AKfycbw0T1WqJ82RL6qx3WhoI0fIKcGQzarEBKLYK0H-h4B4vBLOarbDv_zIjxNJQ8FcLh8jEQ/exec";
+let allOrders = [];
+let currentFilter = 'All';
 
-window.onload = function() { fetchData(); };
+window.onload = fetchData;
 
 async function fetchData() {
-    const tbody = document.getElementById('invoiceTableBody');
-    tbody.innerHTML = '<tr><td colspan="7"><span class="skeleton-bar" style="margin:10px;"></span></td></tr>';
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '<tr><td colspan="7"><div class="skeleton"></div></td></tr>';
     
     try {
         const res = await fetch(baseURL + "?action=getorders");
-        if (!res.ok) throw new Error("Gagal menghubungi server");
         const data = await res.json();
-        
-        if (data.result === 'error') throw new Error(data.message);
-        if (!Array.isArray(data)) throw new Error("Format data salah");
-
-        allOrders = data; 
-        renderTable();
-        showToast("Data Synced", "success");
-    } catch (e) { 
-        console.error(e);
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:#ef4444;">
-            <strong>Error Loading Data</strong><br><span style="font-size:12px">${e.message}</span><br>
-            <button onclick="fetchData()" style="margin-top:10px; cursor:pointer; padding:5px 10px;">Try Again</button>
-        </td></tr>`;
-    }
+        if(Array.isArray(data)) {
+            allOrders = data;
+            renderTable();
+        }
+    } catch(e) { console.error(e); }
 }
 
 function renderTable() {
-    const tbody = document.getElementById('invoiceTableBody');
-    const searchVal = document.getElementById('searchInput').value.toLowerCase();
+    const tbody = document.getElementById('tableBody');
+    const search = document.getElementById('searchInput').value.toLowerCase();
     tbody.innerHTML = '';
-    
-    if(!allOrders) allOrders = [];
 
     const filtered = allOrders.filter(o => {
-        if (currentStatusFilter !== 'All') {
-            if (currentStatusFilter === 'Approved Order') {
+        if (currentFilter !== 'All') {
+            if (currentFilter === 'Approved Order') {
                 if (o.status === 'Awaiting Approval' || o.status === 'Cancel Order') return false;
-            } else {
-                if (o.status !== currentStatusFilter) return false;
-            }
+            } else if (o.status !== currentFilter) return false;
         }
-        if(searchVal && !String(o.id).toLowerCase().includes(searchVal) && !String(o.customer).toLowerCase().includes(searchVal)) return false;
-        return true;
+        return !search || JSON.stringify(o).toLowerCase().includes(search);
     });
 
-    if(filtered.length === 0) { document.getElementById('emptyState').style.display = 'block'; return; }
+    if(filtered.length === 0) {
+        document.getElementById('emptyState').style.display = 'block';
+        return;
+    }
     document.getElementById('emptyState').style.display = 'none';
 
     filtered.forEach(o => {
-        let badgeClass = 'badge-approve'; 
-        if (o.status === 'Cancel Order') badgeClass = 'badge-danger';
-        if (o.status === 'Awaiting Production' || o.status === 'Completed') badgeClass = 'badge-success';
+        let badge = 'badge-approve';
+        if(o.status.includes('Cancel')) badge = 'badge-danger';
+        if(o.status.includes('Completed') || o.status.includes('Production')) badge = 'badge-success';
 
-        const tr = document.createElement('tr');
-        tr.className = 'data-row';
-        tr.onclick = function() { openOrderDetails(o.id); };
-
+        let tr = document.createElement('tr');
+        tr.onclick = () => openModal(o.id);
         tr.innerHTML = `
             <td><strong>${o.id}</strong></td>
             <td>${o.customer}</td>
             <td>${o.date}</td>
             <td>${o.estDelivery}</td>
             <td>${o.dueDate}</td>
-            <td class="t-right" style="font-family:monospace; font-size:13px; font-weight:600;">${formatMoney(o.grandTotal)}</td>
-            <td style="text-align:center;"><span class="badge ${badgeClass}">${o.status}</span></td>
+            <td style="text-align:right;"><strong>${fmtMoney(o.grandTotal)}</strong></td>
+            <td style="text-align:center;"><span class="badge ${badge}">${o.status}</span></td>
         `;
         tbody.appendChild(tr);
     });
 }
 
-function openOrderDetails(id) {
-    const order = allOrders.find(x => String(x.id) === String(id));
-    if(!order) return;
+function openModal(id) {
+    const o = allOrders.find(x => x.id == id);
+    if(!o) return;
 
-    // Header Modal
-    document.getElementById('modalTitleRef').textContent = "Order #" + order.id;
-    const badge = document.getElementById('modalStatusBadge');
-    badge.textContent = order.status;
-    badge.className = 'badge ' + (order.status==='Cancel Order'?'badge-danger': (order.status==='Awaiting Approval'?'badge-approve':'badge-success'));
-
-    // Data Invoice
-    document.getElementById('invNumber').textContent = order.id;
-    document.getElementById('invCustomer').textContent = order.customer;
-    document.getElementById('invDate').textContent = order.date;
-    document.getElementById('invDelivery').textContent = order.estDelivery;
-    document.getElementById('invDue').textContent = order.dueDate;
-    document.getElementById('invNotes').textContent = order.notes || "-";
+    // Fill PDF Data
+    document.getElementById('pdfOrderNo').textContent = o.id;
+    document.getElementById('pdfDate').textContent = o.date;
+    document.getElementById('pdfEst').textContent = o.estDelivery;
+    document.getElementById('pdfDue').textContent = o.dueDate;
     
-    // DETAIL TAMBAHAN (Dari Kolom U-Y)
-    document.getElementById('invCP').textContent = order.cp || "-";
-    document.getElementById('invNPWP').textContent = order.npwp || "-";
-    document.getElementById('invAddress').textContent = order.address || "Alamat belum diisi";
-    document.getElementById('invKec').textContent = order.kec || "-";
-    document.getElementById('invCity').textContent = order.city || "-";
+    document.getElementById('pdfCustomer').textContent = o.customer;
+    document.getElementById('pdfAddress').textContent = o.address || "";
+    document.getElementById('pdfCityKec').textContent = (o.kec || "") + ", " + (o.city || "");
+    document.getElementById('pdfCP').textContent = o.cp || "-";
+    document.getElementById('pdfNPWP').textContent = o.npwp || "-";
 
-    // RENDER TABEL ITEM (8 KOLOM)
-    const itemsBody = document.getElementById('invItemsBody');
-    itemsBody.innerHTML = '';
-    order.items.forEach(item => {
-        // Hitung Harga Net
-        let netPrice = (item.price || 0) - (item.disc || 0);
-
-        itemsBody.innerHTML += `<tr>
-            <td><strong>${item.name}</strong><br><small style="color:#666;">${item.type}</small></td>
-            <td class="t-right">${item.unit || '-'}</td>
-            <td class="t-right">${Number(item.meter)>0 ? item.meter : '-'}</td>
-            <td class="t-right">${item.qty}</td>
-            <td class="t-right">${formatMoney(item.price)}</td>
-            <td class="t-right">${Number(item.disc)>0 ? formatMoney(item.disc) : '-'}</td>
-            <td class="t-right">${formatMoney(netPrice)}</td>
-            <td class="t-right"><strong>${formatMoney(item.total)}</strong></td>
-        </tr>`;
+    const tbody = document.getElementById('pdfItemsBody');
+    tbody.innerHTML = '';
+    o.items.forEach(item => {
+        let net = (item.price || 0) - (item.disc || 0);
+        tbody.innerHTML += `
+            <tr>
+                <td>
+                    <strong>${item.name}</strong>
+                    <span class="item-sub">${item.type}</span>
+                </td>
+                <td class="t-right">${item.unit || '-'}</td>
+                <td class="t-right">${item.meter || '-'}</td>
+                <td class="t-right">${item.qty}</td>
+                <td class="t-right">${fmtMoney(item.price)}</td>
+                <td class="t-right">${fmtMoney(item.disc)}</td>
+                <td class="t-right">${fmtMoney(net)}</td>
+                <td class="t-right"><strong>${fmtMoney(item.total)}</strong></td>
+            </tr>
+        `;
     });
 
-    document.getElementById('invDPP').textContent = formatMoney(order.totalDPP);
-    document.getElementById('invPPN').textContent = formatMoney(order.totalPPN);
-    document.getElementById('invTotal').textContent = formatMoney(order.grandTotal);
+    document.getElementById('pdfDPP').textContent = fmtMoney(o.totalDPP);
+    document.getElementById('pdfPPN').textContent = fmtMoney(o.totalPPN);
+    document.getElementById('pdfTotal').textContent = fmtMoney(o.grandTotal);
+    document.getElementById('pdfNotes').textContent = o.notes || "-";
 
-    let actionHTML = `<button class="btn-action btn-close" onclick="closeModal()">Close</button>`;
-    
-    if (order.status === 'Awaiting Approval') {
-        actionHTML += `
-            <button class="btn-action btn-reject" onclick="processStatus('${order.id}', 'Cancel Order')">✕ Reject</button>
-            <button class="btn-action btn-approve" onclick="processStatus('${order.id}', 'Awaiting Production')">✓ Approve Order</button>
-        `;
-    }
-    else if (order.status === 'Awaiting Production' || order.status === 'Completed') {
-        actionHTML += `
-            <button class="btn-action btn-pdf" onclick="generatePDF('${order.id}')">📄 Download Invoice (PDF)</button>
-        `;
+    // Action Buttons
+    let btns = `<button class="btn-action btn-close" onclick="closeModal()">Close</button>`;
+    if(o.status === 'Awaiting Approval') {
+        btns += `<button class="btn-action btn-reject" onclick="updateStatus('${o.id}', 'Cancel Order')">Reject</button>
+                 <button class="btn-action btn-approve" onclick="updateStatus('${o.id}', 'Awaiting Production')">Approve</button>`;
+    } else if (o.status !== 'Cancel Order') {
+        btns += `<button class="btn-action btn-pdf" onclick="dlPDF('${o.id}')">Download PDF</button>`;
     }
 
-    document.getElementById('modalActions').innerHTML = actionHTML;
+    document.getElementById('modalActions').innerHTML = btns;
     document.getElementById('orderModal').style.display = 'flex';
 }
 
 function closeModal() { document.getElementById('orderModal').style.display = 'none'; }
-function setFilter(status) { 
-    currentStatusFilter = status; 
-    document.querySelectorAll('.cat-btn').forEach(b => {
-        b.classList.remove('active');
-        if(b.textContent.includes(status) || (status === 'All' && b.textContent === 'All Order')) b.classList.add('active');
-    });
+function setFilter(f) { 
+    currentFilter = f; 
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
     renderTable(); 
 }
+function fmtMoney(n) { return (Number(n)||0).toLocaleString('id-ID', {style:'currency', currency:'IDR', minimumFractionDigits:0}); }
 
-function formatMoney(n) { return (Number(n)||0).toLocaleString("id-ID", {style:"currency", currency:"IDR"}); }
-function showToast(msg, type) { const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2500); }
-
-async function processStatus(id, newStatus) {
-    if(!confirm("Proceed to " + newStatus + "?")) return;
-    document.getElementById('modalActions').innerHTML = '<span style="color:#666; font-weight:600;">Processing...</span>';
-    try {
-        await fetch(baseURL, { method: 'POST', body: JSON.stringify({ action: "updatestatus", id: id, status: newStatus }) });
-        showToast("Status Updated", "success");
-        closeModal(); fetchData(); 
-    } catch(e) { alert("Error updating status"); closeModal(); }
+async function updateStatus(id, stat) {
+    if(!confirm('Update status to ' + stat + '?')) return;
+    document.getElementById('modalActions').innerHTML = 'Processing...';
+    await fetch(baseURL, {method:'POST', body:JSON.stringify({action:'updatestatus', id:id, status:stat})});
+    fetchData(); closeModal();
 }
 
-function generatePDF(orderId) {
-    const element = document.getElementById('pdfContent');
+function dlPDF(id) {
+    const el = document.getElementById('pdfContent');
     const opt = {
-      margin:       0.25,
-      filename:     `Invoice_${orderId}.pdf`,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2 }, 
-      jsPDF:        { unit: 'in', format: 'a5', orientation: 'landscape' } 
+        margin: 0.2,
+        filename: `Invoice_${id}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 3 }, // Scale 3 biar tajam
+        jsPDF: { unit: 'in', format: 'a5', orientation: 'landscape' }
     };
-    
     const btn = document.querySelector('.btn-pdf');
-    if(btn) btn.innerHTML = "⏳ Generating...";
-
-    html2pdf().set(opt).from(element).save().then(() => {
-        if(btn) btn.innerHTML = "📄 Download Invoice (PDF)";
-        showToast("PDF Downloaded", "success");
-    });
+    btn.textContent = "Generating...";
+    html2pdf().set(opt).from(el).save().then(() => btn.textContent = "Download PDF");
 }
 </script>
+
 </body>
 </html>
