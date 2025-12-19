@@ -18,7 +18,7 @@ body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background:
 .t-center { text-align: center; }
 .t-right { text-align: right; }
 
-/* TRICK: Currency Alignment (Rp Kiri, Angka Kanan) */
+/* TRICK: Currency Alignment */
 .currency-cell {
     display: flex;
     justify-content: space-between;
@@ -53,12 +53,11 @@ table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 .badge-success { background: #ecfdf5; color: #047857; border: 1px solid #d1fae5; }
 .badge-danger { background: #fef2f2; color: #b91c1c; border: 1px solid #fee2e2; }
 
-/* Type Badge */
 .type-badge { font-size: 10px; padding: 4px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; display: inline-block; white-space: nowrap; }
 .type-gen { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; } 
 .type-pre { background: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe; } 
 
-/* --- 2. PREVIEW MODAL STYLE (WEB) --- */
+/* --- 2. PREVIEW MODAL STYLE --- */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 9000; backdrop-filter: blur(2px); }
 .modal-box { background: #fff; width: 1100px; max-width: 95%; height: 90vh; display: flex; flex-direction: column; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
 .modal-header { padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
@@ -119,35 +118,51 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
 .item-name-main { font-weight: 700; color: #000; display:block; font-size: 11px; }
 .item-sub { font-size: 9px; color: #666; font-weight: normal; margin-top: 2px; display: block; }
 
-/* FOOTER AREA (NOTES + PAYMENT + TOTALS) */
-.pdf-footer-section {
+/* MIDDLE SECTION: NOTES (LEFT) & TOTALS (RIGHT) */
+.pdf-middle-section {
     display: flex;
-    justify-content: space-between; /* Kiri (Notes & Payment), Kanan (Total) */
+    justify-content: space-between;
     align-items: flex-start;
     margin-top: 10px;
     page-break-inside: avoid;
 }
 
-/* Left Box (Notes + Payment) */
-.pdf-left-box { width: 60%; padding-right: 20px; }
-
-/* Notes */
+/* Notes Area */
+.pdf-notes-box { width: 60%; padding-right: 20px; }
 .pdf-notes-label { font-size: 10px; font-weight: 700; margin-bottom: 2px; display:block; }
-.pdf-notes-content { font-size: 10px; color: #555; line-height: 1.4; border: 1px dashed #ccc; padding: 5px; border-radius: 4px; min-height: 30px; margin-bottom: 15px; }
+.pdf-notes-content { font-size: 10px; color: #555; line-height: 1.4; border: 1px dashed #ccc; padding: 5px; border-radius: 4px; min-height: 30px; }
 
-/* Payment Info (New) */
-.pdf-payment-box { margin-top: 10px; }
-.pdf-payment-title { font-size: 10px; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; border-bottom: 1px solid #000; display: inline-block; padding-bottom: 2px; }
-.pdf-payment-grid { display: flex; gap: 30px; }
-.pdf-bank-info { font-size: 10px; line-height: 1.4; color: #000; }
-.bank-name { font-weight: 700; }
-
-/* Right Box (Totals) */
+/* Total Area */
 .pdf-total-box { width: 35%; }
 .pdf-total-row { display: flex; justify-content: space-between; font-size: 10px; padding: 4px 0; color: #333; }
 .pdf-total-row.grand { 
     font-size: 15px; font-weight: 700; color: #116999; margin-top: 10px; padding-top: 10px; border-top: 1px dotted #999; 
 }
+
+/* --- PAYMENT FOOTER (STYLE REFERENCE IMAGE) --- */
+.pdf-payment-wrapper {
+    margin-top: 25px; /* Jarak dari section atas */
+    border-top: 1px solid #ccc; /* Garis pemisah style referensi */
+    padding-top: 10px;
+    page-break-inside: avoid;
+}
+.pdf-payment-title {
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #333;
+    display: block;
+}
+.pdf-payment-container {
+    display: flex;
+    gap: 40px; /* Jarak antar bank */
+}
+.pdf-bank-detail {
+    font-size: 10px;
+    line-height: 1.5;
+    color: #444;
+}
+.bank-name { font-weight: 700; color: #000; }
 
 .skeleton { height: 20px; background: #eee; width: 100%; border-radius: 4px; animation: pulse 1s infinite; }
 @keyframes pulse { 0% {opacity: 0.6;} 50% {opacity: 1;} 100% {opacity: 0.6;} }
@@ -251,34 +266,34 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
             <tbody id="pdfItemsBody"></tbody>
         </table>
         
-        <div class="pdf-footer-section">
-            <div class="pdf-left-box">
+        <div class="pdf-middle-section">
+            <div class="pdf-notes-box">
                 <span class="pdf-notes-label">NOTES:</span>
                 <div class="pdf-notes-content" id="pdfNotes">-</div>
-                
-                <div class="pdf-payment-box">
-                    <span class="pdf-payment-title">PAYMENT METHOD</span>
-                    <div class="pdf-payment-grid">
-                        <div class="pdf-bank-info">
-                            <div class="bank-name">BCA</div>
-                            <div>A/N : CV Sukses Jaya Makmur Lestari</div>
-                            <div>A/C : 79 1088 9880</div>
-                        </div>
-                        <div class="pdf-bank-info">
-                            <div class="bank-name">BRI</div>
-                            <div>A/N : CV Sukses Jaya Makmur Lestari</div>
-                            <div>A/C : 0646 01000 656568</div>
-                        </div>
-                    </div>
-                </div>
             </div>
-
             <div class="pdf-total-box">
                 <div class="pdf-total-row"><span>Total DPP</span><span id="pdfDPP">0</span></div>
                 <div class="pdf-total-row"><span>Total PPN (11%)</span><span id="pdfPPN">0</span></div>
                 <div class="pdf-total-row grand"><span>Grand Total</span><span id="pdfTotal">0</span></div>
             </div>
         </div>
+
+        <div class="pdf-payment-wrapper">
+            <span class="pdf-payment-title">Payment Information</span>
+            <div class="pdf-payment-container">
+                <div class="pdf-bank-detail">
+                    <div><span class="bank-name">CV Sukses Jaya Makmur Lestari</span></div>
+                    <div>Bank: BCA</div>
+                    <div>Account No: 79 1088 9880</div>
+                </div>
+                <div class="pdf-bank-detail">
+                    <div><span class="bank-name">CV Sukses Jaya Makmur Lestari</span></div>
+                    <div>Bank: BRI</div>
+                    <div>Account No: 0646 01000 656568</div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
