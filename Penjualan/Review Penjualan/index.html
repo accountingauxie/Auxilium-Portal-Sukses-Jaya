@@ -18,7 +18,7 @@ body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background:
 .t-center { text-align: center; }
 .t-right { text-align: right; }
 
-/* TRICK: Currency Alignment (Rp Kiri, Angka Kanan) */
+/* TRICK: Currency Alignment */
 .currency-cell {
     display: flex;
     justify-content: space-between;
@@ -33,12 +33,7 @@ body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background:
 .aux-menu a.active { color: var(--primary-color); }
 
 /* --- DASHBOARD LAYOUT --- */
-.page-wrap { 
-    padding: 30px 40px; 
-    max-width: 98%; 
-    margin: 0 auto; 
-}
-
+.page-wrap { padding: 30px 40px; max-width: 98%; margin: 0 auto; }
 .category-tabs { margin-bottom: 20px; border-bottom: 2px solid #ddd; }
 .cat-btn { background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; }
 .cat-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
@@ -58,15 +53,11 @@ table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 .badge-success { background: #ecfdf5; color: #047857; border: 1px solid #d1fae5; }
 .badge-danger { background: #fef2f2; color: #b91c1c; border: 1px solid #fee2e2; }
 
-/* Type Badge */
-.type-badge { 
-    font-size: 10px; padding: 4px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; 
-    display: inline-block; white-space: nowrap; 
-}
+.type-badge { font-size: 10px; padding: 4px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; display: inline-block; white-space: nowrap; }
 .type-gen { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; } 
 .type-pre { background: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe; } 
 
-/* --- 2. PREVIEW MODAL STYLE (WEB) --- */
+/* --- 2. PREVIEW MODAL STYLE --- */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 9000; backdrop-filter: blur(2px); }
 .modal-box { background: #fff; width: 1100px; max-width: 95%; height: 90vh; display: flex; flex-direction: column; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
 .modal-header { padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
@@ -77,7 +68,6 @@ table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 .web-label { font-size: 11px; color: #888; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 5px; }
 .web-value { font-size: 14px; color: #333; font-weight: bold; }
 
-/* Web Table Preview */
 table.web-items { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
 table.web-items th { text-align: left; padding: 10px; background: #f9fafb; font-size: 11px; color: #555; text-transform: uppercase; border-bottom: 1px solid #eee; font-weight: bold; }
 table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
@@ -97,18 +87,14 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 /* --- 3. HIDDEN PDF STYLE --- */
 #pdf-hidden-container { position: absolute; left: -9999px; top: 0; }
 #pdfContent { 
-    background: #fff; 
-    width: 100%; 
-    padding: 0; 
-    font-family: "Arial", sans-serif; 
-    color: #000; 
+    background: #fff; width: 100%; padding: 0; 
+    font-family: "Arial", sans-serif; color: #000; 
 }
 
 /* Header PDF */
 .pdf-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
 .pdf-title { font-size: 32px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-top: 5px; color:#000; }
 .company-details { text-align: right; font-size: 10px; color: #333; line-height: 1.4; }
-/* Logo dihapus */
 .company-name { font-weight: 700; font-size: 12px; color: #F59E0B; text-transform: uppercase; margin-bottom: 2px; }
 
 /* Info PDF */
@@ -123,61 +109,42 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 
 /* TABLE PDF */
 table.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-
 table.pdf-table th { 
-    font-size: 9px; 
-    font-weight: 700; 
-    text-transform: uppercase; 
-    padding: 8px 4px; 
-    color: #000;
-    border-top: 1px solid #000; 
-    border-bottom: 1px solid #000; 
-    letter-spacing: 0.5px;
+    font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 8px 4px; color: #000;
+    border-top: 1px solid #000; border-bottom: 1px solid #000; letter-spacing: 0.5px;
 }
-
-table.pdf-table tr {
-    page-break-inside: avoid;
-    page-break-after: auto;
-}
-
-table.pdf-table td { 
-    padding: 8px 4px; 
-    font-size: 10px; 
-    vertical-align: top; 
-}
-
+table.pdf-table tr { page-break-inside: avoid; page-break-after: auto; }
+table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
 .item-name-main { font-weight: 700; color: #000; display:block; font-size: 11px; }
 .item-sub { font-size: 9px; color: #666; font-weight: normal; margin-top: 2px; display: block; }
 
-/* TOTALS PDF (FIX ALIGNMENT) */
-.pdf-totals-area { 
-    display: flex; 
-    justify-content: flex-end; 
-    margin-top: 5px; 
+/* FOOTER AREA (NOTES + TOTALS) */
+.pdf-footer-section {
+    display: flex;
+    justify-content: space-between; /* Kiri Notes, Kanan Total */
+    align-items: flex-start;
+    margin-top: 10px;
     page-break-inside: avoid;
 }
+
+/* Notes Area (Sebelah Kiri) */
+.pdf-notes-box {
+    width: 60%; /* Lebar area notes */
+    padding-right: 20px;
+}
+.pdf-notes-label { font-size: 10px; font-weight: 700; margin-bottom: 5px; display:block; }
+.pdf-notes-content { font-size: 10px; color: #555; line-height: 1.4; border: 1px dashed #ccc; padding: 8px; border-radius: 4px; min-height: 50px; }
+
+/* Total Area (Sebelah Kanan) */
 .pdf-total-box { 
-    width: 280px; 
+    width: 35%; /* Lebar area total */
 }
 .pdf-total-row { 
-    display: flex; 
-    justify-content: space-between; 
-    font-size: 10px; 
-    padding: 4px 0; 
-    color: #333; 
+    display: flex; justify-content: space-between; font-size: 10px; padding: 4px 0; color: #333; 
 }
-
-/* Grand Total: Bold Standard (700) & Dotted Line */
 .pdf-total-row.grand { 
-    font-size: 15px; 
-    font-weight: 700; 
-    color: #116999; 
-    margin-top: 10px; 
-    padding-top: 10px;
-    border-top: 1px dotted #999; 
+    font-size: 15px; font-weight: 700; color: #116999; margin-top: 10px; padding-top: 10px; border-top: 1px dotted #999; 
 }
-
-.pdf-notes { font-size: 9px; color: #555; margin-top: 40px; border-top: 1px dotted #ccc; padding-top: 10px; }
 
 .skeleton { height: 20px; background: #eee; width: 100%; border-radius: 4px; animation: pulse 1s infinite; }
 @keyframes pulse { 0% {opacity: 0.6;} 50% {opacity: 1;} 100% {opacity: 0.6;} }
@@ -195,16 +162,13 @@ table.pdf-table td {
 
 <div class="page-wrap">
     <h2>Review Penjualan</h2>
-    
     <div class="category-tabs">
         <button class="cat-btn active" onclick="setFilter('All')">All Order</button>
         <button class="cat-btn" onclick="setFilter('Awaiting Approval')">Awaiting Approval</button>
         <button class="cat-btn" onclick="setFilter('Approved Order')">Approved Order</button>
         <button class="cat-btn" onclick="setFilter('Cancel Order')">Cancelled</button>
     </div>
-
     <input type="text" id="searchInput" class="search-input" placeholder="Cari No Order / Customer..." onkeyup="renderTable()">
-
     <div class="table-card">
         <table class="xero-table">
             <thead>
@@ -234,43 +198,16 @@ table.pdf-table td {
             </div>
             <button class="btn-close" onclick="closeModal()" style="border:none; background:none; font-size:24px; cursor:pointer;">&times;</button>
         </div>
-        
         <div class="modal-body">
             <div class="web-info-grid">
-                <div>
-                    <span class="web-label">Customer</span>
-                    <div class="web-value" id="webCustomer">-</div>
-                    <div style="font-size:12px; color:#666; margin-top:5px;" id="webAddress">-</div>
-                </div>
-                <div>
-                    <span class="web-label">Order Details</span>
-                    <div style="font-size:13px; margin-bottom:4px;">Date: <strong id="webDate">-</strong></div>
-                    <div style="font-size:13px; margin-bottom:4px;">Est. Del: <strong id="webEst">-</strong></div>
-                    <div style="font-size:13px;">Due/Term: <strong id="webDue">-</strong></div>
-                </div>
-                <div>
-                    <span class="web-label">Additional Info</span>
-                    <div style="font-size:13px; margin-bottom:4px;">CP: <span id="webCP">-</span></div>
-                    <div style="font-size:13px; margin-bottom:4px;">NPWP: <span id="webNPWP">-</span></div>
-                </div>
+                <div><span class="web-label">Customer</span><div class="web-value" id="webCustomer">-</div><div style="font-size:12px; color:#666; margin-top:5px;" id="webAddress">-</div></div>
+                <div><span class="web-label">Order Details</span><div style="font-size:13px; margin-bottom:4px;">Date: <strong id="webDate">-</strong></div><div style="font-size:13px; margin-bottom:4px;">Est. Del: <strong id="webEst">-</strong></div><div style="font-size:13px;">Due/Term: <strong id="webDue">-</strong></div></div>
+                <div><span class="web-label">Additional Info</span><div style="font-size:13px; margin-bottom:4px;">CP: <span id="webCP">-</span></div><div style="font-size:13px; margin-bottom:4px;">NPWP: <span id="webNPWP">-</span></div></div>
             </div>
-
             <table class="web-items">
-                <thead>
-                    <tr>
-                        <th class="t-left" style="width:25%">ITEM NAME</th>
-                        <th class="t-center" style="width:8%">METER</th>
-                        <th class="t-center" style="width:8%">QTY</th>
-                        <th class="t-center" style="width:10%">SATUAN</th>
-                        <th class="t-left" style="width:15%">HARGA</th>
-                        <th class="t-left" style="width:10%">DISC</th>
-                        <th class="t-left" style="width:12%">NET</th>
-                        <th class="t-left" style="width:12%">TOTAL</th>
-                    </tr>
-                </thead>
+                <thead><tr><th class="t-left" style="width:25%">ITEM NAME</th><th class="t-center" style="width:8%">METER</th><th class="t-center" style="width:8%">QTY</th><th class="t-center" style="width:10%">SATUAN</th><th class="t-left" style="width:15%">HARGA</th><th class="t-left" style="width:10%">DISC</th><th class="t-left" style="width:12%">NET</th><th class="t-left" style="width:12%">TOTAL</th></tr></thead>
                 <tbody id="webItemsBody"></tbody>
             </table>
-
             <div class="web-totals">
                 <div class="web-total-box">
                     <div class="web-total-row"><span>Total DPP</span><span id="webDPP">0</span></div>
@@ -278,13 +215,8 @@ table.pdf-table td {
                     <div class="web-total-row grand"><span>Grand Total</span><span id="webTotal">0</span></div>
                 </div>
             </div>
-            
-            <div style="margin-top:20px; padding:10px; background:#fdfdfd; border:1px dashed #ddd; border-radius:4px;">
-                <strong style="font-size:11px; color:#555;">NOTES:</strong>
-                <span id="webNotes" style="font-size:12px; color:#333; margin-left:5px;">-</span>
-            </div>
+            <div style="margin-top:20px; padding:10px; background:#fdfdfd; border:1px dashed #ddd; border-radius:4px;"><strong style="font-size:11px; color:#555;">NOTES:</strong><span id="webNotes" style="font-size:12px; color:#333; margin-left:5px;">-</span></div>
         </div>
-
         <div class="modal-footer" id="modalActions"></div>
     </div>
 </div>
@@ -295,23 +227,14 @@ table.pdf-table td {
             <div class="pdf-title">INVOICE</div>
             <div class="company-details">
                 <div class="company-name">CV. SUKSES JAYA MAKMUR LESTARI</div>
-                <div>
-                    JL. D.I Panjaitan, RT/RW. 008/003<br>
-                    Kel. Wundudopi, Kec. Baruga, Kendari<br>
-                    Sulawesi Tenggara | Telp. 0822 4708 4908
-                </div>
+                <div>JL. D.I Panjaitan, RT/RW. 008/003<br>Kel. Wundudopi, Kec. Baruga, Kendari<br>Sulawesi Tenggara | Telp. 0822 4708 4908</div>
             </div>
         </div>
-
         <div class="pdf-info">
             <div class="bill-to">
                 <div class="pdf-bill-label">BILLED TO</div>
                 <div class="pdf-cust-name" id="pdfCustName">CUSTOMER NAME</div>
-                <div class="pdf-cust-addr">
-                    <span id="pdfAddr">Alamat...</span><br>
-                    <span id="pdfRegion">Kota, Kec</span><br>
-                    Attn: <span id="pdfCP">-</span> | NPWP: <span id="pdfNPWP">-</span>
-                </div>
+                <div class="pdf-cust-addr"><span id="pdfAddr">Alamat...</span><br><span id="pdfRegion">Kota, Kec</span><br>Attn: <span id="pdfCP">-</span> | NPWP: <span id="pdfNPWP">-</span></div>
             </div>
             <div class="meta-data">
                 <div class="pdf-meta-row"><span class="pdf-meta-key">Invoice Date</span><span id="pdfDate">-</span></div>
@@ -320,42 +243,26 @@ table.pdf-table td {
                 <div class="pdf-meta-row"><span class="pdf-meta-key">Order Number</span><span id="pdfOrderNo">-</span></div>
             </div>
         </div>
-
         <table class="pdf-table">
-            <thead>
-                <tr>
-                    <th class="t-left" style="width:25%;">NAMA BARANG</th>
-                    <th class="t-center" style="width:8%;">METER</th>
-                    <th class="t-center" style="width:8%;">QTY</th>
-                    <th class="t-center" style="width:10%;">SATUAN</th>
-                    <th class="t-right" style="width:13%;">HARGA SATUAN</th>
-                    <th class="t-right" style="width:12%;">DISKON</th>
-                    <th class="t-right" style="width:12%;">HARGA NET</th>
-                    <th class="t-right" style="width:12%;">TOTAL</th>
-                </tr>
-            </thead>
+            <thead><tr><th class="t-left" style="width:25%;">NAMA BARANG</th><th class="t-center" style="width:8%;">METER</th><th class="t-center" style="width:8%;">QTY</th><th class="t-center" style="width:10%;">SATUAN</th><th class="t-right" style="width:13%;">HARGA SATUAN</th><th class="t-right" style="width:12%;">DISKON</th><th class="t-right" style="width:12%;">HARGA NET</th><th class="t-right" style="width:12%;">TOTAL</th></tr></thead>
             <tbody id="pdfItemsBody"></tbody>
         </table>
         
-        <div class="pdf-totals-area">
+        <div class="pdf-footer-section">
+            <div class="pdf-notes-box">
+                <span class="pdf-notes-label">NOTES:</span>
+                <div class="pdf-notes-content" id="pdfNotes">-</div>
+            </div>
             <div class="pdf-total-box">
                 <div class="pdf-total-row"><span>Total DPP</span><span id="pdfDPP">0</span></div>
                 <div class="pdf-total-row"><span>Total PPN (11%)</span><span id="pdfPPN">0</span></div>
-                <div class="pdf-total-row grand">
-                    <span>Grand Total</span>
-                    <span id="pdfTotal">0</span>
-                </div>
+                <div class="pdf-total-row grand"><span>Grand Total</span><span id="pdfTotal">0</span></div>
             </div>
-        </div>
-
-        <div class="pdf-notes">
-            <strong>Notes:</strong> <span id="pdfNotes">-</span>
         </div>
     </div>
 </div>
 
 <script>
-// PASTIKAN SCRIPT INI BENAR
 const baseURL = "https://script.google.com/macros/s/AKfycbwfXZG-xWzjp2_PC68tniPhZkArpQfnZ4ipnmNU-QI1mp-cRCRbLVmDGdp2VEaNGLmG0w/exec";
 let allOrders = [];
 let currentFilter = 'All';
@@ -368,13 +275,7 @@ async function fetchData() {
     try {
         const res = await fetch(baseURL + "?action=getorders");
         const data = await res.json();
-        if(Array.isArray(data)) { 
-            allOrders = data; 
-            renderTable(); 
-        } else {
-            console.error("Data bukan array", data);
-            alert("Data Error dari server.");
-        }
+        if(Array.isArray(data)) { allOrders = data; renderTable(); } else { alert("Data Error"); }
     } catch(e) { console.error(e); }
 }
 
@@ -391,49 +292,31 @@ function renderTable() {
         return !search || JSON.stringify(o).toLowerCase().includes(search);
     });
 
-    if(filtered.length === 0) {
-        document.getElementById('emptyState').style.display = 'block';
-        return;
-    }
+    if(filtered.length === 0) { document.getElementById('emptyState').style.display = 'block'; return; }
     document.getElementById('emptyState').style.display = 'none';
 
     filtered.forEach(o => {
         let badge = 'badge-approve';
         if(o.status.includes('Cancel')) badge = 'badge-danger';
         if(o.status.includes('Completed') || o.status.includes('Production')) badge = 'badge-success';
-
-        // TYPE BADGE
-        let typeBadgeClass = 'type-gen';
-        if (o.type && o.type.toLowerCase().includes('pre')) typeBadgeClass = 'type-pre';
+        let typeBadgeClass = 'type-gen'; if (o.type && o.type.toLowerCase().includes('pre')) typeBadgeClass = 'type-pre';
         let typeHtml = `<span class="type-badge ${typeBadgeClass}">${o.type || 'General'}</span>`;
 
         let tr = document.createElement('tr');
         tr.className = 'data-row';
         tr.onclick = function() { openModal(o.id); };
         
-        tr.innerHTML = `
-            <td><strong>${o.id}</strong></td>
-            <td style="text-align:center;">${typeHtml}</td>
-            <td>${o.customer}</td>
-            <td>${o.date}</td>
-            <td>${o.estDelivery}</td>
-            <td>${o.dueDate}</td>
-            <td style="text-align:right;"><strong>${fmtMoneySimple(o.grandTotal)}</strong></td>
-            <td style="text-align:center;"><span class="badge ${badge}">${o.status}</span></td>
-        `;
+        tr.innerHTML = `<td><strong>${o.id}</strong></td><td style="text-align:center;">${typeHtml}</td><td>${o.customer}</td><td>${o.date}</td><td>${o.estDelivery}</td><td>${o.dueDate}</td><td style="text-align:right;"><strong>${fmtMoneySimple(o.grandTotal)}</strong></td><td style="text-align:center;"><span class="badge ${badge}">${o.status}</span></td>`;
         tbody.appendChild(tr);
     });
 }
 
-function setTxt(id, val) {
-    const el = document.getElementById(id);
-    if(el) el.textContent = val || "-";
-}
+function setTxt(id, val) { const el = document.getElementById(id); if(el) el.textContent = val || "-"; }
 
 function openModal(id) {
     try {
         const o = allOrders.find(x => String(x.id) === String(id));
-        if(!o) { alert("Data order tidak ditemukan!"); return; }
+        if(!o) { alert("Data tidak ditemukan"); return; }
 
         setTxt('webOrderNo', o.id);
         setTxt('webStatusBadge', o.status);
@@ -441,56 +324,20 @@ function openModal(id) {
         if(badgeEl) badgeEl.className = 'badge ' + (o.status.includes('Cancel') ? 'badge-danger' : (o.status.includes('Awaiting Approval') ? 'badge-approve' : 'badge-success'));
         
         ['web','pdf'].forEach(prefix => {
-            setTxt(prefix+'Customer', o.customer);
-            setTxt(prefix+'CustName', o.customer);
-            setTxt(prefix+'Address', (o.address||"") + " " + (o.kec||"") + " " + (o.city||""));
-            setTxt(prefix+'Addr', o.address||"");
-            setTxt(prefix+'Region', (o.kec||"") + ", " + (o.city||""));
-            setTxt(prefix+'Date', o.date);
-            setTxt(prefix+'Est', o.estDelivery);
-            setTxt(prefix+'Due', o.dueDate);
-            setTxt(prefix+'CP', o.cp);
-            setTxt(prefix+'NPWP', o.npwp);
-            setTxt(prefix+'Notes', o.notes);
-            setTxt(prefix+'OrderNo', o.id);
+            setTxt(prefix+'Customer', o.customer); setTxt(prefix+'CustName', o.customer);
+            setTxt(prefix+'Address', (o.address||"") + " " + (o.kec||"") + " " + (o.city||"")); setTxt(prefix+'Addr', o.address||""); setTxt(prefix+'Region', (o.kec||"") + ", " + (o.city||""));
+            setTxt(prefix+'Date', o.date); setTxt(prefix+'Est', o.estDelivery); setTxt(prefix+'Due', o.dueDate);
+            setTxt(prefix+'CP', o.cp); setTxt(prefix+'NPWP', o.npwp); setTxt(prefix+'Notes', o.notes); setTxt(prefix+'OrderNo', o.id);
         });
 
         const webTbody = document.getElementById('webItemsBody');
         const pdfTbody = document.getElementById('pdfItemsBody');
-        webTbody.innerHTML = '';
-        pdfTbody.innerHTML = '';
+        webTbody.innerHTML = ''; pdfTbody.innerHTML = '';
 
         o.items.forEach(item => {
             let net = item.net || 0;
-            
-            // WEB PREVIEW (Dengan Currency Trick)
-            webTbody.innerHTML += `
-                <tr>
-                    <td class="t-left"><strong>${item.name}</strong><br><small style="color:#888;">${item.type}</small></td>
-                    <td class="t-center">${item.meter || '-'}</td>
-                    <td class="t-center">${item.qty}</td>
-                    <td class="t-center">${item.unit || '-'}</td>
-                    <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.price)}</span></div></td>
-                    <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.disc)}</span></div></td>
-                    <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(net)}</span></div></td>
-                    <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.total)}</span></div></td>
-                </tr>`;
-
-            // PDF RENDER (STYLE KHUSUS PDF MINIMALIS)
-            pdfTbody.innerHTML += `
-                <tr>
-                    <td class="t-left">
-                        <span class="item-name-main">${item.name}</span>
-                        <span class="item-sub">${item.type}</span>
-                    </td>
-                    <td class="t-center">${item.meter || '-'}</td>
-                    <td class="t-center">${item.qty}</td>
-                    <td class="t-center">${item.unit || '-'}</td>
-                    <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.price)}</span></div></td>
-                    <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.disc)}</span></div></td>
-                    <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(net)}</span></div></td>
-                    <td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.total)}</span></div></td>
-                </tr>`;
+            webTbody.innerHTML += `<tr><td class="t-left"><strong>${item.name}</strong><br><small style="color:#888;">${item.type}</small></td><td class="t-center">${item.meter || '-'}</td><td class="t-center">${item.qty}</td><td class="t-center">${item.unit || '-'}</td><td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.price)}</span></div></td><td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.disc)}</span></div></td><td><div class="currency-cell"><span>Rp</span><span>${fmtNum(net)}</span></div></td><td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.total)}</span></div></td></tr>`;
+            pdfTbody.innerHTML += `<tr><td class="t-left"><span class="item-name-main">${item.name}</span><span class="item-sub">${item.type}</span></td><td class="t-center">${item.meter || '-'}</td><td class="t-center">${item.qty}</td><td class="t-center">${item.unit || '-'}</td><td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.price)}</span></div></td><td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.disc)}</span></div></td><td><div class="currency-cell"><span>Rp</span><span>${fmtNum(net)}</span></div></td><td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.total)}</span></div></td></tr>`;
         });
 
         ['web','pdf'].forEach(prefix => {
@@ -501,28 +348,17 @@ function openModal(id) {
 
         let btns = `<button class="btn-action btn-close" onclick="closeModal()">Close</button>`;
         if(o.status === 'Awaiting Approval') {
-            btns += `<button class="btn-action btn-reject" onclick="updateStatus('${o.id}', 'Cancel Order')">Reject</button>
-                     <button class="btn-action btn-approve" onclick="updateStatus('${o.id}', 'Awaiting Production')">Approve</button>`;
+            btns += `<button class="btn-action btn-reject" onclick="updateStatus('${o.id}', 'Cancel Order')">Reject</button><button class="btn-action btn-approve" onclick="updateStatus('${o.id}', 'Awaiting Production')">Approve</button>`;
         } else if (o.status !== 'Cancel Order') {
             btns += `<button class="btn-action btn-pdf" onclick="dlPDF('${o.id}')">Download PDF</button>`;
         }
         document.getElementById('modalActions').innerHTML = btns;
         document.getElementById('orderModal').style.display = 'flex';
-
-    } catch(err) {
-        console.error("Error Open Modal:", err);
-        alert("Gagal membuka detail. Cek console browser.");
-    }
+    } catch(err) { console.error(err); alert("Error opening modal"); }
 }
 
 function closeModal() { document.getElementById('orderModal').style.display = 'none'; }
-function setFilter(f) { 
-    currentFilter = f; 
-    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-    event.target.classList.add('active');
-    renderTable(); 
-}
-
+function setFilter(f) { currentFilter = f; document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active')); event.target.classList.add('active'); renderTable(); }
 function fmtNum(n) { return (Number(n)||0).toLocaleString('id-ID', {minimumFractionDigits:0}); }
 function fmtMoneySimple(n) { return (Number(n)||0).toLocaleString('id-ID', {style:'currency', currency:'IDR', minimumFractionDigits:0}); }
 
@@ -535,18 +371,10 @@ async function updateStatus(id, stat) {
 
 function dlPDF(id) {
     const el = document.getElementById('pdfContent');
-    const opt = {
-        margin:       [1.5, 0.75], // Top/Bottom 1.5cm, Left/Right 0.75cm
-        filename:     `Invoice_${id}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'cm', format: 'a5', orientation: 'landscape' }
-    };
-    const btn = document.querySelector('.btn-pdf');
-    btn.textContent = "Generating...";
+    const opt = { margin: [1.5, 0.75], filename: `Invoice_${id}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'cm', format: 'a5', orientation: 'landscape' } };
+    const btn = document.querySelector('.btn-pdf'); btn.textContent = "Generating...";
     html2pdf().set(opt).from(el).save().then(() => btn.textContent = "Download PDF");
 }
 </script>
-
 </body>
 </html>
