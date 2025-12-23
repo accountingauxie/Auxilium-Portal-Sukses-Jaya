@@ -65,9 +65,15 @@
             font-size: 0.95rem !important;
             color: #64748b !important;
         }
+        
+        /* Checkbox Custom Style */
+        .xero-checkbox:checked {
+            background-color: #008080;
+            border-color: #008080;
+        }
     </style>
 </head>
-<body class="text-slate-800 font-sans antialiased">
+<body class="text-slate-800 font-sans antialiased" onclick="handleClickOutside(event)">
 
     <nav class="fixed top-0 w-full bg-white border-b border-slate-200 z-40 px-6 py-3 flex justify-between items-center shadow-sm h-[70px]">
         <div class="flex items-center gap-3">
@@ -118,7 +124,7 @@
             </a>
         </div>
 
-        <div class="flex flex-wrap gap-2 mb-6">
+        <div class="flex flex-wrap gap-2 mb-6 items-center">
             <button onclick="setFilterStatus('all')" id="filter-all" class="filter-pill active border px-4 py-1.5 rounded-full text-xs font-medium shadow-sm transition-all">Semua</button>
             <button onclick="setFilterStatus('billed')" id="filter-billed" class="filter-pill inactive border px-4 py-1.5 rounded-full text-xs font-medium shadow-sm flex items-center gap-2 transition-all">
                 <span class="w-2 h-2 rounded-full bg-green-500"></span> Billed
@@ -126,9 +132,36 @@
             <button onclick="setFilterStatus('rejected')" id="filter-rejected" class="filter-pill inactive border px-4 py-1.5 rounded-full text-xs font-medium shadow-sm flex items-center gap-2 transition-all">
                 <span class="w-2 h-2 rounded-full bg-red-500"></span> Rejected
             </button>
-            <button onclick="setFilterStatus('xero_group')" id="filter-xero" class="filter-pill inactive border px-4 py-1.5 rounded-full text-xs font-medium shadow-sm flex items-center gap-2 transition-all">
-                <span class="w-2 h-2 rounded-full bg-indigo-500"></span> Impor Xero
-            </button>
+            
+            <div class="relative relative-dropdown">
+                <button onclick="toggleXeroDropdown(event)" id="filter-xero" class="filter-pill inactive border px-4 py-1.5 rounded-full text-xs font-medium shadow-sm flex items-center gap-2 transition-all">
+                    <span class="w-2 h-2 rounded-full bg-indigo-500"></span> Impor Xero <i class="fas fa-chevron-down ml-1 text-[10px]"></i>
+                </button>
+                
+                <div id="xero-dropdown-menu" class="hidden absolute top-full left-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-xl z-50 p-2 transform transition-all">
+                    <div class="text-[10px] uppercase font-bold text-slate-400 px-2 py-1 mb-1">Pilih Status</div>
+                    
+                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-indigo-50 rounded-lg cursor-pointer">
+                        <input type="checkbox" value="siap impor" onchange="updateXeroFilter()" checked class="xero-checkbox w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                        <span class="text-xs font-medium text-slate-700">Siap Impor</span>
+                    </label>
+                    
+                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-indigo-50 rounded-lg cursor-pointer">
+                        <input type="checkbox" value="proses impor" onchange="updateXeroFilter()" checked class="xero-checkbox w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                        <span class="text-xs font-medium text-slate-700">Proses Impor</span>
+                    </label>
+                    
+                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-indigo-50 rounded-lg cursor-pointer">
+                        <input type="checkbox" value="sukses impor" onchange="updateXeroFilter()" checked class="xero-checkbox w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                        <span class="text-xs font-medium text-slate-700">Sukses Impor</span>
+                    </label>
+                    
+                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-indigo-50 rounded-lg cursor-pointer">
+                        <input type="checkbox" value="gagal impor" onchange="updateXeroFilter()" checked class="xero-checkbox w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                        <span class="text-xs font-medium text-slate-700">Gagal Impor</span>
+                    </label>
+                </div>
+            </div>
         </div>
 
         <div id="loading" class="flex flex-col items-center justify-center py-20">
@@ -385,9 +418,38 @@
             }
         }
 
-        // --- FILTERING ---
+        // --- NEW FILTERING LOGIC ---
+        
+        function toggleXeroDropdown(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('xero-dropdown-menu');
+            dropdown.classList.toggle('hidden');
+            
+            // Activate button style
+            setFilterStatus('xero_group', false);
+        }
+
+        function handleClickOutside(event) {
+            const dropdown = document.getElementById('xero-dropdown-menu');
+            const button = document.getElementById('filter-xero');
+            if (!dropdown.classList.contains('hidden') && !dropdown.contains(event.target) && !button.contains(event.target)) {
+                dropdown.classList.add('hidden');
+            }
+        }
+
+        function updateXeroFilter() {
+            // Keep the filter set to xero group but update data
+            currentFilterStatus = 'xero_group';
+            applyFilters();
+        }
+
         function applyFilters() {
             const searchVal = document.getElementById('searchInput').value.toLowerCase();
+            
+            // Get selected checkbox values for Xero
+            const checkedBoxes = document.querySelectorAll('.xero-checkbox:checked');
+            const selectedXeroStatuses = Array.from(checkedBoxes).map(cb => cb.value);
+
             const filtered = allData.filter(p => {
                 const matchSearch = p.id.toLowerCase().includes(searchVal) || p.vendor.toLowerCase().includes(searchVal) || (p.invNumber && p.invNumber.toLowerCase().includes(searchVal));
                 
@@ -399,7 +461,8 @@
                 } else if (currentFilterStatus === 'rejected') {
                     matchStatus = statusLower.includes('rejected') || statusLower.includes('batal');
                 } else if (currentFilterStatus === 'xero_group') {
-                    matchStatus = statusLower.includes('siap impor') || statusLower.includes('proses impor') || statusLower.includes('gagal impor') || statusLower.includes('sukses impor');
+                    // Match any of the selected Xero categories
+                    matchStatus = selectedXeroStatuses.some(status => statusLower.includes(status));
                 }
                 
                 return matchSearch && matchStatus;
@@ -407,7 +470,7 @@
             renderTable(filtered);
         }
 
-        function setFilterStatus(status) {
+        function setFilterStatus(status, closeDropdown = true) {
             currentFilterStatus = status;
             document.querySelectorAll('.filter-pill').forEach(el => {
                 el.classList.remove('active'); el.classList.add('inactive');
@@ -426,6 +489,10 @@
                 btn.classList.remove('inactive');
             }
             
+            if(status !== 'xero_group' && closeDropdown) {
+                 document.getElementById('xero-dropdown-menu').classList.add('hidden');
+            }
+
             applyFilters();
         }
 
