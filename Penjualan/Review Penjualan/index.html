@@ -19,12 +19,7 @@ body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background:
 .t-right { text-align: right; }
 
 /* TRICK: Currency Alignment */
-.currency-cell {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-}
+.currency-cell { display: flex; justify-content: space-between; align-items: center; width: 100%; }
 
 /* Navbar */
 .aux-navbar { background: #fff; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
@@ -37,7 +32,31 @@ body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background:
 .category-tabs { margin-bottom: 20px; border-bottom: 2px solid #ddd; }
 .cat-btn { background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; }
 .cat-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
-.search-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 15px; }
+
+/* --- FILTER & SEARCH BAR STYLE --- */
+.filter-container {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    align-items: center;
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.filter-group { display: flex; flex-direction: column; gap: 5px; }
+.filter-label { font-size: 11px; font-weight: bold; color: #666; text-transform: uppercase; }
+
+/* Input Styles */
+.form-control { padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px; outline: none; }
+.form-control:focus { border-color: var(--primary-color); }
+select.form-control { min-width: 150px; background-color: #fff; cursor: pointer; }
+input[type="date"].form-control { color: #555; }
+
+/* Search Input (Updated to fit container) */
+.search-wrapper { flex: 1; }
+.search-input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px; }
 
 /* Table Dashboard */
 .table-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; }
@@ -57,7 +76,7 @@ table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 .type-gen { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; } 
 .type-pre { background: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe; } 
 
-/* --- 2. PREVIEW MODAL STYLE --- */
+/* --- MODAL & PDF STYLES (Sama seperti sebelumnya) --- */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 9000; backdrop-filter: blur(2px); }
 .modal-box { background: #fff; width: 1100px; max-width: 95%; height: 90vh; display: flex; flex-direction: column; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
 .modal-header { padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
@@ -84,20 +103,13 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 .btn-approve { background: #10b981; }
 .btn-pdf { background: #2563eb; }
 
-/* --- 3. HIDDEN PDF STYLE --- */
+/* PDF Hidden */
 #pdf-hidden-container { position: absolute; left: -9999px; top: 0; }
-#pdfContent { 
-    background: #fff; width: 100%; padding: 0; 
-    font-family: "Arial", sans-serif; color: #000; 
-}
-
-/* Header PDF */
+#pdfContent { background: #fff; width: 100%; padding: 0; font-family: "Arial", sans-serif; color: #000; }
 .pdf-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
 .pdf-title { font-size: 32px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-top: 5px; color:#000; }
 .company-details { text-align: right; font-size: 10px; color: #333; line-height: 1.4; }
 .company-name { font-weight: 700; font-size: 12px; color: #F59E0B; text-transform: uppercase; margin-bottom: 2px; }
-
-/* Info PDF */
 .pdf-info { display: flex; justify-content: space-between; margin-bottom: 25px; }
 .bill-to { width: 60%; }
 .pdf-bill-label { font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; color:#000; }
@@ -106,93 +118,28 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 .meta-data { width: 35%; }
 .pdf-meta-row { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 4px; width: 100%; }
 .pdf-meta-key { font-weight: 700; color:#000; }
-
-/* TABLE PDF */
 table.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-table.pdf-table th { 
-    font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 8px 4px; color: #000;
-    border-top: 1px solid #000; border-bottom: 1px solid #000; letter-spacing: 0.5px;
-}
+table.pdf-table th { font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 8px 4px; color: #000; border-top: 1px solid #000; border-bottom: 1px solid #000; letter-spacing: 0.5px; }
 table.pdf-table tr { page-break-inside: avoid; page-break-after: auto; }
 table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
 .item-name-main { font-weight: 700; color: #000; display:block; font-size: 11px; }
 .item-sub { font-size: 9px; color: #666; font-weight: normal; margin-top: 2px; display: block; }
-
-/* MIDDLE SECTION: NOTES (LEFT) & TOTALS (RIGHT) */
-.pdf-middle-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-top: 10px;
-    page-break-inside: avoid;
-}
-
-/* Notes Area */
+.pdf-middle-section { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 10px; page-break-inside: avoid; }
 .pdf-notes-box { width: 60%; padding-right: 20px; }
 .pdf-notes-label { font-size: 10px; font-weight: 700; margin-bottom: 2px; display:block; }
 .pdf-notes-content { font-size: 10px; color: #555; line-height: 1.4; border: 1px dashed #ccc; padding: 5px; border-radius: 4px; min-height: 30px; }
-
-/* Total Area */
 .pdf-total-box { width: 35%; }
 .pdf-total-row { display: flex; justify-content: space-between; font-size: 10px; padding: 4px 0; color: #333; }
-.pdf-total-row.grand { 
-    font-size: 15px; font-weight: 700; color: #116999; margin-top: 10px; padding-top: 10px; border-top: 1px dotted #999; 
-}
-
-/* --- SIGNATURE SECTION --- */
-.pdf-signature-wrapper {
-    margin-top: 25px;
-    display: flex;
-    justify-content: space-between;
-    page-break-inside: avoid;
-    padding-bottom: 10px;
-}
-.sig-box {
-    width: 200px;
-    text-align: center;
-}
-.sig-title {
-    font-size: 11px;
-    font-weight: 700;
-    color: #000;
-    margin-bottom: 45px; /* Jarak untuk tanda tangan */
-}
-.sig-name {
-    font-size: 11px;
-    font-weight: 700;
-    color: #000;
-    border-top: 1px solid #333;
-    display: inline-block;
-    padding-top: 4px;
-    min-width: 140px;
-}
-
-/* --- PAYMENT FOOTER --- */
-.pdf-payment-wrapper {
-    margin-top: 15px; 
-    border-top: 1px solid #ccc;
-    padding-top: 8px;
-    page-break-inside: avoid;
-}
-.pdf-payment-title {
-    font-size: 11px;
-    font-weight: 700;
-    margin-bottom: 5px;
-    color: #333;
-    display: block;
-}
-.pdf-payment-container {
-    display: flex;
-    gap: 40px; 
-}
-.pdf-bank-detail {
-    font-size: 10px;
-    line-height: 1.4;
-    color: #444;
-}
+.pdf-total-row.grand { font-size: 15px; font-weight: 700; color: #116999; margin-top: 10px; padding-top: 10px; border-top: 1px dotted #999; }
+.pdf-signature-wrapper { margin-top: 25px; display: flex; justify-content: space-between; page-break-inside: avoid; padding-bottom: 10px; }
+.sig-box { width: 200px; text-align: center; }
+.sig-title { font-size: 11px; font-weight: 700; color: #000; margin-bottom: 45px; }
+.sig-name { font-size: 11px; font-weight: 700; color: #000; border-top: 1px solid #333; display: inline-block; padding-top: 4px; min-width: 140px; }
+.pdf-payment-wrapper { margin-top: 15px; border-top: 1px solid #ccc; padding-top: 8px; page-break-inside: avoid; }
+.pdf-payment-title { font-size: 11px; font-weight: 700; margin-bottom: 5px; color: #333; display: block; }
+.pdf-payment-container { display: flex; gap: 40px; }
+.pdf-bank-detail { font-size: 10px; line-height: 1.4; color: #444; }
 .bank-name { font-weight: 700; color: #000; }
-
-
 .skeleton { height: 20px; background: #eee; width: 100%; border-radius: 4px; animation: pulse 1s infinite; }
 @keyframes pulse { 0% {opacity: 0.6;} 50% {opacity: 1;} 100% {opacity: 0.6;} }
 </style>
@@ -209,13 +156,44 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
 
 <div class="page-wrap">
     <h2>Review Penjualan</h2>
+    
     <div class="category-tabs">
         <button class="cat-btn active" onclick="setFilter('All')">All Order</button>
         <button class="cat-btn" onclick="setFilter('Awaiting Approval')">Awaiting Approval</button>
         <button class="cat-btn" onclick="setFilter('Approved Order')">Approved Order</button>
         <button class="cat-btn" onclick="setFilter('Cancel Order')">Cancelled</button>
     </div>
-    <input type="text" id="searchInput" class="search-input" placeholder="Cari No Order / Customer..." onkeyup="renderTable()">
+
+    <div class="filter-container">
+        <div class="search-wrapper">
+            <span class="filter-label">Search</span>
+            <input type="text" id="searchInput" class="search-input" placeholder="Cari No Order / Customer..." onkeyup="renderTable()">
+        </div>
+        
+        <div class="filter-group">
+            <span class="filter-label">Order Type</span>
+            <select id="typeFilter" class="form-control" onchange="renderTable()">
+                <option value="All">All Types</option>
+                <option value="General Order">General Order</option>
+                <option value="Pre Order">Pre Order</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <span class="filter-label">Start Date</span>
+            <input type="date" id="startDate" class="form-control" onchange="renderTable()">
+        </div>
+
+        <div class="filter-group">
+            <span class="filter-label">End Date</span>
+            <input type="date" id="endDate" class="form-control" onchange="renderTable()">
+        </div>
+        
+        <div class="filter-group" style="justify-content: flex-end;">
+            <button onclick="resetFilters()" style="padding: 10px; background: #eee; border:1px solid #ccc; border-radius:5px; cursor:pointer;">Reset</button>
+        </div>
+    </div>
+
     <div class="table-card">
         <table class="xero-table">
             <thead>
@@ -232,7 +210,7 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
             </thead>
             <tbody id="tableBody"></tbody>
         </table>
-        <div id="emptyState" style="display:none; text-align:center; padding:50px; color:#999;">Tidak ada data.</div>
+        <div id="emptyState" style="display:none; text-align:center; padding:50px; color:#999;">Tidak ada data yang cocok dengan filter.</div>
     </div>
 </div>
 
@@ -294,7 +272,6 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
             <thead><tr><th class="t-left" style="width:25%;">NAMA BARANG</th><th class="t-center" style="width:8%;">METER</th><th class="t-center" style="width:8%;">QTY</th><th class="t-center" style="width:10%;">SATUAN</th><th class="t-right" style="width:13%;">HARGA SATUAN</th><th class="t-right" style="width:12%;">DISKON</th><th class="t-right" style="width:12%;">HARGA NET</th><th class="t-right" style="width:12%;">TOTAL</th></tr></thead>
             <tbody id="pdfItemsBody"></tbody>
         </table>
-        
         <div class="pdf-middle-section">
             <div class="pdf-notes-box">
                 <span class="pdf-notes-label">CATATAN:</span>
@@ -306,7 +283,6 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
                 <div class="pdf-total-row grand"><span>Total</span><span id="pdfTotal">0</span></div>
             </div>
         </div>
-
         <div class="pdf-signature-wrapper">
             <div class="sig-box">
                 <div class="sig-title">Penerima</div>
@@ -317,7 +293,6 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
                 <div class="sig-name">CV. SUKSES JAYA MAKMUR LESTARI</div>
             </div>
         </div>
-
         <div class="pdf-payment-wrapper">
             <span class="pdf-payment-title">Informasi Pembayaran</span>
             <div class="pdf-payment-container">
@@ -333,7 +308,6 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 
@@ -354,17 +328,66 @@ async function fetchData() {
     } catch(e) { console.error(e); }
 }
 
+function parseDateStr(str) {
+    // Assumes format DD/MM/YYYY or YYYY-MM-DD
+    if(!str) return null;
+    if(str.includes('/')) {
+        const parts = str.split('/');
+        // parts[0]=DD, parts[1]=MM, parts[2]=YYYY
+        return new Date(parts[2], parts[1]-1, parts[0]);
+    }
+    return new Date(str);
+}
+
 function renderTable() {
     const tbody = document.getElementById('tableBody');
-    const search = document.getElementById('searchInput').value.toLowerCase();
+    const searchVal = document.getElementById('searchInput').value.toLowerCase();
+    const typeVal = document.getElementById('typeFilter').value;
+    const startVal = document.getElementById('startDate').value; // yyyy-mm-dd
+    const endVal = document.getElementById('endDate').value; // yyyy-mm-dd
+
     tbody.innerHTML = '';
+
     const filtered = allOrders.filter(o => {
+        // 1. Tab Status Filter
         if (currentFilter !== 'All') {
             if (currentFilter === 'Approved Order') {
                 if (o.status === 'Awaiting Approval' || o.status === 'Cancel Order') return false;
             } else if (o.status !== currentFilter) return false;
         }
-        return !search || JSON.stringify(o).toLowerCase().includes(search);
+
+        // 2. Search Text Filter
+        if (searchVal && !JSON.stringify(o).toLowerCase().includes(searchVal)) return false;
+
+        // 3. Type Filter
+        if (typeVal !== 'All') {
+            // Check if o.type contains 'Pre' for Pre Order or 'General' for General
+            // Case insensitive check
+            const oType = (o.type || "").toLowerCase();
+            const filterType = typeVal.toLowerCase();
+            if (filterType === 'pre order' && !oType.includes('pre')) return false;
+            if (filterType === 'general order' && oType.includes('pre')) return false; // Assume not pre is general
+        }
+
+        // 4. Date Range Filter
+        if (startVal || endVal) {
+            const orderDate = parseDateStr(o.date);
+            if(orderDate) {
+                if(startVal) {
+                    const s = new Date(startVal);
+                    // Reset jam agar perbandingan tanggal murni
+                    s.setHours(0,0,0,0); orderDate.setHours(0,0,0,0);
+                    if(orderDate < s) return false;
+                }
+                if(endVal) {
+                    const e = new Date(endVal);
+                    e.setHours(0,0,0,0); orderDate.setHours(0,0,0,0);
+                    if(orderDate > e) return false;
+                }
+            }
+        }
+
+        return true;
     });
 
     if(filtered.length === 0) { document.getElementById('emptyState').style.display = 'block'; return; }
@@ -374,7 +397,9 @@ function renderTable() {
         let badge = 'badge-approve';
         if(o.status.includes('Cancel')) badge = 'badge-danger';
         if(o.status.includes('Completed') || o.status.includes('Production')) badge = 'badge-success';
-        let typeBadgeClass = 'type-gen'; if (o.type && o.type.toLowerCase().includes('pre')) typeBadgeClass = 'type-pre';
+        
+        let typeBadgeClass = 'type-gen'; 
+        if (o.type && o.type.toLowerCase().includes('pre')) typeBadgeClass = 'type-pre';
         let typeHtml = `<span class="type-badge ${typeBadgeClass}">${o.type || 'General'}</span>`;
 
         let tr = document.createElement('tr');
@@ -384,6 +409,14 @@ function renderTable() {
         tr.innerHTML = `<td><strong>${o.id}</strong></td><td style="text-align:center;">${typeHtml}</td><td>${o.customer}</td><td>${o.date}</td><td>${o.estDelivery}</td><td>${o.dueDate}</td><td style="text-align:right;"><strong>${fmtMoneySimple(o.grandTotal)}</strong></td><td style="text-align:center;"><span class="badge ${badge}">${o.status}</span></td>`;
         tbody.appendChild(tr);
     });
+}
+
+function resetFilters() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('typeFilter').value = 'All';
+    document.getElementById('startDate').value = '';
+    document.getElementById('endDate').value = '';
+    renderTable();
 }
 
 function setTxt(id, val) { const el = document.getElementById(id); if(el) el.textContent = val || "-"; }
@@ -405,7 +438,7 @@ function openModal(id) {
             setTxt(prefix+'CP', o.cp); setTxt(prefix+'NPWP', o.npwp); setTxt(prefix+'Notes', o.notes); setTxt(prefix+'OrderNo', o.id);
         });
 
-        // Update nama penerima di kolom tanda tangan PDF sesuai nama customer
+        // Update nama penerima di kolom tanda tangan PDF
         setTxt('pdfSigCustName', o.customer);
 
         const webTbody = document.getElementById('webItemsBody');
