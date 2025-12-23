@@ -151,6 +151,7 @@ table.xero-table tr:hover { background-color: #f9fafb; }
         <h2 style="text-align:center; margin-bottom:5px;" id="pdfTitle">SURAT</h2>
         <div style="text-align:center; font-size:10px; margin-bottom:20px;">CV. SUKSES JAYA MAKMUR LESTARI</div>
         <div style="border-bottom:2px solid #000; margin-bottom:15px;"></div>
+        
         <table style="width:100%; margin-bottom:15px;">
             <tr>
                 <td style="width:60%"><strong>Kepada Yth:</strong><br><span id="pdfCustomer"></span></td>
@@ -160,6 +161,7 @@ table.xero-table tr:hover { background-color: #f9fafb; }
                 </td>
             </tr>
         </table>
+
         <table style="width:100%; border-collapse:collapse; border:1px solid #000;">
             <thead>
                 <tr style="background:#eee;">
@@ -173,22 +175,30 @@ table.xero-table tr:hover { background-color: #f9fafb; }
             </thead>
             <tbody id="pdfItemsBody"></tbody>
         </table>
+
         <div style="margin-top:40px; display:flex; justify-content:space-between; text-align:center;">
-            <div style="width:30%;"><br><br><br><div style="border-top:1px solid #000; width:80%; margin:0 auto;" id="pdfSign1">Dibuat Oleh</div></div>
-            <div style="width:30%;"><br><br><br><div style="border-top:1px solid #000; width:80%; margin:0 auto;" id="pdfSign2">Diketahui</div></div>
+            <div style="width:30%;">
+                <br><br><br>
+                <div style="border-top:1px solid #000; width:80%; margin:0 auto;" id="pdfSign1">Dibuat Oleh</div>
+            </div>
+            <div style="width:30%;">
+                <br><br><br>
+                <div style="border-top:1px solid #000; width:80%; margin:0 auto;" id="pdfSign2">Diketahui</div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-// --- CONFIG ---
-const BASE_URL = "https://script.google.com/macros/s/AKfycbzRxk60S7_NFqe1T5HIhMG26hH3-bpI1dkZWFm0uC3EprZiecd1Aa3qAfe43rgFC-ua4w/exec"; 
+// --- CONFIG (GANTI DENGAN URL DEPLOY TERBARU ANDA) ---
+const BASE_URL = "https://script.google.com/macros/s/AKfycbxksKfVA9jDqHbgSdZ0EZg9tt3F4zoLZk_pRDylBMLQyCJ5wBZwzkD215-Bw3HKLjbVQg/exec"; 
+
 let currentOrders = {}; 
 let activeOrderId = null;
 let currentTab = 'Awaiting';
 const TYPE_CODES = { 'Custom': 'CS', 'Plat': 'PL' };
 
-// --- GLOBAL HELPERS (Fix for undefined errors) ---
+// --- GLOBAL HELPERS (WAJIB ADA DI ATAS) ---
 function closeModal() { 
     document.getElementById('setupModal').style.display = 'none'; 
 }
@@ -305,16 +315,13 @@ function openSetup(orderId) {
         
         const initialTotalM = (parseFloat(item.meter) * parseInt(item.qty)).toFixed(2);
         let nameHtml = `<strong>${item.item}</strong><br><small style="color:#888;">${item.type}</small>`;
-        
-        // --- LOGIC NON-SPANDEK: TETAP RENDER VALUE TAPI DISABLED ---
         let isEditable = (currentTab === 'Awaiting' || currentTab === 'In Process');
         let spandekClass = isSpandek ? 'prod-input' : 'prod-input non-spandek-input';
         let readonlyAttr = isSpandek && isEditable ? '' : 'disabled';
         
-        // Value for selects
+        // --- Perbaikan Select Value: Pakai 'selected' attribute ---
         let valMesin = item.machine || "";
         let valKPC = item.kpc || "";
-        // Extract Type from WE Code if possible or default
         let valType = "Custom"; 
         if(item.we && item.we.includes('_PL_')) valType = "Plat";
 
@@ -405,7 +412,7 @@ function triggerAction(actionType) {
     if (msg && func) showConfirm(msg, func);
 }
 
-// --- LOGIC SPLIT ---
+// --- LOGIC SPLIT & ACTIONS (SAMA) ---
 function splitRow(btn, groupId) {
     const originalRow = btn.closest('tr');
     if (!originalRow.classList.contains('disabled-row')) {
@@ -423,16 +430,11 @@ function splitRow(btn, groupId) {
     qtyInput.value = 0; qtyInput.disabled = false;
     newRow.querySelectorAll('select').forEach(s => { s.value = ""; s.disabled = false; s.onchange = function(){ generateWE(this); } });
     newRow.querySelector('.we-code').value = "";
-    
-    if(currentTab === 'In Process') {
-        const newCb = newRow.querySelector('.check-production');
-        if(newCb) { newCb.disabled = false; newCb.checked = false; newCb.onchange = checkAllDone; }
-    }
-
+    const newCb = newRow.querySelector('.check-production');
+    if(newCb) { newCb.disabled = false; newCb.checked = false; newCb.onchange = checkAllDone; }
     newRow.querySelector('.target-qty').parentElement.innerHTML = '<small>(Split)</small>';
     const btnContainer = newRow.querySelector('.btn-split').parentElement;
     btnContainer.innerHTML = `<button class="btn-sm btn-remove" onclick="removeSplit(this, ${groupId})"><i class="fas fa-trash"></i></button>`;
-    
     const tbody = originalRow.parentNode;
     const groupRows = tbody.querySelectorAll(`tr[data-id="${groupId}"]`);
     groupRows[groupRows.length-1].after(newRow);
@@ -491,7 +493,6 @@ function validateQty(groupId) {
     return !isErr;
 }
 
-// --- SUBMIT ---
 async function submitProduction(mode) {
     if(document.getElementById('validationMsg').style.display === 'block') return alert("Perbaiki error Qty!");
     const rows = document.querySelectorAll('#setupBody tr:not(.disabled-row)');
@@ -500,9 +501,7 @@ async function submitProduction(mode) {
         const type = r.dataset.type;
         const q = r.querySelector('.qty-input')?.value;
         let item = { originalData: r.dataset.original, qty: q, isSplit: r.classList.contains('split-row') };
-        if(currentTab === 'In Process') {
-            item.isFinished = r.querySelector('.check-production')?.checked || false;
-        }
+        if(currentTab === 'In Process') item.isFinished = r.querySelector('.check-production')?.checked || false;
         if(type === 'spandek') {
             const m = r.querySelector('.machine-select').value;
             const k = r.querySelector('.kpc-select').value;
@@ -555,40 +554,22 @@ function generatePDF(type) {
         let grouped = {};
         o.items.forEach(item => {
             let key = `${item.item}_${item.meter}_${item.type}`;
-            if (!grouped[key]) {
-                grouped[key] = { ...item, qty: 0, we: '', machine: '', kpc: '' }; 
-            }
+            if (!grouped[key]) { grouped[key] = { ...item, qty: 0, we: '', machine: '', kpc: '' }; }
             grouped[key].qty += parseInt(item.qty);
         });
         itemsToPrint = Object.values(grouped);
-    } else {
-        itemsToPrint = o.items; 
-    }
+    } else { itemsToPrint = o.items; }
 
     const tbody = document.getElementById('pdfItemsBody');
     tbody.innerHTML = '';
     itemsToPrint.forEach((i, idx) => {
         let weCell = (type === 'SPK') ? `<td style="border:1px solid #000; padding:5px;">${i.we||'-'}</td>` : '';
         let detail = (type === 'SPK') ? `${i.machine||'-'} / ${i.kpc||'-'}` : ''; 
-        tbody.innerHTML += `<tr>
-            <td style="border:1px solid #000; text-align:center; padding:5px;">${idx+1}</td>
-            <td style="border:1px solid #000; padding:5px;">${i.item}<br><small>${i.type}</small></td>
-            <td style="border:1px solid #000; text-align:center; padding:5px;">${i.meter}</td>
-            <td style="border:1px solid #000; text-align:center; padding:5px;">${i.qty}</td>
-            <td style="border:1px solid #000; padding:5px;">${detail}</td>
-            ${weCell}
-        </tr>`;
+        tbody.innerHTML += `<tr><td style="border:1px solid #000; text-align:center; padding:5px;">${idx+1}</td><td style="border:1px solid #000; padding:5px;">${i.item}<br><small>${i.type}</small></td><td style="border:1px solid #000; text-align:center; padding:5px;">${i.meter}</td><td style="border:1px solid #000; text-align:center; padding:5px;">${i.qty}</td><td style="border:1px solid #000; padding:5px;">${detail}</td>${weCell}</tr>`;
     });
 
     const el = document.getElementById('pdfContent');
-    const opt = { 
-        margin: [0.3, 0.3], 
-        filename: `${type}_${activeOrderId}.pdf`, 
-        image: { type: 'jpeg', quality: 0.98 }, 
-        html2canvas: { scale: 2 }, 
-        jsPDF: { unit: 'in', format: 'a5', orientation: 'landscape' } 
-    };
-    html2pdf().set(opt).from(el).save();
+    html2pdf().set({ margin: [0.3, 0.3], filename: `${type}_${activeOrderId}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a5', orientation: 'landscape' } }).from(el).save();
 }
 </script>
 </body>
