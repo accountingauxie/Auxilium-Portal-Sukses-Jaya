@@ -6,8 +6,12 @@
     <title>Auxilium - Daftar Tagihan</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         tailwind.config = {
@@ -43,6 +47,24 @@
         .badge-proses { background-color: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
         .badge-sukses { background-color: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
         .badge-gagal { background-color: #ffe4e6; color: #be123c; border: 1px solid #fda4af; }
+
+        /* SweetAlert Customization to match Theme */
+        div:where(.swal2-container) {
+            z-index: 9999 !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+        .swal2-popup {
+            border-radius: 1rem !important;
+            padding: 2rem !important;
+        }
+        .swal2-title {
+            font-size: 1.25rem !important;
+            color: #1e293b !important;
+        }
+        .swal2-html-container {
+            font-size: 0.95rem !important;
+            color: #64748b !important;
+        }
     </style>
 </head>
 <body class="text-slate-800 font-sans antialiased">
@@ -87,7 +109,7 @@
                 <span id="count-total" class="ml-1 bg-teal-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">0</span>
             </button>
 
-            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/CreateBill/index.html" class="bg-slate-50 px-5 py-3 rounded-t-xl font-bold text-sm flex items-center gap-2 border border-transparent border-b border-b-slate-200 min-w-max text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition relative top-[1px] group">
+            <a href="#" class="bg-slate-50 px-5 py-3 rounded-t-xl font-bold text-sm flex items-center gap-2 border border-transparent border-b border-b-slate-200 min-w-max text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition relative top-[1px] group">
                 <div class="bg-slate-200 text-slate-600 w-6 h-6 flex items-center justify-center rounded text-xs group-hover:bg-slate-300 transition">
                     <i class="fas fa-folder-open"></i>
                 </div>
@@ -110,7 +132,7 @@
         </div>
 
         <div id="loading" class="flex flex-col items-center justify-center py-20">
-            <i class="fa-solid fa-arrow-rotate-right text-3xl text-slate-300 mb-3"></i>
+            <i class="fa-solid fa-arrow-rotate-right text-3xl text-slate-300 mb-3 animate-spin"></i>
             <p class="text-slate-500 text-sm font-medium">Memuat Data...</p>
         </div>
 
@@ -273,9 +295,9 @@
                     </button>
                 </div>
             </div>
-
+            
             <div id="modalLoading" class="hidden absolute inset-0 bg-white/90 backdrop-blur-[1px] flex flex-col items-center justify-center z-50 rounded-2xl">
-                <i class="fa-solid fa-arrow-rotate-right text-4xl text-primary mb-4"></i>
+                <i class="fa-solid fa-arrow-rotate-right text-4xl text-primary mb-4 animate-spin"></i>
                 <p class="font-bold text-slate-700 animate-pulse">Processing...</p>
             </div>
         </div>
@@ -321,15 +343,6 @@
         </div>
     </div>
 
-    <div id="notificationModal" class="fixed inset-0 z-[80] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden p-6 text-center border border-slate-100">
-            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-teal-50 mb-5 border border-teal-100"><i class="fas fa-info-circle text-3xl text-primary"></i></div>
-            <h3 class="text-lg font-bold text-slate-800 mb-2">Informasi</h3>
-            <p id="notif-message" class="text-slate-500 mb-6 text-sm leading-relaxed">Message</p>
-            <button onclick="closeNotification()" class="w-full py-2.5 px-4 bg-primary hover:bg-primary-hover text-white font-bold rounded-xl shadow-lg transition">OK</button>
-        </div>
-    </div>
-
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbxeoVZiywpVzH5cdgIn4a4pDY8ZlvUlkCvZ1iwRFfi_KNkZZ_99a_EvdQIE4qpX_ZzFyg/exec";
         
@@ -342,6 +355,19 @@
         let currentFilterStatus = 'all';
         let originalInvNumber = ""; 
 
+        // -- MODERN NOTIFICATION CONFIG --
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
         window.onload = fetchData;
 
         async function fetchData() {
@@ -353,7 +379,7 @@
                 applyFilters();
             } catch (error) {
                 console.error(error);
-                showNotification("Gagal memuat data. Periksa koneksi internet.");
+                showNotification("Gagal memuat data. Periksa koneksi internet.", 'error');
             } finally {
                 toggleLoading(false);
             }
@@ -373,7 +399,6 @@
                 } else if (currentFilterStatus === 'rejected') {
                     matchStatus = statusLower.includes('rejected') || statusLower.includes('batal');
                 } else if (currentFilterStatus === 'xero_group') {
-                    // Filter "Impor Xero" mencakup: Siap Impor, Proses Impor, Gagal Impor, Sukses Impor
                     matchStatus = statusLower.includes('siap impor') || statusLower.includes('proses impor') || statusLower.includes('gagal impor') || statusLower.includes('sukses impor');
                 }
                 
@@ -438,7 +463,6 @@
                 // --- ACTION BUTTON ICONS (CUSTOM LOGIC) ---
                 let actionButtons = '';
                 
-                // View Button (Always visible)
                 const viewBtn = `
                     <button onclick="openBillModal('${po.uniqueKey}', true)" class="w-8 h-8 rounded border border-slate-200 text-slate-400 hover:text-primary hover:bg-teal-50 transition shadow-sm flex items-center justify-center" title="Lihat Detail">
                         <i class="fas fa-eye"></i>
@@ -446,7 +470,6 @@
                 `;
 
                 if (statusLower.includes('rejected')) {
-                    // Rejected: View + Reverse (Undo)
                     actionButtons = `
                         ${viewBtn}
                         <button onclick="openBillModal('${po.uniqueKey}')" class="w-8 h-8 rounded bg-yellow-50 border border-yellow-200 text-yellow-600 hover:bg-yellow-100 transition shadow-sm flex items-center justify-center" title="Revisi / Reverse">
@@ -454,7 +477,6 @@
                         </button>
                     `;
                 } else if (statusLower.includes('siap impor') || statusLower.includes('gagal impor')) {
-                    // Siap/Gagal Impor: View + Sync
                     actionButtons = `
                         ${viewBtn}
                         <button onclick="syncToXero('${po.id}', '${po.invNumber}')" class="w-8 h-8 rounded bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-100 transition shadow-sm flex items-center justify-center" title="Sinkronisasi ke Xero">
@@ -462,7 +484,6 @@
                         </button>
                     `;
                 } else if (statusLower.includes('proses impor') || statusLower.includes('sukses impor')) {
-                    // Proses/Sukses: View + Lock
                     actionButtons = `
                         ${viewBtn}
                         <button disabled class="w-8 h-8 rounded bg-slate-100 border border-slate-200 text-slate-400 cursor-not-allowed flex items-center justify-center" title="Terkunci">
@@ -470,7 +491,6 @@
                         </button>
                     `;
                 } else {
-                    // Pending/Billed: View + Edit + Approve (if invoice exists)
                     let editIcon = po.invNumber ? "fa-pencil" : "fa-plus"; 
                     
                     let approveBtn = '';
@@ -513,15 +533,48 @@
             });
         }
 
-        // --- APPROVE FUNCTION ---
+        // --- APPROVE FUNCTION WITH SWEETALERT2 ---
         async function approveBill(uniqueKey, idPO, invNumber) {
             if(!invNumber || invNumber === '-' || invNumber === 'null') {
-                showNotification("Tagihan belum di-entry (Invoice No kosong). Silakan entry dulu.");
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Data Belum Lengkap',
+                    text: 'Tagihan belum di-entry (Invoice No kosong). Silakan entry dulu.',
+                    confirmButtonColor: '#008080'
+                });
                 return;
             }
 
-            if(confirm(`Apakah Anda yakin ingin menyetujui tagihan ${invNumber}? Status akan berubah menjadi 'Siap Impor' dan data terkunci.`)) {
-                document.getElementById('modalLoading').classList.remove('hidden'); 
+            const result = await Swal.fire({
+                title: 'Setujui Tagihan?',
+                html: `
+                    <div class="text-left text-sm text-slate-600">
+                        Apakah Anda yakin ingin menyetujui tagihan <span class="font-bold text-slate-800">${invNumber}</span>?
+                        <br><br>
+                        <ul class="list-disc pl-4 text-xs space-y-1">
+                            <li>Status berubah menjadi <span class="font-bold text-blue-600">Siap Impor</span></li>
+                            <li>Data akan <span class="font-bold text-red-500">Terkunci</span></li>
+                        </ul>
+                    </div>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#008080',
+                cancelButtonColor: '#cbd5e1',
+                confirmButtonText: '<i class="fas fa-check mr-1"></i> Ya, Setujui',
+                cancelButtonText: 'Batal',
+                reverseButtons: true,
+                focusCancel: true
+            });
+
+            if(result.isConfirmed) {
+                // Show Loading Alert
+                Swal.fire({
+                    title: 'Memproses...',
+                    text: 'Mohon tunggu sebentar',
+                    allowOutsideClick: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
                 
                 const payload = {
                     action: 'approve_bill',
@@ -534,23 +587,49 @@
                     const json = await res.json();
                     
                     if(json.status === 'success') {
-                        showNotification(json.message);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: json.message,
+                            confirmButtonColor: '#008080',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
                         fetchData(); 
                     } else {
-                        showNotification("Gagal: " + json.message);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: json.message,
+                            confirmButtonColor: '#EF4444'
+                        });
                     }
                 } catch(e) {
-                    showNotification("Error koneksi: " + e.message);
-                } finally {
-                    document.getElementById('modalLoading').classList.add('hidden');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error Koneksi',
+                        text: e.message,
+                        confirmButtonColor: '#EF4444'
+                    });
                 }
             }
         }
 
-        // --- SYNC TO XERO FUNCTION ---
+        // --- SYNC TO XERO FUNCTION WITH SWEETALERT2 ---
         async function syncToXero(idPO, invNumber) {
-            if(confirm(`Apakah Anda yakin ingin mengimpor tagihan ${invNumber} ke Xero?`)) {
-                document.getElementById('modalLoading').classList.remove('hidden');
+            const result = await Swal.fire({
+                title: 'Sinkronisasi Xero',
+                text: `Apakah Anda yakin ingin mengimpor tagihan ${invNumber} ke Xero?`,
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#4F46E5', // Xero color
+                cancelButtonColor: '#cbd5e1',
+                confirmButtonText: 'Ya, Impor Sekarang',
+                cancelButtonText: 'Batal'
+            });
+
+            if(result.isConfirmed) {
+                Swal.fire({ title: 'Menghubungkan...', didOpen: () => Swal.showLoading() });
                 
                 const payload = {
                     action: 'sync_xero',
@@ -563,15 +642,18 @@
                     const json = await res.json();
                     
                     if(json.status === 'success') {
-                        showNotification("Sinkronisasi dimulai. Status berubah menjadi 'Proses Impor'.");
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Proses Dimulai',
+                            text: "Status berubah menjadi 'Proses Impor'.",
+                            confirmButtonColor: '#008080'
+                        });
                         fetchData(); 
                     } else {
-                        showNotification("Gagal Sinkronisasi: " + json.message);
+                        Swal.fire({ icon: 'error', title: 'Gagal', text: json.message });
                     }
                 } catch(e) {
-                    showNotification("Error koneksi: " + e.message);
-                } finally {
-                    document.getElementById('modalLoading').classList.add('hidden');
+                    Swal.fire({ icon: 'error', title: 'Error', text: e.message });
                 }
             }
         }
@@ -658,8 +740,19 @@
             document.getElementById('billModal').classList.remove('hidden');
         }
 
-        function enableRevision() {
-            if(confirm("Apakah Anda yakin ingin merevisi data ini? Status akan berubah setelah disimpan.")) {
+        async function enableRevision() {
+            const result = await Swal.fire({
+                title: 'Buka Revisi?',
+                text: "Apakah Anda yakin ingin merevisi data ini? Status akan berubah setelah disimpan.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#008080',
+                cancelButtonColor: '#cbd5e1',
+                confirmButtonText: 'Ya, Revisi',
+                cancelButtonText: 'Batal'
+            });
+
+            if(result.isConfirmed) {
                 document.getElementById('locked-banner').classList.add('hidden');
                 document.querySelectorAll('.bill-input').forEach(el => el.disabled = false);
                 document.querySelectorAll('.action-btn').forEach(el => el.disabled = false);
@@ -740,8 +833,22 @@
             }
         }
 
-        function deleteItem(index) {
-            if(confirm("Hapus baris ini?")) {
+        async function deleteItem(index) {
+            const result = await Swal.fire({
+                title: 'Hapus Item?',
+                text: "Item ini akan dihapus dari daftar.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#cbd5e1',
+                confirmButtonText: 'Ya, Hapus',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    popup: 'text-xs' // make it smaller
+                }
+            });
+
+            if(result.isConfirmed) {
                 currentItems.splice(index, 1);
                 renderBillItems();
             }
@@ -792,7 +899,7 @@
 
         async function openProductModal() {
             const vendorName = document.getElementById('bill-vendor').value;
-            if(!vendorName) { showNotification("Vendor belum terisi."); return; }
+            if(!vendorName) { showNotification("Vendor belum terisi.", 'warning'); return; }
 
             document.getElementById('productModal').classList.remove('hidden');
             document.getElementById('product-vendor-filter').innerText = vendorName;
@@ -891,7 +998,7 @@
 
         async function submitBill(customStatus = null, overrideNotes = null) {
             const invNum = document.getElementById('bill-inv-number').value;
-            if(!invNum) { showNotification("Invoice Number wajib diisi!"); return; }
+            if(!invNum) { showNotification("Invoice Number wajib diisi!", 'warning'); return; }
 
             // Gunakan overrideNotes (dari popup reject) jika ada, jika tidak pakai main notes
             let finalNotes = overrideNotes !== null ? overrideNotes : document.getElementById('bill-note').value;
@@ -908,9 +1015,8 @@
                     invDate: document.getElementById('bill-date').value,
                     dueDate: document.getElementById('bill-due-date').value,
                     taxMode: document.getElementById('tax-mode').value,
-                    // FORCE CLOSE REMOVED
                     customStatus: customStatus, 
-                    notes: finalNotes, // Kirim notes yang benar
+                    notes: finalNotes, 
                     items: activeItems,
                     existingFileUrl: currentFileUrl
                 }
@@ -939,22 +1045,31 @@
                 const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
                 const json = await res.json();
                 if(json.status === 'success') {
-                    showNotification(json.message);
+                    showNotification(json.message, 'success');
                     closeModal();
                     fetchData();
                 } else {
-                    showNotification("Gagal: " + json.message);
+                    showNotification("Gagal: " + json.message, 'error');
                 }
             } catch(e) {
-                showNotification("Error koneksi: " + e.message);
+                showNotification("Error koneksi: " + e.message, 'error');
             } finally {
                 document.getElementById('modalLoading').classList.add('hidden');
             }
         }
 
         function closeModal() { document.getElementById('billModal').classList.add('hidden'); }
-        function showNotification(msg) { document.getElementById('notif-message').innerText = msg; document.getElementById('notificationModal').classList.remove('hidden'); }
-        function closeNotification() { document.getElementById('notificationModal').classList.add('hidden'); }
+        
+        function showNotification(msg, type = 'info') {
+            // Mapping simple keywords to icon types if not provided
+            if(type === 'info') {
+                if(msg.toLowerCase().includes('gagal') || msg.toLowerCase().includes('error')) type = 'error';
+                else if (msg.toLowerCase().includes('berhasil') || msg.toLowerCase().includes('sukses')) type = 'success';
+                else if (msg.toLowerCase().includes('wajib')) type = 'warning';
+            }
+            Toast.fire({ icon: type, title: msg });
+        }
+        
         function toggleLoading(show) { document.getElementById('loading').style.display = show ? 'flex' : 'none'; }
         function formatRupiah(n) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n); }
         function formatDate(d) { return d ? new Date(d).toLocaleDateString('id-ID') : '-'; }
