@@ -59,7 +59,7 @@ table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 .order-link { color: var(--primary-color); font-weight: bold; text-decoration: none; cursor: pointer; }
 .order-link:hover { text-decoration: underline; }
 
-/* STATUS BADGES (Pill Shape - Poin 4) */
+/* STATUS BADGES (Pill Shape) */
 .badge { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; display: inline-block; border: 1px solid transparent; letter-spacing: 0.5px; }
 .badge-awaiting { background: var(--orange-bg); color: var(--orange-text); border-color: #ffe8cc; }
 .badge-process { background: #e0f2fe; color: #0369a1; border-color: #bae6fd; }
@@ -71,14 +71,13 @@ table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 .prod-select { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; background: #fff; }
 .prod-input[readonly] { background-color: #eee; color: #666; }
 
-/* Non Spandek Style (Poin 2) */
+/* Non Spandek Style */
 .non-spandek-input { background-color: #f3f4f6 !important; border-color: #e5e7eb !important; color: #9ca3af !important; pointer-events: none; }
 
 .main-row { background-color: #fff; transition: 0.3s; }
 .split-row { background-color: #fffde7; } 
 .disabled-row { background-color: #f9fafb; color: #9ca3af; }
 .disabled-row input, .disabled-row select { background: #e5e7eb; border-color: #d1d5db; pointer-events: none; }
-/* Tombol split tetap aktif di main row agar bisa nambah line (Poin 4) */
 .disabled-row .btn-split { display: inline-block; pointer-events: auto; opacity: 1; }
 
 .btn { padding: 8px 16px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s; color: white; display: inline-flex; align-items: center; gap: 5px; }
@@ -208,13 +207,30 @@ table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 
 <script>
 // --- CONFIG ---
-const BASE_URL = "https://script.google.com/macros/s/AKfycbyynqUUyp5WGyQS7ZTnTwWmIOWLKhx0URcVqXT7XK0ilbqAWd7cYYcwATUjfe0_Exd36w/exec"; 
+const BASE_URL = "https://script.google.com/macros/s/AKfycbx3JZ1TpYZF36_PFO-rWjjX9IW49XXnS2yqitqks8tJOi28m0P3-NtbV5vtn02iFxvF3w/exec"; 
 let currentOrders = {}; 
 let activeOrderId = null;
 let currentTab = 'Awaiting';
 const TYPE_CODES = { 'Custom': 'CS', 'Plat': 'PL' };
 
 window.onload = () => switchTab('Awaiting');
+
+// --- HELPER FORMAT TANGGAL ---
+function fmtDate(val) {
+    if (!val) return "-";
+    const d = new Date(val);
+    if (isNaN(d.getTime())) return val;
+    return d.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function fmtTimestamp(val) {
+    if (!val) return "-";
+    const d = new Date(val);
+    if (isNaN(d.getTime())) return val;
+    // Format DD/MM/YYYY HH:mm:ss
+    return d.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }) + 
+           ' ' + d.toLocaleTimeString('id-ID', { hour12: false });
+}
 
 function switchTab(tabName) {
     currentTab = tabName;
@@ -251,7 +267,7 @@ function renderDashboard(data, status) {
 
     Object.keys(data).forEach(key => {
         const o = data[key];
-        // Poin 4: Status Badge Style
+        // Status Badge Style
         let badgeClass = 'badge-awaiting';
         if (o.status === 'In Process') badgeClass = 'badge-process';
         if (o.status === 'Completed Production') badgeClass = 'badge-completed';
@@ -263,8 +279,8 @@ function renderDashboard(data, status) {
             <td><a class="order-link" onclick="openSetup('${o.orderNo}')">${o.orderNo}</a></td>
             <td>${o.type}</td>
             <td>${o.customer}</td>
-            <td>${o.date}</td>
-            <td>${o.delivery}</td>
+            <td>${fmtDate(o.date)}</td>
+            <td>${fmtDate(o.delivery)}</td>
             <td><span class="badge ${badgeClass}">${o.status}</span></td>
             <td>${o.items.length} Items</td>
         `;
@@ -279,7 +295,7 @@ function openSetup(orderId) {
     document.getElementById('modalOrderNo').innerText = orderId;
     document.getElementById('modalCustomer').innerText = order.customer;
     
-    // Poin 6: Alert Text Beda jika In Process
+    // Alert Text Beda jika In Process
     const alertBox = document.getElementById('modalAlert');
     if (currentTab === 'In Process') {
         alertBox.innerHTML = '<i class="fas fa-edit"></i> <strong>Mode Edit:</strong> Anda dapat mengubah alokasi produksi. Pastikan update data setelah selesai.';
@@ -304,15 +320,15 @@ function openSetup(orderId) {
         
         const initialTotalM = (parseFloat(item.meter) * parseInt(item.qty)).toFixed(2);
 
-        // Poin 1: Style Nama Barang
+        // Style Nama Barang
         let nameHtml = `<strong>${item.item}</strong><br><small style="color:#888;">${item.type}</small>`;
 
-        // Poin 2: Non-Spandek Render Kolom tapi Disabled (Gray)
-        // Poin 6: Jika 'In Process', field enable (kecuali non-spandek)
+        // Non-Spandek Render Kolom tapi Disabled (Gray)
+        // Jika 'In Process', field enable (kecuali non-spandek)
         let isEditable = (currentTab === 'Awaiting' || currentTab === 'In Process');
         let spandekClass = isSpandek ? 'prod-input' : 'prod-input non-spandek-input';
         let readonlyAttr = isSpandek && isEditable ? '' : 'disabled';
-        let valKPC = isSpandek ? (item.kpc || '') : '-'; // Isi data jika ada (dari backend)
+        let valKPC = isSpandek ? (item.kpc || '') : '-'; 
         let valMesin = isSpandek ? (item.machine || '') : '-'; 
         
         // Render Baris
@@ -352,7 +368,6 @@ function openSetup(orderId) {
         if(isSpandek && item.machine) {
              tr.querySelector('.machine-select').value = item.machine;
              tr.querySelector('.kpc-select').value = item.kpc;
-             // Try to parse WE Code to set Type logic if possible, or default
         }
     });
 
@@ -467,7 +482,7 @@ function validateQty(groupId) {
     return !isErr;
 }
 
-// --- SUBMIT ACTIONS (Poin 3: Pop up confirm) ---
+// --- SUBMIT ACTIONS ---
 async function submitProduction(mode) {
     if(!confirm(mode === 'new' ? "Yakin ingin memproses produksi?" : "Simpan perubahan data produksi?")) return;
     if(document.getElementById('validationMsg').style.display === 'block') return alert("Perbaiki error Qty!");
@@ -529,7 +544,8 @@ function generatePDF(items) {
     const o = currentOrders[activeOrderId];
     document.getElementById('pdfOrderNo').innerText = activeOrderId;
     document.getElementById('pdfCustomer').innerText = o.customer;
-    document.getElementById('pdfDate').innerText = new Date().toLocaleDateString();
+    document.getElementById('pdfDate').innerText = fmtDate(o.date); // Use Order Date
+    document.getElementById('pdfEst').innerText = fmtDate(o.delivery); // Use Est Delivery
     const tbody = document.getElementById('pdfItemsBody');
     tbody.innerHTML = '';
     items.forEach(i => tbody.innerHTML += `<tr><td style="border:1px solid #000;">${i.name}</td><td style="border:1px solid #000; text-align:center;">${i.m}</td><td style="border:1px solid #000; text-align:center;">${i.q}</td><td style="border:1px solid #000;">${i.det}</td><td style="border:1px solid #000;">${i.we}</td></tr>`);
