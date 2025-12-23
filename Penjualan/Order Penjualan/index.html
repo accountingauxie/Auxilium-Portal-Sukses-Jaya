@@ -306,7 +306,7 @@ function showToast(msg, type="info") {
 function formatMoney(n) { return (Number(n)||0).toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2}); }
 function parseMoney(s) { return parseFloat((s||"").replace(/,/g,"")) || 0; }
 
-// === FUNGSI FORMAT ID (XXX) ===
+// === FUNGSI FORMAT ID (REVISI: POTONG PREFIX) ===
 function formatInvoiceID(dateVal, rawID) {
     let dateObj = new Date();
     if (dateVal) {
@@ -318,10 +318,19 @@ function formatInvoiceID(dateVal, rawID) {
     const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
     const dd = String(dateObj.getDate()).padStart(2, '0');
     
-    // Pastikan rawID memiliki 3 digit (Padding 001, 002, dst)
-    const paddedID = String(rawID).padStart(3, '0');
+    // Konversi rawID ke string
+    let seq = String(rawID);
 
-    return "INV" + yy + mm + dd + paddedID;
+    // Jika panjangnya lebih dari 3 digit (misal 251000006), potong 3 digit terakhir (006)
+    if(seq.length > 3) {
+        seq = seq.slice(-3);
+    } else {
+        // Jika kurang (misal 1), pad dengan 0 di depan (001)
+        seq = seq.padStart(3, '0');
+    }
+
+    // Format Akhir: INV + YYMMDD + XXX
+    return "INV" + yy + mm + dd + seq;
 }
 
 window.onload = async function () {
@@ -334,7 +343,7 @@ window.onload = async function () {
 
   document.getElementById("issueDate").addEventListener("change", calculateDueDate);
   
-  // Jika tanggal berubah, estimasi ID juga berubah
+  // Jika tanggal berubah, update tampilan ID
   document.getElementById("issueDate").addEventListener("change", fetchNextOrderID);
 
   await loadDropdowns();
@@ -352,9 +361,9 @@ async function fetchNextOrderID() {
     try {
         titleEl.textContent = "Memuat..."; 
         const res = await fetch(baseURL + "?action=getnextid");
-        const nextID = await res.text(); // Misalnya "1"
+        const nextID = await res.text(); // Server balikin ID mentah (misal: 251000006 atau 1)
         
-        // Format jadi INV251223001
+        // Format di sisi klien: INV251223006
         const formattedID = formatInvoiceID(issueDate, nextID);
         titleEl.textContent = "Order #" + formattedID; 
 
