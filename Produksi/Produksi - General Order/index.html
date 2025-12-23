@@ -7,75 +7,173 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-/* --- SYSTEM STYLE --- */
-:root { --primary: #116999; --bg: #f4f7f6; --text: #333; --red: #b91c1c; --green: #047857; --orange: #b75900; }
+/* --- 1. SYSTEM STYLE --- */
+:root { 
+    --primary-color: #116999; 
+    --bg-color: #f4f7f6; 
+    --text-color: #333; 
+    --red-bg: #fee2e2; 
+    --red-text: #991b1b;
+}
+
 * { box-sizing: border-box; }
-body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background: var(--bg); color: var(--text); }
+body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background: var(--bg-color); color: var(--text-color); }
 
 /* --- NAVBAR --- */
-.aux-navbar { background: #fff; height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; box-shadow: 0 1px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
-.aux-logo img { height: 40px; }
-.aux-menu { display: flex; gap: 10px; height: 100%; align-items: center; }
-.aux-link { text-decoration: none; color: #666; font-weight: 600; padding: 8px 14px; border-radius: 6px; }
-.aux-link.active { color: var(--primary); background: #eff8ff; }
+.aux-navbar {
+    background-color: #ffffff;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+    position: sticky; top: 0; 
+    z-index: 100;
+}
+.aux-logo img { height: 40px; width: auto; display: block; }
+.aux-menu { display: flex; gap: 10px; align-items: center; height: 100%; }
+.nav-item { position: relative; height: 100%; display: flex; align-items: center; }
+.aux-link { text-decoration: none; color: #666; font-weight: 600; font-size: 14px; padding: 8px 14px; border-radius: 6px; transition: all 0.2s; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+.aux-link:hover, .nav-item:hover .aux-link { color: #1d2939; background-color: #f9fafb; }
+.aux-link.active { color: var(--primary-color); background-color: #eff8ff; font-weight: 700; }
 
-/* --- CONTENT --- */
+/* Dropdown */
+.dropdown-menu { visibility: hidden; opacity: 0; position: absolute; top: 90%; left: 50%; transform: translateX(-50%) translateY(-10px); background: white; min-width: 220px; border: 1px solid #eaecf0; border-radius: 8px; box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08); padding: 6px; z-index: 200; transition: all 0.2s ease; }
+.dropdown-menu::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
+.nav-item:hover .dropdown-menu { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
+.dropdown-item { display: block; padding: 10px 12px; color: #344054; text-decoration: none; font-size: 14px; border-radius: 6px; transition: background 0.2s; text-align: left; font-weight: 400; }
+.dropdown-item:hover { background-color: #f9fafb; color: #2f54eb; }
+
+/* User Panel */
+.user-panel { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid #eee; }
+.user-details { display: flex; flex-direction: column; text-align: right; line-height: 1.3; }
+.user-name { font-weight: 700; font-size: 13px; color: #333; }
+.user-role { font-size: 11px; color: #888; }
+.user-avatar { width: 36px; height: 36px; background-color: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; user-select: none; }
+
+/* --- CONTENT STYLE --- */
 .page-wrap { padding: 30px 40px; max-width: 98%; margin: 0 auto; }
 .category-tabs { margin-bottom: 20px; border-bottom: 2px solid #ddd; }
 .cat-btn { background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; }
-.cat-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+.cat-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
 
 .table-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; }
 table.xero-table { width: 100%; border-collapse: collapse; }
-table.xero-table th { text-align: left; padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; color: #555; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+table.xero-table th { text-align: left; padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; color: #555; font-size: 12px; text-transform: uppercase; font-weight: bold; }
 table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-align: middle; }
-table.xero-table tr:hover { background-color: #f9fafb; }
+table.xero-table tr.data-row { cursor: pointer; transition: background-color 0.2s; }
+table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 
-/* Badges */
-.badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
-.badge-gen { background: #e0f2fe; color: #0369a1; }
-.badge-pre { background: #f3e8ff; color: #7e22ce; }
-.status-process { background: #fff7e6; color: var(--orange); }
-.status-completed { background: #ecfdf5; color: var(--green); }
-.status-cancel { background: #fef2f2; color: var(--red); }
+/* Link Order # (Fix #2) */
+.order-link { color: var(--primary-color); font-weight: bold; text-decoration: none; cursor: pointer; }
+.order-link:hover { text-decoration: underline; }
 
-/* --- MODAL --- */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: flex-start; justify-content: center; z-index: 10000; padding-top: 50px; overflow-y: auto; }
-.modal-box { background: #fff; width: 1350px; max-width: 98%; height: auto; max-height: 90vh; display: flex; flex-direction: column; border-radius: 8px; margin-bottom: 50px; }
-.modal-header, .modal-footer { padding: 20px 30px; background: #fff; border-bottom: 1px solid #eee; }
-.modal-footer { background: #f9fafb; text-align: right; border-top: 1px solid #eee; }
-.modal-body { flex: 1; overflow-y: auto; padding: 20px; }
+/* --- STYLE KHUSUS PRODUKSI --- */
+.prod-input { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
+.prod-select { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; background: #fff; }
+.prod-input[readonly] { background-color: #eee; color: #666; }
 
-/* Production Inputs */
-.prod-input, .prod-select { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
-.split-row { background-color: #fffde7; }
-.disabled-row { background-color: #f3f4f6; color: #9ca3af; pointer-events: none; }
-.disabled-row input, .disabled-row select { background: #e5e7eb; border-color: #d1d5db; }
+/* Row Styling */
+.main-row { background-color: #fff; transition: 0.3s; }
+.split-row { background-color: #fffde7; } /* Kuning tipis untuk anak split */
 
-/* Buttons */
-.btn { padding: 6px 12px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s; color: white; }
-.btn-setup { background: var(--primary); }
-.btn-complete { background: var(--green); }
-.btn-cancel { background: var(--red); }
+/* Disabled Row (Untuk Main Row saat di-split) */
+.disabled-row { 
+    background-color: #f0f0f0 !important; 
+    color: #999 !important;
+}
+.disabled-row input, .disabled-row select {
+    background-color: #e0e0e0;
+    pointer-events: none;
+    border-color: #ddd;
+    color: #999;
+}
+/* Tombol split tetap aktif di main row agar bisa nambah line */
+.disabled-row .btn-split { 
+    display: inline-block; 
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.btn { padding: 8px 16px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s; color: white; display: inline-flex; align-items: center; gap: 5px; }
+.btn-sm { padding: 4px 8px; font-size: 11px; }
+
+.btn-process { background: var(--primary-color); }
+.btn-complete { background: #047857; }
+.btn-cancel { background: #b91c1c; }
+.btn-secondary { background: #fff; border: 1px solid #ccc; color: #333; }
 .btn-split { background: #d8b4fe; color: #6b21a8; }
 .btn-remove { background: #fee2e2; color: #991b1b; }
-.btn-secondary { background: #fff; border: 1px solid #ccc; color: #333; }
 
-/* PDF Hidden */
-#pdf-hidden-container { position: absolute; left: -9999px; }
+/* --- MODAL STYLE --- */
+.modal-overlay { 
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+    background: rgba(0,0,0,0.5); 
+    display: none; 
+    align-items: flex-start; 
+    justify-content: center; 
+    z-index: 10000; 
+    backdrop-filter: blur(2px); 
+    padding-top: 50px; 
+    overflow-y: auto; 
+}
+
+.modal-box { 
+    background: #fff; 
+    width: 1350px; 
+    max-width: 98%; 
+    height: auto; 
+    max-height: 90vh;
+    display: flex; 
+    flex-direction: column; 
+    border-radius: 8px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
+    margin-bottom: 50px;
+}
+
+.modal-header { padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; border-radius: 8px 8px 0 0; }
+.modal-body { flex: 1; overflow-y: auto; padding: 20px; background: #fff; }
+.modal-footer { padding: 15px 30px; background: #f9fafb; border-top: 1px solid #eee; text-align: right; border-radius: 0 0 8px 8px; display: flex; justify-content: flex-end; gap: 10px; }
+
+/* --- PDF STYLE --- */
+#pdf-hidden-container { position: absolute; left: -9999px; top: 0; }
+#pdfContent { background: #fff; width: 100%; padding: 0; font-family: "Arial", sans-serif; color: #000; }
+.we-code { font-family: "Courier New", monospace; font-weight: bold; letter-spacing: 1px; }
 </style>
 </head>
 <body>
 
 <div class="aux-navbar">
-    <div class="aux-logo"><img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png"></div>
+    <div class="aux-logo">
+        <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png" alt="Auxilium Logo">
+    </div>
+    
     <nav class="aux-menu">
-        <div class="nav-item"><a href="#" class="aux-link active">Produksi</a></div>
+        <div class="nav-item"><a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/" class="aux-link">Home</a></div>
+        <div class="nav-item">
+            <div class="aux-link">Penjualan <i class="fas fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></div>
+            <div class="dropdown-menu">
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Review%20Penjualan/" class="dropdown-item">Review Penjualan</a>
+            </div>
+        </div>
+        <div class="nav-item">
+            <div class="aux-link active">Produksi <i class="fas fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></div>
+            <div class="dropdown-menu">
+                <a href="#" class="dropdown-item">Persiapan Pesanan</a>
+                <a href="#" onclick="alert('Coming soon')" class="dropdown-item">Produksi Barang Jadi</a>
+            </div>
+        </div>
     </nav>
+
+    <div class="user-panel">
+        <div class="user-details"><span class="user-name">Admin Produksi</span><span class="user-role">CV Sukses Jaya</span></div>
+        <div class="user-avatar">AP</div>
+    </div>
 </div>
 
 <div class="page-wrap">
-    <h2>Persiapan Produksi</h2>
+    <h2>Persiapan Produksi (General Order)</h2>
     
     <div class="category-tabs">
         <button class="cat-btn active" id="tab-awaiting" onclick="switchTab('Awaiting')">Awaiting Production</button>
@@ -89,15 +187,16 @@ table.xero-table tr:hover { background-color: #f9fafb; }
             <thead>
                 <tr>
                     <th>Order #</th>
-                    <th>Type</th> <th>Customer</th>
+                    <th>Type</th>
+                    <th>Customer</th>
                     <th>Order Date</th>
                     <th>Est. Delivery</th>
-                    <th>Status</th> <th>Items</th>
-                    <th style="text-align:center;">Action</th>
+                    <th>Status</th>
+                    <th>Items</th>
                 </tr>
             </thead>
             <tbody id="dashboardBody">
-                <tr><td colspan="8" style="text-align:center; padding:30px;">Loading...</td></tr>
+                <tr><td colspan="7" style="text-align:center; padding:50px; color:#999;">Loading Data...</td></tr>
             </tbody>
         </table>
     </div>
@@ -106,57 +205,72 @@ table.xero-table tr:hover { background-color: #f9fafb; }
 <div id="setupModal" class="modal-overlay">
     <div class="modal-box">
         <div class="modal-header">
-            <h3>Setup: <span id="modalOrderNo" style="color:#116999;"></span></h3>
-            <button onclick="closeModal()" style="border:none; background:none; font-size:20px; cursor:pointer;">&times;</button>
+            <div>
+                <h3 style="margin:0; font-size: 18px;">Review Produksi: <span id="modalOrderNo" style="font-weight:bold; color:var(--primary-color);"></span></h3>
+                <span style="font-size:12px; color:#666;" id="modalCustomer"></span>
+            </div>
+            <button class="btn-close" onclick="closeModal()" style="border:none; background:none; font-size:24px; cursor:pointer;">&times;</button>
         </div>
+        
         <div class="modal-body">
             <div class="alert" style="background:#e0f2fe; color:#0c4a6e; padding:10px; border-radius:6px; margin-bottom:15px; font-size:12px;">
-                <i class="fas fa-info-circle"></i> Gunakan tombol <strong>Split</strong> jika stok KPC kurang. Baris utama akan dinonaktifkan.
+                <i class="fas fa-info-circle"></i> <strong>Instruksi:</strong> Tekan tombol "Split" untuk menambah baris produksi baru. Qty pada baris utama akan otomatis non-aktif. Total split harus sama dengan target.
             </div>
+
             <table class="xero-table" id="productionTable">
                 <thead>
                     <tr>
-                        <th style="width:20%">Item</th>
-                        <th style="width:5%">M</th>
-                        <th style="width:5%">Qty</th>
-                        <th style="width:8%">Set Qty</th>
-                        <th style="width:8%">Total M'</th>
+                        <th style="width:20%">Nama Barang</th>
+                        <th style="width:5%; text-align:center;">Meter</th>
+                        <th style="width:5%; text-align:center;">Total Qty</th>
+                        <th style="width:8%; text-align:center;">Assigned Qty</th>
+                        <th style="width:8%; text-align:center;">Total M'</th>
                         <th style="width:12%">Mesin</th>
-                        <th style="width:14%">KPC</th>
+                        <th style="width:14%">KPC Code (Stok)</th>
                         <th style="width:8%">Type</th>
-                        <th style="width:14%">WE Code</th>
-                        <th style="width:6%">Act</th>
+                        <th style="width:14%">Work Effort Code</th>
+                        <th style="width:6%">Action</th>
                     </tr>
                 </thead>
                 <tbody id="setupBody"></tbody>
             </table>
             <div id="validationMsg" style="color:red; font-weight:bold; margin-top:10px; display:none;"></div>
         </div>
-        <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-            <button class="btn btn-setup" onclick="submitProduction()">Process & Print PDF</button>
-        </div>
+
+        <div class="modal-footer" id="modalFooter">
+            </div>
     </div>
 </div>
 
 <div id="pdf-hidden-container">
-    <div id="pdfContent" style="padding:20px; background:#fff; color:#000;">
-        <h2 style="text-align:center;">WORK ORDER PRODUKSI</h2>
-        <div style="border-bottom:2px solid #000; margin-bottom:20px;"></div>
-        <table style="width:100%; margin-bottom:20px;">
+    <div id="pdfContent" style="padding:20px;">
+        <h2 style="text-align:center;">SURAT PERINTAH KERJA</h2>
+        <div style="border-bottom:2px solid #000; margin-bottom:10px;"></div>
+        <table style="width:100%; margin-bottom:15px;">
             <tr><td><strong>Order No:</strong> <span id="pdfOrderNo"></span></td><td style="text-align:right;"><strong>Date:</strong> <span id="pdfDate"></span></td></tr>
-            <tr><td><strong>Customer:</strong> <span id="pdfCustomer"></span></td><td style="text-align:right;"><strong>Est. Del:</strong> <span id="pdfEst"></span></td></tr>
+            <tr><td><strong>Customer:</strong> <span id="pdfCustomer"></span></td><td style="text-align:right;"><strong>Del:</strong> <span id="pdfEst"></span></td></tr>
         </table>
         <table style="width:100%; border-collapse:collapse; border:1px solid #000;">
-            <thead><tr style="background:#eee;"><th style="border:1px solid #000; padding:5px;">Item</th><th style="border:1px solid #000;">M</th><th style="border:1px solid #000;">Qty</th><th style="border:1px solid #000;">Detail</th><th style="border:1px solid #000;">WE Code</th></tr></thead>
+            <thead>
+                <tr style="background:#eee;">
+                    <th style="border:1px solid #000; padding:5px;">Item</th>
+                    <th style="border:1px solid #000; text-align:center;">M</th>
+                    <th style="border:1px solid #000; text-align:center;">Qty</th>
+                    <th style="border:1px solid #000;">Detail</th>
+                    <th style="border:1px solid #000;">WE Code</th>
+                </tr>
+            </thead>
             <tbody id="pdfItemsBody"></tbody>
         </table>
     </div>
 </div>
 
 <script>
-// --- CONFIG ---
+// =========================================================
+// KONFIGURASI URL BACKEND
+// =========================================================
 const BASE_URL = "https://script.google.com/macros/s/AKfycbxCYnBYUv8wLe1IcJ0vORsUxfLYYOXPsQLVhPB3mc66FHbeo58aW1pneKXHAndU-TIfkg/exec"; 
+
 let currentOrders = {}; 
 let activeOrderId = null;
 let currentTab = 'Awaiting';
@@ -178,18 +292,17 @@ function switchTab(tabName) {
     loadOrders(tabName);
 }
 
-// --- LOAD DATA ---
+// --- 1. LOAD DATA ---
 async function loadOrders(status) {
     const tbody = document.getElementById('dashboardBody');
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px;">Loading Data...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px;">Loading Data...</td></tr>';
     
     try {
-        // Kirim parameter status ke backend
         const response = await fetch(`${BASE_URL}?action=getProductionOrders&status=${encodeURIComponent(status)}`);
         const data = await response.json();
         renderDashboard(data, status);
     } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="8" style="color:red; text-align:center;">Error: ${err}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="color:red; text-align:center;">Error: ${err}</td></tr>`;
     }
 }
 
@@ -198,7 +311,7 @@ function renderDashboard(data, status) {
     tbody.innerHTML = '';
     
     if (!data || Object.keys(data).length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:#999;">No orders in ${status}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:#999;">No orders in ${status}</td></tr>`;
         return;
     }
 
@@ -207,154 +320,151 @@ function renderDashboard(data, status) {
     Object.keys(data).forEach(key => {
         const o = data[key];
         
-        // Badge Logic
-        let typeBadge = o.type.includes('Pre') ? 'badge-pre' : 'badge-gen';
-        let statusBadge = 'status-process';
-        if(status === 'Completed') statusBadge = 'status-completed';
-        if(status === 'Cancel') statusBadge = 'status-cancel';
-
-        // Action Buttons Logic
-        let buttons = '';
-        if (status === 'Awaiting') {
-            buttons = `<button class="btn btn-setup" onclick="openSetup('${o.orderNo}')">Setup</button>
-                       <button class="btn btn-cancel" style="margin-left:5px;" onclick="cancelOrder('${o.orderNo}')"><i class="fas fa-times"></i></button>`;
-        } else if (status === 'In Process') {
-            buttons = `<button class="btn btn-complete" onclick="completeOrder('${o.orderNo}')">Selesai</button>
-                       <button class="btn btn-cancel" style="margin-left:5px;" onclick="cancelOrder('${o.orderNo}')">Batal</button>`;
-        } else {
-            buttons = `<span style="color:#999;">-</span>`;
-        }
+        // Badge Colors
+        let statusBadge = 'badge bg-warning text-dark';
+        if(status === 'Completed') statusBadge = 'badge bg-success';
+        if(status === 'Cancel') statusBadge = 'badge bg-danger';
 
         const tr = document.createElement('tr');
+        tr.className = 'data-row';
+        // Fix #2: Klik Order No untuk buka modal
         tr.innerHTML = `
-            <td><strong>${o.orderNo}</strong></td>
-            <td><span class="badge ${typeBadge}">${o.type || 'General'}</span></td>
+            <td><a class="order-link" onclick="openSetup('${o.orderNo}')">${o.orderNo}</a></td>
+            <td>${o.type || 'General'}</td>
             <td>${o.customer}</td>
             <td>${o.date}</td>
             <td>${o.delivery}</td>
-            <td><span class="badge ${statusBadge}">${status}</span></td>
-            <td>${o.items.length}</td>
-            <td style="text-align:center;">${buttons}</td>
+            <td><span class="${statusBadge}">${status}</span></td>
+            <td>${o.items.length} Items</td>
         `;
         tbody.appendChild(tr);
     });
 }
 
-// --- ACTIONS (COMPLETE / CANCEL) ---
-async function completeOrder(id) {
-    if(!confirm('Tandai pesanan ini sebagai SELESAI?')) return;
-    await sendStatusUpdate('completeOrder', id);
-}
-
-async function cancelOrder(id) {
-    if(!confirm('Yakin ingin MEMBATALKAN pesanan ini?')) return;
-    await sendStatusUpdate('cancelOrder', id);
-}
-
-async function sendStatusUpdate(action, id) {
-    const tbody = document.getElementById('dashboardBody');
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Updating...</td></tr>';
-    
-    try {
-        await fetch(BASE_URL, {
-            method: 'POST',
-            body: JSON.stringify({ action: action, orderId: id })
-        });
-        loadOrders(currentTab); // Refresh current tab
-    } catch(e) { alert(e); }
-}
-
-// --- MODAL SETUP (Logic Split/Input sama seperti sebelumnya) ---
+// --- 2. MODAL LOGIC ---
 function openSetup(orderId) {
     activeOrderId = orderId;
     const order = currentOrders[orderId];
     
     document.getElementById('modalOrderNo').innerText = orderId;
-    document.getElementById('setupModal').style.display = 'flex';
+    document.getElementById('modalCustomer').innerText = order.customer;
+    
+    // Render Table Rows
     const tbody = document.getElementById('setupBody');
     tbody.innerHTML = '';
 
     order.items.forEach((item, idx) => {
         const isSpandek = (item.type && item.type.toLowerCase().includes('spandek') && !item.type.toLowerCase().includes('non'));
+        
         const tr = document.createElement('tr');
         tr.className = 'main-row';
         tr.dataset.id = idx; 
         tr.dataset.type = isSpandek ? 'spandek' : 'non-spandek';
-        tr.dataset.original = item.fullRowData;
+        tr.dataset.original = item.fullRowData; 
         
-        const initialTotalM = (parseFloat(item.meter) * parseInt(item.qty)).toFixed(2);
+        // Calculate Initials
+        const totalM = (parseFloat(item.meter) * parseInt(item.qty)).toFixed(2);
 
-        let inputHTML = isSpandek ? `
-            <td><input type="number" class="prod-input qty-input" value="${item.qty}" min="1" onchange="validateQty(${idx}); updateCalc(this)"></td>
-            <td style="text-align:center;"><span class="total-m">${initialTotalM}</span></td>
-            <td><select class="prod-select machine-select" onchange="generateWE(this)"><option value="">-</option><option value="PM08">PM08</option><option value="PM14">PM14</option></select></td>
-            <td><select class="prod-select kpc-select" onchange="generateWE(this)"><option value="">-</option><option value="KPC-001">KPC-001</option><option value="KPC-002">KPC-002</option></select></td>
-            <td><select class="prod-select type-select" onchange="generateWE(this)"><option value="Custom">Custom</option><option value="Plat">Plat</option></select></td>
-            <td><input type="text" class="prod-input we-code" readonly></td>
-            <td style="text-align:center;"><button class="btn btn-split" onclick="splitRow(this, ${idx})">Split</button></td>` 
-            : `<td colspan="7" style="text-align:center; color:#999;">Non-Spandek</td>`;
-
-        tr.innerHTML = `
+        let html = `
             <td><strong>${item.item}</strong></td>
             <td style="text-align:center;"><span class="meter-val">${item.meter}</span></td>
-            <td style="text-align:center;"><span class="target-qty badge badge-gen">${item.qty}</span></td>
-            ${inputHTML}
+            <td style="text-align:center;"><span class="target-qty badge bg-info text-dark">${item.qty}</span></td>
         `;
+
+        if (isSpandek && currentTab === 'Awaiting') {
+            // Editable for Awaiting
+            html += `
+                <td><input type="number" class="prod-input qty-input" value="${item.qty}" min="1" onchange="validateQty(${idx}); updateCalc(this)"></td>
+                <td style="text-align:center;"><span class="total-m">${totalM}</span></td>
+                <td><select class="prod-select machine-select" onchange="generateWE(this)"><option value="">-</option><option value="PM08">PM08</option><option value="PM14">PM14</option></select></td>
+                <td><select class="prod-select kpc-select" onchange="generateWE(this)"><option value="">-</option><option value="KPC-001">KPC-001</option><option value="KPC-002">KPC-002</option></select></td>
+                <td><select class="prod-select type-select" onchange="generateWE(this)"><option value="Custom">Custom</option><option value="Plat">Plat</option></select></td>
+                <td><input type="text" class="prod-input we-code" readonly></td>
+                <td style="text-align:center;"><button class="btn-sm btn-split" onclick="splitRow(this, ${idx})"><i class="fas fa-plus"></i> Split</button></td>
+            `;
+        } else {
+            // Read Only for Non-Spandek OR Non-Awaiting
+            html += `
+                <td style="text-align:center;">${item.qty}</td>
+                <td style="text-align:center;">-</td>
+                <td colspan="4" style="text-align:center; color:#999;">${isSpandek ? 'View Only Mode' : 'Non-Spandek'}</td>
+                <td style="text-align:center;">-</td>
+            `;
+        }
+        
+        tr.innerHTML = html;
         tbody.appendChild(tr);
     });
+
+    renderFooterButtons();
+    document.getElementById('validationMsg').style.display = 'none';
+    document.getElementById('setupModal').style.display = 'flex';
 }
 
 function closeModal() { document.getElementById('setupModal').style.display = 'none'; }
 
-// --- LOGIC SPLIT (ABU-ABU) ---
-function splitRow(btn, groupId) {
-    const row = btn.closest('tr');
-    const mainQty = parseInt(row.querySelector('.qty-input').value || 0);
-    
-    // Disable Main Row
-    row.classList.add('disabled-row');
-    row.querySelector('.qty-input').value = 0; // Visual 0
-    row.querySelector('.total-m').innerText = "0.00";
-    
-    // Split 50:50
-    const q1 = Math.floor(mainQty / 2);
-    const q2 = mainQty - q1;
-    
-    createSplit(row, groupId, q1);
-    createSplit(row, groupId, q2);
-    validateQty(groupId);
+// Fix #1: Render Buttons in Footer based on Status
+function renderFooterButtons() {
+    const footer = document.getElementById('modalFooter');
+    footer.innerHTML = ''; // Reset
+
+    const btnCancel = `<button class="btn btn-secondary" onclick="closeModal()">Close</button>
+                       <button class="btn btn-cancel" onclick="cancelOrder()">Cancel Order</button>`;
+
+    if (currentTab === 'Awaiting') {
+        footer.innerHTML = `${btnCancel} <button class="btn btn-process" onclick="submitProduction()">Process & Print PDF</button>`;
+    } else if (currentTab === 'In Process') {
+        footer.innerHTML = `${btnCancel} <button class="btn btn-complete" onclick="completeOrder()">Mark as Completed</button>`;
+    } else {
+        footer.innerHTML = `<button class="btn btn-secondary" onclick="closeModal()">Close</button>`;
+    }
 }
 
-function createSplit(refRow, groupId, qty) {
-    const newRow = refRow.cloneNode(true);
+// --- 3. LOGIC INFINITE SPLIT (Fix #4) ---
+function splitRow(btn, groupId) {
+    const originalRow = btn.closest('tr');
+    
+    // 1. Disable Main Row (Jika belum)
+    if (!originalRow.classList.contains('disabled-row')) {
+        originalRow.classList.add('disabled-row');
+        originalRow.querySelector('.qty-input').value = 0; // Set visual 0 agar validasi benar
+        originalRow.querySelector('.total-m').innerText = "0.00";
+        // Disable inputs kecuali tombol split
+        originalRow.querySelectorAll('input, select').forEach(el => el.disabled = true);
+    }
+
+    // 2. Tambah Baris Split Baru (Kosong)
+    const newRow = originalRow.cloneNode(true);
     newRow.classList.remove('main-row', 'disabled-row');
     newRow.classList.add('split-row');
     
-    // Enable inputs
-    newRow.querySelector('.qty-input').value = qty;
-    const inputs = newRow.querySelectorAll('input, select, button');
-    inputs.forEach(el => el.disabled = false);
+    // Reset Inputs
+    const qtyInput = newRow.querySelector('.qty-input');
+    qtyInput.value = 0; // User isi sendiri
+    qtyInput.disabled = false;
     
-    // Reset selects/WE
-    newRow.querySelectorAll('select').forEach(s => { s.value = ""; s.onchange = function(){ generateWE(this); } });
-    newRow.querySelector('.we-code').value = "";
+    newRow.querySelectorAll('select').forEach(s => { 
+        s.value = ""; s.disabled = false; 
+        s.onchange = function(){ generateWE(this); } 
+    });
     
-    // Change Button
-    const btnDiv = newRow.lastElementChild;
-    btnDiv.innerHTML = `<button class="btn btn-remove" onclick="removeSplit(this, ${groupId})"><i class="fas fa-trash"></i></button>`;
-    
-    // Event Listener
-    const qInput = newRow.querySelector('.qty-input');
-    qInput.onchange = function() { validateQty(groupId); updateCalc(this); };
-    
-    // Calculate M
-    const m = parseFloat(newRow.querySelector('.meter-val').innerText);
-    newRow.querySelector('.total-m').innerText = (m * qty).toFixed(2);
+    const weInput = newRow.querySelector('.we-code');
+    weInput.value = ""; weInput.disabled = false; weInput.readOnly = true;
 
-    // Insert
-    const tbody = refRow.parentNode;
-    const group = tbody.querySelectorAll(`tr[data-id="${groupId}"]`);
-    group[group.length-1].after(newRow);
+    // Tampilan Split
+    newRow.querySelector('.target-qty').parentElement.innerHTML = '<small>(Split)</small>';
+    
+    // Ubah tombol jadi Remove
+    newRow.lastElementChild.innerHTML = `<button class="btn-sm btn-remove" onclick="removeSplit(this, ${groupId})"><i class="fas fa-trash"></i></button>`;
+    
+    // Insert after last sibling of group
+    const tbody = originalRow.parentNode;
+    const groupRows = tbody.querySelectorAll(`tr[data-id="${groupId}"]`);
+    const lastRow = groupRows[groupRows.length-1];
+    lastRow.after(newRow);
+
+    // Event Listener
+    qtyInput.onchange = function() { validateQty(groupId); updateCalc(this); };
 }
 
 function removeSplit(btn, groupId) {
@@ -362,18 +472,23 @@ function removeSplit(btn, groupId) {
     const tbody = row.parentNode;
     row.remove();
     
-    // Jika tidak ada split tersisa, enable main row
-    const splits = tbody.querySelectorAll(`.split-row[data-id="${groupId}"]`);
-    if(splits.length === 0) {
+    // Cek apakah masih ada split?
+    const remainingSplits = tbody.querySelectorAll(`.split-row[data-id="${groupId}"]`);
+    if(remainingSplits.length === 0) {
+        // Enable Main Row
         const main = tbody.querySelector(`.main-row[data-id="${groupId}"]`);
         main.classList.remove('disabled-row');
         const target = parseInt(main.querySelector('.target-qty').innerText);
-        main.querySelector('.qty-input').value = target;
-        updateCalc(main.querySelector('.qty-input'));
+        const qInput = main.querySelector('.qty-input');
+        qInput.value = target;
+        qInput.disabled = false;
+        main.querySelectorAll('select').forEach(el => el.disabled = false);
+        updateCalc(qInput);
     }
     validateQty(groupId);
 }
 
+// --- HELPER LOGIC ---
 function updateCalc(input) {
     const row = input.closest('tr');
     if(row.classList.contains('disabled-row')) return;
@@ -388,34 +503,41 @@ function generateWE(el) {
     const kpc = row.querySelector('.kpc-select').value;
     const type = TYPE_CODES[row.querySelector('.type-select').value] || 'XX';
     if(mach && kpc) row.querySelector('.we-code').value = `${mach}_${kpc}_${type}_${activeOrderId}`;
-    else row.querySelector('.we-code').value = "";
 }
 
 function validateQty(groupId) {
     const tbody = document.getElementById('setupBody');
     const main = tbody.querySelector(`.main-row[data-id="${groupId}"]`);
     const target = parseInt(main.querySelector('.target-qty').innerText);
-    const rows = tbody.querySelectorAll(`tr[data-id="${groupId}"]:not(.disabled-row)`);
     
     let current = 0;
-    rows.forEach(r => current += parseInt(r.querySelector('.qty-input').value||0));
-    
-    const msg = document.getElementById('validationMsg');
+    // Hitung hanya yang aktif (bukan disabled main row)
+    tbody.querySelectorAll(`tr[data-id="${groupId}"]:not(.disabled-row)`).forEach(r => {
+        current += parseInt(r.querySelector('.qty-input').value || 0);
+    });
+
     const isErr = current !== target;
-    rows.forEach(r => r.querySelector('.qty-input').style.borderColor = isErr ? 'red' : '#ccc');
+    const msg = document.getElementById('validationMsg');
     
+    tbody.querySelectorAll(`tr[data-id="${groupId}"] .qty-input`).forEach(el => {
+        el.style.borderColor = isErr ? 'red' : '#ccc';
+    });
+
     if(isErr) {
         msg.style.display = 'block';
-        msg.innerText = `Total Qty (${current}) tidak sama dengan Target (${target})`;
+        msg.innerText = `Total Qty Group ini (${current}) tidak sama dengan Target (${target})`;
     } else {
         msg.style.display = 'none';
     }
     return !isErr;
 }
 
-// --- SUBMIT ---
+// --- ACTIONS (WITH CONFIRMATION) - Fix #3 ---
+
 async function submitProduction() {
-    if(document.getElementById('validationMsg').style.display === 'block') return alert("Fix Qty Error first!");
+    if(!confirm("Anda yakin data produksi sudah benar dan ingin memproses?")) return;
+    
+    if(document.getElementById('validationMsg').style.display === 'block') return alert("Perbaiki error qty dulu!");
     
     const rows = document.querySelectorAll('#setupBody tr:not(.disabled-row)');
     let data = [], pdfData = [];
@@ -424,7 +546,6 @@ async function submitProduction() {
     rows.forEach(r => {
         const type = r.dataset.type;
         const q = r.querySelector('.qty-input')?.value;
-        
         let item = { originalData: r.dataset.original, qty: q, isSplit: r.classList.contains('split-row') };
         let pdf = { name: r.cells[0].innerText, m: r.cells[1].innerText, q: q, det: '-', we: '-' };
 
@@ -432,28 +553,42 @@ async function submitProduction() {
             const m = r.querySelector('.machine-select').value;
             const k = r.querySelector('.kpc-select').value;
             const w = r.querySelector('.we-code').value;
-            if(!m || !k) { r.style.background = '#fee2e2'; valid = false; }
-            else { 
-                item.machine = m; item.kpc = k; item.we = w; 
-                pdf.det = `${m}/${k}`; pdf.we = w;
-            }
+            if(!m || !k || !w) valid = false;
+            item.machine = m; item.kpc = k; item.we = w;
+            pdf.det = `${m}/${k}`; pdf.we = w;
         }
         data.push(item); pdfData.push(pdf);
     });
 
-    if(!valid) return alert("Lengkapi data produksi!");
+    if(!valid) return alert("Lengkapi data mesin/KPC!");
 
     // Generate PDF & Submit
     generatePDF(pdfData);
     
-    document.querySelector('.btn-setup').innerText = "Processing...";
+    await sendAPI('submitProduction', { orderId: activeOrderId, data: data });
+}
+
+async function completeOrder() {
+    if(!confirm("Apakah order ini sudah selesai diproduksi?")) return;
+    await sendAPI('completeOrder', { orderId: activeOrderId });
+}
+
+async function cancelOrder() {
+    if(!confirm("Yakin ingin membatalkan order ini? Aksi tidak dapat dibatalkan.")) return;
+    await sendAPI('cancelOrder', { orderId: activeOrderId });
+}
+
+async function sendAPI(action, payload) {
+    const btn = document.querySelector('.btn-process') || document.querySelector('.btn-complete');
+    if(btn) btn.innerText = "Processing...";
+    
     try {
-        await fetch(BASE_URL, { method: 'POST', body: JSON.stringify({ action: 'submitProduction', orderId: activeOrderId, data: data }) });
-        alert("Sukses!");
+        payload.action = action;
+        await fetch(BASE_URL, { method: 'POST', body: JSON.stringify(payload) });
+        alert("Berhasil!");
         closeModal();
-        loadOrders('Awaiting');
-    } catch(e) { alert(e); }
-    document.querySelector('.btn-setup').innerText = "Process & Print PDF";
+        loadOrders(currentTab);
+    } catch(e) { alert("Error: " + e); }
 }
 
 function generatePDF(items) {
