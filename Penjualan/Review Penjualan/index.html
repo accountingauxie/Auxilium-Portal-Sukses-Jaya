@@ -93,8 +93,19 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 
 .web-totals { display: flex; justify-content: flex-end; }
 .web-total-box { width: 300px; background: #f9fafb; padding: 15px; border-radius: 8px; }
-/* Modified for Single Total Line */
-.web-total-row.grand { font-size: 20px; color: var(--primary-color); font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+
+/* MODIFIED: Web Total Row with Top Border */
+.web-total-row.grand { 
+    font-size: 20px; 
+    color: var(--primary-color); 
+    font-weight: bold; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    border-top: 2px solid #ccc; /* Garis Penutup */
+    margin-top: 5px; 
+    padding-top: 10px; 
+}
 
 .modal-footer { padding: 15px 30px; background: #f9fafb; border-top: 1px solid #eee; text-align: right; }
 .btn-action { padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; color: white; font-weight: bold; margin-left: 10px; transition: 0.2s; }
@@ -129,7 +140,19 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
 .pdf-notes-label { font-size: 10px; font-weight: 700; margin-bottom: 2px; display:block; }
 .pdf-notes-content { font-size: 10px; color: #555; line-height: 1.4; border: 1px dashed #ccc; padding: 5px; border-radius: 4px; min-height: 30px; }
 .pdf-total-box { width: 35%; }
-.pdf-total-row.grand { font-size: 15px; font-weight: 700; color: #116999; margin-top: 0; padding-top: 0; display: flex; justify-content: space-between; }
+
+/* MODIFIED: PDF Total Row with Top Border */
+.pdf-total-row.grand { 
+    font-size: 15px; 
+    font-weight: 700; 
+    color: #116999; 
+    display: flex; 
+    justify-content: space-between;
+    border-top: 1px solid #000; /* Garis Penutup Hitam */
+    margin-top: 5px; 
+    padding-top: 5px;
+}
+
 .pdf-signature-wrapper { margin-top: 25px; display: flex; justify-content: space-between; page-break-inside: avoid; padding-bottom: 10px; }
 .sig-box { width: 200px; text-align: center; }
 .sig-title { font-size: 11px; font-weight: 700; color: #000; margin-bottom: 45px; }
@@ -232,6 +255,7 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
                 <thead><tr><th class="t-left" style="width:25%">ITEM NAME</th><th class="t-center" style="width:8%">METER</th><th class="t-center" style="width:8%">QTY</th><th class="t-center" style="width:10%">SATUAN</th><th class="t-left" style="width:15%">HARGA</th><th class="t-left" style="width:10%">DISC</th><th class="t-left" style="width:12%">NET</th><th class="t-left" style="width:12%">TOTAL</th></tr></thead>
                 <tbody id="webItemsBody"></tbody>
             </table>
+            
             <div class="web-totals">
                 <div class="web-total-box">
                     <div class="web-total-row grand"><span>Total</span><span id="webTotal">0</span></div>
@@ -401,7 +425,6 @@ function renderTable() {
         tr.className = 'data-row';
         tr.onclick = function() { openModal(o.id); };
         
-        // TAMBAH INV DISINI
         tr.innerHTML = `<td><strong>INV${o.id}</strong></td><td style="text-align:center;">${typeHtml}</td><td>${o.customer}</td><td>${o.date}</td><td>${o.estDelivery}</td><td>${o.dueDate}</td><td style="text-align:right;"><strong>${fmtMoneySimple(o.grandTotal)}</strong></td><td style="text-align:center;"><span class="badge ${badge}">${o.status}</span></td>`;
         tbody.appendChild(tr);
     });
@@ -422,7 +445,6 @@ function openModal(id) {
         const o = allOrders.find(x => String(x.id) === String(id));
         if(!o) { alert("Data tidak ditemukan"); return; }
 
-        // Tambah Prefix INV
         const fullOrderId = "INV" + o.id;
 
         setTxt('webOrderNo', fullOrderId);
@@ -435,11 +457,9 @@ function openModal(id) {
             setTxt(prefix+'Address', (o.address||"") + " " + (o.kec||"") + " " + (o.city||"")); setTxt(prefix+'Addr', o.address||""); setTxt(prefix+'Region', (o.kec||"") + ", " + (o.city||""));
             setTxt(prefix+'Date', o.date); setTxt(prefix+'Est', o.estDelivery); setTxt(prefix+'Due', o.dueDate);
             setTxt(prefix+'CP', o.cp); setTxt(prefix+'NPWP', o.npwp); setTxt(prefix+'Notes', o.notes); 
-            // Tambah Prefix INV disini juga
             setTxt(prefix+'OrderNo', fullOrderId);
         });
 
-        // Update nama penerima di kolom tanda tangan PDF
         setTxt('pdfSigCustName', o.customer);
 
         const webTbody = document.getElementById('webItemsBody');
@@ -452,7 +472,6 @@ function openModal(id) {
             pdfTbody.innerHTML += `<tr><td class="t-left"><span class="item-name-main">${item.name}</span><span class="item-sub">${item.type}</span></td><td class="t-center">${item.meter || '-'}</td><td class="t-center">${item.qty}</td><td class="t-center">${item.unit || '-'}</td><td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.price)}</span></div></td><td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.disc)}</span></div></td><td><div class="currency-cell"><span>Rp</span><span>${fmtNum(net)}</span></div></td><td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.total)}</span></div></td></tr>`;
         });
 
-        // REVISI: HANYA SET TOTAL, HAPUS DPP & PPN
         ['web','pdf'].forEach(prefix => {
             setTxt(prefix+'Total', fmtMoneySimple(o.grandTotal));
         });
@@ -482,7 +501,6 @@ async function updateStatus(id, stat) {
 
 function dlPDF(id) {
     const el = document.getElementById('pdfContent');
-    // Filename juga diberi INV
     const opt = { margin: [1, 0.75, 1, 0.75], filename: `Faktur_INV${id}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'cm', format: 'a5', orientation: 'landscape' } };
     const btn = document.querySelector('.btn-pdf'); btn.textContent = "Generating...";
     html2pdf().set(opt).from(el).save().then(() => btn.textContent = "Download PDF");
