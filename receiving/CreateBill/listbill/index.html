@@ -302,7 +302,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbwH_ObJYLSjLrECGEWDkVVwUFQQYCQL9HKoxivF2XveQw5FEuxVPEndrB25E_VpGRMPOg/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbyEb8z9nbnkGH9fdiUNgdNqclD40ExwdNjpEhasXWU3HPSXvAq8TQryKp-F7Ehvri-ADw/exec";
         
         const TAX_RATE = 0.11;
         let allData = [];
@@ -705,6 +705,18 @@
             const invNum = document.getElementById('bill-inv-number').value;
             if(!invNum) { showNotification("Invoice Number wajib diisi!"); return; }
 
+            // Ambil nilai notes
+            const notesVal = document.getElementById('bill-note').value;
+
+            // --- VALIDASI REJECT ---
+            // Jika statusnya Rejected DAN notes kosong, tolak submit
+            if (customStatus === 'Rejected' && !notesVal.trim()) {
+                showNotification("Wajib mengisi 'Internal Notes' untuk alasan penolakan!");
+                document.getElementById('bill-note').focus(); // Arahkan kursor ke kolom notes
+                return; // Stop proses
+            }
+            // -----------------------
+
             const activeItems = currentItems.filter(i => i.checked);
             
             const payload = {
@@ -719,6 +731,7 @@
                     taxMode: document.getElementById('tax-mode').value,
                     forceClose: document.getElementById('check-force-close').checked,
                     customStatus: customStatus, 
+                    notes: notesVal, // <--- Kirim Notes ke Backend
                     items: activeItems,
                     existingFileUrl: currentFileUrl
                 }
@@ -740,7 +753,6 @@
                 await sendData(payload);
             }
         }
-
         async function sendData(payload) {
             document.getElementById('modalLoading').classList.remove('hidden');
             try {
