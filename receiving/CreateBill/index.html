@@ -375,7 +375,6 @@
                     btnText = 'Create Bill';
                     btnIcon = '<i class="fas fa-plus"></i>';
                     btnClass = 'text-white bg-primary hover:bg-primary-hover shadow-md border-transparent';
-                    // Tombol Reject
                     secondaryBtn = `<button onclick="openRejectModal('${po.id}')" class="w-full mt-2 py-2 rounded-lg font-bold text-xs text-red-600 border border-red-100 hover:bg-red-50 transition"><i class="fas fa-ban mr-1"></i> Reject PO</button>`;
                 } else if (po.status === 'Partial') {
                     statusClass = 'bg-indigo-50 text-indigo-600 border-indigo-100';
@@ -383,23 +382,20 @@
                     btnText = 'Add Bill (Partial)';
                     btnIcon = '<i class="fas fa-plus"></i>';
                     btnClass = 'text-white bg-indigo-500 hover:bg-indigo-600 shadow-md border-transparent';
-                    // REVISI: Partial TIDAK ADA Reject Remaining
                     secondaryBtn = ""; 
                 } else if (po.status === 'Rejected') {
                     statusClass = 'bg-red-50 text-red-600 border-red-100';
                     statusBadge = 'Rejected';
                     btnText = 'View Data';
                     btnIcon = '<i class="fas fa-eye"></i>';
-                    btnClass = 'text-slate-400 bg-slate-50 border-slate-200 cursor-not-allowed';
-                    // Tombol Revert
+                    // REVISI: Tombol diaktifkan (tidak ada cursor-not-allowed)
+                    btnClass = 'text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:text-primary shadow-sm';
                     secondaryBtn = `<button onclick="revertPO('${po.id}')" class="w-full mt-2 py-2 rounded-lg font-bold text-sm text-amber-600 bg-amber-50 border border-amber-200 hover:bg-amber-100 transition shadow-sm"><i class="fas fa-undo mr-1"></i> Revert Status</button>`;
                 } else {
-                    // Billed / Finished / PO Diselesaikan
-                    statusClass = 'bg-emerald-50 text-emerald-600 border-emerald-100'; // Default Billed
-
+                    statusClass = 'bg-emerald-50 text-emerald-600 border-emerald-100'; 
                     if(po.status === 'Process to Import') statusClass = 'bg-orange-50 text-orange-600 border-orange-100';
                     else if(po.status === 'Success Imported') statusClass = 'bg-emerald-100 text-emerald-700 border-emerald-200';
-                    else if(po.status === 'PO Diselesaikan') statusClass = 'bg-teal-100 text-teal-800 border-teal-200'; // STATUS BARU
+                    else if(po.status === 'PO Diselesaikan') statusClass = 'bg-teal-100 text-teal-800 border-teal-200';
 
                     statusBadge = po.status;
                     btnText = 'Lihat Detail';
@@ -412,8 +408,8 @@
                     invInfo = `<div class="mt-2 text-[11px] font-mono bg-green-50 border border-green-200 rounded px-2 py-1 inline-flex items-center text-green-700 w-full"><i class="fas fa-file-invoice mr-2 text-xs"></i>${po.invNumber}</div>`;
                 }
 
-                // Jika Rejected, tombol utama didisable
-                const mainBtnAction = po.status === 'Rejected' ? '' : `onclick="openBillModal('${po.id}')"`;
+                // REVISI: Tombol utama selalu aktif
+                const mainBtnAction = `onclick="openBillModal('${po.id}')"`;
 
                 const html = `
                 <div class="bg-white rounded-xl p-5 border border-slate-200 hover:shadow-lg hover:border-primary/30 transition-all duration-300 flex flex-col justify-between h-full group relative overflow-hidden">
@@ -441,7 +437,6 @@
             });
         }
 
-        // ================= REJECT / REVERT LOGIC =================
         let rejectTargetId = "";
 
         function openRejectModal(idPO) {
@@ -475,7 +470,7 @@
                 });
                 const json = await res.json();
                 if (json.status === 'success') {
-                    await fetchData(); // Reload data
+                    await fetchData(); 
                     showNotification("PO Berhasil di-Reject.");
                 } else {
                     showNotification("Gagal update status: " + json.message);
@@ -493,7 +488,6 @@
 
             toggleLoading(true);
             try {
-                // Status 'Pending' di sini hanya trigger untuk backend menghitung ulang status
                 const res = await fetch(API_URL, {
                     method: 'POST',
                     body: JSON.stringify({ action: 'update_po_status', idPO: idPO, status: 'Pending', reason: 'Reverted to Previous Status by User' })
@@ -513,7 +507,6 @@
             }
         }
 
-        // ================= BILL MODAL FUNCTIONS =================
         async function openBillModal(idPO) {
             const poFromList = allData.find(d => d.id === idPO);
             if (!poFromList) return;
@@ -530,7 +523,8 @@
                 const jsonRem = await resRem.json();
                 const history = jsonRem.history || {};
 
-                let isCreateMode = (poFromList.status === 'Pending' || poFromList.status === 'Partial');
+                // REVISI: 'Rejected' dianggap sebagai mode create (ambil data master) tapi nanti dilock
+                let isCreateMode = (poFromList.status === 'Pending' || poFromList.status === 'Partial' || poFromList.status === 'Rejected');
                 let existingBillData = null;
 
                 if (!isCreateMode) {
@@ -542,7 +536,15 @@
                 if (existingBillData && !isCreateMode) {
                     setupViewMode(existingBillData, history);
                 } else {
+                    // Masuk sini jika Pending, Partial, atau Rejected
                     setupCreateMode(poFromList, history);
+                    
+                    // REVISI: Jika Rejected, kunci form setelah setup selesai
+                    if (poFromList.status === 'Rejected') {
+                        setFormState(false);
+                        document.getElementById('btn-save').classList.add('hidden');
+                        document.getElementById('banner-container').innerHTML = `<div class="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm font-bold flex items-center gap-3 border border-red-200"><i class="fas fa-ban"></i> PO Rejected. Data is Read-Only.</div>`;
+                    }
                 }
                 renderBillItems();
             } catch (err) {
@@ -603,7 +605,6 @@
             
             setFormState(false); 
             
-            // UPDATED: Check for 'PO Diselesaikan' as well to lock the form
             if (bill.status === 'Billed' || bill.status === 'PO Diselesaikan' || bill.status.includes('Import')) {
                 document.getElementById('banner-container').innerHTML = `<div class="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm font-bold flex items-center gap-3 border border-red-200"><i class="fas fa-lock"></i> Bill Locked. Data is Read-Only.</div>`;
                 document.getElementById('btn-save').classList.add('hidden');
