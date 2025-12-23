@@ -38,7 +38,7 @@
         .badge-billed { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; } 
         .badge-rejected { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; } 
         .badge-imported { background-color: #e0f2fe; color: #075985; border: 1px solid #bae6fd; }
-        .badge-pending { background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .badge-pending { background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; } 
         .badge-siap { background-color: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
     </style>
 </head>
@@ -76,21 +76,13 @@
         </div>
 
         <div class="flex items-end gap-2 border-b border-slate-200 mb-6 pl-1 overflow-x-auto">
-            <button onclick="setFilterStatus('all')" class="bg-white px-5 py-3 rounded-t-xl font-bold text-sm flex items-center gap-2 border border-slate-200 border-b-0 min-w-max text-primary relative top-[1px] z-10 shadow-sm cursor-default hover:bg-slate-50 transition">
+            <button class="bg-white px-5 py-3 rounded-t-xl font-bold text-sm flex items-center gap-2 border border-slate-200 border-b-0 min-w-max text-primary relative top-[1px] z-10 shadow-sm cursor-default">
                 <div class="bg-teal-100 text-teal-700 w-6 h-6 flex items-center justify-center rounded text-xs">
                     <i class="fas fa-receipt"></i>
                 </div>
                 Daftar Tagihan
                 <span id="count-total" class="ml-1 bg-teal-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">0</span>
             </button>
-
-            <button onclick="setFilterStatus('ready_import')" class="bg-slate-50 px-5 py-3 rounded-t-xl font-bold text-sm flex items-center gap-2 border border-transparent border-b border-b-slate-200 min-w-max text-slate-600 hover:bg-white hover:border-slate-200 hover:border-b-0 hover:z-20 hover:text-primary transition relative top-[1px] group">
-                <div class="bg-indigo-100 text-indigo-700 w-6 h-6 flex items-center justify-center rounded text-xs">
-                    <i class="fas fa-file-import"></i>
-                </div>
-                Impor Xero
-            </button>
-
             <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/CreateBill/index.html" class="bg-slate-50 px-5 py-3 rounded-t-xl font-bold text-sm flex items-center gap-2 border border-transparent border-b border-b-slate-200 min-w-max text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition relative top-[1px] group">
                 <div class="bg-slate-200 text-slate-600 w-6 h-6 flex items-center justify-center rounded text-xs group-hover:bg-slate-300 transition">
                     <i class="fas fa-folder-open"></i>
@@ -107,6 +99,9 @@
             </button>
             <button onclick="setFilterStatus('rejected')" id="filter-rejected" class="filter-pill inactive border px-4 py-1.5 rounded-full text-xs font-medium shadow-sm flex items-center gap-2 transition-all">
                 <span class="w-2 h-2 rounded-full bg-red-500"></span> Rejected
+            </button>
+            <button onclick="setFilterStatus('ready_import')" id="filter-ready" class="filter-pill inactive border px-4 py-1.5 rounded-full text-xs font-medium shadow-sm flex items-center gap-2 transition-all">
+                <span class="w-2 h-2 rounded-full bg-indigo-500"></span> Siap Impor
             </button>
         </div>
 
@@ -332,7 +327,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbwtJ4wCjVShSHAMJojKXhLvFPO17fkZu_iDHYM6Bg8-KXipfmkzKczssY1H9s-TN-0TqQ/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbyjH9KkbhSYl9lzC2zAvQbIyV7lIPrDKshjIi17Ppy4Moq3Ma8y0GI5ja_y1gQXRzpGGQ/exec";
         
         const TAX_RATE = 0.11;
         let allData = [];
@@ -388,10 +383,18 @@
                 el.classList.remove('active'); el.classList.add('inactive');
             });
             
-            // Handle active state for pill buttons (only for basic filters)
-            if(['all', 'billed', 'rejected'].includes(status)) {
-                document.getElementById(`filter-${status}`).classList.add('active');
-                document.getElementById(`filter-${status}`).classList.remove('inactive');
+            // Set active class properly including new button
+            const statusMap = {
+                'all': 'filter-all',
+                'billed': 'filter-billed',
+                'rejected': 'filter-rejected',
+                'ready_import': 'filter-ready'
+            };
+            
+            if(statusMap[status]) {
+                const btn = document.getElementById(statusMap[status]);
+                btn.classList.add('active');
+                btn.classList.remove('inactive');
             }
             
             applyFilters();
@@ -426,27 +429,26 @@
                 
                 let displayTotal = formatRupiah(po.totalEst || 0);
 
-                // --- ACTION BUTTON LOGIC ---
+                // --- ACTION BUTTON ICONS ---
                 let actionButtons = '';
                 
-                // 1. View Button (Always visible)
+                // View Button (Always visible)
                 const viewBtn = `
                     <button onclick="openBillModal('${po.uniqueKey}', true)" class="w-8 h-8 rounded border border-slate-200 text-slate-400 hover:text-primary hover:bg-teal-50 transition shadow-sm flex items-center justify-center" title="Lihat Detail">
                         <i class="fas fa-eye"></i>
                     </button>
                 `;
 
-                // 2. Conditional Buttons
                 if (statusLower.includes('rejected')) {
-                    // Jika Rejected: Reverse/Undo (Revise)
+                    // Rejected: View + Reverse (Undo)
                     actionButtons = `
                         ${viewBtn}
-                        <button onclick="openBillModal('${po.uniqueKey}')" class="w-8 h-8 rounded bg-yellow-50 border border-yellow-200 text-yellow-600 hover:bg-yellow-100 transition shadow-sm flex items-center justify-center" title="Revisi">
+                        <button onclick="openBillModal('${po.uniqueKey}')" class="w-8 h-8 rounded bg-yellow-50 border border-yellow-200 text-yellow-600 hover:bg-yellow-100 transition shadow-sm flex items-center justify-center" title="Revisi / Reverse">
                             <i class="fas fa-rotate-left"></i>
                         </button>
                     `;
                 } else if (statusLower.includes('siap impor') || statusLower.includes('imported')) {
-                    // Jika Siap Impor: Lock (Tidak bisa edit)
+                    // Approved/Imported: View + Lock
                     actionButtons = `
                         ${viewBtn}
                         <button disabled class="w-8 h-8 rounded bg-slate-100 border border-slate-200 text-slate-400 cursor-not-allowed flex items-center justify-center" title="Terkunci">
@@ -454,16 +456,24 @@
                         </button>
                     `;
                 } else {
-                    // Pending / Billed: Edit & Approve
-                    let editIcon = po.invNumber ? "fa-pencil" : "fa-plus";
+                    // Pending/Billed: View + Edit + Approve (if invoice exists)
+                    let editIcon = po.invNumber ? "fa-pencil" : "fa-plus"; // Edit or Entry
+                    
+                    let approveBtn = '';
+                    if (po.invNumber) {
+                        approveBtn = `
+                            <button onclick="approveBill('${po.uniqueKey}', '${po.id}', '${po.invNumber}')" class="w-8 h-8 rounded bg-indigo-50 border border-indigo-200 text-indigo-600 hover:bg-indigo-100 transition shadow-sm flex items-center justify-center" title="Approve">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        `;
+                    }
+
                     actionButtons = `
                         ${viewBtn}
                         <button onclick="openBillModal('${po.uniqueKey}')" class="w-8 h-8 rounded bg-white border border-slate-200 text-primary hover:bg-teal-50 transition shadow-sm flex items-center justify-center" title="Edit/Entry">
                             <i class="fas ${editIcon}"></i>
                         </button>
-                        <button onclick="approveBill('${po.uniqueKey}', '${po.id}', '${po.invNumber}')" class="w-8 h-8 rounded bg-indigo-50 border border-indigo-200 text-indigo-600 hover:bg-indigo-100 transition shadow-sm flex items-center justify-center" title="Approve">
-                            <i class="fas fa-check"></i>
-                        </button>
+                        ${approveBtn}
                     `;
                 }
 
@@ -489,7 +499,7 @@
             });
         }
 
-        // --- NEW FUNCTION: APPROVE BILL ---
+        // --- APPROVE FUNCTION ---
         async function approveBill(uniqueKey, idPO, invNumber) {
             if(!invNumber || invNumber === '-' || invNumber === 'null') {
                 showNotification("Tagihan belum di-entry (Invoice No kosong). Silakan entry dulu.");
@@ -497,7 +507,7 @@
             }
 
             if(confirm(`Apakah Anda yakin ingin menyetujui tagihan ${invNumber}? Status akan berubah menjadi 'Siap Impor' dan data terkunci.`)) {
-                document.getElementById('modalLoading').classList.remove('hidden'); // Use global loading or modal loading
+                document.getElementById('modalLoading').classList.remove('hidden'); 
                 
                 const payload = {
                     action: 'approve_bill',
@@ -511,7 +521,7 @@
                     
                     if(json.status === 'success') {
                         showNotification(json.message);
-                        fetchData(); // Refresh table
+                        fetchData(); // Refresh table to show locked status
                     } else {
                         showNotification("Gagal: " + json.message);
                     }
@@ -557,22 +567,16 @@
             
             // Logic Status Check
             const statusLower = (po.status || "").toLowerCase();
-            const isStatusLocked = statusLower.includes('rejected') || statusLower.includes('imported') || statusLower.includes('siap impor') || statusLower.includes('billed');
             
-            // Billed is usually editable, but Siap Impor/Rejected is locked for standard entry
-            // But wait, the requirement says "Edit will become Lock" IF Approved (Siap Impor).
-            // Normal "Billed" status should still be editable via the Pencil icon.
+            // Check if editable
+            const isStatusLocked = statusLower.includes('rejected') || statusLower.includes('imported') || statusLower.includes('siap impor');
             
-            // Logic Override: 
-            // If viewOnly = true -> Locked
-            // If Rejected -> Locked (Show banner)
-            // If Siap Impor -> Locked (Show banner)
-            
-            const isFormLocked = viewOnly || statusLower.includes('rejected') || statusLower.includes('siap impor');
+            // If viewOnly is passed, OR status is locked (approved/rejected), then form is locked
+            const isFormLocked = viewOnly || isStatusLocked;
             
             renderBillItems(isFormLocked); 
             
-            // Rejection/Cancellation Reason
+            // Rejection info
             const rejectContainer = document.getElementById('rejection-info-container');
             const rejectText = document.getElementById('rejection-reason-text');
             
@@ -585,8 +589,8 @@
             }
 
             if (isFormLocked) {
-                // Show banner if it's a locked status (not just view mode)
-                if(!viewOnly && (statusLower.includes('rejected') || statusLower.includes('siap impor'))) {
+                // Only show Red Banner if it's strictly locked by status (not just view mode)
+                if(!viewOnly && isStatusLocked) {
                     document.getElementById('locked-banner').classList.remove('hidden');
                     document.getElementById('locked-status-text').innerText = po.status;
                 } else {
