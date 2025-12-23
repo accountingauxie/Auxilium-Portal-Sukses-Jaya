@@ -507,57 +507,57 @@
         }
 
         function renderBillItems(isFormLocked = false) {
-            const tbody = document.getElementById('bill-items-body');
-            tbody.innerHTML = '';
-            
-            // Cek apakah tombol save tersembunyi (indikator global lock) atau dipaksa lock via parameter
-            const isGlobalLocked = document.getElementById('btn-save').classList.contains('hidden') || isFormLocked;
+    const tbody = document.getElementById('bill-items-body');
+    tbody.innerHTML = '';
+    
+    // Cek apakah tombol save tersembunyi (indikator global lock) atau dipaksa lock via parameter
+    const isGlobalLocked = document.getElementById('btn-save').classList.contains('hidden') || isFormLocked;
 
-            currentItems.forEach((item, index) => {
-                const lineTotal = (item.price - item.disc) * item.qty;
-                const rowClass = item.checked ? "bg-white" : "bg-gray-50 opacity-60";
-                const typeBadge = item.typeProduk 
-                    ? `<span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-[10px] font-bold border border-gray-200">${item.typeProduk}</span>`
-                    : `<span class="text-gray-300 text-xs">-</span>`;
+    currentItems.forEach((item, index) => {
+        const lineTotal = (item.price - item.disc) * item.qty;
+        const rowClass = item.checked ? "bg-white" : "bg-gray-50 opacity-60";
+        const typeBadge = item.typeProduk 
+            ? `<span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-[10px] font-bold border border-gray-200">${item.typeProduk}</span>`
+            : `<span class="text-gray-300 text-xs">-</span>`;
+        
+        const disabledAttr = isGlobalLocked ? "disabled" : "";
+
+        tbody.innerHTML += `
+            <tr class="${rowClass} border-b border-slate-50 last:border-0 transition">
+                <td class="p-4 align-top text-center">
+                    <input type="checkbox" ${item.checked ? 'checked' : ''} ${disabledAttr} onchange="toggleItem(${index}, this.checked)" class="bill-input w-4 h-4 text-primary rounded cursor-pointer accent-primary">
+                </td>
+                <td class="p-4 align-top text-center">${typeBadge}</td>
                 
-                const disabledAttr = isGlobalLocked ? "disabled" : "";
-
-                tbody.innerHTML += `
-                    <tr class="${rowClass} border-b border-slate-50 last:border-0 transition">
-                        <td class="p-4 align-top text-center">
-                            <input type="checkbox" ${item.checked ? 'checked' : ''} ${disabledAttr} onchange="toggleItem(${index}, this.checked)" class="bill-input w-4 h-4 text-primary rounded cursor-pointer accent-primary">
-                        </td>
-                        <td class="p-4 align-top text-center">${typeBadge}</td>
-                        <td class="p-4 align-top">
-                            <div class="font-bold text-slate-700 text-sm">${item.namaItem}</div>
-                            <div class="text-[10px] text-slate-400 mt-1 flex gap-2 items-center">
-                                <span class="bg-slate-100 px-1.5 rounded font-bold">${item.satuan}</span>
-                            </div>
-                        </td>
-                        <td class="p-4 align-top bg-yellow-50/30">
-                            <input type="text" value="${item.spec || ''}" ${disabledAttr} oninput="updateItem(${index}, 'spec', this.value)" class="input-bare text-xs text-slate-600 font-medium h-full" placeholder="-">
-                        </td>
-                        <td class="p-4 align-top">
-                            <input type="number" value="${item.qty}" min="0" ${disabledAttr} oninput="updateItem(${index}, 'qty', this.value)" class="input-bare text-center text-sm font-bold text-slate-700">
-                        </td>
-                        <td class="p-4 align-top">
-                            <input type="number" value="${item.price}" ${disabledAttr} oninput="updateItem(${index}, 'price', this.value)" class="input-bare text-right text-sm font-mono text-slate-600">
-                        </td>
-                        <td class="p-4 align-top">
-                            <input type="number" value="${item.disc}" ${disabledAttr} oninput="updateItem(${index}, 'disc', this.value)" class="input-bare text-right text-sm font-mono text-red-500">
-                        </td>
-                        <td class="p-4 align-top text-right font-bold text-slate-800 font-mono text-sm">
-                            <span id="amount-${index}">${formatRupiah(lineTotal)}</span>
-                        </td>
-                        <td class="p-4 align-top text-center">
-                            <button onclick="deleteItem(${index})" ${disabledAttr} class="bill-input text-slate-300 hover:text-red-500 transition px-2"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            });
-            calculateTotal();
-        }
-
+                <td class="p-4 align-top">
+                    <input type="text" value="${item.namaItem}" ${disabledAttr} oninput="updateItem(${index}, 'namaItem', this.value)" class="input-bare font-bold text-slate-700 text-sm w-full mb-1 focus:bg-white focus:border-slate-300 transition" placeholder="Deskripsi Item...">
+                    <div class="flex items-center">
+                        <input type="text" value="${item.satuan}" ${disabledAttr} oninput="updateItem(${index}, 'satuan', this.value)" class="input-bare text-[10px] bg-slate-100 text-slate-600 font-bold w-16 text-center rounded px-1 py-0.5 focus:bg-white focus:ring-1 focus:ring-slate-300 transition" placeholder="Unit">
+                    </div>
+                </td>
+                <td class="p-4 align-top bg-yellow-50/30">
+                    <input type="text" value="${item.spec || ''}" ${disabledAttr} oninput="updateItem(${index}, 'spec', this.value)" class="input-bare text-xs text-slate-600 font-medium h-full" placeholder="-">
+                </td>
+                <td class="p-4 align-top">
+                    <input type="number" value="${item.qty}" min="0" ${disabledAttr} oninput="updateItem(${index}, 'qty', this.value)" class="input-bare text-center text-sm font-bold text-slate-700">
+                </td>
+                <td class="p-4 align-top">
+                    <input type="number" value="${item.price}" ${disabledAttr} oninput="updateItem(${index}, 'price', this.value)" class="input-bare text-right text-sm font-mono text-slate-600">
+                </td>
+                <td class="p-4 align-top">
+                    <input type="number" value="${item.disc}" ${disabledAttr} oninput="updateItem(${index}, 'disc', this.value)" class="input-bare text-right text-sm font-mono text-red-500">
+                </td>
+                <td class="p-4 align-top text-right font-bold text-slate-800 font-mono text-sm">
+                    <span id="amount-${index}">${formatRupiah(lineTotal)}</span>
+                </td>
+                <td class="p-4 align-top text-center">
+                    <button onclick="deleteItem(${index})" ${disabledAttr} class="bill-input text-slate-300 hover:text-red-500 transition px-2"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>
+        `;
+    });
+    calculateTotal();
+}
         function toggleItem(index, isChecked) {
             currentItems[index].checked = isChecked;
             renderBillItems(); // State locked akan otomatis terdeteksi dari DOM button save
