@@ -7,7 +7,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-/* --- 1. SYSTEM STYLE (Sama persis dengan Review Penjualan) --- */
+/* --- 1. SYSTEM STYLE --- */
 :root { 
     --primary-color: #116999; 
     --bg-color: #f4f7f6; 
@@ -28,7 +28,8 @@ body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background:
     justify-content: space-between;
     padding: 0 40px;
     box-shadow: 0 1px 5px rgba(0,0,0,0.05);
-    position: sticky; top: 0; z-index: 10000;
+    position: sticky; top: 0; 
+    z-index: 100; /* Z-index Navbar diturunkan agar Modal bisa di atasnya */
 }
 .aux-logo img { height: 40px; width: auto; display: block; }
 .aux-menu { display: flex; gap: 10px; align-items: center; height: 100%; }
@@ -38,7 +39,7 @@ body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background:
 .aux-link.active { color: var(--primary-color); background-color: #eff8ff; font-weight: 700; }
 
 /* Dropdown */
-.dropdown-menu { visibility: hidden; opacity: 0; position: absolute; top: 90%; left: 50%; transform: translateX(-50%) translateY(-10px); background: white; min-width: 220px; border: 1px solid #eaecf0; border-radius: 8px; box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08); padding: 6px; z-index: 100000; transition: all 0.2s ease; }
+.dropdown-menu { visibility: hidden; opacity: 0; position: absolute; top: 90%; left: 50%; transform: translateX(-50%) translateY(-10px); background: white; min-width: 220px; border: 1px solid #eaecf0; border-radius: 8px; box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08); padding: 6px; z-index: 200; transition: all 0.2s ease; }
 .dropdown-menu::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
 .nav-item:hover .dropdown-menu { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
 .dropdown-item { display: block; padding: 10px 12px; color: #344054; text-decoration: none; font-size: 14px; border-radius: 6px; transition: background 0.2s; text-align: left; font-weight: 400; }
@@ -50,8 +51,6 @@ body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background:
 .user-name { font-weight: 700; font-size: 13px; color: #333; }
 .user-role { font-size: 11px; color: #888; }
 .user-avatar { width: 36px; height: 36px; background-color: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; user-select: none; }
-.logout-btn { background: none; border: 1px solid #ddd; color: #666; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 14px; }
-.logout-btn:hover { background-color: var(--red-bg); color: var(--red-text); border-color: var(--red-bg); }
 
 /* --- CONTENT STYLE --- */
 .page-wrap { padding: 30px 40px; max-width: 98%; margin: 0 auto; }
@@ -79,12 +78,36 @@ table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 .btn-split { background: #f3e8ff; color: #6b21a8; border-color: #d8b4fe; }
 .btn-remove { background: #fef2f2; color: #991b1b; border-color: #fee2e2; }
 
-/* --- MODAL STYLE --- */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 9000; backdrop-filter: blur(2px); }
-.modal-box { background: #fff; width: 1300px; max-width: 98%; height: 95vh; display: flex; flex-direction: column; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-.modal-header { padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
+/* --- MODAL STYLE (UPDATED) --- */
+.modal-overlay { 
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+    background: rgba(0,0,0,0.5); 
+    display: none; 
+    align-items: flex-start; /* Ubah dari center ke flex-start agar mulai dari atas */
+    justify-content: center; 
+    z-index: 10000; /* Z-Index sangat tinggi agar di atas Navbar */
+    backdrop-filter: blur(2px); 
+    padding-top: 50px; /* Jarak dari atas layar (Fix #1) */
+    overflow-y: auto; /* Agar overlay bisa discroll jika modal sangat panjang */
+}
+
+.modal-box { 
+    background: #fff; 
+    width: 1350px; 
+    max-width: 98%; 
+    /* Fix #2: Ubah height fixed menjadi auto dengan max-height */
+    height: auto; 
+    max-height: 90vh;
+    display: flex; 
+    flex-direction: column; 
+    border-radius: 8px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
+    margin-bottom: 50px;
+}
+
+.modal-header { padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; border-radius: 8px 8px 0 0; }
 .modal-body { flex: 1; overflow-y: auto; padding: 20px; background: #fff; }
-.modal-footer { padding: 15px 30px; background: #f9fafb; border-top: 1px solid #eee; text-align: right; }
+.modal-footer { padding: 15px 30px; background: #f9fafb; border-top: 1px solid #eee; text-align: right; border-radius: 0 0 8px 8px; }
 
 .btn-action { padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; color: white; font-weight: bold; margin-left: 10px; transition: 0.2s; }
 .btn-close { background: #fff; color: #333; border: 1px solid #ccc; }
@@ -173,21 +196,21 @@ table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; bor
         
         <div class="modal-body">
             <div class="alert" style="background:#e0f2fe; color:#0c4a6e; padding:10px; border-radius:6px; margin-bottom:15px; font-size:12px;">
-                <i class="fas fa-info-circle"></i> <strong>Instruksi:</strong> Lengkapi Mesin dan KPC untuk item Spandek. Gunakan tombol "Split" jika stok KPC tidak cukup.
+                <i class="fas fa-info-circle"></i> <strong>Instruksi:</strong> Lengkapi Mesin dan KPC untuk item Spandek. Jika Split dinyalakan, harap sesuaikan Qty di setiap baris (Baris Utama + Baris Split) agar totalnya pas.
             </div>
 
             <table class="xero-table" id="productionTable">
                 <thead>
                     <tr>
                         <th style="width:20%">Nama Barang</th>
-                        <th style="width:8%; text-align:center;">Meter</th>
-                        <th style="width:8%; text-align:center;">Total Qty</th>
-                        <th style="width:10%; text-align:center;">Assigned Qty</th>
-                        <th style="width:12%">Mesin</th>
-                        <th style="width:15%">KPC Code (Stok)</th>
-                        <th style="width:10%">Type</th>
-                        <th style="width:12%">Work Effort Code</th>
-                        <th style="width:5%">Action</th>
+                        <th style="width:5%; text-align:center;">Meter</th>
+                        <th style="width:5%; text-align:center;">Total Qty</th>
+                        <th style="width:8%; text-align:center;">Assigned Qty</th>
+                        <th style="width:8%; text-align:center;">Total M'</th> <th style="width:12%">Mesin</th>
+                        <th style="width:14%">KPC Code (Stok)</th>
+                        <th style="width:8%">Type</th>
+                        <th style="width:14%">Work Effort Code</th>
+                        <th style="width:6%">Action</th>
                     </tr>
                 </thead>
                 <tbody id="setupBody"></tbody>
@@ -255,34 +278,33 @@ table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; bor
 
 <script>
 // =========================================================
-// KONFIGURASI BASE URL
-// Silakan Ganti URL ini dengan URL Web App Deployment Anda
+// URL Backend Google Apps Script
 // =========================================================
 const BASE_URL = "https://script.google.com/macros/s/AKfycbxmfwf0e9_K1TwaCGqmvCMSAX11UsCgctqX9newCThLpssio-GE3KECfVYdItZRCBJV5Q/exec"; 
 
 let currentOrders = {}; 
 let activeOrderId = null;
 
+// Peta Kode untuk Work Effort (Fix #5)
+const TYPE_CODES = {
+    'Custom': 'CS',
+    'Plat': 'PL'
+};
+
 window.onload = loadOrders;
 
-// --- 1. LOAD DATA (FETCH API) ---
+// --- 1. LOAD DATA ---
 async function loadOrders() {
     const tbody = document.getElementById('dashboardBody');
     tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px;">Loading Data...</td></tr>';
     
     try {
-        // Panggil Action "getProductionOrders" di Backend
-        // Pastikan Anda sudah update Main.gs untuk handle "getProductionOrders" via doGet
-        // atau update Main.gs untuk return JSON jika action=getProductionOrders
-        
-        // Asumsi: Kita pakai endpoint yang sama, tapi param action beda
         const response = await fetch(BASE_URL + "?action=getProductionOrders");
         const data = await response.json();
-        
         renderDashboard(data);
     } catch (err) {
         console.error(err);
-        tbody.innerHTML = `<tr><td colspan="6" style="color:red; text-align:center;">Error Loading Data. Pastikan Script sudah di-deploy dengan akses 'Anyone'.<br>${err}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="color:red; text-align:center;">Error Loading Data.<br>${err}</td></tr>`;
     }
 }
 
@@ -290,7 +312,6 @@ function renderDashboard(data) {
     const tbody = document.getElementById('dashboardBody');
     tbody.innerHTML = '';
     
-    // Jika data kosong atau error object kosong
     if (!data || Object.keys(data).length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#999;">Tidak ada pesanan "Awaiting Production".</td></tr>';
         return;
@@ -337,12 +358,17 @@ function openSetup(orderId) {
         tr.dataset.original = item.fullRowData; 
         tr.dataset.rowindex = item.rowIndex;
 
+        // Hitung Total M' Awal
+        const initialTotalM = (parseFloat(item.meter) * parseInt(item.qty)).toFixed(2);
+
         let html = `
             <td>
                 <strong>${item.item}</strong>
                 <div style="font-size:10px; color:#666;">Original Type: ${item.type}</div>
             </td>
-            <td style="text-align:center;">${item.meter || '-'}</td>
+            <td style="text-align:center;">
+                <span class="meter-val">${item.meter || 0}</span>
+            </td>
             <td style="text-align:center;">
                 <span class="target-qty badge badge-approve" style="font-size:12px;">${item.qty}</span>
             </td>
@@ -350,7 +376,13 @@ function openSetup(orderId) {
 
         if (isSpandek) {
             html += `
-                <td><input type="number" class="prod-input qty-input" value="${item.qty}" min="1" onchange="validateQty(${idx})"></td>
+                <td>
+                    <input type="number" class="prod-input qty-input" value="${item.qty}" min="1" 
+                    onchange="validateQty(${idx}); updateCalculations(this)">
+                </td>
+                <td style="text-align:center;">
+                    <span class="total-m-display" style="font-weight:bold; color:#116999;">${initialTotalM}</span>
+                </td>
                 <td>
                     <select class="prod-select machine-select" onchange="generateWE(this)">
                         <option value="">- Pilih -</option>
@@ -361,8 +393,8 @@ function openSetup(orderId) {
                 <td>
                     <select class="prod-select kpc-select" onchange="generateWE(this)">
                         <option value="">- Pilih KPC -</option>
-                        <option value="KPC-001">KPC-001 (Stock: 500m)</option>
-                        <option value="KPC-002">KPC-002 (Stock: 120m)</option>
+                        <option value="KPC-001">KPC-001</option>
+                        <option value="KPC-002">KPC-002</option>
                     </select>
                 </td>
                 <td>
@@ -379,8 +411,10 @@ function openSetup(orderId) {
                 </td>
             `;
         } else {
+            // Non-Spandek (Read Only)
             html += `
                 <td style="text-align:center;"><input type="hidden" class="qty-input" value="${item.qty}">${item.qty}</td>
+                <td style="text-align:center;">-</td>
                 <td colspan="4" style="text-align:center; color:#999; font-style:italic; background:#f9f9f9;">
                     Non-Spandek (Tidak perlu setup)
                 </td>
@@ -400,42 +434,91 @@ function closeModal() {
     document.getElementById('setupModal').style.display = 'none';
 }
 
-// --- 3. SPLIT & WE LOGIC ---
+// --- 3. SPLIT & CALCULATION LOGIC ---
+
+// Helper: Update Total Meter per Row (Fix #4)
+function updateCalculations(input) {
+    const row = input.closest('tr');
+    const meterVal = parseFloat(row.querySelector('.meter-val')?.innerText || 0);
+    const qtyVal = parseInt(input.value || 0);
+    const totalM = (meterVal * qtyVal).toFixed(2);
+    
+    const display = row.querySelector('.total-m-display');
+    if(display) display.innerText = totalM;
+}
+
+// Helper: Generate Work Effort Code (Fix #5)
 function generateWE(el) {
     const row = el.closest('tr');
     const machine = row.querySelector('.machine-select').value;
     const kpc = row.querySelector('.kpc-select').value;
+    const typeVal = row.querySelector('.type-select').value;
+    const typeCode = TYPE_CODES[typeVal] || 'XX'; // Map Custom->CS, Plat->PL
+    
     const output = row.querySelector('.we-code-input');
     
     if(machine && kpc) {
-        output.value = `${machine}_${kpc}_${activeOrderId}`;
+        // Format: MESIN_KPC_TYPE_NOINV
+        output.value = `${machine}_${kpc}_${typeCode}_${activeOrderId}`;
     } else {
         output.value = '';
     }
 }
 
+// Logic: Smart Split (Fix #3 & #6)
 function splitRow(btn, groupId) {
     const originalRow = btn.closest('tr');
-    const newRow = originalRow.cloneNode(true);
     
+    // 1. Ambil Qty saat ini di baris utama
+    const mainQtyInput = originalRow.querySelector('.qty-input');
+    const currentQty = parseInt(mainQtyInput.value || 0);
+    
+    // 2. Bagi dua secara otomatis (Smart Split)
+    const splitQty1 = Math.floor(currentQty / 2);
+    const splitQty2 = currentQty - splitQty1; // Sisanya
+
+    // Update Baris Utama
+    mainQtyInput.value = splitQty1;
+    updateCalculations(mainQtyInput);
+
+    // 3. Clone Baris untuk Split
+    const newRow = originalRow.cloneNode(true);
     newRow.classList.remove('main-row');
     newRow.classList.add('split-row');
     
-    // Reset Inputs
-    newRow.querySelector('.qty-input').value = 0;
+    // Setup Baris Baru
+    const newQtyInput = newRow.querySelector('.qty-input');
+    newQtyInput.value = splitQty2; // Isi dengan sisa Qty
+    
+    // Reset Selects & Output
     newRow.querySelectorAll('select').forEach(s => {
         s.value = "";
         s.onchange = function() { generateWE(this); };
     });
     newRow.querySelector('.we-code-input').value = "";
-    newRow.querySelector('.target-qty').parentElement.innerHTML = ""; 
+    
+    // Hapus badge target qty di baris split (agar tidak bingung)
+    const targetCell = newRow.querySelector('.target-qty').parentElement;
+    targetCell.innerHTML = '<small class="text-muted">(Split)</small>';
 
-    // Ubah tombol
+    // Ubah tombol jadi Remove
     const actionTd = newRow.lastElementChild;
     actionTd.innerHTML = `<button class="btn-sm btn-remove" onclick="removeSplit(this, ${groupId})"><i class="fas fa-trash"></i></button>`;
     
-    newRow.querySelector('.qty-input').onchange = function() { validateQty(groupId); };
+    // Re-attach event listeners
+    newQtyInput.onchange = function() { 
+        validateQty(groupId); 
+        updateCalculations(this);
+    };
+
+    // Masukkan baris baru
     originalRow.after(newRow);
+    
+    // Update Total Meter Baris Baru
+    updateCalculations(newQtyInput);
+    
+    // Validasi ulang
+    validateQty(groupId);
 }
 
 function removeSplit(btn, groupId) {
@@ -450,25 +533,34 @@ function validateQty(groupId) {
     let target = 0;
     let totalAssigned = 0;
 
+    // Cari Target (hanya ada di Main Row)
+    const mainRow = tbody.querySelector(`tr.main-row[data-id="${groupId}"]`);
+    if(mainRow) {
+        target = parseInt(mainRow.querySelector('.target-qty').innerText);
+    }
+
+    // Hitung Total Input (Main + Splits)
     rows.forEach(r => {
-        if(r.classList.contains('main-row')) {
-            target = parseInt(r.querySelector('.target-qty').innerText);
-        }
         totalAssigned += parseInt(r.querySelector('.qty-input').value || 0);
     });
 
     const msg = document.getElementById('validationMsg');
     
+    // Visual Feedback (Merah jika salah)
+    let isError = (totalAssigned !== target);
+    
     rows.forEach(r => {
         const input = r.querySelector('.qty-input');
-        if(totalAssigned !== target) {
+        if(isError) {
             input.style.borderColor = 'red';
+            input.style.backgroundColor = '#fff0f0';
         } else {
             input.style.borderColor = '#ccc';
+            input.style.backgroundColor = '#fff';
         }
     });
 
-    if(totalAssigned !== target) {
+    if(isError) {
         msg.style.display = 'block';
         msg.innerText = `Total Qty Item Group ini (${totalAssigned}) tidak sama dengan Target (${target}).`;
         return false;
@@ -505,7 +597,7 @@ async function submitProduction() {
 
         let pdfItem = {
             name: row.cells[0].querySelector('strong').innerText,
-            meter: row.cells[1].innerText,
+            meter: row.querySelector('.meter-val').innerText,
             qty: qty,
             detail: '-',
             we: '-'
@@ -539,10 +631,10 @@ async function submitProduction() {
         return;
     }
 
-    // Generate PDF dulu
+    // Generate PDF
     generatePDF(activeOrderId, pdfData);
 
-    // Kirim Data ke Backend
+    // Kirim Data
     const btn = document.querySelector('.btn-process');
     const oldText = btn.innerText;
     btn.innerText = "Processing...";
@@ -555,7 +647,6 @@ async function submitProduction() {
             data: submitData
         };
 
-        // Gunakan POST untuk kirim data
         const res = await fetch(BASE_URL, {
             method: 'POST',
             body: JSON.stringify(payload)
