@@ -139,30 +139,58 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
     font-size: 15px; font-weight: 700; color: #116999; margin-top: 10px; padding-top: 10px; border-top: 1px dotted #999; 
 }
 
-/* --- PAYMENT FOOTER (STYLE REFERENCE IMAGE) --- */
+/* --- PAYMENT FOOTER --- */
 .pdf-payment-wrapper {
-    margin-top: 25px; /* Jarak dari section atas */
-    border-top: 1px solid #ccc; /* Garis pemisah style referensi */
-    padding-top: 10px;
+    margin-top: 20px; 
+    border-top: 1px solid #ccc;
+    padding-top: 8px;
     page-break-inside: avoid;
 }
 .pdf-payment-title {
     font-size: 11px;
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
     color: #333;
     display: block;
 }
 .pdf-payment-container {
     display: flex;
-    gap: 40px; /* Jarak antar bank */
+    gap: 40px; 
 }
 .pdf-bank-detail {
     font-size: 10px;
-    line-height: 1.5;
+    line-height: 1.4;
     color: #444;
 }
 .bank-name { font-weight: 700; color: #000; }
+
+/* --- NEW SIGNATURE SECTION --- */
+.pdf-signature-wrapper {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    page-break-inside: avoid;
+    padding-bottom: 10px;
+}
+.sig-box {
+    width: 200px;
+    text-align: center;
+}
+.sig-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 40px; /* Space for signature */
+}
+.sig-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: #000;
+    border-top: 1px solid #333;
+    display: inline-block;
+    padding-top: 2px;
+    min-width: 120px;
+}
 
 .skeleton { height: 20px; background: #eee; width: 100%; border-radius: 4px; animation: pulse 1s infinite; }
 @keyframes pulse { 0% {opacity: 0.6;} 50% {opacity: 1;} 100% {opacity: 0.6;} }
@@ -242,7 +270,7 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
 <div id="pdf-hidden-container">
     <div id="pdfContent">
         <div class="pdf-header">
-            <div class="pdf-title">INVOICE</div>
+            <div class="pdf-title">FAKTUR PENJUALAN</div>
             <div class="company-details">
                 <div class="company-name">CV. SUKSES JAYA MAKMUR LESTARI</div>
                 <div>JL. D.I Panjaitan, RT/RW. 008/003<br>Kel. Wundudopi, Kec. Baruga, Kendari<br>Sulawesi Tenggara | Telp. 0822 4708 4908</div>
@@ -250,15 +278,15 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
         </div>
         <div class="pdf-info">
             <div class="bill-to">
-                <div class="pdf-bill-label">BILLED TO</div>
+                <div class="pdf-bill-label">KEPADA YTH.</div>
                 <div class="pdf-cust-name" id="pdfCustName">CUSTOMER NAME</div>
                 <div class="pdf-cust-addr"><span id="pdfAddr">Alamat...</span><br><span id="pdfRegion">Kota, Kec</span><br>Attn: <span id="pdfCP">-</span> | NPWP: <span id="pdfNPWP">-</span></div>
             </div>
             <div class="meta-data">
-                <div class="pdf-meta-row"><span class="pdf-meta-key">Invoice Date</span><span id="pdfDate">-</span></div>
-                <div class="pdf-meta-row"><span class="pdf-meta-key">Est. Delivery</span><span id="pdfEst">-</span></div>
-                <div class="pdf-meta-row"><span class="pdf-meta-key">Due Date</span><span id="pdfDue">-</span></div>
-                <div class="pdf-meta-row"><span class="pdf-meta-key">Order Number</span><span id="pdfOrderNo">-</span></div>
+                <div class="pdf-meta-row"><span class="pdf-meta-key">Tanggal Faktur</span><span id="pdfDate">-</span></div>
+                <div class="pdf-meta-row"><span class="pdf-meta-key">Est. Pengiriman</span><span id="pdfEst">-</span></div>
+                <div class="pdf-meta-row"><span class="pdf-meta-key">Jatuh Tempo</span><span id="pdfDue">-</span></div>
+                <div class="pdf-meta-row"><span class="pdf-meta-key">Nomor Order</span><span id="pdfOrderNo">-</span></div>
             </div>
         </div>
         <table class="pdf-table">
@@ -268,29 +296,40 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
         
         <div class="pdf-middle-section">
             <div class="pdf-notes-box">
-                <span class="pdf-notes-label">NOTES:</span>
+                <span class="pdf-notes-label">CATATAN:</span>
                 <div class="pdf-notes-content" id="pdfNotes">-</div>
             </div>
             <div class="pdf-total-box">
                 <div class="pdf-total-row"><span>Total DPP</span><span id="pdfDPP">0</span></div>
                 <div class="pdf-total-row"><span>Total PPN (11%)</span><span id="pdfPPN">0</span></div>
-                <div class="pdf-total-row grand"><span>Grand Total</span><span id="pdfTotal">0</span></div>
+                <div class="pdf-total-row grand"><span>Total Akhir</span><span id="pdfTotal">0</span></div>
             </div>
         </div>
 
         <div class="pdf-payment-wrapper">
-            <span class="pdf-payment-title">Payment Information</span>
+            <span class="pdf-payment-title">Informasi Pembayaran</span>
             <div class="pdf-payment-container">
                 <div class="pdf-bank-detail">
                     <div><span class="bank-name">CV Sukses Jaya Makmur Lestari</span></div>
                     <div>Bank: BCA</div>
-                    <div>Account No: 79 1088 9880</div>
+                    <div>No. Rek: 79 1088 9880</div>
                 </div>
                 <div class="pdf-bank-detail">
                     <div><span class="bank-name">CV Sukses Jaya Makmur Lestari</span></div>
                     <div>Bank: BRI</div>
-                    <div>Account No: 0646 01000 656568</div>
+                    <div>No. Rek: 0646 01000 656568</div>
                 </div>
+            </div>
+        </div>
+
+        <div class="pdf-signature-wrapper">
+            <div class="sig-box">
+                <div class="sig-title">Penerima</div>
+                <div class="sig-name">( ........................................ )</div>
+            </div>
+            <div class="sig-box">
+                <div class="sig-title">Hormat Kami</div>
+                <div class="sig-name">CV. SUKSES JAYA MAKMUR LESTARI</div>
             </div>
         </div>
 
@@ -406,7 +445,8 @@ async function updateStatus(id, stat) {
 
 function dlPDF(id) {
     const el = document.getElementById('pdfContent');
-    const opt = { margin: [1.5, 0.75], filename: `Invoice_${id}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'cm', format: 'a5', orientation: 'landscape' } };
+    // Adjust margin or scale if necessary for A5 Landscape
+    const opt = { margin: [1, 0.75, 1, 0.75], filename: `Faktur_${id}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'cm', format: 'a5', orientation: 'landscape' } };
     const btn = document.querySelector('.btn-pdf'); btn.textContent = "Generating...";
     html2pdf().set(opt).from(el).save().then(() => btn.textContent = "Download PDF");
 }
