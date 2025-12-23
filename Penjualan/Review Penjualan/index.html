@@ -93,7 +93,7 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 
 .web-totals { display: flex; justify-content: flex-end; }
 .web-total-box { width: 300px; background: #f9fafb; padding: 15px; border-radius: 8px; }
-/* Web Total (Tanpa garis khusus, standard box) */
+/* Web Total */
 .web-total-row.grand { 
     font-size: 20px; 
     color: var(--primary-color); 
@@ -133,15 +133,15 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
 .item-name-main { font-weight: 700; color: #000; display:block; font-size: 11px; }
 .item-sub { font-size: 9px; color: #666; font-weight: normal; margin-top: 2px; display: block; }
 
-/* REVISI: MIDDLE SECTION DENGAN GARIS HITAM DI ATAS */
+/* REVISI: GARIS TIPIS (1px) WARNA ABU TUA (#555) */
 .pdf-middle-section { 
     display: flex; 
     justify-content: space-between; 
     align-items: flex-start; 
     margin-top: 10px; 
     page-break-inside: avoid; 
-    /* Garis hitam pemisah area table dengan footer */
-    border-top: 2px solid #000; 
+    /* Perubahan di sini: ketebalan 1px, warna abu tua */
+    border-top: 1px solid #555; 
     padding-top: 10px;
 }
 
@@ -150,7 +150,7 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
 .pdf-notes-content { font-size: 10px; color: #555; line-height: 1.4; border: 1px dashed #ccc; padding: 5px; border-radius: 4px; min-height: 30px; }
 .pdf-total-box { width: 35%; }
 
-/* Total Row PDF (Clean, tanpa border sendiri karena sudah ada di parent) */
+/* Total Row PDF */
 .pdf-total-row.grand { 
     font-size: 15px; 
     font-weight: 700; 
