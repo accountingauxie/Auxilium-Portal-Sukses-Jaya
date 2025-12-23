@@ -543,7 +543,7 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
 </div>
 
 <script>
-const baseURL = "https://script.google.com/macros/s/AKfycbwIE7I1nk9c1r8oosJ8VhGBo_HXWk7hQeu-xtqocElzVaj5WhorGMyqk08bJLvSsRCrqg/exec";
+const baseURL = "https://script.google.com/macros/s/AKfycbwzPYOC27iO8kqKmsdwhcjKaJe_qHdCQWwmuxHzyREV1FOxbukb6U6MWuM54naRnrSvKQ/exec";
 let allOrders = [];
 let currentFilter = 'All';
 
@@ -561,10 +561,22 @@ async function fetchData() {
 
 function parseDateStr(str) {
     if(!str) return null;
-    if(str.includes('/')) {
-        const parts = str.split('/');
-        return new Date(parts[2], parts[1]-1, parts[0]);
+    
+    // Jika format sudah Date object
+    if (str instanceof Date) return str;
+
+    // Paksa jadi string untuk pengecekan
+    const s = String(str);
+
+    // Cek format dd/mm/yyyy
+    if(s.includes('/')) {
+        const parts = s.split('/');
+        // Pastikan parts lengkap
+        if(parts.length === 3) {
+            return new Date(parts[2], parts[1]-1, parts[0]);
+        }
     }
+    // Fallback parsing standar
     return new Date(str);
 }
 
