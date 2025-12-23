@@ -1,327 +1,263 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AUXILIUM Portal – CV. Sukses Jaya</title>
-  <link href="https://unpkg.com/feather-icons" rel="stylesheet">
-  <style>
-    /* ========== RESET & BASE ========== */
-    * {
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AUXILIUM Portal – CV. Sukses Jaya</title>
+<link href="https://unpkg.com/feather-icons" rel="stylesheet">
+<style>
+/* --- 1. SYSTEM STYLE (Web UI) --- */
+:root { 
+    --primary-color: #116999; 
+    --xero-blue: #116999; 
+    --bg-color: #f4f7f6; 
+    --text-color: #333; 
+    --red-bg: #fee2e2; 
+    --red-text: #991b1b;
+}
 
-    body {
-      margin: 0;
-      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #f5f7fb;
-      color: #333;
-      -webkit-font-smoothing: antialiased;
-    }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; background: var(--bg-color); color: var(--text-color); -webkit-font-smoothing: antialiased; }
 
-    /* ========== HEADER ========== */
-    .header {
-      background: #ffffff;
-      height: 80px;
-      padding: 0 40px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid #eaecf0;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    }
+/* --- NAVIGATION BAR (STANDARDIZED) --- */
+.aux-navbar {
+    background-color: #ffffff;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+    position: sticky; top: 0; z-index: 10000;
+}
 
-    /* 1. BAGIAN KIRI (LOGO) */
-    .header-left {
-      display: flex;
-      align-items: center;
-      min-width: 200px;
-    }
+.aux-logo img { height: 40px; width: auto; display: block; }
 
-    .brand-logo-img {
-      height: 50px; /* Ukuran logo disesuaikan */
-      width: auto;
-      object-fit: contain;
-    }
+/* Wrapper Menu Utama */
+.aux-menu { 
+    display: flex; 
+    gap: 10px; 
+    align-items: center; 
+    height: 100%; 
+}
 
-    /* 2. BAGIAN TENGAH (NAVIGASI) */
-    .header-center {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      height: 100%;
-    }
+/* Item Menu Individual */
+.nav-item {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
 
-    .nav-item {
-      position: relative;
-      height: 100%;
-      display: flex;
-      align-items: center;
-    }
+/* Link Menu Utama */
+.aux-link { 
+    text-decoration: none; 
+    color: #666; 
+    font-weight: 600; 
+    font-size: 14px; 
+    padding: 8px 14px; 
+    border-radius: 6px; 
+    transition: all 0.2s; 
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
 
-    .nav-link {
-      text-decoration: none;
-      color: #667085;
-      font-size: 14px;
-      font-weight: 500;
-      padding: 8px 16px;
-      border-radius: 6px;
-      transition: all 0.2s;
-      cursor: pointer;
-      white-space: nowrap;
-    }
+.aux-link:hover, .nav-item:hover .aux-link { 
+    color: #1d2939; 
+    background-color: #f9fafb; 
+}
 
-    .nav-link:hover {
-      color: #1d2939;
-      background-color: #f9fafb;
-    }
+.aux-link.active { 
+    color: var(--primary-color); 
+    background-color: #eff8ff; 
+    font-weight: 700; 
+}
 
-    /* Menu Aktif (Biru) */
-    .nav-link.active {
-      background-color: #eff8ff;
-      color: #1570EF;
-      font-weight: 600;
-    }
+/* --- DROPDOWN STYLES --- */
+.dropdown-menu {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    top: 90%; 
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background: white;
+    min-width: 220px;
+    border: 1px solid #eaecf0;
+    border-radius: 8px;
+    box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08);
+    padding: 6px;
+    z-index: 100000;
+    transition: all 0.2s ease;
+}
 
-    /* DROPDOWN MENU FIX */
-    .dropdown-menu {
-      visibility: hidden;
-      opacity: 0;
-      position: absolute;
-      top: 90%; /* Posisi sedikit di bawah header */
-      left: 50%;
-      transform: translateX(-50%) translateY(-10px);
-      background: white;
-      min-width: 200px;
-      border: 1px solid #eaecf0;
-      border-radius: 8px;
-      box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08);
-      padding: 8px;
-      z-index: 1100;
-      transition: all 0.2s ease;
-    }
+/* Jembatan Transparan */
+.dropdown-menu::before {
+    content: "";
+    position: absolute;
+    top: -20px; left: 0; width: 100%; height: 20px; background: transparent;
+}
 
-    /* Invisible Bridge: Agar mouse tidak "putus" saat pindah ke dropdown */
-    .dropdown-menu::before {
-      content: "";
-      position: absolute;
-      top: -20px; /* Mengisi celah antara menu dan dropdown */
-      left: 0;
-      width: 100%;
-      height: 20px;
-      background: transparent;
-    }
+/* Show Dropdown on Hover */
+.nav-item:hover .dropdown-menu {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
 
-    .nav-item:hover .dropdown-menu {
-      visibility: visible;
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
+/* Item Dropdown */
+.dropdown-item {
+    display: block;
+    padding: 10px 12px;
+    color: #344054;
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 6px;
+    transition: background 0.2s;
+    text-align: left;
+    font-weight: 400;
+}
 
-    .dropdown-item {
-      display: block;
-      padding: 10px 12px;
-      color: #344054;
-      text-decoration: none;
-      font-size: 14px;
-      border-radius: 6px;
-      transition: background 0.2s;
-      text-align: left;
-    }
+.dropdown-item:hover {
+    background-color: #f9fafb;
+    color: #2f54eb;
+}
 
-    .dropdown-item:hover {
-      background-color: #f9fafb;
-      color: #2f54eb;
-    }
+/* --- USER PANEL --- */
+.user-panel { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid #eee; }
+.user-details { display: flex; flex-direction: column; text-align: right; line-height: 1.3; }
+.user-name { font-weight: 700; font-size: 13px; color: #333; }
+.user-role { font-size: 11px; color: #888; }
+.user-avatar { width: 36px; height: 36px; background-color: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; user-select: none; }
+.logout-btn { background: none; border: 1px solid #ddd; color: #666; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 14px; }
+.logout-btn:hover { background-color: var(--red-bg); color: var(--red-text); border-color: var(--red-bg); }
 
-    /* 3. BAGIAN KANAN (PROFIL) */
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      min-width: 200px;
-      justify-content: flex-end;
-    }
+/* --- CONTENT --- */
+.main-container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px;
+}
 
-    .user-info {
-      text-align: right;
-    }
+.content h2 {
+    margin-top: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #101828;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
-    .user-name {
-      display: block;
-      font-size: 14px;
-      font-weight: 700;
-      color: #101828;
-    }
+.subtitle {
+    font-size: 16px;
+    color: #667085;
+    margin-top: 8px;
+    margin-bottom: 40px;
+}
 
-    .user-company {
-      display: block;
-      font-size: 12px;
-      color: #667085;
-      margin-top: 2px;
-    }
+/* ========== TILES ========== */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 Kolom sejajar */
+    gap: 24px;
+}
 
-    .user-avatar {
-      width: 40px;
-      height: 40px;
-      background-color: #005f98;
-      color: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 16px;
-    }
+.tile {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0px 1px 3px rgba(16, 24, 40, 0.1), 0px 1px 2px rgba(16, 24, 40, 0.06);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid #eaecf0;
+}
 
-    .logout-btn-icon {
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid #eaecf0;
-      border-radius: 8px;
-      color: #667085;
-      cursor: pointer;
-      background: white;
-      transition: all 0.2s;
-    }
+.tile:hover {
+    transform: translateY(-4px);
+    box-shadow: 0px 12px 16px -4px rgba(16, 24, 40, 0.08);
+    border-color: #d0d5dd;
+}
 
-    .logout-btn-icon:hover {
-      background: #fef3f2;
-      color: #d92d20;
-      border-color: #fee4e2;
-    }
+.tile-icon {
+    margin-bottom: 20px;
+}
 
-    /* ========== CONTENT ========== */
-    .main-container {
-      width: 100%;
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 40px;
-    }
+.tile-icon svg {
+    stroke: #475467;
+    width: 32px;
+    height: 32px;
+}
 
-    .content h2 {
-      margin-top: 0;
-      font-size: 28px;
-      font-weight: 700;
-      color: #101828;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+.tile-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #101828;
+    margin-bottom: 8px;
+}
 
-    .subtitle {
-      font-size: 16px;
-      color: #667085;
-      margin-top: 8px;
-      margin-bottom: 40px;
-    }
+.tile-desc {
+    font-size: 14px;
+    color: #667085;
+    line-height: 1.5;
+}
 
-    /* ========== TILES ========== */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr); /* 4 Kolom sejajar */
-      gap: 24px;
-    }
+/* ========== MODAL & LOADER ========== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+.modal-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 32px;
+    border-radius: 16px;
+    width: 360px;
+    text-align: center;
+}
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 24px;
+}
+.btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; }
+.btn-yes { background-color: #d92d20; color: #fff; }
+.btn-cancel { background-color: #f2f4f7; color: #344054; }
 
-    .tile {
-      background: white;
-      padding: 24px;
-      border-radius: 12px;
-      box-shadow: 0px 1px 3px rgba(16, 24, 40, 0.1), 0px 1px 2px rgba(16, 24, 40, 0.06);
-      cursor: pointer;
-      transition: all 0.2s ease;
-      min-height: 220px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      border: 1px solid #eaecf0;
-    }
+.auxie-loader {
+    position: fixed; inset: 0; background: #ffffff;
+    display: flex; justify-content: center; align-items: center;
+    z-index: 99999; transition: opacity 0.5s ease;
+}
+.auxie-loader.hide { opacity: 0; pointer-events: none; }
+.rings { position: relative; width: 100px; height: 100px; }
+.ring { position: absolute; border-radius: 50%; border-style: solid; border-width: 4px; }
+.ring-lg { width: 100px; height: 100px; border-color: #2f54eb transparent transparent transparent; animation: spinCW 2s linear infinite; }
+.ring-md { width: 70px; height: 70px; top: 15px; left: 15px; border-color: #7b61ff transparent transparent transparent; animation: spinCCW 1.5s linear infinite; }
+.ring-sm { width: 40px; height: 40px; top: 30px; left: 30px; border-color: #e04f98 transparent transparent transparent; animation: spinCWfast 1s linear infinite; }
+@keyframes spinCW { to { transform: rotate(360deg); } }
+@keyframes spinCCW { to { transform: rotate(-360deg); } }
+@keyframes spinCWfast { to { transform: rotate(540deg); } }
 
-    .tile:hover {
-      transform: translateY(-4px);
-      box-shadow: 0px 12px 16px -4px rgba(16, 24, 40, 0.08);
-      border-color: #d0d5dd;
-    }
-
-    .tile-icon {
-      margin-bottom: 20px;
-    }
-    
-    .tile-icon svg {
-        stroke: #475467;
-        width: 32px;
-        height: 32px;
-    }
-
-    .tile-title {
-      font-size: 18px;
-      font-weight: 700;
-      color: #101828;
-      margin-bottom: 8px;
-    }
-
-    .tile-desc {
-      font-size: 14px;
-      color: #667085;
-      line-height: 1.5;
-    }
-
-    /* ========== MODAL & LOADER ========== */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 9999;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(4px);
-    }
-    .modal-content {
-      background-color: #fff;
-      margin: 15% auto;
-      padding: 32px;
-      border-radius: 16px;
-      width: 360px;
-      text-align: center;
-    }
-    .modal-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin-top: 24px;
-    }
-    .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; }
-    .btn-yes { background-color: #d92d20; color: #fff; }
-    .btn-cancel { background-color: #f2f4f7; color: #344054; }
-
-    .auxie-loader {
-      position: fixed; inset: 0; background: #ffffff;
-      display: flex; justify-content: center; align-items: center;
-      z-index: 99999; transition: opacity 0.5s ease;
-    }
-    .auxie-loader.hide { opacity: 0; pointer-events: none; }
-    .rings { position: relative; width: 100px; height: 100px; }
-    .ring { position: absolute; border-radius: 50%; border-style: solid; border-width: 4px; }
-    .ring-lg { width: 100px; height: 100px; border-color: #2f54eb transparent transparent transparent; animation: spinCW 2s linear infinite; }
-    .ring-md { width: 70px; height: 70px; top: 15px; left: 15px; border-color: #7b61ff transparent transparent transparent; animation: spinCCW 1.5s linear infinite; }
-    .ring-sm { width: 40px; height: 40px; top: 30px; left: 30px; border-color: #e04f98 transparent transparent transparent; animation: spinCWfast 1s linear infinite; }
-    @keyframes spinCW { to { transform: rotate(360deg); } }
-    @keyframes spinCCW { to { transform: rotate(-360deg); } }
-    @keyframes spinCWfast { to { transform: rotate(540deg); } }
-
-    @media (max-width: 1100px) {
-        .grid { grid-template-columns: repeat(2, 1fr); }
-    }
-  </style>
+@media (max-width: 1100px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
 </head>
 
 <body>
@@ -333,62 +269,80 @@
     </div>
   </div>
 
-  <header class="header">
-    <div class="header-left">
-        <img 
-            src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png" 
-            alt="Auxilium Logo" 
-            class="brand-logo-img"
-            onerror="this.style.display='none'; document.querySelector('.header-left').innerHTML='<h2 style=\'margin:0\'>AUXILIUM</h2>'"
-        >
-        <div style="margin-left: 10px; display: flex; flex-direction: column;">
-            <span style="font-weight: 800; font-size: 18px; color: #101828; letter-spacing: 1px;">UXILIUM</span>
-            <span style="font-size: 10px; color: #98a2b3;">Accounting Management Service</span>
-         </div>
+  <div class="aux-navbar">
+    <div class="aux-logo">
+        <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png" alt="Auxilium Logo">
     </div>
+    
+    <nav class="aux-menu">
+        <div class="nav-item">
+            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/" class="aux-link active">Home</a>
+        </div>
 
-    <nav class="header-center">
         <div class="nav-item">
-            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/" class="nav-link">Home</a>
-        </div>
-        <div class="nav-item">
-            <a href="inventory/" class="nav-link">Inventory</a>
-             <div class="dropdown-menu">
-                <a href="#" class="dropdown-item">Stok KPC</a>
-                <a href="#" class="dropdown-item">General Inventory</a>
+            <div class="aux-link">
+                Penjualan 
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
-        </div>
-        
-        <div class="nav-item">
-            <div class="nav-link active">Penjualan</div>
             <div class="dropdown-menu">
-                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Order%20Penjualan/" class="dropdown-item">Buat Order Baru</a>
-                <a href="Penjualan/Review%20Penjualan/" class="dropdown-item">Review Penjualan</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Order%20Penjualan/" class="dropdown-item">Order Penjualan</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Review%20Penjualan/" class="dropdown-item">Review Penjualan</a>
             </div>
         </div>
 
         <div class="nav-item">
-            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/" class="nav-link">Production</a>
+            <div class="aux-link">
+                Pembelian
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="dropdown-menu">
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/PurchaseOrder/index.html" class="dropdown-item">Pemesanan Pembelian</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/CreateBill/index.html" class="dropdown-item">Daftar Tagihan</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/entry/index.html" class="dropdown-item">Penerimaan Pemesanan</a>
+            </div>
         </div>
+
         <div class="nav-item">
-            <a href="receiving/" class="nav-link">Receiving</a>
+            <div class="aux-link">
+                Produksi
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="dropdown-menu">
+                <a href="#" onclick="alert('Modul belum tersedia')" class="dropdown-item">Persiapan Pemesanan</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/" class="dropdown-item">Produksi Barang Jadi</a>
+                <a href="#" onclick="alert('Modul belum tersedia')" class="dropdown-item">Retur Penjualan</a>
+            </div>
         </div>
+
         <div class="nav-item">
-            <a href="#" class="nav-link">Review Invoice</a>
+            <div class="aux-link">
+                Persediaan
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="dropdown-menu">
+                <a href="#" onclick="alert('Stok KPC')" class="dropdown-item">KPC</a>
+                <a href="#" onclick="alert('Stok Spandek')" class="dropdown-item">Spandek</a>
+                <a href="#" onclick="alert('Stok Non Spandek')" class="dropdown-item">Non Spandek</a>
+                <a href="#" onclick="alert('List Pre Order')" class="dropdown-item">Pre Order</a>
+                <a href="#" onclick="alert('Gudang BS')" class="dropdown-item">Gudang BS</a>
+            </div>
         </div>
     </nav>
 
-    <div class="header-right">
-        <div class="user-info">
+    <div class="user-panel">
+        <div class="user-details">
             <span class="user-name">Admin Gudang</span>
-            <span class="user-company">CV Sukses Jaya</span>
+            <span class="user-role">CV Sukses Jaya</span>
         </div>
         <div class="user-avatar">AG</div>
-        <div class="logout-btn-icon" onclick="showLogoutModal()">
-            <i data-feather="power" style="width: 18px; height: 18px;"></i>
-        </div>
+        <button class="logout-btn" onclick="showLogoutModal()" title="Keluar Akun">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M7.5 1v7h1V1h-1z"/>
+              <path d="M3 8.812a4.999 4.999 0 0 1 2.578-4.375l-.485-.874A6 6 0 1 0 11 3.616l-.501.865A5 5 0 1 1 3 8.812z"/>
+            </svg>
+        </button>
     </div>
-  </header>
+  </div>
 
   <div class="main-container">
     <div class="content" id="home-page">
