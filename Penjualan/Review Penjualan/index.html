@@ -76,7 +76,7 @@ table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 .type-gen { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; } 
 .type-pre { background: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe; } 
 
-/* --- MODAL & PDF STYLES --- */
+/* --- MODAL STYLE --- */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 9000; backdrop-filter: blur(2px); }
 .modal-box { background: #fff; width: 1100px; max-width: 95%; height: 90vh; display: flex; flex-direction: column; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
 .modal-header { padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
@@ -93,8 +93,7 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 
 .web-totals { display: flex; justify-content: flex-end; }
 .web-total-box { width: 300px; background: #f9fafb; padding: 15px; border-radius: 8px; }
-
-/* MODIFIED: Web Total Row with Top Border */
+/* Web Total (Tanpa garis khusus, standard box) */
 .web-total-row.grand { 
     font-size: 20px; 
     color: var(--primary-color); 
@@ -102,9 +101,6 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
     display: flex; 
     justify-content: space-between; 
     align-items: center;
-    border-top: 2px solid #ccc; /* Garis Penutup */
-    margin-top: 5px; 
-    padding-top: 10px; 
 }
 
 .modal-footer { padding: 15px 30px; background: #f9fafb; border-top: 1px solid #eee; text-align: right; }
@@ -114,7 +110,7 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 .btn-approve { background: #10b981; }
 .btn-pdf { background: #2563eb; }
 
-/* PDF Hidden */
+/* --- PDF STYLE (HIDDEN) --- */
 #pdf-hidden-container { position: absolute; left: -9999px; top: 0; }
 #pdfContent { background: #fff; width: 100%; padding: 0; font-family: "Arial", sans-serif; color: #000; }
 .pdf-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
@@ -129,28 +125,40 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 .meta-data { width: 35%; }
 .pdf-meta-row { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 4px; width: 100%; }
 .pdf-meta-key { font-weight: 700; color:#000; }
+
 table.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
 table.pdf-table th { font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 8px 4px; color: #000; border-top: 1px solid #000; border-bottom: 1px solid #000; letter-spacing: 0.5px; }
 table.pdf-table tr { page-break-inside: avoid; page-break-after: auto; }
 table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
 .item-name-main { font-weight: 700; color: #000; display:block; font-size: 11px; }
 .item-sub { font-size: 9px; color: #666; font-weight: normal; margin-top: 2px; display: block; }
-.pdf-middle-section { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 10px; page-break-inside: avoid; }
+
+/* REVISI: MIDDLE SECTION DENGAN GARIS HITAM DI ATAS */
+.pdf-middle-section { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: flex-start; 
+    margin-top: 10px; 
+    page-break-inside: avoid; 
+    /* Garis hitam pemisah area table dengan footer */
+    border-top: 2px solid #000; 
+    padding-top: 10px;
+}
+
 .pdf-notes-box { width: 60%; padding-right: 20px; }
 .pdf-notes-label { font-size: 10px; font-weight: 700; margin-bottom: 2px; display:block; }
 .pdf-notes-content { font-size: 10px; color: #555; line-height: 1.4; border: 1px dashed #ccc; padding: 5px; border-radius: 4px; min-height: 30px; }
 .pdf-total-box { width: 35%; }
 
-/* MODIFIED: PDF Total Row with Top Border */
+/* Total Row PDF (Clean, tanpa border sendiri karena sudah ada di parent) */
 .pdf-total-row.grand { 
     font-size: 15px; 
     font-weight: 700; 
     color: #116999; 
     display: flex; 
     justify-content: space-between;
-    border-top: 1px solid #000; /* Garis Penutup Hitam */
-    margin-top: 5px; 
-    padding-top: 5px;
+    margin-top: 0; 
+    padding-top: 0;
 }
 
 .pdf-signature-wrapper { margin-top: 25px; display: flex; justify-content: space-between; page-break-inside: avoid; padding-bottom: 10px; }
