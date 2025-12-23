@@ -384,18 +384,6 @@ function parseDateStr(str) {
     return new Date(str);
 }
 
-// Fungsi helper baru untuk format INVYYMMDDXXX
-function generateInvoiceNo(dateStr, id) {
-    const d = parseDateStr(dateStr);
-    if (!d) return "INV" + id; // Fallback jika tanggal invalid
-    
-    const yy = String(d.getFullYear()).slice(-2);
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    
-    return "INV" + yy + mm + dd + id;
-}
-
 function renderTable() {
     const tbody = document.getElementById('tableBody');
     const searchVal = document.getElementById('searchInput').value.toLowerCase();
@@ -413,9 +401,9 @@ function renderTable() {
             } else if (o.status !== currentFilter) return false;
         }
 
-        // 2. Search Text Filter (Include checking generated INV ID)
-        const fullId = generateInvoiceNo(o.date, o.id);
-        const searchStr = JSON.stringify(o).toLowerCase() + fullId.toLowerCase();
+        // 2. Search Text Filter (Direct from o.id from spreadsheet)
+        const fullId = String(o.id);
+        const searchStr = JSON.stringify(o).toLowerCase();
         if (searchVal && !searchStr.includes(searchVal)) return false;
 
         // 3. Type Filter
@@ -462,10 +450,8 @@ function renderTable() {
         tr.className = 'data-row';
         tr.onclick = function() { openModal(o.id); };
         
-        // GUNAKAN FUNGSI GENERATE INVOICE BARU
-        const invNo = generateInvoiceNo(o.date, o.id);
-
-        tr.innerHTML = `<td><strong>${invNo}</strong></td><td style="text-align:center;">${typeHtml}</td><td>${o.customer}</td><td>${o.date}</td><td>${o.estDelivery}</td><td>${o.dueDate}</td><td style="text-align:right;"><strong>${fmtMoneySimple(o.grandTotal)}</strong></td><td style="text-align:center;"><span class="badge ${badge}">${o.status}</span></td>`;
+        // NO PREFIX ADDED HERE (Raw Data)
+        tr.innerHTML = `<td><strong>${o.id}</strong></td><td style="text-align:center;">${typeHtml}</td><td>${o.customer}</td><td>${o.date}</td><td>${o.estDelivery}</td><td>${o.dueDate}</td><td style="text-align:right;"><strong>${fmtMoneySimple(o.grandTotal)}</strong></td><td style="text-align:center;"><span class="badge ${badge}">${o.status}</span></td>`;
         tbody.appendChild(tr);
     });
 }
@@ -485,8 +471,7 @@ function openModal(id) {
         const o = allOrders.find(x => String(x.id) === String(id));
         if(!o) { alert("Data tidak ditemukan"); return; }
 
-        // GUNAKAN FUNGSI GENERATE INVOICE BARU
-        const fullOrderId = generateInvoiceNo(o.date, o.id);
+        const fullOrderId = o.id; // Use Raw ID
 
         setTxt('webOrderNo', fullOrderId);
         setTxt('webStatusBadge', o.status);
@@ -521,7 +506,6 @@ function openModal(id) {
         if(o.status === 'Awaiting Approval') {
             btns += `<button class="btn-action btn-reject" onclick="updateStatus('${o.id}', 'Cancel Order')">Reject</button><button class="btn-action btn-approve" onclick="updateStatus('${o.id}', 'Awaiting Production')">Approve</button>`;
         } else if (o.status !== 'Cancel Order') {
-            // Gunakan fullOrderId untuk nama file
             btns += `<button class="btn-action btn-pdf" onclick="dlPDF('${fullOrderId}')">Download PDF</button>`;
         }
         document.getElementById('modalActions').innerHTML = btns;
@@ -543,7 +527,14 @@ async function updateStatus(id, stat) {
 
 function dlPDF(filenameId) {
     const el = document.getElementById('pdfContent');
-    const opt = { margin: [1, 0.75, 1, 0.75], filename: `Faktur_${filenameId}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'cm', format: 'a5', orientation: 'landscape' } };
+    // UKURAN 21.59cm x 13.97cm
+    const opt = { 
+        margin: [1, 0.75, 1, 0.75], 
+        filename: `Faktur_${filenameId}.pdf`, 
+        image: { type: 'jpeg', quality: 0.98 }, 
+        html2canvas: { scale: 2 }, 
+        jsPDF: { unit: 'cm', format: [21.59, 13.97], orientation: 'landscape' } 
+    };
     const btn = document.querySelector('.btn-pdf'); btn.textContent = "Generating...";
     html2pdf().set(opt).from(el).save().then(() => btn.textContent = "Download PDF");
 }
