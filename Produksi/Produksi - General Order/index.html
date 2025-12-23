@@ -42,14 +42,14 @@ table.xero-table tr:hover { background-color: #f9fafb; }
 .badge-delivery { background: #eef2ff; color: #4338ca; border: 1px solid #c7d2fe; }
 .badge-cancel { background: #fef2f2; color: var(--red); border: 1px solid #fecaca; }
 
-/* Modal Main */
+/* Modal */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: flex-start; justify-content: center; z-index: 10000; padding-top: 50px; overflow-y: auto; }
 .modal-box { background: #fff; width: 1350px; max-width: 98%; height: auto; max-height: 90vh; display: flex; flex-direction: column; border-radius: 8px; margin-bottom: 50px; }
 .modal-header { padding: 20px 30px; background: #fff; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
 .modal-body { flex: 1; overflow-y: auto; padding: 20px; }
 .modal-footer { background: #f9fafb; padding: 15px 30px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
 
-/* Confirmation Modal (Pop Up Yakinkan) */
+/* Confirmation Modal */
 #confirmModal .modal-box { width: 400px; margin-top: 150px; }
 #confirmModal .modal-header { border-bottom: none; padding-bottom: 0; }
 #confirmModal .modal-body { text-align: center; padding: 20px 30px; font-size: 14px; color: #555; }
@@ -74,9 +74,7 @@ table.xero-table tr:hover { background-color: #f9fafb; }
 .btn-split { background: #d8b4fe; color: #6b21a8; }
 .btn-remove { background: #fee2e2; color: #991b1b; }
 
-/* Checkbox Style */
 .check-production { width: 18px; height: 18px; cursor: pointer; accent-color: var(--green); }
-
 #pdf-hidden-container { position: absolute; left: -9999px; }
 </style>
 </head>
@@ -129,10 +127,7 @@ table.xero-table tr:hover { background-color: #f9fafb; }
         <div class="modal-body">
             <div id="modalAlert" class="alert" style="background:#e0f2fe; color:#0c4a6e; padding:10px; border-radius:6px; margin-bottom:15px; font-size:12px;"></div>
             <table class="xero-table">
-                <thead>
-                    <tr id="tableHeaderRow">
-                        </tr>
-                </thead>
+                <thead><tr id="tableHeaderRow"></tr></thead>
                 <tbody id="setupBody"></tbody>
             </table>
             <div id="validationMsg" style="color:red; font-weight:bold; margin-top:10px; display:none;"></div>
@@ -178,10 +173,11 @@ table.xero-table tr:hover { background-color: #f9fafb; }
         <table style="width:100%; border-collapse:collapse; border:1px solid #000;">
             <thead>
                 <tr style="background:#eee;">
-                    <th style="border:1px solid #000; padding:5px;">Nama Barang</th>
-                    <th style="border:1px solid #000; padding:5px; text-align:center;">Meter</th>
-                    <th style="border:1px solid #000; padding:5px; text-align:center;">Qty</th>
-                    <th style="border:1px solid #000; padding:5px;" id="pdfHeadDetail">Keterangan</th>
+                    <th style="border:1px solid #000; padding:5px; width:5%; text-align:center;">No</th>
+                    <th style="border:1px solid #000; padding:5px; width:45%;">Nama Barang</th>
+                    <th style="border:1px solid #000; padding:5px; width:10%; text-align:center;">Meter</th>
+                    <th style="border:1px solid #000; padding:5px; width:10%; text-align:center;">Qty</th>
+                    <th style="border:1px solid #000; padding:5px; width:30%;" id="pdfHeadDetail">Keterangan</th>
                     <th style="border:1px solid #000; padding:5px;" id="pdfHeadWE">WE Code</th>
                 </tr>
             </thead>
@@ -191,19 +187,19 @@ table.xero-table tr:hover { background-color: #f9fafb; }
         <div style="margin-top:40px; display:flex; justify-content:space-between; text-align:center;">
             <div style="width:30%;">
                 <br><br><br>
-                <div style="border-top:1px solid #000; width:80%; margin:0 auto;">Dibuat Oleh</div>
+                <div style="border-top:1px solid #000; width:80%; margin:0 auto;" id="pdfSign1">Dibuat Oleh</div>
             </div>
             <div style="width:30%;">
                 <br><br><br>
-                <div style="border-top:1px solid #000; width:80%; margin:0 auto;">Diketahui</div>
+                <div style="border-top:1px solid #000; width:80%; margin:0 auto;" id="pdfSign2">Diketahui</div>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-// --- CONFIG ---
-const BASE_URL = "https://script.google.com/macros/s/AKfycbxabXe_MdVNcETFCY_Oqp91sk1oESniHLEcepIXjXHCbn0P-w7NuiVOGDhfXtko0v15/exec"; 
+// --- CONFIG (Pastikan URL Backend Benar) ---
+const BASE_URL = "https://script.google.com/macros/s/AKfycbyqy5ktaOeIHqKE1kX7RwgfXfLZ_zIsPoIAJg3k3mD97W4s0jHdsbsOBN30fWf8Aakm1Q/exec"; 
 let currentOrders = {}; 
 let activeOrderId = null;
 let currentTab = 'Awaiting';
@@ -211,30 +207,24 @@ const TYPE_CODES = { 'Custom': 'CS', 'Plat': 'PL' };
 
 window.onload = () => switchTab('Awaiting');
 
-// --- HELPER ---
 function fmtDate(val) {
     if (!val) return "-";
     const d = new Date(val);
     return isNaN(d.getTime()) ? val : d.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
-// --- CONFIRMATION MODAL LOGIC ---
+// --- POPUP LOGIC ---
 let confirmCallback = null;
-
 function showConfirm(message, callback) {
     document.getElementById('confirmMessage').innerText = message;
     confirmCallback = callback;
     document.getElementById('confirmModal').style.display = 'flex';
 }
-
 function closeConfirm(isConfirmed) {
     document.getElementById('confirmModal').style.display = 'none';
-    if (isConfirmed && confirmCallback) {
-        confirmCallback();
-    }
+    if (isConfirmed && confirmCallback) confirmCallback();
     confirmCallback = null;
 }
-
 document.getElementById('confirmYesBtn').onclick = () => closeConfirm(true);
 
 // --- MAIN LOGIC ---
@@ -267,13 +257,11 @@ async function loadOrders(status) {
 function renderDashboard(data, status) {
     const tbody = document.getElementById('dashboardBody');
     tbody.innerHTML = '';
-    
     if (!data || Object.keys(data).length === 0) {
         tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:#999;">No orders found in ${status}</td></tr>`;
         return;
     }
     currentOrders = data; 
-
     Object.keys(data).forEach(key => {
         const o = data[key];
         let badgeClass = 'badge-awaiting';
@@ -302,39 +290,21 @@ function openSetup(orderId) {
     const order = currentOrders[orderId];
     document.getElementById('modalOrderNo').innerText = orderId;
     
-    // --- 1. SETUP HEADER COLUMNS ---
     const headerRow = document.getElementById('tableHeaderRow');
-    let headers = `
-        <th style="width:20%">Item</th>
-        <th style="width:5%; text-align:center;">M</th>
-        <th style="width:5%; text-align:center;">Qty</th>
-        <th style="width:8%; text-align:center;">Set Qty</th>
-        <th style="width:8%; text-align:center;">Tot M'</th>
-        <th style="width:12%">Mesin</th>
-        <th style="width:14%">KPC</th>
-        <th style="width:8%">Type</th>
-        <th style="width:14%">WE Code</th>
-        <th style="width:5%; text-align:center;">Act</th>
-    `;
-    
-    // Tambah Kolom Checklist jika In Process
-    if (currentTab === 'In Process') {
-        headers += `<th style="width:5%; text-align:center;">Selesai?</th>`;
-    }
+    let headers = `<th style="width:20%">Item</th><th style="width:5%; text-align:center;">M</th><th style="width:5%; text-align:center;">Qty</th><th style="width:8%; text-align:center;">Set Qty</th><th style="width:8%; text-align:center;">Tot M'</th><th style="width:12%">Mesin</th><th style="width:14%">KPC</th><th style="width:8%">Type</th><th style="width:14%">WE Code</th><th style="width:5%; text-align:center;">Act</th>`;
+    if (currentTab === 'In Process') headers += `<th style="width:5%; text-align:center;">Selesai?</th>`;
     headerRow.innerHTML = headers;
 
-    // --- 2. ALERT & INSTRUCTION ---
     const alertBox = document.getElementById('modalAlert');
     if (currentTab === 'In Process') {
-        alertBox.innerHTML = '<i class="fas fa-check-circle"></i> <strong>Produksi Berjalan:</strong> Centang barang yang sudah selesai diproduksi. Tombol "Selesai" aktif jika semua dicentang.';
+        alertBox.innerHTML = '<i class="fas fa-check-circle"></i> <strong>Produksi:</strong> Centang barang yang sudah selesai. Jangan lupa klik <strong>Update</strong> untuk menyimpan progres.';
     } else if (['Completed', 'Delivered', 'Cancel'].includes(currentTab)) {
         alertBox.style.display = 'none';
     } else {
         alertBox.style.display = 'block';
-        alertBox.innerHTML = '<strong>Instruksi:</strong> Gunakan Split jika stok kurang. Baris utama otomatis non-aktif.';
+        alertBox.innerHTML = '<strong>Instruksi:</strong> Gunakan Split jika stok kurang.';
     }
 
-    // --- 3. RENDER ROWS ---
     const tbody = document.getElementById('setupBody');
     tbody.innerHTML = '';
 
@@ -348,7 +318,6 @@ function openSetup(orderId) {
         
         const initialTotalM = (parseFloat(item.meter) * parseInt(item.qty)).toFixed(2);
         let nameHtml = `<strong>${item.item}</strong><br><small style="color:#888;">${item.type}</small>`;
-
         let isEditable = (currentTab === 'Awaiting' || currentTab === 'In Process');
         let spandekClass = isSpandek ? 'prod-input' : 'prod-input non-spandek-input';
         let readonlyAttr = isSpandek && isEditable ? '' : 'disabled';
@@ -356,30 +325,16 @@ function openSetup(orderId) {
         let inputs = `
             <td><input type="number" class="${spandekClass} qty-input" value="${item.qty}" min="1" ${readonlyAttr} onchange="validateQty(${idx}); updateCalc(this)"></td>
             <td style="text-align:center;"><span class="total-m">${initialTotalM}</span></td>
-            <td>
-                <select class="${isSpandek?'prod-select':'prod-select non-spandek-input'} machine-select" ${readonlyAttr} onchange="generateWE(this)">
-                    <option value="">-</option><option value="PM08">PM08</option><option value="PM14">PM14</option>
-                </select>
-            </td>
-            <td>
-                <select class="${isSpandek?'prod-select':'prod-select non-spandek-input'} kpc-select" ${readonlyAttr} onchange="generateWE(this)"><option value="">-</option><option value="KPC-001">KPC-001</option><option value="KPC-002">KPC-002</option></select>
-            </td>
-            <td>
-                <select class="${isSpandek?'prod-select':'prod-select non-spandek-input'} type-select" ${readonlyAttr} onchange="generateWE(this)"><option value="Custom">Custom</option><option value="Plat">Plat</option></select>
-            </td>
+            <td><select class="${isSpandek?'prod-select':'prod-select non-spandek-input'} machine-select" ${readonlyAttr} onchange="generateWE(this)"><option value="">-</option><option value="PM08">PM08</option><option value="PM14">PM14</option></select></td>
+            <td><select class="${isSpandek?'prod-select':'prod-select non-spandek-input'} kpc-select" ${readonlyAttr} onchange="generateWE(this)"><option value="">-</option><option value="KPC-001">KPC-001</option><option value="KPC-002">KPC-002</option></select></td>
+            <td><select class="${isSpandek?'prod-select':'prod-select non-spandek-input'} type-select" ${readonlyAttr} onchange="generateWE(this)"><option value="Custom">Custom</option><option value="Plat">Plat</option></select></td>
             <td><input type="text" class="${spandekClass} we-code" readonly value="${item.we||''}"></td>
-            <td style="text-align:center;">
-                ${isSpandek && isEditable ? `<button class="btn-sm btn-split" onclick="splitRow(this, ${idx})"><i class="fas fa-plus"></i></button>` : '-'}
-            </td>
+            <td style="text-align:center;">${isSpandek && isEditable ? `<button class="btn-sm btn-split" onclick="splitRow(this, ${idx})"><i class="fas fa-plus"></i></button>` : '-'}</td>
         `;
 
-        // Render Checkbox jika In Process
         if (currentTab === 'In Process') {
-            inputs += `
-                <td style="text-align:center;">
-                    <input type="checkbox" class="check-production" onchange="checkAllDone()">
-                </td>
-            `;
+            let checked = item.isFinished ? 'checked' : '';
+            inputs += `<td style="text-align:center;"><input type="checkbox" class="check-production" ${checked} onchange="checkAllDone()"></td>`;
         }
 
         tr.innerHTML = `<td>${nameHtml}</td><td style="text-align:center;"><span class="meter-val">${item.meter}</span></td><td style="text-align:center;"><span class="target-qty badge bg-info text-dark" style="background:#e0f2fe; color:#0369a1;">${item.qty}</span></td>${inputs}`;
@@ -394,18 +349,13 @@ function openSetup(orderId) {
     renderFooterButtons();
     document.getElementById('validationMsg').style.display = 'none';
     document.getElementById('setupModal').style.display = 'flex';
-    
-    // Initial check for buttons
     if(currentTab === 'In Process') checkAllDone();
 }
 
 function renderFooterButtons() {
     const footerLeft = document.getElementById('footerLeft');
     const footerRight = document.getElementById('footerRight');
-    
-    footerLeft.innerHTML = '';
-    footerRight.innerHTML = '';
-
+    footerLeft.innerHTML = ''; footerRight.innerHTML = '';
     const btnClose = `<button class="btn btn-secondary" onclick="closeModal()">Close</button>`;
     
     if (currentTab === 'Awaiting') {
@@ -413,13 +363,8 @@ function renderFooterButtons() {
             <button class="btn btn-cancel" onclick="triggerAction('cancel')">Cancel Production</button>
             <button class="btn btn-process" onclick="triggerAction('process')">Process</button>`;
     } else if (currentTab === 'In Process') {
-        // Tombol Print SPK di Kiri
         footerLeft.innerHTML = `<button class="btn btn-print" onclick="generatePDF('SPK')"><i class="fas fa-print"></i> Print SPK</button>`;
-        
-        footerRight.innerHTML = `${btnClose} 
-            <button class="btn btn-cancel" onclick="triggerAction('cancel')">Cancel</button>
-            <button class="btn btn-process" onclick="triggerAction('update')">Update</button>
-            <button class="btn btn-complete" id="btnComplete" onclick="triggerAction('complete')" disabled>Selesai Produksi</button>`;
+        footerRight.innerHTML = `${btnClose} <button class="btn btn-cancel" onclick="triggerAction('cancel')">Cancel</button><button class="btn btn-process" onclick="triggerAction('update')">Update</button><button class="btn btn-complete" id="btnComplete" onclick="triggerAction('complete')" disabled>Selesai Produksi</button>`;
     } else if (currentTab === 'Completed') {
         footerRight.innerHTML = `${btnClose} <button class="btn btn-deliver" onclick="triggerAction('deliver')">Delivery (Kirim)</button>`;
     } else if (currentTab === 'Delivered') {
@@ -431,86 +376,52 @@ function renderFooterButtons() {
 }
 
 function checkAllDone() {
-    // Cari semua checkbox yang TIDAK berada di baris disabled (Main Row yang ke-split)
-    // Karena Main Row yg ke-split dianggap sudah tidak valid/digantikan
     const checkboxes = document.querySelectorAll('#setupBody tr:not(.disabled-row) .check-production');
     let allChecked = true;
-    
-    if (checkboxes.length === 0) allChecked = false; // Safety
-
-    checkboxes.forEach(cb => {
-        if (!cb.checked) allChecked = false;
-    });
-
+    if (checkboxes.length === 0) allChecked = false;
+    checkboxes.forEach(cb => { if (!cb.checked) allChecked = false; });
     const btn = document.getElementById('btnComplete');
     if(btn) btn.disabled = !allChecked;
 }
 
-// --- POP UP TRIGGER SYSTEM ---
 function triggerAction(actionType) {
     let msg = "";
     let func = null;
-
-    if (actionType === 'process') {
-        msg = "Yakin data produksi sudah benar dan ingin memproses?";
-        func = () => submitProduction('new');
-    } else if (actionType === 'update') {
-        msg = "Simpan perubahan data produksi?";
-        func = () => submitProduction('update');
-    } else if (actionType === 'complete') {
-        msg = "Pastikan semua barang fisik sudah selesai diproduksi. Lanjutkan?";
-        func = () => completeOrder(activeOrderId);
-    } else if (actionType === 'deliver') {
-        msg = "Barang akan dikirim ke customer. Lanjutkan?";
-        func = () => deliverOrder(activeOrderId);
-    } else if (actionType === 'cancel') {
-        msg = "PERINGATAN: Aksi ini akan membatalkan produksi secara permanen. Yakin?";
-        func = () => cancelOrder(activeOrderId);
-    }
-
+    if (actionType === 'process') { msg = "Yakin data sudah benar?"; func = () => submitProduction('new'); }
+    else if (actionType === 'update') { msg = "Simpan perubahan (termasuk status centang)?"; func = () => submitProduction('update'); }
+    else if (actionType === 'complete') { msg = "Pastikan semua barang fisik sudah selesai diproduksi. Lanjutkan?"; func = () => completeOrder(activeOrderId); }
+    else if (actionType === 'deliver') { msg = "Kirim barang sekarang?"; func = () => deliverOrder(activeOrderId); }
+    else if (actionType === 'cancel') { msg = "Yakin batalkan produksi?"; func = () => cancelOrder(activeOrderId); }
     if (msg && func) showConfirm(msg, func);
 }
 
-// --- LOGIC SPLIT (Infinite) ---
+// --- LOGIC SPLIT ---
 function splitRow(btn, groupId) {
     const originalRow = btn.closest('tr');
-    
     if (!originalRow.classList.contains('disabled-row')) {
         originalRow.classList.add('disabled-row');
         originalRow.querySelector('.qty-input').value = 0; 
         originalRow.querySelector('.total-m').innerText = "0.00";
         originalRow.querySelectorAll('input, select').forEach(el => el.disabled = true);
-        // Disable checkbox di main row jika ada
         const cb = originalRow.querySelector('.check-production');
         if(cb) cb.disabled = true; 
     }
-
     const newRow = originalRow.cloneNode(true);
     newRow.classList.remove('main-row', 'disabled-row');
     newRow.classList.add('split-row');
-    
     const qtyInput = newRow.querySelector('.qty-input');
     qtyInput.value = 0; qtyInput.disabled = false;
     newRow.querySelectorAll('select').forEach(s => { s.value = ""; s.disabled = false; s.onchange = function(){ generateWE(this); } });
     newRow.querySelector('.we-code').value = "";
-    
-    // Enable checkbox di split row
     const newCb = newRow.querySelector('.check-production');
     if(newCb) { newCb.disabled = false; newCb.checked = false; newCb.onchange = checkAllDone; }
-
     newRow.querySelector('.target-qty').parentElement.innerHTML = '<small>(Split)</small>';
-    // Cari cell tombol action (index terakhir atau sebelum checkbox)
-    // Kita cari button split lalu ganti
     const btnContainer = newRow.querySelector('.btn-split').parentElement;
     btnContainer.innerHTML = `<button class="btn-sm btn-remove" onclick="removeSplit(this, ${groupId})"><i class="fas fa-trash"></i></button>`;
-    
     const tbody = originalRow.parentNode;
     const groupRows = tbody.querySelectorAll(`tr[data-id="${groupId}"]`);
     groupRows[groupRows.length-1].after(newRow);
-
     qtyInput.onchange = function() { validateQty(groupId); updateCalc(this); };
-    
-    // Re-check checkboxes state
     if(currentTab === 'In Process') checkAllDone();
 }
 
@@ -518,7 +429,6 @@ function removeSplit(btn, groupId) {
     const row = btn.closest('tr');
     const tbody = row.parentNode;
     row.remove();
-    
     const remainingSplits = tbody.querySelectorAll(`.split-row[data-id="${groupId}"]`);
     if(remainingSplits.length === 0) {
         const main = tbody.querySelector(`.main-row[data-id="${groupId}"]`);
@@ -526,18 +436,13 @@ function removeSplit(btn, groupId) {
         const target = parseInt(main.querySelector('.target-qty').innerText);
         main.querySelector('.qty-input').value = target;
         main.querySelectorAll('select, input').forEach(el => el.disabled = false);
-        
-        // Enable checkbox main row
         const cb = main.querySelector('.check-production');
         if(cb) cb.disabled = false;
-
         updateCalc(main.querySelector('.qty-input'));
     }
     validateQty(groupId);
     if(currentTab === 'In Process') checkAllDone();
 }
-
-function closeModal() { document.getElementById('setupModal').style.display = 'none'; }
 
 function updateCalc(input) {
     const row = input.closest('tr');
@@ -571,7 +476,7 @@ function validateQty(groupId) {
     return !isErr;
 }
 
-// --- API ACTIONS ---
+// --- SUBMIT ---
 async function submitProduction(mode) {
     if(document.getElementById('validationMsg').style.display === 'block') return alert("Perbaiki error Qty!");
     const rows = document.querySelectorAll('#setupBody tr:not(.disabled-row)');
@@ -580,6 +485,12 @@ async function submitProduction(mode) {
         const type = r.dataset.type;
         const q = r.querySelector('.qty-input')?.value;
         let item = { originalData: r.dataset.original, qty: q, isSplit: r.classList.contains('split-row') };
+        
+        // Scrape checkbox status if in process
+        if(currentTab === 'In Process') {
+            item.isFinished = r.querySelector('.check-production')?.checked || false;
+        }
+
         if(type === 'spandek') {
             const m = r.querySelector('.machine-select').value;
             const k = r.querySelector('.kpc-select').value;
@@ -591,8 +502,6 @@ async function submitProduction(mode) {
     });
     if(!valid) return alert("Lengkapi Data Mesin/KPC!");
     await sendAPI(mode === 'new' ? 'submitProduction' : 'updateProductionData', { orderId: activeOrderId, data: data });
-    
-    // Auto print SPK if new process
     if(mode === 'new') generatePDF('SPK'); 
 }
 
@@ -610,44 +519,58 @@ async function sendAPI(action, payload) {
     } catch(e) { alert("Error: " + e); }
 }
 
-// --- PDF GENERATOR (SPK & SJ) ---
 function generatePDF(type) {
     const o = currentOrders[activeOrderId];
     document.getElementById('pdfOrderNo').innerText = activeOrderId;
     document.getElementById('pdfCustomer').innerText = o.customer;
-    document.getElementById('pdfDate').innerText = fmtDate(new Date()); // Print Date
-    
+    document.getElementById('pdfDate').innerText = fmtDate(new Date()); 
     document.getElementById('pdfTitle').innerText = (type === 'SPK') ? "SURAT PERINTAH KERJA" : "SURAT JALAN";
-    
-    // Toggle Column Visibility
+    document.getElementById('pdfSign1').innerText = (type === 'SPK') ? "Admin Produksi" : "Penerima";
+    document.getElementById('pdfSign2').innerText = (type === 'SPK') ? "Kepala Produksi" : "Pengirim";
+
     const headDetail = document.getElementById('pdfHeadDetail');
     const headWE = document.getElementById('pdfHeadWE');
-    
     if (type === 'SJ') {
         headDetail.innerText = "Keterangan";
-        headWE.style.display = 'none'; // Hide WE on Surat Jalan
+        headWE.style.display = 'none'; 
     } else {
         headDetail.innerText = "Detail Mesin/KPC";
         headWE.style.display = 'table-cell'; 
     }
 
+    // SMART MERGE FOR SJ
+    let itemsToPrint = [];
+    if (type === 'SJ') {
+        let grouped = {};
+        o.items.forEach(item => {
+            // Key: Name + Meter + Type
+            let key = `${item.item}_${item.meter}_${item.type}`;
+            if (!grouped[key]) {
+                grouped[key] = { ...item, qty: 0, we: '', machine: '', kpc: '' }; 
+            }
+            grouped[key].qty += parseInt(item.qty);
+        });
+        itemsToPrint = Object.values(grouped);
+    } else {
+        itemsToPrint = o.items; // SPK shows splits
+    }
+
     const tbody = document.getElementById('pdfItemsBody');
     tbody.innerHTML = '';
-    o.items.forEach(i => {
+    itemsToPrint.forEach((i, idx) => {
         let weCell = (type === 'SPK') ? `<td style="border:1px solid #000; padding:5px;">${i.we||'-'}</td>` : '';
-        let detail = (type === 'SPK') ? `${i.machine||'-'} / ${i.kpc||'-'}` : ''; // Clean detail for SJ if needed
-        
+        let detail = (type === 'SPK') ? `${i.machine||'-'} / ${i.kpc||'-'}` : ''; 
         tbody.innerHTML += `<tr>
+            <td style="border:1px solid #000; text-align:center; padding:5px;">${idx+1}</td>
             <td style="border:1px solid #000; padding:5px;">${i.item}<br><small>${i.type}</small></td>
-            <td style="border:1px solid #000; text-align:center;">${i.meter}</td>
-            <td style="border:1px solid #000; text-align:center;">${i.qty}</td>
+            <td style="border:1px solid #000; text-align:center; padding:5px;">${i.meter}</td>
+            <td style="border:1px solid #000; text-align:center; padding:5px;">${i.qty}</td>
             <td style="border:1px solid #000; padding:5px;">${detail}</td>
             ${weCell}
         </tr>`;
     });
 
     const el = document.getElementById('pdfContent');
-    // A5 Landscape as requested
     const opt = { 
         margin: [0.3, 0.3], 
         filename: `${type}_${activeOrderId}.pdf`, 
