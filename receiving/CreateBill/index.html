@@ -306,7 +306,7 @@
 
     <script>
         // ================= CONFIGURATION =================
-        const API_URL = "https://script.google.com/macros/s/AKfycbwGXId_yDeMjIyaI9ZlpJk0JdoBbeZIWrSBrYCYH6KI8mr20MGHWACdZ8fErv7QAGyV/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbwNckrkHcfNVrvaCiLNvbr_NBZ8I9rp8b0s7-SRKuYd88pVFIed0TZ7hq2xhkzP9ZQO/exec"; 
         const TAX_RATE = 0.11;
 
         // ================= GLOBAL VARIABLES =================
@@ -389,30 +389,31 @@
             }
 
             data.forEach(po => {
-                let statusClass, btnText, btnIcon, btnClass, statusBadge;
+                let statusClass, btnIcon, btnClass, statusBadge, mainTitle;
                 let secondaryBtn = ""; 
 
+                // REVISI: Menggunakan Icon Only Button
                 if (po.status === 'Pending') {
                     statusClass = 'bg-amber-100 text-amber-700 border-amber-200';
                     statusBadge = 'Pending';
-                    btnText = 'Create Bill';
+                    mainTitle = 'Create Bill';
                     btnIcon = '<i class="fas fa-plus"></i>';
                     btnClass = 'text-white bg-primary hover:bg-primary-hover border-transparent';
-                    secondaryBtn = `<button onclick="openRejectModal('${po.id}')" class="px-2 py-1.5 rounded-lg font-bold text-[10px] text-red-500 border border-red-100 hover:bg-red-50 transition ml-2" title="Reject PO"><i class="fas fa-ban"></i></button>`;
+                    secondaryBtn = `<button onclick="openRejectModal('${po.id}')" class="w-8 h-8 rounded-lg flex items-center justify-center text-red-500 border border-red-100 hover:bg-red-50 transition ml-2" title="Reject PO"><i class="fas fa-ban"></i></button>`;
                 } else if (po.status === 'Partial') {
                     statusClass = 'bg-indigo-100 text-indigo-700 border-indigo-200';
                     statusBadge = 'Partial';
-                    btnText = 'Add Bill (Partial)';
+                    mainTitle = 'Add Bill (Partial)';
                     btnIcon = '<i class="fas fa-plus"></i>';
                     btnClass = 'text-white bg-indigo-500 hover:bg-indigo-600 border-transparent';
                     secondaryBtn = ""; 
                 } else if (po.status === 'Rejected') {
                     statusClass = 'bg-red-100 text-red-700 border-red-200';
                     statusBadge = 'Rejected';
-                    btnText = 'View Data';
+                    mainTitle = 'View Data';
                     btnIcon = '<i class="fas fa-eye"></i>';
                     btnClass = 'text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:text-primary';
-                    secondaryBtn = `<button onclick="revertPO('${po.id}')" class="px-2 py-1.5 rounded-lg font-bold text-[10px] text-amber-600 border border-amber-200 hover:bg-amber-50 transition ml-2" title="Revert Status"><i class="fas fa-undo"></i></button>`;
+                    secondaryBtn = `<button onclick="revertPO('${po.id}')" class="w-8 h-8 rounded-lg flex items-center justify-center text-amber-600 border border-amber-200 hover:bg-amber-50 transition ml-2" title="Revert Status"><i class="fas fa-undo"></i></button>`;
                 } else {
                     statusClass = 'bg-emerald-100 text-emerald-700 border-emerald-200'; 
                     if(po.status === 'Process to Import') statusClass = 'bg-orange-100 text-orange-700 border-orange-200';
@@ -420,7 +421,7 @@
                     else if(po.status === 'PO Diselesaikan') statusClass = 'bg-teal-100 text-teal-800 border-teal-200';
 
                     statusBadge = po.status;
-                    btnText = 'Detail';
+                    mainTitle = 'Lihat Detail';
                     btnIcon = '<i class="fas fa-eye"></i>';
                     btnClass = 'text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:text-primary';
                 }
@@ -432,7 +433,6 @@
                     invInfo = `<span class="text-slate-300">-</span>`;
                 }
 
-                // REVISI: Layout Table Row
                 const mainBtnAction = `onclick="openBillModal('${po.id}')"`;
 
                 const html = `
@@ -451,8 +451,8 @@
                         <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${statusClass}">${statusBadge}</span>
                     </td>
                     <td class="px-6 py-4 text-center flex justify-center items-center">
-                        <button ${mainBtnAction} class="px-3 py-1.5 rounded-lg font-bold text-xs transition-all shadow-sm flex items-center gap-1 ${btnClass}">
-                            ${btnIcon} ${btnText}
+                        <button ${mainBtnAction} class="w-8 h-8 rounded-lg flex items-center justify-center transition-all shadow-sm ${btnClass}" title="${mainTitle}">
+                            ${btnIcon}
                         </button>
                         ${secondaryBtn}
                     </td>
