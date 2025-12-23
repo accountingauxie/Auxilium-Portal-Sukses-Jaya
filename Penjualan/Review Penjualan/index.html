@@ -93,7 +93,7 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 
 .web-totals { display: flex; justify-content: flex-end; }
 .web-total-box { width: 300px; background: #f9fafb; padding: 15px; border-radius: 8px; }
-/* Web Total */
+/* Web Total Row */
 .web-total-row.grand { 
     font-size: 20px; 
     color: var(--primary-color); 
@@ -101,6 +101,14 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
     display: flex; 
     justify-content: space-between; 
     align-items: center;
+}
+/* Style untuk teks PPN di Web Modal */
+.web-ppn-note {
+    font-style: italic;
+    font-size: 11px;
+    color: #666;
+    margin-top: 5px;
+    text-align: right;
 }
 
 .modal-footer { padding: 15px 30px; background: #f9fafb; border-top: 1px solid #eee; text-align: right; }
@@ -133,14 +141,13 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
 .item-name-main { font-weight: 700; color: #000; display:block; font-size: 11px; }
 .item-sub { font-size: 9px; color: #666; font-weight: normal; margin-top: 2px; display: block; }
 
-/* REVISI: GARIS TIPIS (1px) WARNA ABU TUA (#555) */
+/* MIDDLE SECTION */
 .pdf-middle-section { 
     display: flex; 
     justify-content: space-between; 
     align-items: flex-start; 
     margin-top: 10px; 
     page-break-inside: avoid; 
-    /* Perubahan di sini: ketebalan 1px, warna abu tua */
     border-top: 1px solid #555; 
     padding-top: 10px;
 }
@@ -159,6 +166,14 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
     justify-content: space-between;
     margin-top: 0; 
     padding-top: 0;
+}
+/* Style untuk teks PPN di PDF */
+.pdf-ppn-note {
+    font-style: italic;
+    font-size: 9px;
+    color: #555;
+    text-align: right;
+    margin-top: 2px;
 }
 
 .pdf-signature-wrapper { margin-top: 25px; display: flex; justify-content: space-between; page-break-inside: avoid; padding-bottom: 10px; }
@@ -267,6 +282,7 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
             <div class="web-totals">
                 <div class="web-total-box">
                     <div class="web-total-row grand"><span>Total</span><span id="webTotal">0</span></div>
+                    <div class="web-ppn-note">Harga sudah termasuk PPN</div>
                 </div>
             </div>
             <div style="margin-top:20px; padding:10px; background:#fdfdfd; border:1px dashed #ddd; border-radius:4px;"><strong style="font-size:11px; color:#555;">NOTES:</strong><span id="webNotes" style="font-size:12px; color:#333; margin-left:5px;">-</span></div>
@@ -309,6 +325,7 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
             </div>
             <div class="pdf-total-box">
                 <div class="pdf-total-row grand"><span>Total</span><span id="pdfTotal">0</span></div>
+                <div class="pdf-ppn-note">Harga sudah termasuk PPN</div>
             </div>
         </div>
 
@@ -367,6 +384,18 @@ function parseDateStr(str) {
     return new Date(str);
 }
 
+// Fungsi helper baru untuk format INVYYMMDDXXX
+function generateInvoiceNo(dateStr, id) {
+    const d = parseDateStr(dateStr);
+    if (!d) return "INV" + id; // Fallback jika tanggal invalid
+    
+    const yy = String(d.getFullYear()).slice(-2);
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    
+    return "INV" + yy + mm + dd + id;
+}
+
 function renderTable() {
     const tbody = document.getElementById('tableBody');
     const searchVal = document.getElementById('searchInput').value.toLowerCase();
@@ -384,8 +413,8 @@ function renderTable() {
             } else if (o.status !== currentFilter) return false;
         }
 
-        // 2. Search Text Filter (Include checking INV+ID)
-        const fullId = "INV" + o.id;
+        // 2. Search Text Filter (Include checking generated INV ID)
+        const fullId = generateInvoiceNo(o.date, o.id);
         const searchStr = JSON.stringify(o).toLowerCase() + fullId.toLowerCase();
         if (searchVal && !searchStr.includes(searchVal)) return false;
 
@@ -433,7 +462,10 @@ function renderTable() {
         tr.className = 'data-row';
         tr.onclick = function() { openModal(o.id); };
         
-        tr.innerHTML = `<td><strong>INV${o.id}</strong></td><td style="text-align:center;">${typeHtml}</td><td>${o.customer}</td><td>${o.date}</td><td>${o.estDelivery}</td><td>${o.dueDate}</td><td style="text-align:right;"><strong>${fmtMoneySimple(o.grandTotal)}</strong></td><td style="text-align:center;"><span class="badge ${badge}">${o.status}</span></td>`;
+        // GUNAKAN FUNGSI GENERATE INVOICE BARU
+        const invNo = generateInvoiceNo(o.date, o.id);
+
+        tr.innerHTML = `<td><strong>${invNo}</strong></td><td style="text-align:center;">${typeHtml}</td><td>${o.customer}</td><td>${o.date}</td><td>${o.estDelivery}</td><td>${o.dueDate}</td><td style="text-align:right;"><strong>${fmtMoneySimple(o.grandTotal)}</strong></td><td style="text-align:center;"><span class="badge ${badge}">${o.status}</span></td>`;
         tbody.appendChild(tr);
     });
 }
@@ -453,7 +485,8 @@ function openModal(id) {
         const o = allOrders.find(x => String(x.id) === String(id));
         if(!o) { alert("Data tidak ditemukan"); return; }
 
-        const fullOrderId = "INV" + o.id;
+        // GUNAKAN FUNGSI GENERATE INVOICE BARU
+        const fullOrderId = generateInvoiceNo(o.date, o.id);
 
         setTxt('webOrderNo', fullOrderId);
         setTxt('webStatusBadge', o.status);
@@ -488,7 +521,8 @@ function openModal(id) {
         if(o.status === 'Awaiting Approval') {
             btns += `<button class="btn-action btn-reject" onclick="updateStatus('${o.id}', 'Cancel Order')">Reject</button><button class="btn-action btn-approve" onclick="updateStatus('${o.id}', 'Awaiting Production')">Approve</button>`;
         } else if (o.status !== 'Cancel Order') {
-            btns += `<button class="btn-action btn-pdf" onclick="dlPDF('${o.id}')">Download PDF</button>`;
+            // Gunakan fullOrderId untuk nama file
+            btns += `<button class="btn-action btn-pdf" onclick="dlPDF('${fullOrderId}')">Download PDF</button>`;
         }
         document.getElementById('modalActions').innerHTML = btns;
         document.getElementById('orderModal').style.display = 'flex';
@@ -507,9 +541,9 @@ async function updateStatus(id, stat) {
     fetchData(); closeModal();
 }
 
-function dlPDF(id) {
+function dlPDF(filenameId) {
     const el = document.getElementById('pdfContent');
-    const opt = { margin: [1, 0.75, 1, 0.75], filename: `Faktur_INV${id}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'cm', format: 'a5', orientation: 'landscape' } };
+    const opt = { margin: [1, 0.75, 1, 0.75], filename: `Faktur_${filenameId}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'cm', format: 'a5', orientation: 'landscape' } };
     const btn = document.querySelector('.btn-pdf'); btn.textContent = "Generating...";
     html2pdf().set(opt).from(el).save().then(() => btn.textContent = "Download PDF");
 }
