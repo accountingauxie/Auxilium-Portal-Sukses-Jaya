@@ -29,7 +29,7 @@ body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background:
     padding: 0 40px;
     box-shadow: 0 1px 5px rgba(0,0,0,0.05);
     position: sticky; top: 0; 
-    z-index: 100; /* Z-index Navbar diturunkan agar Modal bisa di atasnya */
+    z-index: 100;
 }
 .aux-logo img { height: 40px; width: auto; display: block; }
 .aux-menu { display: flex; gap: 10px; align-items: center; height: 100%; }
@@ -70,32 +70,46 @@ table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 .prod-select { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; background: #fff; }
 .prod-input[readonly] { background-color: #eee; color: #666; }
 
-/* Split Row Styling */
-.split-row { background-color: #fffde7; } /* Kuning tipis */
-.main-row { background-color: #fff; }
+/* Row Styling */
+.main-row { background-color: #fff; transition: 0.3s; }
+.split-row { background-color: #fffde7; } /* Kuning tipis untuk anak split */
+
+/* Disabled Row (Untuk Main Row saat di-split) */
+.disabled-row { 
+    background-color: #f0f0f0 !important; 
+    color: #999 !important;
+}
+.disabled-row input, .disabled-row select {
+    background-color: #e0e0e0;
+    pointer-events: none;
+    border-color: #ddd;
+    color: #999;
+}
+.disabled-row .btn-split {
+    display: none; /* Sembunyikan tombol split jika sudah disabled */
+}
 
 .btn-sm { padding: 4px 8px; font-size: 11px; border-radius: 3px; cursor: pointer; border: 1px solid transparent; }
 .btn-split { background: #f3e8ff; color: #6b21a8; border-color: #d8b4fe; }
 .btn-remove { background: #fef2f2; color: #991b1b; border-color: #fee2e2; }
 
-/* --- MODAL STYLE (UPDATED) --- */
+/* --- MODAL STYLE --- */
 .modal-overlay { 
     position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
     background: rgba(0,0,0,0.5); 
     display: none; 
-    align-items: flex-start; /* Ubah dari center ke flex-start agar mulai dari atas */
+    align-items: flex-start; 
     justify-content: center; 
-    z-index: 10000; /* Z-Index sangat tinggi agar di atas Navbar */
+    z-index: 10000; 
     backdrop-filter: blur(2px); 
-    padding-top: 50px; /* Jarak dari atas layar (Fix #1) */
-    overflow-y: auto; /* Agar overlay bisa discroll jika modal sangat panjang */
+    padding-top: 50px; 
+    overflow-y: auto; 
 }
 
 .modal-box { 
     background: #fff; 
     width: 1350px; 
     max-width: 98%; 
-    /* Fix #2: Ubah height fixed menjadi auto dengan max-height */
     height: auto; 
     max-height: 90vh;
     display: flex; 
@@ -196,7 +210,7 @@ table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; bor
         
         <div class="modal-body">
             <div class="alert" style="background:#e0f2fe; color:#0c4a6e; padding:10px; border-radius:6px; margin-bottom:15px; font-size:12px;">
-                <i class="fas fa-info-circle"></i> <strong>Instruksi:</strong> Lengkapi Mesin dan KPC untuk item Spandek. Jika Split dinyalakan, harap sesuaikan Qty di setiap baris (Baris Utama + Baris Split) agar totalnya pas.
+                <i class="fas fa-info-circle"></i> <strong>Instruksi:</strong> Lengkapi Mesin dan KPC. Jika stok kurang, klik <strong>Split</strong>. Baris utama akan dinonaktifkan (abu-abu) dan digantikan oleh baris split.
             </div>
 
             <table class="xero-table" id="productionTable">
@@ -206,7 +220,8 @@ table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; bor
                         <th style="width:5%; text-align:center;">Meter</th>
                         <th style="width:5%; text-align:center;">Total Qty</th>
                         <th style="width:8%; text-align:center;">Assigned Qty</th>
-                        <th style="width:8%; text-align:center;">Total M'</th> <th style="width:12%">Mesin</th>
+                        <th style="width:8%; text-align:center;">Total M'</th>
+                        <th style="width:12%">Mesin</th>
                         <th style="width:14%">KPC Code (Stok)</th>
                         <th style="width:8%">Type</th>
                         <th style="width:14%">Work Effort Code</th>
@@ -285,7 +300,6 @@ const BASE_URL = "https://script.google.com/macros/s/AKfycbxmfwf0e9_K1TwaCGqmvCM
 let currentOrders = {}; 
 let activeOrderId = null;
 
-// Peta Kode untuk Work Effort (Fix #5)
 const TYPE_CODES = {
     'Custom': 'CS',
     'Plat': 'PL'
@@ -436,9 +450,11 @@ function closeModal() {
 
 // --- 3. SPLIT & CALCULATION LOGIC ---
 
-// Helper: Update Total Meter per Row (Fix #4)
+// Helper: Update Total Meter per Row
 function updateCalculations(input) {
     const row = input.closest('tr');
+    if (row.classList.contains('disabled-row')) return; // Ignore jika disabled
+
     const meterVal = parseFloat(row.querySelector('.meter-val')?.innerText || 0);
     const qtyVal = parseInt(input.value || 0);
     const totalM = (meterVal * qtyVal).toFixed(2);
@@ -447,13 +463,15 @@ function updateCalculations(input) {
     if(display) display.innerText = totalM;
 }
 
-// Helper: Generate Work Effort Code (Fix #5)
+// Helper: Generate Work Effort Code
 function generateWE(el) {
     const row = el.closest('tr');
+    if (row.classList.contains('disabled-row')) return;
+
     const machine = row.querySelector('.machine-select').value;
     const kpc = row.querySelector('.kpc-select').value;
     const typeVal = row.querySelector('.type-select').value;
-    const typeCode = TYPE_CODES[typeVal] || 'XX'; // Map Custom->CS, Plat->PL
+    const typeCode = TYPE_CODES[typeVal] || 'XX'; 
     
     const output = row.querySelector('.we-code-input');
     
@@ -465,64 +483,96 @@ function generateWE(el) {
     }
 }
 
-// Logic: Smart Split (Fix #3 & #6)
+// Logic: Smart Split (Fix #3 & #6 - Nonaktifkan Main Row)
 function splitRow(btn, groupId) {
     const originalRow = btn.closest('tr');
     
     // 1. Ambil Qty saat ini di baris utama
-    const mainQtyInput = originalRow.querySelector('.qty-input');
-    const currentQty = parseInt(mainQtyInput.value || 0);
+    const mainQtyVal = parseInt(originalRow.querySelector('.qty-input').value || 0);
     
-    // 2. Bagi dua secara otomatis (Smart Split)
-    const splitQty1 = Math.floor(currentQty / 2);
-    const splitQty2 = currentQty - splitQty1; // Sisanya
+    // 2. Disable Baris Utama
+    originalRow.classList.add('disabled-row');
+    originalRow.querySelector('.qty-input').value = 0; // Set 0 visual (logic validasi akan ignore baris ini)
+    originalRow.querySelector('.total-m-display').innerText = "0.00";
+    originalRow.querySelectorAll('select, input').forEach(el => el.disabled = true);
 
-    // Update Baris Utama
-    mainQtyInput.value = splitQty1;
-    updateCalculations(mainQtyInput);
+    // 3. Bagi Dua Qty untuk Baris Baru
+    const splitQty1 = Math.floor(mainQtyVal / 2);
+    const splitQty2 = mainQtyVal - splitQty1; 
 
-    // 3. Clone Baris untuk Split
-    const newRow = originalRow.cloneNode(true);
-    newRow.classList.remove('main-row');
-    newRow.classList.add('split-row');
-    
-    // Setup Baris Baru
-    const newQtyInput = newRow.querySelector('.qty-input');
-    newQtyInput.value = splitQty2; // Isi dengan sisa Qty
-    
-    // Reset Selects & Output
-    newRow.querySelectorAll('select').forEach(s => {
-        s.value = "";
-        s.onchange = function() { generateWE(this); };
-    });
-    newRow.querySelector('.we-code-input').value = "";
-    
-    // Hapus badge target qty di baris split (agar tidak bingung)
-    const targetCell = newRow.querySelector('.target-qty').parentElement;
-    targetCell.innerHTML = '<small class="text-muted">(Split)</small>';
+    // 4. Create Split Row 1
+    createSplitRow(originalRow, groupId, splitQty1);
+    // 5. Create Split Row 2
+    createSplitRow(originalRow, groupId, splitQty2);
 
-    // Ubah tombol jadi Remove
-    const actionTd = newRow.lastElementChild;
-    actionTd.innerHTML = `<button class="btn-sm btn-remove" onclick="removeSplit(this, ${groupId})"><i class="fas fa-trash"></i></button>`;
-    
-    // Re-attach event listeners
-    newQtyInput.onchange = function() { 
-        validateQty(groupId); 
-        updateCalculations(this);
-    };
-
-    // Masukkan baris baru
-    originalRow.after(newRow);
-    
-    // Update Total Meter Baris Baru
-    updateCalculations(newQtyInput);
-    
     // Validasi ulang
     validateQty(groupId);
 }
 
+function createSplitRow(originalRow, groupId, qtyValue) {
+    const newRow = originalRow.cloneNode(true);
+    newRow.classList.remove('main-row', 'disabled-row');
+    newRow.classList.add('split-row');
+    
+    // Reset Inputs
+    const qtyInput = newRow.querySelector('.qty-input');
+    qtyInput.value = qtyValue;
+    qtyInput.disabled = false;
+    
+    newRow.querySelectorAll('select').forEach(s => {
+        s.value = "";
+        s.disabled = false;
+        s.onchange = function() { generateWE(this); };
+    });
+    const weInput = newRow.querySelector('.we-code-input');
+    weInput.value = "";
+    weInput.disabled = false; // readonly but enabled for submission
+    weInput.readOnly = true;
+
+    // Tampilan
+    newRow.querySelector('.target-qty').parentElement.innerHTML = '<small class="text-muted">(Split)</small>';
+    
+    // Tombol Remove
+    const actionTd = newRow.lastElementChild;
+    actionTd.innerHTML = `<button class="btn-sm btn-remove" onclick="removeSplit(this, ${groupId})"><i class="fas fa-trash"></i></button>`;
+    
+    // Insert
+    // Kita insert setelah sibling terakhir dari group ini agar urutan rapi
+    const tbody = originalRow.parentNode;
+    const allGroupRows = tbody.querySelectorAll(`tr[data-id="${groupId}"]`);
+    const lastRow = allGroupRows[allGroupRows.length - 1];
+    lastRow.after(newRow);
+
+    // Event Listener & Calc
+    qtyInput.onchange = function() { 
+        validateQty(groupId); 
+        updateCalculations(this);
+    };
+    updateCalculations(qtyInput);
+}
+
 function removeSplit(btn, groupId) {
-    btn.closest('tr').remove();
+    const rowToRemove = btn.closest('tr');
+    const tbody = rowToRemove.parentNode;
+    rowToRemove.remove();
+
+    // Cek apakah masih ada split row?
+    const remainingSplits = tbody.querySelectorAll(`.split-row[data-id="${groupId}"]`);
+    
+    // Jika tidak ada split row tersisa, aktifkan kembali Main Row
+    if(remainingSplits.length === 0) {
+        const mainRow = tbody.querySelector(`.main-row[data-id="${groupId}"]`);
+        if(mainRow) {
+            mainRow.classList.remove('disabled-row');
+            mainRow.querySelectorAll('select, input').forEach(el => el.disabled = false);
+            // Kembalikan Qty Target
+            const targetQty = parseInt(mainRow.querySelector('.target-qty').innerText);
+            const qtyInput = mainRow.querySelector('.qty-input');
+            qtyInput.value = targetQty;
+            updateCalculations(qtyInput);
+        }
+    }
+    
     validateQty(groupId);
 }
 
@@ -533,30 +583,32 @@ function validateQty(groupId) {
     let target = 0;
     let totalAssigned = 0;
 
-    // Cari Target (hanya ada di Main Row)
+    // Cari Target
     const mainRow = tbody.querySelector(`tr.main-row[data-id="${groupId}"]`);
     if(mainRow) {
         target = parseInt(mainRow.querySelector('.target-qty').innerText);
     }
 
-    // Hitung Total Input (Main + Splits)
+    // Hitung Total (Hanya dari baris yang TIDAK disabled)
     rows.forEach(r => {
-        totalAssigned += parseInt(r.querySelector('.qty-input').value || 0);
+        if (!r.classList.contains('disabled-row')) {
+            totalAssigned += parseInt(r.querySelector('.qty-input').value || 0);
+        }
     });
 
     const msg = document.getElementById('validationMsg');
-    
-    // Visual Feedback (Merah jika salah)
     let isError = (totalAssigned !== target);
     
     rows.forEach(r => {
-        const input = r.querySelector('.qty-input');
-        if(isError) {
-            input.style.borderColor = 'red';
-            input.style.backgroundColor = '#fff0f0';
-        } else {
-            input.style.borderColor = '#ccc';
-            input.style.backgroundColor = '#fff';
+        if (!r.classList.contains('disabled-row')) {
+            const input = r.querySelector('.qty-input');
+            if(isError) {
+                input.style.borderColor = 'red';
+                input.style.backgroundColor = '#fff0f0';
+            } else {
+                input.style.borderColor = '#ccc';
+                input.style.backgroundColor = '#fff';
+            }
         }
     });
 
@@ -578,12 +630,17 @@ async function submitProduction() {
     let submitData = [];
     let pdfData = [];
 
+    // Cek error global
     if(document.getElementById('validationMsg').style.display === 'block') {
-        alert("Harap perbaiki jumlah Qty (Split) yang tidak sesuai target.");
+        alert("Harap perbaiki jumlah Qty yang tidak sesuai target.");
         return;
     }
 
+    // Loop Row
     rows.forEach(row => {
+        // Skip jika row disabled (Main row yang di-split)
+        if (row.classList.contains('disabled-row')) return;
+
         const isSpandek = row.dataset.type === 'spandek';
         const qty = row.querySelector('.qty-input').value;
         
