@@ -228,6 +228,10 @@ function closeConfirm(isConfirmed) {
 document.getElementById('confirmYesBtn').onclick = () => closeConfirm(true);
 
 // --- MAIN LOGIC ---
+function closeModal() { 
+    document.getElementById('setupModal').style.display = 'none'; 
+}
+
 function switchTab(tabName) {
     currentTab = tabName;
     document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
@@ -486,7 +490,6 @@ async function submitProduction(mode) {
         const q = r.querySelector('.qty-input')?.value;
         let item = { originalData: r.dataset.original, qty: q, isSplit: r.classList.contains('split-row') };
         
-        // Scrape checkbox status if in process
         if(currentTab === 'In Process') {
             item.isFinished = r.querySelector('.check-production')?.checked || false;
         }
@@ -543,7 +546,6 @@ function generatePDF(type) {
     if (type === 'SJ') {
         let grouped = {};
         o.items.forEach(item => {
-            // Key: Name + Meter + Type
             let key = `${item.item}_${item.meter}_${item.type}`;
             if (!grouped[key]) {
                 grouped[key] = { ...item, qty: 0, we: '', machine: '', kpc: '' }; 
@@ -552,7 +554,7 @@ function generatePDF(type) {
         });
         itemsToPrint = Object.values(grouped);
     } else {
-        itemsToPrint = o.items; // SPK shows splits
+        itemsToPrint = o.items; 
     }
 
     const tbody = document.getElementById('pdfItemsBody');
