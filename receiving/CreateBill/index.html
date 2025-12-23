@@ -58,7 +58,6 @@
         .filter-pill.active { background-color: #ccfbf1; color: #0f766e; border-color: #99f6e4; font-weight: 700; }
         .filter-pill.inactive { background-color: white; color: #64748b; border-color: #e2e8f0; }
 
-        /* Table Specific Styles */
         .table-row-hover:hover td { background-color: #f8fafc; }
     </style>
 </head>
@@ -119,11 +118,6 @@
             <button onclick="setFilterStatus('rejected')" id="filter-rejected" class="filter-pill inactive border px-4 py-1.5 rounded-full text-xs font-medium shadow-sm flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-red-400"></span> Rejected</button>
         </div>
 
-        <div id="loading" class="flex flex-col items-center justify-center py-20">
-            <div class="animate-spin rounded-full h-10 w-10 border-4 border-slate-200 border-t-primary mb-3"></div>
-            <p class="text-slate-500 text-sm font-medium">Memuat Data...</p>
-        </div>
-
         <div id="content-area" class="min-h-[300px]">
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="overflow-x-auto">
@@ -140,10 +134,6 @@
                         <tbody id="listContainer" class="divide-y divide-slate-100 bg-white">
                             </tbody>
                     </table>
-                </div>
-                <div id="empty-state" class="hidden py-10 text-center">
-                    <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-2"><i class="fas fa-search text-slate-300"></i></div>
-                    <p class="text-slate-400 text-sm">Tidak ada data yang cocok.</p>
                 </div>
             </div>
         </div>
@@ -322,19 +312,24 @@
         window.onload = fetchData;
 
         async function fetchData() {
-            toggleLoading(true);
-            document.getElementById('listContainer').innerHTML = '';
-            document.getElementById('empty-state').classList.add('hidden');
+            // Inject Loading Row inside Table Body
+            const container = document.getElementById('listContainer');
+            container.innerHTML = `
+                <tr>
+                    <td colspan="5" class="py-20 text-center">
+                        <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-slate-200 border-t-primary mb-3"></div>
+                        <p class="text-slate-500 text-sm font-medium">Memuat Data...</p>
+                    </td>
+                </tr>`;
 
             try {
                 const response = await fetch(`${API_URL}?t=${new Date().getTime()}`);
                 const data = await response.json();
                 allData = data;
-                toggleLoading(false);
                 applyFilters();
             } catch (error) {
                 console.error(error);
-                toggleLoading(false);
+                container.innerHTML = `<tr><td colspan="5" class="py-10 text-center text-red-500">Gagal memuat data. Periksa koneksi.</td></tr>`;
                 showNotification("Gagal memuat data. Periksa koneksi internet Anda.");
             }
         }
@@ -377,15 +372,18 @@
 
         function renderCards(data) {
             const container = document.getElementById('listContainer');
-            const emptyState = document.getElementById('empty-state');
             container.innerHTML = '';
             document.getElementById('count-total').innerText = allData.length;
 
             if (data.length === 0) {
-                emptyState.classList.remove('hidden');
+                container.innerHTML = `
+                <tr>
+                    <td colspan="5" class="py-10 text-center">
+                        <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-2"><i class="fas fa-search text-slate-300"></i></div>
+                        <p class="text-slate-400 text-sm">Tidak ada data yang cocok.</p>
+                    </td>
+                </tr>`;
                 return;
-            } else {
-                emptyState.classList.add('hidden');
             }
 
             data.forEach(po => {
@@ -487,7 +485,8 @@
             if (!confirm("Apakah Anda yakin ingin menolak PO ini?")) return;
 
             document.getElementById('rejectModal').classList.add('hidden');
-            toggleLoading(true);
+            // Re-render loading inside table
+            document.getElementById('listContainer').innerHTML = `<tr><td colspan="5" class="py-20 text-center"><div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-slate-200 border-t-primary"></div></td></tr>`;
 
             try {
                 const res = await fetch(API_URL, {
@@ -500,19 +499,21 @@
                     showNotification("PO Berhasil di-Reject.");
                 } else {
                     showNotification("Gagal update status: " + json.message);
+                    fetchData(); // Reload data anyway
                 }
             } catch (e) {
                 console.error(e);
                 showNotification("Terjadi kesalahan koneksi.");
-            } finally {
-                toggleLoading(false);
+                fetchData();
             }
         }
 
         async function revertPO(idPO) {
             if (!confirm(`Kembalikan status PO ${idPO} ke semula?`)) return;
 
-            toggleLoading(true);
+            // Re-render loading inside table
+            document.getElementById('listContainer').innerHTML = `<tr><td colspan="5" class="py-20 text-center"><div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-slate-200 border-t-primary"></div></td></tr>`;
+
             try {
                 const res = await fetch(API_URL, {
                     method: 'POST',
@@ -524,12 +525,12 @@
                     showNotification(`PO Berhasil dikembalikan ke status: ${json.newStatus}`);
                 } else {
                     showNotification("Gagal revert: " + json.message);
+                    fetchData();
                 }
             } catch (e) {
                 console.error(e);
                 showNotification("Terjadi kesalahan koneksi.");
-            } finally {
-                toggleLoading(false);
+                fetchData();
             }
         }
 
@@ -790,8 +791,7 @@
         function formatDate(d) { return d ? new Date(d).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'}) : '-'; }
         
         function toggleLoading(show) {
-            const el = document.getElementById('loading');
-            el.style.display = show ? 'flex' : 'none';
+            // Unused in new logic, but kept for compatibility
         }
 
         // --- Helper for Product Search ---
