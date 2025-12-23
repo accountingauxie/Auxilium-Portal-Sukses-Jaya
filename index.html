@@ -20,77 +20,59 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ========== HEADER LAYOUT (Full Width) ========== */
+    /* ========== HEADER ========== */
     .header {
       background: #ffffff;
-      height: 80px; /* Lebih tinggi sesuai gambar */
+      height: 80px;
       padding: 0 40px;
       display: flex;
       align-items: center;
-      justify-content: space-between; /* Kiri, Tengah, Kanan */
+      justify-content: space-between;
       border-bottom: 1px solid #eaecf0;
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 1000;
       box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
 
-    /* 1. BAGIAN KIRI (BRAND) */
+    /* 1. BAGIAN KIRI (LOGO) */
     .header-left {
       display: flex;
       align-items: center;
-      gap: 12px;
       min-width: 200px;
     }
 
     .brand-logo-img {
-      height: 40px;
+      height: 50px; /* Ukuran logo disesuaikan */
       width: auto;
-    }
-
-    .brand-text {
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .brand-title {
-        font-weight: 800;
-        font-size: 20px;
-        letter-spacing: 2px;
-        color: #101828;
-        line-height: 1;
-    }
-
-    .brand-subtitle {
-        font-size: 10px;
-        color: #98a2b3;
-        margin-top: 4px;
-        letter-spacing: 0.5px;
+      object-fit: contain;
     }
 
     /* 2. BAGIAN TENGAH (NAVIGASI) */
     .header-center {
       display: flex;
       align-items: center;
-      gap: 8px; /* Jarak antar menu */
+      gap: 12px;
+      height: 100%;
     }
 
     .nav-item {
       position: relative;
+      height: 100%;
+      display: flex;
+      align-items: center;
     }
 
     .nav-link {
       text-decoration: none;
-      color: #667085; /* Abu-abu seperti di gambar */
-      font-size: 15px;
-      font-weight: 600;
-      padding: 10px 18px;
+      color: #667085;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 16px;
       border-radius: 6px;
       transition: all 0.2s;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      white-space: nowrap;
     }
 
     .nav-link:hover {
@@ -98,31 +80,46 @@
       background-color: #f9fafb;
     }
 
-    /* Style untuk menu yang sedang AKTIF (Order Form style) */
+    /* Menu Aktif (Biru) */
     .nav-link.active {
-      background-color: #eef4ff; /* Biru muda */
-      color: #004EEB; /* Biru tua */
+      background-color: #eff8ff;
+      color: #1570EF;
+      font-weight: 600;
     }
 
-    /* Dropdown Styling */
+    /* DROPDOWN MENU FIX */
     .dropdown-menu {
-      display: none;
+      visibility: hidden;
+      opacity: 0;
       position: absolute;
-      top: 100%;
+      top: 90%; /* Posisi sedikit di bawah header */
       left: 50%;
-      transform: translateX(-50%); /* Center dropdown */
+      transform: translateX(-50%) translateY(-10px);
       background: white;
       min-width: 200px;
       border: 1px solid #eaecf0;
       border-radius: 8px;
       box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08);
-      padding: 6px;
-      z-index: 101;
-      margin-top: 8px;
+      padding: 8px;
+      z-index: 1100;
+      transition: all 0.2s ease;
+    }
+
+    /* Invisible Bridge: Agar mouse tidak "putus" saat pindah ke dropdown */
+    .dropdown-menu::before {
+      content: "";
+      position: absolute;
+      top: -20px; /* Mengisi celah antara menu dan dropdown */
+      left: 0;
+      width: 100%;
+      height: 20px;
+      background: transparent;
     }
 
     .nav-item:hover .dropdown-menu {
-      display: block;
+      visibility: visible;
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
 
     .dropdown-item {
@@ -133,6 +130,7 @@
       font-size: 14px;
       border-radius: 6px;
       transition: background 0.2s;
+      text-align: left;
     }
 
     .dropdown-item:hover {
@@ -140,7 +138,7 @@
       color: #2f54eb;
     }
 
-    /* 3. BAGIAN KANAN (PROFIL USER) */
+    /* 3. BAGIAN KANAN (PROFIL) */
     .header-right {
       display: flex;
       align-items: center;
@@ -170,7 +168,7 @@
     .user-avatar {
       width: 40px;
       height: 40px;
-      background-color: #005f98; /* Warna biru avatar */
+      background-color: #005f98;
       color: white;
       border-radius: 50%;
       display: flex;
@@ -200,11 +198,11 @@
       border-color: #fee4e2;
     }
 
-    /* ========== MAIN CONTENT AREA ========== */
+    /* ========== CONTENT ========== */
     .main-container {
       width: 100%;
       max-width: 1400px;
-      margin: 0 auto; /* Center content */
+      margin: 0 auto;
       padding: 40px;
     }
 
@@ -213,36 +211,37 @@
       font-size: 28px;
       font-weight: 700;
       color: #101828;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .subtitle {
       font-size: 16px;
       color: #667085;
       margin-top: 8px;
-      line-height: 1.5;
+      margin-bottom: 40px;
     }
 
-    /* ========== GRID & TILES ========== */
+    /* ========== TILES ========== */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(4, 1fr); /* 4 Kolom sejajar */
       gap: 24px;
-      margin-top: 32px;
     }
 
     .tile {
       background: white;
-      padding: 32px;
-      border-radius: 16px;
-      box-shadow: 0px 2px 4px -2px rgba(16, 24, 40, 0.06), 0px 4px 8px -2px rgba(16, 24, 40, 0.1);
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0px 1px 3px rgba(16, 24, 40, 0.1), 0px 1px 2px rgba(16, 24, 40, 0.06);
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-      min-height: 200px;
+      transition: all 0.2s ease;
+      min-height: 220px;
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
+      justify-content: space-between;
       border: 1px solid #eaecf0;
-      position: relative;
     }
 
     .tile:hover {
@@ -251,36 +250,21 @@
       border-color: #d0d5dd;
     }
 
-    .tile-disabled {
-      background: #f2f4f7;
-      opacity: 0.7;
-      cursor: not-allowed;
-      border-color: #e4e7ec;
+    .tile-icon {
+      margin-bottom: 20px;
     }
     
-    .tile-disabled:hover {
-        transform: none;
-    }
-
-    .tile-icon {
-      margin-bottom: auto;
-      padding-bottom: 20px;
-    }
-
     .tile-icon svg {
         stroke: #475467;
-        transition: stroke 0.3s;
-    }
-
-    .tile:hover .tile-icon svg {
-        stroke: #2f54eb;
+        width: 32px;
+        height: 32px;
     }
 
     .tile-title {
       font-size: 18px;
       font-weight: 700;
-      margin-bottom: 8px;
       color: #101828;
+      margin-bottom: 8px;
     }
 
     .tile-desc {
@@ -289,20 +273,18 @@
       line-height: 1.5;
     }
 
-    /* ========== MODAL ========== */
+    /* ========== MODAL & LOADER ========== */
     .modal {
       display: none;
       position: fixed;
-      z-index: 999999;
+      z-index: 9999;
       left: 0;
       top: 0;
       width: 100%;
       height: 100%;
       background-color: rgba(0, 0, 0, 0.5);
       backdrop-filter: blur(4px);
-      animation: fadeIn 0.2s ease;
     }
-
     .modal-content {
       background-color: #fff;
       margin: 15% auto;
@@ -310,42 +292,23 @@
       border-radius: 16px;
       width: 360px;
       text-align: center;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
     }
-    
     .modal-buttons {
       display: flex;
       justify-content: center;
       gap: 12px;
       margin-top: 24px;
     }
-
-    .btn {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      flex: 1;
-    }
-
+    .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; }
     .btn-yes { background-color: #d92d20; color: #fff; }
     .btn-cancel { background-color: #f2f4f7; color: #344054; }
 
-    /* ========== LOADER ========== */
     .auxie-loader {
-      position: fixed;
-      inset: 0;
-      background: #ffffff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 99999;
-      transition: opacity 0.5s ease;
+      position: fixed; inset: 0; background: #ffffff;
+      display: flex; justify-content: center; align-items: center;
+      z-index: 99999; transition: opacity 0.5s ease;
     }
     .auxie-loader.hide { opacity: 0; pointer-events: none; }
-    
-    /* Animation keyframes same as before */
     .rings { position: relative; width: 100px; height: 100px; }
     .ring { position: absolute; border-radius: 50%; border-style: solid; border-width: 4px; }
     .ring-lg { width: 100px; height: 100px; border-color: #2f54eb transparent transparent transparent; animation: spinCW 2s linear infinite; }
@@ -354,13 +317,9 @@
     @keyframes spinCW { to { transform: rotate(360deg); } }
     @keyframes spinCCW { to { transform: rotate(-360deg); } }
     @keyframes spinCWfast { to { transform: rotate(540deg); } }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-    /* Responsive */
     @media (max-width: 1100px) {
-        .header { padding: 0 20px; }
-        .nav-link { font-size: 13px; padding: 10px 12px; }
-        .brand-title { font-size: 18px; }
+        .grid { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
@@ -376,37 +335,32 @@
 
   <header class="header">
     <div class="header-left">
-        <div style="width: 36px; height: 36px; background: #101828; border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-right: 8px;">
-            <span style="color: white; font-weight: bold; font-size: 20px;">A</span>
-        </div>
-        <div class="brand-text">
-            <span class="brand-title">UXILIUM</span>
-            <span class="brand-subtitle">Accounting Management Service</span>
-        </div>
+        <img 
+            src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png" 
+            alt="Auxilium Logo" 
+            class="brand-logo-img"
+            onerror="this.style.display='none'; document.querySelector('.header-left').innerHTML='<h2 style=\'margin:0\'>AUXILIUM</h2>'"
+        >
+        <div style="margin-left: 10px; display: flex; flex-direction: column;">
+            <span style="font-weight: 800; font-size: 18px; color: #101828; letter-spacing: 1px;">UXILIUM</span>
+            <span style="font-size: 10px; color: #98a2b3;">Accounting Management Service</span>
+         </div>
     </div>
 
     <nav class="header-center">
         <div class="nav-item">
-            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/" class="nav-link">
-                Home
-            </a>
+            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/" class="nav-link">Home</a>
         </div>
-
         <div class="nav-item">
-            <div class="nav-link">
-                Inventory
-            </div>
+            <a href="inventory/" class="nav-link">Inventory</a>
              <div class="dropdown-menu">
-                <a href="#" onclick="alert('Stok KPC')" class="dropdown-item">KPC</a>
-                <a href="#" onclick="alert('Stok Spandek')" class="dropdown-item">Spandek</a>
-                <a href="inventory/" class="dropdown-item">General Inventory</a>
+                <a href="#" class="dropdown-item">Stok KPC</a>
+                <a href="#" class="dropdown-item">General Inventory</a>
             </div>
         </div>
-
+        
         <div class="nav-item">
-            <div class="nav-link active">
-                Order Form
-            </div>
+            <div class="nav-link active">Penjualan</div>
             <div class="dropdown-menu">
                 <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Order%20Penjualan/" class="dropdown-item">Buat Order Baru</a>
                 <a href="Penjualan/Review%20Penjualan/" class="dropdown-item">Review Penjualan</a>
@@ -414,31 +368,13 @@
         </div>
 
         <div class="nav-item">
-            <div class="nav-link">
-                Production
-            </div>
-            <div class="dropdown-menu">
-                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/" class="dropdown-item">Produksi Barang Jadi</a>
-            </div>
+            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/" class="nav-link">Production</a>
         </div>
-
         <div class="nav-item">
-            <div class="nav-link">
-                Receiving
-            </div>
-            <div class="dropdown-menu">
-                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/PurchaseOrder/index.html" class="dropdown-item">PO</a>
-                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/entry/index.html" class="dropdown-item">Receive Goods</a>
-            </div>
+            <a href="receiving/" class="nav-link">Receiving</a>
         </div>
-
         <div class="nav-item">
-            <div class="nav-link">
-                Review Invoice
-            </div>
-            <div class="dropdown-menu">
-                 <a href="#" class="dropdown-item">Pending Approval</a>
-            </div>
+            <a href="#" class="nav-link">Review Invoice</a>
         </div>
     </nav>
 
@@ -447,65 +383,57 @@
             <span class="user-name">Admin Gudang</span>
             <span class="user-company">CV Sukses Jaya</span>
         </div>
-        <div class="user-avatar">
-            AG
-        </div>
-        <div class="logout-btn-icon" onclick="showLogoutModal()" title="Logout">
+        <div class="user-avatar">AG</div>
+        <div class="logout-btn-icon" onclick="showLogoutModal()">
             <i data-feather="power" style="width: 18px; height: 18px;"></i>
         </div>
     </div>
   </header>
 
   <div class="main-container">
-    
     <div class="content" id="home-page">
       <h2>Welcome Back 👋</h2>
       <p class="subtitle">Silakan pilih modul melalui menu navigasi di atas.</p>
       
       <div class="grid">
-        <div class="tile" id="tile-receiving" onclick="window.location.href='receiving/'">
-          <div class="tile-icon">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 16V8L12 3 3 8v8l9 5 9-5z"></path>
-              <line x1="12" y1="22" x2="12" y2="12"></line>
-            </svg>
+        <div class="tile" onclick="window.location.href='receiving/'">
+          <div>
+            <div class="tile-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8L12 3 3 8v8l9 5 9-5z"/><line x1="12" y1="22" x2="12" y2="12"/></svg>
+            </div>
+            <div class="tile-title">Receiving</div>
+            <div class="tile-desc">Penerimaan material & PO</div>
           </div>
-          <div class="tile-title">Receiving</div>
-          <div class="tile-desc">Penerimaan material & PO</div>
         </div>
 
-        <div class="tile" id="tile-finished-goods" onclick="window.location.href='production/'">
-          <div class="tile-icon">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="3"></circle>
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83"></path>
-            </svg>
+        <div class="tile" onclick="window.location.href='production/'">
+          <div>
+              <div class="tile-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83"></path></svg>
+              </div>
+              <div class="tile-title">Production</div>
+              <div class="tile-desc">Input hasil produksi mesin</div>
           </div>
-          <div class="tile-title">Production</div>
-          <div class="tile-desc">Input hasil produksi mesin</div>
         </div>
 
-        <div class="tile" id="tile-order-form" onclick="window.location.href='Penjualan/Order Penjualan/'">
-          <div class="tile-icon">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
-              <line x1="14" y1="2" x2="14" y2="8"></line>
-            </svg>
+        <div class="tile" onclick="window.location.href='Penjualan/Order Penjualan/'">
+          <div>
+              <div class="tile-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              </div>
+              <div class="tile-title">Order Form</div>
+              <div class="tile-desc">Buat order penjualan baru</div>
           </div>
-          <div class="tile-title">Order Form</div>
-          <div class="tile-desc">Buat order penjualan baru</div>
         </div>
 
-        <div class="tile" id="tile-inventory" onclick="window.location.href='inventory/'">
-          <div class="tile-icon">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-               <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-               <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-               <line x1="12" y1="22.08" x2="12" y2="12"></line>
-            </svg>
+        <div class="tile" onclick="window.location.href='inventory/'">
+          <div>
+              <div class="tile-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+              </div>
+              <div class="tile-title">Inventory</div>
+              <div class="tile-desc">Cek stok & mutasi barang</div>
           </div>
-          <div class="tile-title">Inventory</div>
-          <div class="tile-desc">Cek stok & mutasi barang</div>
         </div>
       </div> 
     </div>
@@ -525,21 +453,10 @@
   <script src="https://unpkg.com/feather-icons"></script>
   <script>
     feather.replace();
-
     const loader = document.getElementById("auxieLoading");
-
-    window.addEventListener("load", () => {
-      setTimeout(() => loader.classList.add("hide"), 500);
-    });
-
-    function showLogoutModal() {
-      document.getElementById("logoutModal").style.display = "block";
-    }
-
-    function closeLogoutModal() {
-      document.getElementById("logoutModal").style.display = "none";
-    }
-
+    window.addEventListener("load", () => { setTimeout(() => loader.classList.add("hide"), 500); });
+    function showLogoutModal() { document.getElementById("logoutModal").style.display = "block"; }
+    function closeLogoutModal() { document.getElementById("logoutModal").style.display = "none"; }
     function logout() {
       loader.classList.remove("hide");
       setTimeout(() => {
@@ -547,40 +464,6 @@
         window.location.href = "login.html";
       }, 800);
     }
-
-    // Access Control Logic
-    (function applyAccess() {
-      const raw = localStorage.getItem("uxilium_current_user");
-      if (!raw) return;
-      let user = null;
-      try { user = JSON.parse(raw); } catch { return; }
-      if (!user.access) return;
-
-      // Update UI Name if available
-      if(user.username) {
-        document.querySelector('.user-name').textContent = user.username;
-      }
-      if(user.company) {
-        document.querySelector('.user-company').textContent = user.company;
-      }
-
-      function setTile(id, allowed) {
-        const tile = document.getElementById(id);
-        if (!tile) return;
-        if (allowed) {
-          tile.classList.remove("tile-disabled");
-          tile.style.pointerEvents = "auto";
-        } else {
-          tile.classList.add("tile-disabled");
-          tile.style.pointerEvents = "none";
-        }
-      }
-
-      setTile("tile-receiving", !!user.access.receiving);
-      setTile("tile-finished-goods", !!user.access.finished_goods);
-      setTile("tile-order-form", !!user.access.order_form);
-      setTile("tile-inventory", !!user.access.inventory);
-    })();
   </script>
 </body>
 </html>
