@@ -7,176 +7,81 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-/* --- 1. SYSTEM STYLE --- */
-:root { 
-    --primary-color: #116999; 
-    --bg-color: #f4f7f6; 
-    --text-color: #333; 
-    --red-bg: #fee2e2; 
-    --red-text: #991b1b;
-}
-
+/* --- SYSTEM STYLE --- */
+:root { --primary: #116999; --bg: #f4f7f6; --text: #333; --red: #b91c1c; --green: #047857; --orange: #b75900; }
 * { box-sizing: border-box; }
-body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background: var(--bg-color); color: var(--text-color); }
+body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background: var(--bg); color: var(--text); }
 
-/* --- NAVIGATION BAR --- */
-.aux-navbar {
-    background-color: #ffffff;
-    height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 40px;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.05);
-    position: sticky; top: 0; 
-    z-index: 100;
-}
-.aux-logo img { height: 40px; width: auto; display: block; }
-.aux-menu { display: flex; gap: 10px; align-items: center; height: 100%; }
-.nav-item { position: relative; height: 100%; display: flex; align-items: center; }
-.aux-link { text-decoration: none; color: #666; font-weight: 600; font-size: 14px; padding: 8px 14px; border-radius: 6px; transition: all 0.2s; cursor: pointer; display: flex; align-items: center; gap: 4px; }
-.aux-link:hover, .nav-item:hover .aux-link { color: #1d2939; background-color: #f9fafb; }
-.aux-link.active { color: var(--primary-color); background-color: #eff8ff; font-weight: 700; }
+/* --- NAVBAR --- */
+.aux-navbar { background: #fff; height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; box-shadow: 0 1px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
+.aux-logo img { height: 40px; }
+.aux-menu { display: flex; gap: 10px; height: 100%; align-items: center; }
+.aux-link { text-decoration: none; color: #666; font-weight: 600; padding: 8px 14px; border-radius: 6px; }
+.aux-link.active { color: var(--primary); background: #eff8ff; }
 
-/* Dropdown */
-.dropdown-menu { visibility: hidden; opacity: 0; position: absolute; top: 90%; left: 50%; transform: translateX(-50%) translateY(-10px); background: white; min-width: 220px; border: 1px solid #eaecf0; border-radius: 8px; box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08); padding: 6px; z-index: 200; transition: all 0.2s ease; }
-.dropdown-menu::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
-.nav-item:hover .dropdown-menu { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
-.dropdown-item { display: block; padding: 10px 12px; color: #344054; text-decoration: none; font-size: 14px; border-radius: 6px; transition: background 0.2s; text-align: left; font-weight: 400; }
-.dropdown-item:hover { background-color: #f9fafb; color: #2f54eb; }
-
-/* User Panel */
-.user-panel { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid #eee; }
-.user-details { display: flex; flex-direction: column; text-align: right; line-height: 1.3; }
-.user-name { font-weight: 700; font-size: 13px; color: #333; }
-.user-role { font-size: 11px; color: #888; }
-.user-avatar { width: 36px; height: 36px; background-color: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; user-select: none; }
-
-/* --- CONTENT STYLE --- */
+/* --- CONTENT --- */
 .page-wrap { padding: 30px 40px; max-width: 98%; margin: 0 auto; }
 .category-tabs { margin-bottom: 20px; border-bottom: 2px solid #ddd; }
 .cat-btn { background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; }
-.cat-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+.cat-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
 
 .table-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; }
 table.xero-table { width: 100%; border-collapse: collapse; }
-table.xero-table th { text-align: left; padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; color: #555; font-size: 12px; text-transform: uppercase; font-weight: bold; }
+table.xero-table th { text-align: left; padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; color: #555; font-size: 12px; font-weight: bold; text-transform: uppercase; }
 table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-align: middle; }
-table.xero-table tr.data-row { cursor: pointer; transition: background-color 0.2s; }
-table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
+table.xero-table tr:hover { background-color: #f9fafb; }
 
-/* --- STYLE KHUSUS PRODUKSI --- */
-.prod-input { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
-.prod-select { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; background: #fff; }
-.prod-input[readonly] { background-color: #eee; color: #666; }
+/* Badges */
+.badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+.badge-gen { background: #e0f2fe; color: #0369a1; }
+.badge-pre { background: #f3e8ff; color: #7e22ce; }
+.status-process { background: #fff7e6; color: var(--orange); }
+.status-completed { background: #ecfdf5; color: var(--green); }
+.status-cancel { background: #fef2f2; color: var(--red); }
 
-/* Row Styling */
-.main-row { background-color: #fff; transition: 0.3s; }
-.split-row { background-color: #fffde7; } /* Kuning tipis untuk anak split */
+/* --- MODAL --- */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: flex-start; justify-content: center; z-index: 10000; padding-top: 50px; overflow-y: auto; }
+.modal-box { background: #fff; width: 1350px; max-width: 98%; height: auto; max-height: 90vh; display: flex; flex-direction: column; border-radius: 8px; margin-bottom: 50px; }
+.modal-header, .modal-footer { padding: 20px 30px; background: #fff; border-bottom: 1px solid #eee; }
+.modal-footer { background: #f9fafb; text-align: right; border-top: 1px solid #eee; }
+.modal-body { flex: 1; overflow-y: auto; padding: 20px; }
 
-/* Disabled Row (Untuk Main Row saat di-split) */
-.disabled-row { 
-    background-color: #f0f0f0 !important; 
-    color: #999 !important;
-}
-.disabled-row input, .disabled-row select {
-    background-color: #e0e0e0;
-    pointer-events: none;
-    border-color: #ddd;
-    color: #999;
-}
-.disabled-row .btn-split {
-    display: none; /* Sembunyikan tombol split jika sudah disabled */
-}
+/* Production Inputs */
+.prod-input, .prod-select { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
+.split-row { background-color: #fffde7; }
+.disabled-row { background-color: #f3f4f6; color: #9ca3af; pointer-events: none; }
+.disabled-row input, .disabled-row select { background: #e5e7eb; border-color: #d1d5db; }
 
-.btn-sm { padding: 4px 8px; font-size: 11px; border-radius: 3px; cursor: pointer; border: 1px solid transparent; }
-.btn-split { background: #f3e8ff; color: #6b21a8; border-color: #d8b4fe; }
-.btn-remove { background: #fef2f2; color: #991b1b; border-color: #fee2e2; }
+/* Buttons */
+.btn { padding: 6px 12px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s; color: white; }
+.btn-setup { background: var(--primary); }
+.btn-complete { background: var(--green); }
+.btn-cancel { background: var(--red); }
+.btn-split { background: #d8b4fe; color: #6b21a8; }
+.btn-remove { background: #fee2e2; color: #991b1b; }
+.btn-secondary { background: #fff; border: 1px solid #ccc; color: #333; }
 
-/* --- MODAL STYLE --- */
-.modal-overlay { 
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-    background: rgba(0,0,0,0.5); 
-    display: none; 
-    align-items: flex-start; 
-    justify-content: center; 
-    z-index: 10000; 
-    backdrop-filter: blur(2px); 
-    padding-top: 50px; 
-    overflow-y: auto; 
-}
-
-.modal-box { 
-    background: #fff; 
-    width: 1350px; 
-    max-width: 98%; 
-    height: auto; 
-    max-height: 90vh;
-    display: flex; 
-    flex-direction: column; 
-    border-radius: 8px; 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
-    margin-bottom: 50px;
-}
-
-.modal-header { padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; border-radius: 8px 8px 0 0; }
-.modal-body { flex: 1; overflow-y: auto; padding: 20px; background: #fff; }
-.modal-footer { padding: 15px 30px; background: #f9fafb; border-top: 1px solid #eee; text-align: right; border-radius: 0 0 8px 8px; }
-
-.btn-action { padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; color: white; font-weight: bold; margin-left: 10px; transition: 0.2s; }
-.btn-close { background: #fff; color: #333; border: 1px solid #ccc; }
-.btn-process { background: #116999; }
-
-/* --- PDF STYLE (SURAT JALAN) --- */
-#pdf-hidden-container { position: absolute; left: -9999px; top: 0; }
-#pdfContent { background: #fff; width: 100%; padding: 0; font-family: "Arial", sans-serif; color: #000; }
-.pdf-header { display: flex; justify-content: space-between; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
-.pdf-title { font-size: 24px; font-weight: 800; text-transform: uppercase; color: #000; }
-.pdf-subtitle { font-size: 14px; font-weight: bold; color: #444; margin-top: 5px; text-transform: uppercase; }
-
-table.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-table.pdf-table th { font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 8px 4px; border: 1px solid #000; background: #eee; }
-table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; border: 1px solid #000; }
-.we-code { font-family: "Courier New", monospace; font-weight: bold; letter-spacing: 1px; }
+/* PDF Hidden */
+#pdf-hidden-container { position: absolute; left: -9999px; }
 </style>
 </head>
 <body>
 
 <div class="aux-navbar">
-    <div class="aux-logo">
-        <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png" alt="Auxilium Logo">
-    </div>
-    
+    <div class="aux-logo"><img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png"></div>
     <nav class="aux-menu">
-        <div class="nav-item"><a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/" class="aux-link">Home</a></div>
-        <div class="nav-item">
-            <div class="aux-link">Penjualan <i class="fas fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></div>
-            <div class="dropdown-menu">
-                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Review%20Penjualan/" class="dropdown-item">Review Penjualan</a>
-            </div>
-        </div>
-        <div class="nav-item">
-            <div class="aux-link active">Produksi <i class="fas fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></div>
-            <div class="dropdown-menu">
-                <a href="#" class="dropdown-item">Persiapan Pesanan</a>
-                <a href="#" onclick="alert('Coming soon')" class="dropdown-item">Produksi Barang Jadi</a>
-            </div>
-        </div>
+        <div class="nav-item"><a href="#" class="aux-link active">Produksi</a></div>
     </nav>
-
-    <div class="user-panel">
-        <div class="user-details"><span class="user-name">Admin Produksi</span><span class="user-role">CV Sukses Jaya</span></div>
-        <div class="user-avatar">AP</div>
-    </div>
 </div>
 
 <div class="page-wrap">
-    <h2>Persiapan Produksi (General Order)</h2>
+    <h2>Persiapan Produksi</h2>
     
     <div class="category-tabs">
-        <button class="cat-btn active" id="tab-awaiting" onclick="loadOrders()">Awaiting Production</button>
-        <button class="cat-btn" id="tab-process" onclick="alert('Fitur Process View akan segera hadir')">In Process</button>
-        <button class="cat-btn" id="tab-completed" onclick="alert('History selesai akan segera hadir')">Completed</button>
+        <button class="cat-btn active" id="tab-awaiting" onclick="switchTab('Awaiting')">Awaiting Production</button>
+        <button class="cat-btn" id="tab-process" onclick="switchTab('In Process')">In Process</button>
+        <button class="cat-btn" id="tab-completed" onclick="switchTab('Completed')">Completed</button>
+        <button class="cat-btn" id="tab-cancel" onclick="switchTab('Cancel')">Cancelled</button>
     </div>
 
     <div class="table-card">
@@ -184,15 +89,15 @@ table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; bor
             <thead>
                 <tr>
                     <th>Order #</th>
-                    <th>Customer</th>
+                    <th>Type</th> <th>Customer</th>
                     <th>Order Date</th>
                     <th>Est. Delivery</th>
-                    <th>Items Count</th>
+                    <th>Status</th> <th>Items</th>
                     <th style="text-align:center;">Action</th>
                 </tr>
             </thead>
             <tbody id="dashboardBody">
-                <tr><td colspan="6" style="text-align:center; padding:50px; color:#999;">Loading Data...</td></tr>
+                <tr><td colspan="8" style="text-align:center; padding:30px;">Loading...</td></tr>
             </tbody>
         </table>
     </div>
@@ -201,133 +106,99 @@ table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; bor
 <div id="setupModal" class="modal-overlay">
     <div class="modal-box">
         <div class="modal-header">
-            <div>
-                <h3 style="margin:0; font-size: 18px;">Setup Produksi: <span id="modalOrderNo" style="font-weight:bold; color:var(--primary-color);"></span></h3>
-                <span style="font-size:12px; color:#666;" id="modalCustomer"></span>
-            </div>
-            <button class="btn-close" onclick="closeModal()" style="border:none; background:none; font-size:24px; cursor:pointer;">&times;</button>
+            <h3>Setup: <span id="modalOrderNo" style="color:#116999;"></span></h3>
+            <button onclick="closeModal()" style="border:none; background:none; font-size:20px; cursor:pointer;">&times;</button>
         </div>
-        
         <div class="modal-body">
             <div class="alert" style="background:#e0f2fe; color:#0c4a6e; padding:10px; border-radius:6px; margin-bottom:15px; font-size:12px;">
-                <i class="fas fa-info-circle"></i> <strong>Instruksi:</strong> Lengkapi Mesin dan KPC. Jika stok kurang, klik <strong>Split</strong>. Baris utama akan dinonaktifkan (abu-abu) dan digantikan oleh baris split.
+                <i class="fas fa-info-circle"></i> Gunakan tombol <strong>Split</strong> jika stok KPC kurang. Baris utama akan dinonaktifkan.
             </div>
-
             <table class="xero-table" id="productionTable">
                 <thead>
                     <tr>
-                        <th style="width:20%">Nama Barang</th>
-                        <th style="width:5%; text-align:center;">Meter</th>
-                        <th style="width:5%; text-align:center;">Total Qty</th>
-                        <th style="width:8%; text-align:center;">Assigned Qty</th>
-                        <th style="width:8%; text-align:center;">Total M'</th>
+                        <th style="width:20%">Item</th>
+                        <th style="width:5%">M</th>
+                        <th style="width:5%">Qty</th>
+                        <th style="width:8%">Set Qty</th>
+                        <th style="width:8%">Total M'</th>
                         <th style="width:12%">Mesin</th>
-                        <th style="width:14%">KPC Code (Stok)</th>
+                        <th style="width:14%">KPC</th>
                         <th style="width:8%">Type</th>
-                        <th style="width:14%">Work Effort Code</th>
-                        <th style="width:6%">Action</th>
+                        <th style="width:14%">WE Code</th>
+                        <th style="width:6%">Act</th>
                     </tr>
                 </thead>
                 <tbody id="setupBody"></tbody>
             </table>
             <div id="validationMsg" style="color:red; font-weight:bold; margin-top:10px; display:none;"></div>
         </div>
-
         <div class="modal-footer">
-            <button class="btn-action btn-close" onclick="closeModal()">Cancel</button>
-            <button class="btn-action btn-process" onclick="submitProduction()">Process & Print PDF</button>
+            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-setup" onclick="submitProduction()">Process & Print PDF</button>
         </div>
     </div>
 </div>
 
 <div id="pdf-hidden-container">
-    <div id="pdfContent">
-        <div class="pdf-header">
-            <div>
-                <div class="pdf-title">SURAT PERINTAH KERJA</div>
-                <div class="pdf-subtitle">Produksi (Internal Use Only)</div>
-            </div>
-            <div style="text-align:right;">
-                <div style="font-size:16px; font-weight:bold;" id="pdfOrderNo">-</div>
-                <div style="font-size:11px;">Date: <span id="pdfDate">-</span></div>
-            </div>
-        </div>
-
-        <div style="margin-bottom:20px; border:1px solid #000; padding:10px;">
-            <strong>Customer:</strong> <span id="pdfCustomer">-</span><br>
-            <strong>Delivery Est:</strong> <span id="pdfEst">-</span>
-        </div>
-
-        <table class="pdf-table">
-            <thead>
-                <tr>
-                    <th>Nama Barang</th>
-                    <th style="text-align:center;">Meter</th>
-                    <th style="text-align:center;">Qty</th>
-                    <th>Mesin / KPC / Type</th>
-                    <th>Work Effort Code</th>
-                </tr>
-            </thead>
+    <div id="pdfContent" style="padding:20px; background:#fff; color:#000;">
+        <h2 style="text-align:center;">WORK ORDER PRODUKSI</h2>
+        <div style="border-bottom:2px solid #000; margin-bottom:20px;"></div>
+        <table style="width:100%; margin-bottom:20px;">
+            <tr><td><strong>Order No:</strong> <span id="pdfOrderNo"></span></td><td style="text-align:right;"><strong>Date:</strong> <span id="pdfDate"></span></td></tr>
+            <tr><td><strong>Customer:</strong> <span id="pdfCustomer"></span></td><td style="text-align:right;"><strong>Est. Del:</strong> <span id="pdfEst"></span></td></tr>
+        </table>
+        <table style="width:100%; border-collapse:collapse; border:1px solid #000;">
+            <thead><tr style="background:#eee;"><th style="border:1px solid #000; padding:5px;">Item</th><th style="border:1px solid #000;">M</th><th style="border:1px solid #000;">Qty</th><th style="border:1px solid #000;">Detail</th><th style="border:1px solid #000;">WE Code</th></tr></thead>
             <tbody id="pdfItemsBody"></tbody>
         </table>
-
-        <div style="margin-top:40px; display:flex; justify-content:space-between; text-align:center;">
-            <div style="width:30%;">
-                <div>Dibuat Oleh,</div>
-                <br><br><br>
-                <div style="border-top:1px solid #000; width:80%; margin:0 auto;">( Admin Produksi )</div>
-            </div>
-            <div style="width:30%;">
-                <div>Diterima Oleh,</div>
-                <br><br><br>
-                <div style="border-top:1px solid #000; width:80%; margin:0 auto;">( Operator Mesin )</div>
-            </div>
-            <div style="width:30%;">
-                <div>Diketahui Oleh,</div>
-                <br><br><br>
-                <div style="border-top:1px solid #000; width:80%; margin:0 auto;">( Kepala Produksi )</div>
-            </div>
-        </div>
     </div>
 </div>
 
 <script>
-// =========================================================
-// URL Backend Google Apps Script
-// =========================================================
-const BASE_URL = "https://script.google.com/macros/s/AKfycbxmfwf0e9_K1TwaCGqmvCMSAX11UsCgctqX9newCThLpssio-GE3KECfVYdItZRCBJV5Q/exec"; 
-
+// --- CONFIG ---
+const BASE_URL = "https://script.google.com/macros/s/AKfycbxCYnBYUv8wLe1IcJ0vORsUxfLYYOXPsQLVhPB3mc66FHbeo58aW1pneKXHAndU-TIfkg/exec"; 
 let currentOrders = {}; 
 let activeOrderId = null;
+let currentTab = 'Awaiting';
 
-const TYPE_CODES = {
-    'Custom': 'CS',
-    'Plat': 'PL'
-};
+const TYPE_CODES = { 'Custom': 'CS', 'Plat': 'PL' };
 
-window.onload = loadOrders;
+window.onload = () => switchTab('Awaiting');
 
-// --- 1. LOAD DATA ---
-async function loadOrders() {
+function switchTab(tabName) {
+    currentTab = tabName;
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    
+    let btnId = 'tab-awaiting';
+    if(tabName === 'In Process') btnId = 'tab-process';
+    if(tabName === 'Completed') btnId = 'tab-completed';
+    if(tabName === 'Cancel') btnId = 'tab-cancel';
+    
+    document.getElementById(btnId).classList.add('active');
+    loadOrders(tabName);
+}
+
+// --- LOAD DATA ---
+async function loadOrders(status) {
     const tbody = document.getElementById('dashboardBody');
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px;">Loading Data...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px;">Loading Data...</td></tr>';
     
     try {
-        const response = await fetch(BASE_URL + "?action=getProductionOrders");
+        // Kirim parameter status ke backend
+        const response = await fetch(`${BASE_URL}?action=getProductionOrders&status=${encodeURIComponent(status)}`);
         const data = await response.json();
-        renderDashboard(data);
+        renderDashboard(data, status);
     } catch (err) {
-        console.error(err);
-        tbody.innerHTML = `<tr><td colspan="6" style="color:red; text-align:center;">Error Loading Data.<br>${err}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="color:red; text-align:center;">Error: ${err}</td></tr>`;
     }
 }
 
-function renderDashboard(data) {
+function renderDashboard(data, status) {
     const tbody = document.getElementById('dashboardBody');
     tbody.innerHTML = '';
     
     if (!data || Object.keys(data).length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#999;">Tidak ada pesanan "Awaiting Production".</td></tr>';
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:#999;">No orders in ${status}</td></tr>`;
         return;
     }
 
@@ -335,422 +206,268 @@ function renderDashboard(data) {
 
     Object.keys(data).forEach(key => {
         const o = data[key];
+        
+        // Badge Logic
+        let typeBadge = o.type.includes('Pre') ? 'badge-pre' : 'badge-gen';
+        let statusBadge = 'status-process';
+        if(status === 'Completed') statusBadge = 'status-completed';
+        if(status === 'Cancel') statusBadge = 'status-cancel';
+
+        // Action Buttons Logic
+        let buttons = '';
+        if (status === 'Awaiting') {
+            buttons = `<button class="btn btn-setup" onclick="openSetup('${o.orderNo}')">Setup</button>
+                       <button class="btn btn-cancel" style="margin-left:5px;" onclick="cancelOrder('${o.orderNo}')"><i class="fas fa-times"></i></button>`;
+        } else if (status === 'In Process') {
+            buttons = `<button class="btn btn-complete" onclick="completeOrder('${o.orderNo}')">Selesai</button>
+                       <button class="btn btn-cancel" style="margin-left:5px;" onclick="cancelOrder('${o.orderNo}')">Batal</button>`;
+        } else {
+            buttons = `<span style="color:#999;">-</span>`;
+        }
+
         const tr = document.createElement('tr');
-        tr.className = 'data-row';
         tr.innerHTML = `
             <td><strong>${o.orderNo}</strong></td>
+            <td><span class="badge ${typeBadge}">${o.type || 'General'}</span></td>
             <td>${o.customer}</td>
             <td>${o.date}</td>
-            <td>${o.delivery || '-'}</td>
-            <td>${o.items.length} Items</td>
-            <td style="text-align:center;">
-                <button class="btn-action btn-process" style="padding:5px 10px; font-size:11px;" onclick="openSetup('${o.orderNo}')">Setup</button>
-            </td>
+            <td>${o.delivery}</td>
+            <td><span class="badge ${statusBadge}">${status}</span></td>
+            <td>${o.items.length}</td>
+            <td style="text-align:center;">${buttons}</td>
         `;
         tbody.appendChild(tr);
     });
 }
 
-// --- 2. MODAL & SETUP LOGIC ---
+// --- ACTIONS (COMPLETE / CANCEL) ---
+async function completeOrder(id) {
+    if(!confirm('Tandai pesanan ini sebagai SELESAI?')) return;
+    await sendStatusUpdate('completeOrder', id);
+}
+
+async function cancelOrder(id) {
+    if(!confirm('Yakin ingin MEMBATALKAN pesanan ini?')) return;
+    await sendStatusUpdate('cancelOrder', id);
+}
+
+async function sendStatusUpdate(action, id) {
+    const tbody = document.getElementById('dashboardBody');
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Updating...</td></tr>';
+    
+    try {
+        await fetch(BASE_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: action, orderId: id })
+        });
+        loadOrders(currentTab); // Refresh current tab
+    } catch(e) { alert(e); }
+}
+
+// --- MODAL SETUP (Logic Split/Input sama seperti sebelumnya) ---
 function openSetup(orderId) {
     activeOrderId = orderId;
     const order = currentOrders[orderId];
     
     document.getElementById('modalOrderNo').innerText = orderId;
-    document.getElementById('modalCustomer').innerText = order.customer;
-    
+    document.getElementById('setupModal').style.display = 'flex';
     const tbody = document.getElementById('setupBody');
     tbody.innerHTML = '';
 
     order.items.forEach((item, idx) => {
         const isSpandek = (item.type && item.type.toLowerCase().includes('spandek') && !item.type.toLowerCase().includes('non'));
-        
         const tr = document.createElement('tr');
         tr.className = 'main-row';
         tr.dataset.id = idx; 
         tr.dataset.type = isSpandek ? 'spandek' : 'non-spandek';
-        tr.dataset.original = item.fullRowData; 
-        tr.dataset.rowindex = item.rowIndex;
-
-        // Hitung Total M' Awal
+        tr.dataset.original = item.fullRowData;
+        
         const initialTotalM = (parseFloat(item.meter) * parseInt(item.qty)).toFixed(2);
 
-        let html = `
-            <td>
-                <strong>${item.item}</strong>
-                <div style="font-size:10px; color:#666;">Original Type: ${item.type}</div>
-            </td>
-            <td style="text-align:center;">
-                <span class="meter-val">${item.meter || 0}</span>
-            </td>
-            <td style="text-align:center;">
-                <span class="target-qty badge badge-approve" style="font-size:12px;">${item.qty}</span>
-            </td>
-        `;
+        let inputHTML = isSpandek ? `
+            <td><input type="number" class="prod-input qty-input" value="${item.qty}" min="1" onchange="validateQty(${idx}); updateCalc(this)"></td>
+            <td style="text-align:center;"><span class="total-m">${initialTotalM}</span></td>
+            <td><select class="prod-select machine-select" onchange="generateWE(this)"><option value="">-</option><option value="PM08">PM08</option><option value="PM14">PM14</option></select></td>
+            <td><select class="prod-select kpc-select" onchange="generateWE(this)"><option value="">-</option><option value="KPC-001">KPC-001</option><option value="KPC-002">KPC-002</option></select></td>
+            <td><select class="prod-select type-select" onchange="generateWE(this)"><option value="Custom">Custom</option><option value="Plat">Plat</option></select></td>
+            <td><input type="text" class="prod-input we-code" readonly></td>
+            <td style="text-align:center;"><button class="btn btn-split" onclick="splitRow(this, ${idx})">Split</button></td>` 
+            : `<td colspan="7" style="text-align:center; color:#999;">Non-Spandek</td>`;
 
-        if (isSpandek) {
-            html += `
-                <td>
-                    <input type="number" class="prod-input qty-input" value="${item.qty}" min="1" 
-                    onchange="validateQty(${idx}); updateCalculations(this)">
-                </td>
-                <td style="text-align:center;">
-                    <span class="total-m-display" style="font-weight:bold; color:#116999;">${initialTotalM}</span>
-                </td>
-                <td>
-                    <select class="prod-select machine-select" onchange="generateWE(this)">
-                        <option value="">- Pilih -</option>
-                        <option value="PM08">MX PUMA 08</option>
-                        <option value="PM14">MX PUMA 14</option>
-                    </select>
-                </td>
-                <td>
-                    <select class="prod-select kpc-select" onchange="generateWE(this)">
-                        <option value="">- Pilih KPC -</option>
-                        <option value="KPC-001">KPC-001</option>
-                        <option value="KPC-002">KPC-002</option>
-                    </select>
-                </td>
-                <td>
-                    <select class="prod-select type-select" onchange="generateWE(this)">
-                        <option value="Custom">Custom</option>
-                        <option value="Plat">Plat</option>
-                    </select>
-                </td>
-                <td>
-                    <input type="text" class="prod-input we-code-input" readonly placeholder="Auto...">
-                </td>
-                <td style="text-align:center;">
-                    <button class="btn-sm btn-split" onclick="splitRow(this, ${idx})"><i class="fas fa-code-branch"></i> Split</button>
-                </td>
-            `;
-        } else {
-            // Non-Spandek (Read Only)
-            html += `
-                <td style="text-align:center;"><input type="hidden" class="qty-input" value="${item.qty}">${item.qty}</td>
-                <td style="text-align:center;">-</td>
-                <td colspan="4" style="text-align:center; color:#999; font-style:italic; background:#f9f9f9;">
-                    Non-Spandek (Tidak perlu setup)
-                </td>
-                <td style="text-align:center;">-</td>
-            `;
-        }
-        
-        tr.innerHTML = html;
+        tr.innerHTML = `
+            <td><strong>${item.item}</strong></td>
+            <td style="text-align:center;"><span class="meter-val">${item.meter}</span></td>
+            <td style="text-align:center;"><span class="target-qty badge badge-gen">${item.qty}</span></td>
+            ${inputHTML}
+        `;
         tbody.appendChild(tr);
     });
-
-    document.getElementById('validationMsg').style.display = 'none';
-    document.getElementById('setupModal').style.display = 'flex';
 }
 
-function closeModal() {
-    document.getElementById('setupModal').style.display = 'none';
-}
+function closeModal() { document.getElementById('setupModal').style.display = 'none'; }
 
-// --- 3. SPLIT & CALCULATION LOGIC ---
-
-// Helper: Update Total Meter per Row
-function updateCalculations(input) {
-    const row = input.closest('tr');
-    if (row.classList.contains('disabled-row')) return; // Ignore jika disabled
-
-    const meterVal = parseFloat(row.querySelector('.meter-val')?.innerText || 0);
-    const qtyVal = parseInt(input.value || 0);
-    const totalM = (meterVal * qtyVal).toFixed(2);
-    
-    const display = row.querySelector('.total-m-display');
-    if(display) display.innerText = totalM;
-}
-
-// Helper: Generate Work Effort Code
-function generateWE(el) {
-    const row = el.closest('tr');
-    if (row.classList.contains('disabled-row')) return;
-
-    const machine = row.querySelector('.machine-select').value;
-    const kpc = row.querySelector('.kpc-select').value;
-    const typeVal = row.querySelector('.type-select').value;
-    const typeCode = TYPE_CODES[typeVal] || 'XX'; 
-    
-    const output = row.querySelector('.we-code-input');
-    
-    if(machine && kpc) {
-        // Format: MESIN_KPC_TYPE_NOINV
-        output.value = `${machine}_${kpc}_${typeCode}_${activeOrderId}`;
-    } else {
-        output.value = '';
-    }
-}
-
-// Logic: Smart Split (Fix #3 & #6 - Nonaktifkan Main Row)
+// --- LOGIC SPLIT (ABU-ABU) ---
 function splitRow(btn, groupId) {
-    const originalRow = btn.closest('tr');
+    const row = btn.closest('tr');
+    const mainQty = parseInt(row.querySelector('.qty-input').value || 0);
     
-    // 1. Ambil Qty saat ini di baris utama
-    const mainQtyVal = parseInt(originalRow.querySelector('.qty-input').value || 0);
+    // Disable Main Row
+    row.classList.add('disabled-row');
+    row.querySelector('.qty-input').value = 0; // Visual 0
+    row.querySelector('.total-m').innerText = "0.00";
     
-    // 2. Disable Baris Utama
-    originalRow.classList.add('disabled-row');
-    originalRow.querySelector('.qty-input').value = 0; // Set 0 visual (logic validasi akan ignore baris ini)
-    originalRow.querySelector('.total-m-display').innerText = "0.00";
-    originalRow.querySelectorAll('select, input').forEach(el => el.disabled = true);
-
-    // 3. Bagi Dua Qty untuk Baris Baru
-    const splitQty1 = Math.floor(mainQtyVal / 2);
-    const splitQty2 = mainQtyVal - splitQty1; 
-
-    // 4. Create Split Row 1
-    createSplitRow(originalRow, groupId, splitQty1);
-    // 5. Create Split Row 2
-    createSplitRow(originalRow, groupId, splitQty2);
-
-    // Validasi ulang
+    // Split 50:50
+    const q1 = Math.floor(mainQty / 2);
+    const q2 = mainQty - q1;
+    
+    createSplit(row, groupId, q1);
+    createSplit(row, groupId, q2);
     validateQty(groupId);
 }
 
-function createSplitRow(originalRow, groupId, qtyValue) {
-    const newRow = originalRow.cloneNode(true);
+function createSplit(refRow, groupId, qty) {
+    const newRow = refRow.cloneNode(true);
     newRow.classList.remove('main-row', 'disabled-row');
     newRow.classList.add('split-row');
     
-    // Reset Inputs
-    const qtyInput = newRow.querySelector('.qty-input');
-    qtyInput.value = qtyValue;
-    qtyInput.disabled = false;
+    // Enable inputs
+    newRow.querySelector('.qty-input').value = qty;
+    const inputs = newRow.querySelectorAll('input, select, button');
+    inputs.forEach(el => el.disabled = false);
     
-    newRow.querySelectorAll('select').forEach(s => {
-        s.value = "";
-        s.disabled = false;
-        s.onchange = function() { generateWE(this); };
-    });
-    const weInput = newRow.querySelector('.we-code-input');
-    weInput.value = "";
-    weInput.disabled = false; // readonly but enabled for submission
-    weInput.readOnly = true;
+    // Reset selects/WE
+    newRow.querySelectorAll('select').forEach(s => { s.value = ""; s.onchange = function(){ generateWE(this); } });
+    newRow.querySelector('.we-code').value = "";
+    
+    // Change Button
+    const btnDiv = newRow.lastElementChild;
+    btnDiv.innerHTML = `<button class="btn btn-remove" onclick="removeSplit(this, ${groupId})"><i class="fas fa-trash"></i></button>`;
+    
+    // Event Listener
+    const qInput = newRow.querySelector('.qty-input');
+    qInput.onchange = function() { validateQty(groupId); updateCalc(this); };
+    
+    // Calculate M
+    const m = parseFloat(newRow.querySelector('.meter-val').innerText);
+    newRow.querySelector('.total-m').innerText = (m * qty).toFixed(2);
 
-    // Tampilan
-    newRow.querySelector('.target-qty').parentElement.innerHTML = '<small class="text-muted">(Split)</small>';
-    
-    // Tombol Remove
-    const actionTd = newRow.lastElementChild;
-    actionTd.innerHTML = `<button class="btn-sm btn-remove" onclick="removeSplit(this, ${groupId})"><i class="fas fa-trash"></i></button>`;
-    
     // Insert
-    // Kita insert setelah sibling terakhir dari group ini agar urutan rapi
-    const tbody = originalRow.parentNode;
-    const allGroupRows = tbody.querySelectorAll(`tr[data-id="${groupId}"]`);
-    const lastRow = allGroupRows[allGroupRows.length - 1];
-    lastRow.after(newRow);
-
-    // Event Listener & Calc
-    qtyInput.onchange = function() { 
-        validateQty(groupId); 
-        updateCalculations(this);
-    };
-    updateCalculations(qtyInput);
+    const tbody = refRow.parentNode;
+    const group = tbody.querySelectorAll(`tr[data-id="${groupId}"]`);
+    group[group.length-1].after(newRow);
 }
 
 function removeSplit(btn, groupId) {
-    const rowToRemove = btn.closest('tr');
-    const tbody = rowToRemove.parentNode;
-    rowToRemove.remove();
-
-    // Cek apakah masih ada split row?
-    const remainingSplits = tbody.querySelectorAll(`.split-row[data-id="${groupId}"]`);
+    const row = btn.closest('tr');
+    const tbody = row.parentNode;
+    row.remove();
     
-    // Jika tidak ada split row tersisa, aktifkan kembali Main Row
-    if(remainingSplits.length === 0) {
-        const mainRow = tbody.querySelector(`.main-row[data-id="${groupId}"]`);
-        if(mainRow) {
-            mainRow.classList.remove('disabled-row');
-            mainRow.querySelectorAll('select, input').forEach(el => el.disabled = false);
-            // Kembalikan Qty Target
-            const targetQty = parseInt(mainRow.querySelector('.target-qty').innerText);
-            const qtyInput = mainRow.querySelector('.qty-input');
-            qtyInput.value = targetQty;
-            updateCalculations(qtyInput);
-        }
+    // Jika tidak ada split tersisa, enable main row
+    const splits = tbody.querySelectorAll(`.split-row[data-id="${groupId}"]`);
+    if(splits.length === 0) {
+        const main = tbody.querySelector(`.main-row[data-id="${groupId}"]`);
+        main.classList.remove('disabled-row');
+        const target = parseInt(main.querySelector('.target-qty').innerText);
+        main.querySelector('.qty-input').value = target;
+        updateCalc(main.querySelector('.qty-input'));
     }
-    
     validateQty(groupId);
+}
+
+function updateCalc(input) {
+    const row = input.closest('tr');
+    if(row.classList.contains('disabled-row')) return;
+    const m = parseFloat(row.querySelector('.meter-val').innerText || 0);
+    const q = parseInt(input.value || 0);
+    row.querySelector('.total-m').innerText = (m * q).toFixed(2);
+}
+
+function generateWE(el) {
+    const row = el.closest('tr');
+    const mach = row.querySelector('.machine-select').value;
+    const kpc = row.querySelector('.kpc-select').value;
+    const type = TYPE_CODES[row.querySelector('.type-select').value] || 'XX';
+    if(mach && kpc) row.querySelector('.we-code').value = `${mach}_${kpc}_${type}_${activeOrderId}`;
+    else row.querySelector('.we-code').value = "";
 }
 
 function validateQty(groupId) {
     const tbody = document.getElementById('setupBody');
-    const rows = tbody.querySelectorAll(`tr[data-id="${groupId}"]`);
+    const main = tbody.querySelector(`.main-row[data-id="${groupId}"]`);
+    const target = parseInt(main.querySelector('.target-qty').innerText);
+    const rows = tbody.querySelectorAll(`tr[data-id="${groupId}"]:not(.disabled-row)`);
     
-    let target = 0;
-    let totalAssigned = 0;
-
-    // Cari Target
-    const mainRow = tbody.querySelector(`tr.main-row[data-id="${groupId}"]`);
-    if(mainRow) {
-        target = parseInt(mainRow.querySelector('.target-qty').innerText);
-    }
-
-    // Hitung Total (Hanya dari baris yang TIDAK disabled)
-    rows.forEach(r => {
-        if (!r.classList.contains('disabled-row')) {
-            totalAssigned += parseInt(r.querySelector('.qty-input').value || 0);
-        }
-    });
-
+    let current = 0;
+    rows.forEach(r => current += parseInt(r.querySelector('.qty-input').value||0));
+    
     const msg = document.getElementById('validationMsg');
-    let isError = (totalAssigned !== target);
+    const isErr = current !== target;
+    rows.forEach(r => r.querySelector('.qty-input').style.borderColor = isErr ? 'red' : '#ccc');
     
-    rows.forEach(r => {
-        if (!r.classList.contains('disabled-row')) {
-            const input = r.querySelector('.qty-input');
-            if(isError) {
-                input.style.borderColor = 'red';
-                input.style.backgroundColor = '#fff0f0';
-            } else {
-                input.style.borderColor = '#ccc';
-                input.style.backgroundColor = '#fff';
-            }
-        }
-    });
-
-    if(isError) {
+    if(isErr) {
         msg.style.display = 'block';
-        msg.innerText = `Total Qty Item Group ini (${totalAssigned}) tidak sama dengan Target (${target}).`;
-        return false;
+        msg.innerText = `Total Qty (${current}) tidak sama dengan Target (${target})`;
     } else {
         msg.style.display = 'none';
-        return true;
     }
+    return !isErr;
 }
 
-// --- 4. SUBMIT & PRINT ---
+// --- SUBMIT ---
 async function submitProduction() {
-    const tbody = document.getElementById('setupBody');
-    const rows = tbody.querySelectorAll('tr');
-    let isValid = true;
-    let submitData = [];
-    let pdfData = [];
+    if(document.getElementById('validationMsg').style.display === 'block') return alert("Fix Qty Error first!");
+    
+    const rows = document.querySelectorAll('#setupBody tr:not(.disabled-row)');
+    let data = [], pdfData = [];
+    let valid = true;
 
-    // Cek error global
-    if(document.getElementById('validationMsg').style.display === 'block') {
-        alert("Harap perbaiki jumlah Qty yang tidak sesuai target.");
-        return;
-    }
-
-    // Loop Row
-    rows.forEach(row => {
-        // Skip jika row disabled (Main row yang di-split)
-        if (row.classList.contains('disabled-row')) return;
-
-        const isSpandek = row.dataset.type === 'spandek';
-        const qty = row.querySelector('.qty-input').value;
+    rows.forEach(r => {
+        const type = r.dataset.type;
+        const q = r.querySelector('.qty-input')?.value;
         
-        let itemData = {
-            originalData: row.dataset.original,
-            originalRowIndex: row.classList.contains('main-row') ? row.dataset.rowindex : null,
-            isSplit: row.classList.contains('split-row'),
-            qty: qty,
-            machine: '', kpc: '', we: ''
-        };
+        let item = { originalData: r.dataset.original, qty: q, isSplit: r.classList.contains('split-row') };
+        let pdf = { name: r.cells[0].innerText, m: r.cells[1].innerText, q: q, det: '-', we: '-' };
 
-        let pdfItem = {
-            name: row.cells[0].querySelector('strong').innerText,
-            meter: row.querySelector('.meter-val').innerText,
-            qty: qty,
-            detail: '-',
-            we: '-'
-        };
-
-        if(isSpandek) {
-            const machine = row.querySelector('.machine-select').value;
-            const kpc = row.querySelector('.kpc-select').value;
-            const we = row.querySelector('.we-code-input').value;
-            const type = row.querySelector('.type-select').value;
-
-            if(!machine || !kpc || !we || qty <= 0) {
-                row.style.backgroundColor = '#fee2e2'; 
-                isValid = false;
-            } else {
-                row.style.backgroundColor = row.classList.contains('split-row') ? '#fffde7' : '#fff';
-                itemData.machine = machine;
-                itemData.kpc = kpc;
-                itemData.we = we;
-
-                pdfItem.detail = `${machine} / ${kpc} / ${type}`;
-                pdfItem.we = we;
+        if(type === 'spandek') {
+            const m = r.querySelector('.machine-select').value;
+            const k = r.querySelector('.kpc-select').value;
+            const w = r.querySelector('.we-code').value;
+            if(!m || !k) { r.style.background = '#fee2e2'; valid = false; }
+            else { 
+                item.machine = m; item.kpc = k; item.we = w; 
+                pdf.det = `${m}/${k}`; pdf.we = w;
             }
         }
-        submitData.push(itemData);
-        pdfData.push(pdfItem);
+        data.push(item); pdfData.push(pdf);
     });
 
-    if(!isValid) {
-        alert("Mohon lengkapi Mesin dan KPC untuk semua item Spandek.");
-        return;
-    }
+    if(!valid) return alert("Lengkapi data produksi!");
 
-    // Generate PDF
-    generatePDF(activeOrderId, pdfData);
-
-    // Kirim Data
-    const btn = document.querySelector('.btn-process');
-    const oldText = btn.innerText;
-    btn.innerText = "Processing...";
-    btn.disabled = true;
-
+    // Generate PDF & Submit
+    generatePDF(pdfData);
+    
+    document.querySelector('.btn-setup').innerText = "Processing...";
     try {
-        const payload = {
-            action: 'submitProduction',
-            orderId: activeOrderId,
-            data: submitData
-        };
-
-        const res = await fetch(BASE_URL, {
-            method: 'POST',
-            body: JSON.stringify(payload)
-        });
-        
-        const result = await res.json();
-        
-        if(result.result === 'error') throw new Error(result.message);
-
-        alert("Sukses! " + (result.message || "Data berhasil diproses."));
+        await fetch(BASE_URL, { method: 'POST', body: JSON.stringify({ action: 'submitProduction', orderId: activeOrderId, data: data }) });
+        alert("Sukses!");
         closeModal();
-        loadOrders(); 
-
-    } catch (e) {
-        alert("Error submit: " + e.message);
-    } finally {
-        btn.innerText = oldText;
-        btn.disabled = false;
-    }
+        loadOrders('Awaiting');
+    } catch(e) { alert(e); }
+    document.querySelector('.btn-setup').innerText = "Process & Print PDF";
 }
 
-function generatePDF(orderId, items) {
-    const o = currentOrders[orderId];
-    
-    document.getElementById('pdfOrderNo').innerText = orderId;
-    document.getElementById('pdfDate').innerText = new Date().toLocaleDateString('id-ID');
+function generatePDF(items) {
+    const o = currentOrders[activeOrderId];
+    document.getElementById('pdfOrderNo').innerText = activeOrderId;
     document.getElementById('pdfCustomer').innerText = o.customer;
-    document.getElementById('pdfEst').innerText = o.delivery;
-
+    document.getElementById('pdfDate').innerText = new Date().toLocaleDateString();
+    
     const tbody = document.getElementById('pdfItemsBody');
     tbody.innerHTML = '';
+    items.forEach(i => tbody.innerHTML += `<tr><td style="border:1px solid #000;">${i.name}</td><td style="border:1px solid #000; text-align:center;">${i.m}</td><td style="border:1px solid #000; text-align:center;">${i.q}</td><td style="border:1px solid #000;">${i.det}</td><td style="border:1px solid #000;">${i.we}</td></tr>`);
     
-    items.forEach(item => {
-        tbody.innerHTML += `<tr><td>${item.name}</td><td style="text-align:center;">${item.meter}</td><td style="text-align:center;">${item.qty}</td><td>${item.detail}</td><td class="we-code">${item.we}</td></tr>`;
-    });
-
-    const el = document.getElementById('pdfContent');
-    const opt = { 
-        margin: [0.5, 0.5, 0.5, 0.5], 
-        filename: `SPK_${orderId}.pdf`, 
-        image: { type: 'jpeg', quality: 0.98 }, 
-        html2canvas: { scale: 2 }, 
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } 
-    };
-    html2pdf().set(opt).from(el).save();
+    html2pdf().from(document.getElementById('pdfContent')).save(`SPK_${activeOrderId}.pdf`);
 }
 </script>
-
 </body>
 </html>
