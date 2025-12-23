@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Order Penjualan</title>
+<title>Purchase Order - User Profile Header</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -30,7 +30,7 @@ body, input, select, textarea, button, .choices, .choices__inner, .brand-title, 
 
 body { background: var(--bg-color); margin: 0; padding: 0; }
 
-/* --- AUXILIUM NAVIGATION BAR (UPDATED WITH DROPDOWN) --- */
+/* --- AUXILIUM NAVIGATION BAR --- */
 .aux-navbar {
     background-color: #ffffff;
     height: 70px;
@@ -39,7 +39,7 @@ body { background: var(--bg-color); margin: 0; padding: 0; }
     justify-content: space-between;
     padding: 0 40px;
     box-shadow: 0 1px 5px rgba(0,0,0,0.05);
-    position: sticky; top: 0; z-index: 99999; /* Z-index tinggi untuk dropdown */
+    position: sticky; top: 0; z-index: 99999;
     font-family: sans-serif;
 }
 
@@ -76,60 +76,65 @@ body { background: var(--bg-color); margin: 0; padding: 0; }
     gap: 4px;
 }
 
-.aux-link:hover { color: var(--xero-blue); background-color: #f5f9fc; }
-.aux-link.active { color: var(--xero-blue); background-color: #e6f0fa; font-weight: 700; }
+.aux-link:hover, .nav-item:hover .aux-link { 
+    color: #1d2939; 
+    background-color: #f9fafb; 
+}
+
+.aux-link.active { 
+    color: var(--xero-blue); 
+    background-color: #eff8ff; 
+    font-weight: 700; 
+}
 
 /* --- DROPDOWN STYLES --- */
 .dropdown-menu {
     visibility: hidden;
     opacity: 0;
     position: absolute;
-    top: 90%; /* Muncul sedikit di bawah */
+    top: 90%; 
     left: 50%;
     transform: translateX(-50%) translateY(-10px);
     background: white;
     min-width: 220px;
-    border: 1px solid #eee;
+    border: 1px solid #eaecf0;
     border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    padding: 8px;
+    box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08);
+    padding: 6px;
     z-index: 100000;
     transition: all 0.2s ease;
 }
 
-/* Jembatan Transparan (Agar mouse tidak putus saat turun ke dropdown) */
+/* Jembatan Transparan */
 .dropdown-menu::before {
     content: "";
     position: absolute;
-    top: -20px;
-    left: 0;
-    width: 100%;
-    height: 20px;
-    background: transparent;
+    top: -20px; left: 0; width: 100%; height: 20px; background: transparent;
 }
 
-/* Tampilkan Dropdown saat Hover */
+/* Show Dropdown on Hover */
 .nav-item:hover .dropdown-menu {
     visibility: visible;
     opacity: 1;
     transform: translateX(-50%) translateY(0);
 }
 
-/* Item di dalam Dropdown */
+/* Item Dropdown */
 .dropdown-item {
     display: block;
-    padding: 10px 14px;
-    color: #444;
+    padding: 10px 12px;
+    color: #344054;
     text-decoration: none;
-    font-size: 13px;
+    font-size: 14px;
     border-radius: 6px;
     transition: background 0.2s;
     text-align: left;
+    font-weight: 400;
 }
 
 .dropdown-item:hover {
-    background-color: #f5f9fc;
-    color: var(--xero-blue);
+    background-color: #f9fafb;
+    color: #2f54eb;
 }
 
 /* --- USER PANEL --- */
@@ -254,44 +259,49 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
         <div class="nav-item">
             <div class="aux-link active">
                 Penjualan 
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="dropdown-menu">
-                <a href="../orderform/" class="dropdown-item">Order Penjualan</a>
-                <a href="../reviewinvoice/" class="dropdown-item">Review Penjualan</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Order%20Penjualan/" class="dropdown-item">Order Penjualan</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Review%20Penjualan/" class="dropdown-item">Review Penjualan</a>
             </div>
         </div>
 
         <div class="nav-item">
             <div class="aux-link">
                 Pembelian
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="dropdown-menu">
-                <a href="../receiving/" class="dropdown-item">Receiving (PO)</a>
-                <a href="#" class="dropdown-item" onclick="showToast('Menu segera hadir!')">Daftar Tagihan</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/PurchaseOrder/index.html" class="dropdown-item">Pemesanan Pembelian</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/CreateBill/index.html" class="dropdown-item">Daftar Tagihan</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/entry/index.html" class="dropdown-item">Penerimaan Pemesanan</a>
             </div>
         </div>
 
         <div class="nav-item">
             <div class="aux-link">
                 Produksi
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="dropdown-menu">
-                <a href="../production/" class="dropdown-item">Produksi Barang Jadi</a>
+                <a href="#" onclick="alert('Modul belum tersedia')" class="dropdown-item">Persiapan Pemesanan</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/" class="dropdown-item">Produksi Barang Jadi</a>
+                <a href="#" onclick="alert('Modul belum tersedia')" class="dropdown-item">Retur Penjualan</a>
             </div>
         </div>
 
         <div class="nav-item">
             <div class="aux-link">
                 Persediaan
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="dropdown-menu">
-                <a href="../inventory/" class="dropdown-item">General Inventory</a>
-                <a href="#" class="dropdown-item" onclick="showToast('Menu segera hadir!')">Stok KPC</a>
-                <a href="#" class="dropdown-item" onclick="showToast('Menu segera hadir!')">Stok Spandek</a>
+                <a href="#" onclick="alert('Stok KPC')" class="dropdown-item">KPC</a>
+                <a href="#" onclick="alert('Stok Spandek')" class="dropdown-item">Spandek</a>
+                <a href="#" onclick="alert('Stok Non Spandek')" class="dropdown-item">Non Spandek</a>
+                <a href="#" onclick="alert('List Pre Order')" class="dropdown-item">Pre Order</a>
+                <a href="#" onclick="alert('Gudang BS')" class="dropdown-item">Gudang BS</a>
             </div>
         </div>
     </nav>
