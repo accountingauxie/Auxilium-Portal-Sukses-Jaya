@@ -72,11 +72,9 @@
                     <i class="fa-solid fa-arrow-rotate-right text-sm"></i>
                 </button>
             </div>
-
         </div>
 
         <div class="flex items-end gap-2 border-b border-slate-200 mb-6 pl-1 overflow-x-auto">
-            
             <button class="bg-white px-5 py-3 rounded-t-xl font-bold text-sm flex items-center gap-2 border border-slate-200 border-b-0 min-w-max text-primary relative top-[1px] z-10 shadow-sm cursor-default">
                 <div class="bg-teal-100 text-teal-700 w-6 h-6 flex items-center justify-center rounded text-xs">
                     <i class="fas fa-receipt"></i>
@@ -84,7 +82,6 @@
                 Daftar Tagihan
                 <span id="count-total" class="ml-1 bg-teal-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">0</span>
             </button>
-
             <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/CreateBill/index.html" class="bg-slate-50 px-5 py-3 rounded-t-xl font-bold text-sm flex items-center gap-2 border border-transparent border-b border-b-slate-200 min-w-max text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition relative top-[1px] group">
                 <div class="bg-slate-200 text-slate-600 w-6 h-6 flex items-center justify-center rounded text-xs group-hover:bg-slate-300 transition">
                     <i class="fas fa-folder-open"></i>
@@ -92,7 +89,6 @@
                 Kelola Tagihan PO
                 <i class="fas fa-external-link-alt text-[10px] ml-1 text-slate-400"></i>
             </a>
-
         </div>
 
         <div class="flex flex-wrap gap-2 mb-6">
@@ -257,7 +253,7 @@
                     </label>
                 </div>
                 <div class="flex gap-3">
-                    <button id="btn-reject" onclick="submitBill('Rejected')" class="px-4 py-2.5 border border-red-200 bg-red-50 text-red-600 rounded-lg font-bold hover:bg-red-100 transition mr-2">
+                    <button id="btn-reject" onclick="openRejectModal()" class="px-4 py-2.5 border border-red-200 bg-red-50 text-red-600 rounded-lg font-bold hover:bg-red-100 transition mr-2">
                         <i class="fas fa-ban mr-1"></i> Tolak / Batal
                     </button>
                     
@@ -272,6 +268,30 @@
             <div id="modalLoading" class="hidden absolute inset-0 bg-white/90 backdrop-blur-[1px] flex flex-col items-center justify-center z-50 rounded-2xl">
                 <i class="fa-solid fa-arrow-rotate-right text-4xl text-primary mb-4"></i>
                 <p class="font-bold text-slate-700 animate-pulse">Processing...</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="rejectModal" class="fixed inset-0 z-[90] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100 transform transition-all scale-100">
+            <div class="bg-red-50 p-4 border-b border-red-100 flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h3 class="text-lg font-bold text-red-700">Konfirmasi Penolakan</h3>
+            </div>
+            
+            <div class="p-6">
+                <p class="text-sm text-slate-600 mb-3">Silakan masukkan alasan penolakan tagihan ini. Catatan ini akan disimpan.</p>
+                <textarea id="reject-reason" rows="4" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none resize-none" placeholder="Tulis alasan penolakan..."></textarea>
+                <p id="reject-error" class="text-xs text-red-500 mt-2 hidden font-bold"><i class="fas fa-info-circle"></i> Alasan wajib diisi!</p>
+            </div>
+
+            <div class="p-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+                <button onclick="closeRejectModal()" class="px-4 py-2 border border-slate-300 rounded-lg text-slate-600 font-bold hover:bg-white transition">Batal</button>
+                <button onclick="confirmReject()" class="px-4 py-2 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700 shadow-lg flex items-center gap-2 transition">
+                    <i class="fas fa-ban"></i> Tolak Tagihan
+                </button>
             </div>
         </div>
     </div>
@@ -302,6 +322,7 @@
     </div>
 
     <script>
+        // Updated API URL
         const API_URL = "https://script.google.com/macros/s/AKfycbyEb8z9nbnkGH9fdiUNgdNqclD40ExwdNjpEhasXWU3HPSXvAq8TQryKp-F7Ehvri-ADw/exec";
         
         const TAX_RATE = 0.11;
@@ -384,10 +405,10 @@
 
                 const statusBadge = `<span class="${badgeClass} px-2 py-1 rounded text-xs font-bold capitalize">${rawStatus}</span>`;
                 
-                // Kolom FILE (PDF)
+                // Column 1: File
                 let fileBtn = po.fileUrl ? `<a href="${po.fileUrl}" target="_blank" class="text-red-500 hover:text-red-700 block text-center"><i class="fas fa-file-pdf text-xl"></i></a>` : `<span class="text-slate-300 block text-center">-</span>`;
                 
-                // Label Tombol Action
+                // Label Action Button
                 let btnLabel = po.invNumber ? "Edit" : "Entry";
                 let btnIcon = po.invNumber ? "fa-edit" : "fa-plus";
                 if (statusLower.includes('rejected')) { btnLabel = "Revise"; btnIcon = "fa-pen-to-square"; }
@@ -397,7 +418,6 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
                 
-                // Perubahan di sini: Memisahkan kolom File, View (Mata), dan Action
                 tr.innerHTML = `
                     <td class="px-6 py-4 font-bold text-slate-800">${po.vendor}</td>
                     <td class="px-6 py-4 text-primary font-medium">${po.id}</td>
@@ -462,14 +482,11 @@
             const statusLower = (po.status || "").toLowerCase();
             const isStatusLocked = statusLower.includes('rejected') || statusLower.includes('imported') || statusLower.includes('billed');
             
-            // Jika status locked ATAU user hanya ingin melihat (viewOnly)
             const isFormLocked = isStatusLocked || viewOnly;
             
-            // Render items dengan status locked yang sesuai
             renderBillItems(isFormLocked); 
             
             if (isFormLocked) {
-                // Tampilkan banner HANYA jika statusnya memang locked (bukan sekadar viewOnly)
                 if(isStatusLocked && !viewOnly) {
                     document.getElementById('locked-banner').classList.remove('hidden');
                     document.getElementById('locked-status-text').innerText = po.status;
@@ -477,11 +494,9 @@
                     document.getElementById('locked-banner').classList.add('hidden');
                 }
 
-                // Matikan semua input
                 document.querySelectorAll('.bill-input').forEach(el => el.disabled = true);
                 document.querySelectorAll('.action-btn').forEach(el => el.disabled = true);
                 
-                // Sembunyikan tombol aksi
                 document.getElementById('btn-save').classList.add('hidden');
                 document.getElementById('btn-reject').classList.add('hidden');
             } else {
@@ -502,65 +517,66 @@
                 document.querySelectorAll('.action-btn').forEach(el => el.disabled = false);
                 document.getElementById('btn-save').classList.remove('hidden');
                 document.getElementById('btn-reject').classList.remove('hidden');
-                renderBillItems(false); // Enable items
+                renderBillItems(false);
             }
         }
 
         function renderBillItems(isFormLocked = false) {
-    const tbody = document.getElementById('bill-items-body');
-    tbody.innerHTML = '';
-    
-    // Cek apakah tombol save tersembunyi (indikator global lock) atau dipaksa lock via parameter
-    const isGlobalLocked = document.getElementById('btn-save').classList.contains('hidden') || isFormLocked;
+            const tbody = document.getElementById('bill-items-body');
+            tbody.innerHTML = '';
+            
+            const isGlobalLocked = document.getElementById('btn-save').classList.contains('hidden') || isFormLocked;
 
-    currentItems.forEach((item, index) => {
-        const lineTotal = (item.price - item.disc) * item.qty;
-        const rowClass = item.checked ? "bg-white" : "bg-gray-50 opacity-60";
-        const typeBadge = item.typeProduk 
-            ? `<span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-[10px] font-bold border border-gray-200">${item.typeProduk}</span>`
-            : `<span class="text-gray-300 text-xs">-</span>`;
-        
-        const disabledAttr = isGlobalLocked ? "disabled" : "";
-
-        tbody.innerHTML += `
-            <tr class="${rowClass} border-b border-slate-50 last:border-0 transition">
-                <td class="p-4 align-top text-center">
-                    <input type="checkbox" ${item.checked ? 'checked' : ''} ${disabledAttr} onchange="toggleItem(${index}, this.checked)" class="bill-input w-4 h-4 text-primary rounded cursor-pointer accent-primary">
-                </td>
-                <td class="p-4 align-top text-center">${typeBadge}</td>
+            currentItems.forEach((item, index) => {
+                const lineTotal = (item.price - item.disc) * item.qty;
+                const rowClass = item.checked ? "bg-white" : "bg-gray-50 opacity-60";
+                const typeBadge = item.typeProduk 
+                    ? `<span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-[10px] font-bold border border-gray-200">${item.typeProduk}</span>`
+                    : `<span class="text-gray-300 text-xs">-</span>`;
                 
-                <td class="p-4 align-top">
-                    <input type="text" value="${item.namaItem}" ${disabledAttr} oninput="updateItem(${index}, 'namaItem', this.value)" class="input-bare font-bold text-slate-700 text-sm w-full mb-1 focus:bg-white focus:border-slate-300 transition" placeholder="Deskripsi Item...">
-                    <div class="flex items-center">
-                        <input type="text" value="${item.satuan}" ${disabledAttr} oninput="updateItem(${index}, 'satuan', this.value)" class="input-bare text-[10px] bg-slate-100 text-slate-600 font-bold w-16 text-center rounded px-1 py-0.5 focus:bg-white focus:ring-1 focus:ring-slate-300 transition" placeholder="Unit">
-                    </div>
-                </td>
-                <td class="p-4 align-top bg-yellow-50/30">
-                    <input type="text" value="${item.spec || ''}" ${disabledAttr} oninput="updateItem(${index}, 'spec', this.value)" class="input-bare text-xs text-slate-600 font-medium h-full" placeholder="-">
-                </td>
-                <td class="p-4 align-top">
-                    <input type="number" value="${item.qty}" min="0" ${disabledAttr} oninput="updateItem(${index}, 'qty', this.value)" class="input-bare text-center text-sm font-bold text-slate-700">
-                </td>
-                <td class="p-4 align-top">
-                    <input type="number" value="${item.price}" ${disabledAttr} oninput="updateItem(${index}, 'price', this.value)" class="input-bare text-right text-sm font-mono text-slate-600">
-                </td>
-                <td class="p-4 align-top">
-                    <input type="number" value="${item.disc}" ${disabledAttr} oninput="updateItem(${index}, 'disc', this.value)" class="input-bare text-right text-sm font-mono text-red-500">
-                </td>
-                <td class="p-4 align-top text-right font-bold text-slate-800 font-mono text-sm">
-                    <span id="amount-${index}">${formatRupiah(lineTotal)}</span>
-                </td>
-                <td class="p-4 align-top text-center">
-                    <button onclick="deleteItem(${index})" ${disabledAttr} class="bill-input text-slate-300 hover:text-red-500 transition px-2"><i class="fas fa-trash"></i></button>
-                </td>
-            </tr>
-        `;
-    });
-    calculateTotal();
-}
+                const disabledAttr = isGlobalLocked ? "disabled" : "";
+
+                tbody.innerHTML += `
+                    <tr class="${rowClass} border-b border-slate-50 last:border-0 transition">
+                        <td class="p-4 align-top text-center">
+                            <input type="checkbox" ${item.checked ? 'checked' : ''} ${disabledAttr} onchange="toggleItem(${index}, this.checked)" class="bill-input w-4 h-4 text-primary rounded cursor-pointer accent-primary">
+                        </td>
+                        <td class="p-4 align-top text-center">${typeBadge}</td>
+                        
+                        <td class="p-4 align-top">
+                            <input type="text" value="${item.namaItem}" ${disabledAttr} oninput="updateItem(${index}, 'namaItem', this.value)" class="input-bare font-bold text-slate-700 text-sm w-full mb-1 focus:bg-white focus:border-slate-300 transition" placeholder="Deskripsi Item...">
+                            <div class="flex items-center">
+                                <input type="text" value="${item.satuan}" ${disabledAttr} oninput="updateItem(${index}, 'satuan', this.value)" class="input-bare text-[10px] bg-slate-100 text-slate-600 font-bold w-16 text-center rounded px-1 py-0.5 focus:bg-white focus:ring-1 focus:ring-slate-300 transition" placeholder="Unit">
+                            </div>
+                        </td>
+
+                        <td class="p-4 align-top bg-yellow-50/30">
+                            <input type="text" value="${item.spec || ''}" ${disabledAttr} oninput="updateItem(${index}, 'spec', this.value)" class="input-bare text-xs text-slate-600 font-medium h-full" placeholder="-">
+                        </td>
+                        <td class="p-4 align-top">
+                            <input type="number" value="${item.qty}" min="0" ${disabledAttr} oninput="updateItem(${index}, 'qty', this.value)" class="input-bare text-center text-sm font-bold text-slate-700">
+                        </td>
+                        <td class="p-4 align-top">
+                            <input type="number" value="${item.price}" ${disabledAttr} oninput="updateItem(${index}, 'price', this.value)" class="input-bare text-right text-sm font-mono text-slate-600">
+                        </td>
+                        <td class="p-4 align-top">
+                            <input type="number" value="${item.disc}" ${disabledAttr} oninput="updateItem(${index}, 'disc', this.value)" class="input-bare text-right text-sm font-mono text-red-500">
+                        </td>
+                        <td class="p-4 align-top text-right font-bold text-slate-800 font-mono text-sm">
+                            <span id="amount-${index}">${formatRupiah(lineTotal)}</span>
+                        </td>
+                        <td class="p-4 align-top text-center">
+                            <button onclick="deleteItem(${index})" ${disabledAttr} class="bill-input text-slate-300 hover:text-red-500 transition px-2"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+            calculateTotal();
+        }
+
         function toggleItem(index, isChecked) {
             currentItems[index].checked = isChecked;
-            renderBillItems(); // State locked akan otomatis terdeteksi dari DOM button save
+            renderBillItems();
         }
 
         function updateItem(index, field, value) {
@@ -701,21 +717,36 @@
 
         function closeProductModal() { document.getElementById('productModal').classList.add('hidden'); }
 
-        async function submitBill(customStatus = null) {
+        // --- FUNGSI MODAL REJECT ---
+        function openRejectModal() {
+            document.getElementById('rejectModal').classList.remove('hidden');
+            document.getElementById('reject-reason').value = ''; // Reset
+            document.getElementById('reject-error').classList.add('hidden');
+            document.getElementById('reject-reason').focus();
+        }
+
+        function closeRejectModal() {
+            document.getElementById('rejectModal').classList.add('hidden');
+        }
+
+        function confirmReject() {
+            const reason = document.getElementById('reject-reason').value;
+            if (!reason.trim()) {
+                document.getElementById('reject-error').classList.remove('hidden');
+                document.getElementById('reject-reason').classList.add('border-red-500');
+                return;
+            }
+            // Kirim status Rejected DAN notes dari popup
+            submitBill('Rejected', reason);
+            closeRejectModal();
+        }
+
+        async function submitBill(customStatus = null, overrideNotes = null) {
             const invNum = document.getElementById('bill-inv-number').value;
             if(!invNum) { showNotification("Invoice Number wajib diisi!"); return; }
 
-            // Ambil nilai notes
-            const notesVal = document.getElementById('bill-note').value;
-
-            // --- VALIDASI REJECT ---
-            // Jika statusnya Rejected DAN notes kosong, tolak submit
-            if (customStatus === 'Rejected' && !notesVal.trim()) {
-                showNotification("Wajib mengisi 'Internal Notes' untuk alasan penolakan!");
-                document.getElementById('bill-note').focus(); // Arahkan kursor ke kolom notes
-                return; // Stop proses
-            }
-            // -----------------------
+            // Gunakan overrideNotes (dari popup reject) jika ada, jika tidak pakai main notes
+            let finalNotes = overrideNotes !== null ? overrideNotes : document.getElementById('bill-note').value;
 
             const activeItems = currentItems.filter(i => i.checked);
             
@@ -731,7 +762,7 @@
                     taxMode: document.getElementById('tax-mode').value,
                     forceClose: document.getElementById('check-force-close').checked,
                     customStatus: customStatus, 
-                    notes: notesVal, // <--- Kirim Notes ke Backend
+                    notes: finalNotes, // Kirim notes yang benar
                     items: activeItems,
                     existingFileUrl: currentFileUrl
                 }
@@ -753,6 +784,7 @@
                 await sendData(payload);
             }
         }
+
         async function sendData(payload) {
             document.getElementById('modalLoading').classList.remove('hidden');
             try {
