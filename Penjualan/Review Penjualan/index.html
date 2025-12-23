@@ -11,7 +11,7 @@
 /* --- 1. SYSTEM STYLE (Web UI) --- */
 :root { 
     --primary-color: #116999; 
-    --xero-blue: #116999; /* Added for consistency */
+    --xero-blue: #116999; 
     --bg-color: #f4f7f6; 
     --text-color: #333; 
     --red-bg: #fee2e2; 
@@ -25,117 +25,48 @@ body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background:
 .t-left { text-align: left; }
 .t-center { text-align: center; }
 .t-right { text-align: right; }
-
-/* TRICK: Currency Alignment */
 .currency-cell { display: flex; justify-content: space-between; align-items: center; width: 100%; }
 
-/* --- NAVIGATION BAR (UPDATED) --- */
+/* --- NAVIGATION BAR --- */
 .aux-navbar {
     background-color: #ffffff;
-    height: 70px; /* Tinggi disesuaikan */
+    height: 70px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 40px;
     box-shadow: 0 1px 5px rgba(0,0,0,0.05);
-    position: sticky; top: 0; z-index: 10000; /* Z-index tinggi */
+    position: sticky; top: 0; z-index: 10000;
 }
 
 .aux-logo img { height: 40px; width: auto; display: block; }
 
-/* Wrapper Menu Utama */
-.aux-menu { 
-    display: flex; 
-    gap: 10px; 
-    align-items: center; 
-    height: 100%; 
-}
+.aux-menu { display: flex; gap: 10px; align-items: center; height: 100%; }
+.nav-item { position: relative; height: 100%; display: flex; align-items: center; }
 
-/* Item Menu Individual */
-.nav-item {
-    position: relative;
-    height: 100%;
-    display: flex;
-    align-items: center;
-}
-
-/* Link Menu Utama */
 .aux-link { 
-    text-decoration: none; 
-    color: #666; 
-    font-weight: 600; 
-    font-size: 14px; 
-    padding: 8px 14px; 
-    border-radius: 6px; 
-    transition: all 0.2s; 
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 4px;
+    text-decoration: none; color: #666; font-weight: 600; font-size: 14px; 
+    padding: 8px 14px; border-radius: 6px; transition: all 0.2s; cursor: pointer; 
+    display: flex; align-items: center; gap: 4px;
 }
+.aux-link:hover, .nav-item:hover .aux-link { color: #1d2939; background-color: #f9fafb; }
+.aux-link.active { color: var(--primary-color); background-color: #eff8ff; font-weight: 700; }
 
-.aux-link:hover, .nav-item:hover .aux-link { 
-    color: #1d2939; 
-    background-color: #f9fafb; 
-}
-
-.aux-link.active { 
-    color: var(--primary-color); 
-    background-color: #eff8ff; 
-    font-weight: 700; 
-}
-
-/* --- DROPDOWN STYLES --- */
+/* DROPDOWN */
 .dropdown-menu {
-    visibility: hidden;
-    opacity: 0;
-    position: absolute;
-    top: 90%; 
-    left: 50%;
-    transform: translateX(-50%) translateY(-10px);
-    background: white;
-    min-width: 220px;
-    border: 1px solid #eaecf0;
-    border-radius: 8px;
-    box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08);
-    padding: 6px;
-    z-index: 100000;
-    transition: all 0.2s ease;
+    visibility: hidden; opacity: 0; position: absolute; top: 90%; left: 50%;
+    transform: translateX(-50%) translateY(-10px); background: white; min-width: 220px;
+    border: 1px solid #eaecf0; border-radius: 8px; box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08);
+    padding: 6px; z-index: 100000; transition: all 0.2s ease;
 }
-
-/* Jembatan Transparan */
-.dropdown-menu::before {
-    content: "";
-    position: absolute;
-    top: -20px; left: 0; width: 100%; height: 20px; background: transparent;
-}
-
-/* Show Dropdown on Hover */
-.nav-item:hover .dropdown-menu {
-    visibility: visible;
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-}
-
-/* Item Dropdown */
+.nav-item:hover .dropdown-menu { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
 .dropdown-item {
-    display: block;
-    padding: 10px 12px;
-    color: #344054;
-    text-decoration: none;
-    font-size: 14px;
-    border-radius: 6px;
-    transition: background 0.2s;
-    text-align: left;
-    font-weight: 400;
+    display: block; padding: 10px 12px; color: #344054; text-decoration: none;
+    font-size: 14px; border-radius: 6px; transition: background 0.2s; text-align: left;
 }
+.dropdown-item:hover { background-color: #f9fafb; color: #2f54eb; }
 
-.dropdown-item:hover {
-    background-color: #f9fafb;
-    color: #2f54eb;
-}
-
-/* --- USER PANEL --- */
+/* USER PANEL */
 .user-panel { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid #eee; }
 .user-details { display: flex; flex-direction: column; text-align: right; line-height: 1.3; }
 .user-name { font-weight: 700; font-size: 13px; color: #333; }
@@ -144,38 +75,19 @@ body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background:
 .logout-btn { background: none; border: 1px solid #ddd; color: #666; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 14px; }
 .logout-btn:hover { background-color: var(--red-bg); color: var(--red-text); border-color: var(--red-bg); }
 
-/* --- DASHBOARD LAYOUT --- */
+/* --- DASHBOARD --- */
 .page-wrap { padding: 30px 40px; max-width: 98%; margin: 0 auto; }
 .category-tabs { margin-bottom: 20px; border-bottom: 2px solid #ddd; }
 .cat-btn { background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; }
 .cat-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
 
-/* --- FILTER & SEARCH BAR STYLE --- */
-.filter-container {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 15px;
-    align-items: center;
-    background: #fff;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-
+.filter-container { display: flex; gap: 15px; margin-bottom: 15px; align-items: center; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
 .filter-group { display: flex; flex-direction: column; gap: 5px; }
 .filter-label { font-size: 11px; font-weight: bold; color: #666; text-transform: uppercase; }
-
-/* Input Styles */
 .form-control { padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px; outline: none; }
-.form-control:focus { border-color: var(--primary-color); }
-select.form-control { min-width: 150px; background-color: #fff; cursor: pointer; }
-input[type="date"].form-control { color: #555; }
-
-/* Search Input */
 .search-wrapper { flex: 1; }
 .search-input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px; }
 
-/* Table Dashboard */
 .table-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; }
 table.xero-table { width: 100%; border-collapse: collapse; }
 table.xero-table th { text-align: left; padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; color: #555; font-size: 12px; text-transform: uppercase; font-weight: bold; }
@@ -183,51 +95,30 @@ table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-ali
 table.xero-table tr.data-row { cursor: pointer; transition: background-color 0.2s; }
 table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 
-/* Badges */
+/* BADGES */
 .badge { padding: 5px 12px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; display: inline-block; }
 .badge-approve { background: #fff7e6; color: #b75900; border: 1px solid #ffe8cc; }
 .badge-success { background: #ecfdf5; color: #047857; border: 1px solid #d1fae5; }
 .badge-danger { background: #fef2f2; color: #b91c1c; border: 1px solid #fee2e2; }
-
 .type-badge { font-size: 10px; padding: 4px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; display: inline-block; white-space: nowrap; }
 .type-gen { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; } 
 .type-pre { background: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe; } 
 
-/* --- MODAL STYLE --- */
+/* --- MODAL --- */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 9000; backdrop-filter: blur(2px); }
 .modal-box { background: #fff; width: 1100px; max-width: 95%; height: 90vh; display: flex; flex-direction: column; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
 .modal-header { padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
-.header-left { display: flex; align-items: center; gap: 15px; } 
 .modal-body { flex: 1; overflow-y: auto; padding: 30px; background: #fff; }
-
 .web-info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px; margin-bottom: 30px; border-bottom: 1px solid #f0f0f0; padding-bottom: 20px; }
 .web-label { font-size: 11px; color: #888; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 5px; }
 .web-value { font-size: 14px; color: #333; font-weight: bold; }
-
 table.web-items { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
 table.web-items th { text-align: left; padding: 10px; background: #f9fafb; font-size: 11px; color: #555; text-transform: uppercase; border-bottom: 1px solid #eee; font-weight: bold; }
 table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
-
 .web-totals { display: flex; justify-content: flex-end; }
 .web-total-box { width: 300px; background: #f9fafb; padding: 15px; border-radius: 8px; }
-/* Web Total Row */
-.web-total-row.grand { 
-    font-size: 20px; 
-    color: var(--primary-color); 
-    font-weight: bold; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center;
-}
-/* Style untuk teks PPN di Web Modal */
-.web-ppn-note {
-    font-style: italic;
-    font-size: 11px;
-    color: #666;
-    margin-top: 5px;
-    text-align: right;
-}
-
+.web-total-row.grand { font-size: 20px; color: var(--primary-color); font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+.web-ppn-note { font-style: italic; font-size: 11px; color: #666; margin-top: 5px; text-align: right; }
 .modal-footer { padding: 15px 30px; background: #f9fafb; border-top: 1px solid #eee; text-align: right; }
 .btn-action { padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; color: white; font-weight: bold; margin-left: 10px; transition: 0.2s; }
 .btn-close { background: #fff; color: #333; border: 1px solid #ccc; }
@@ -250,49 +141,18 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 .meta-data { width: 35%; }
 .pdf-meta-row { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 4px; width: 100%; }
 .pdf-meta-key { font-weight: 700; color:#000; }
-
 table.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
 table.pdf-table th { font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 8px 4px; color: #000; border-top: 1px solid #000; border-bottom: 1px solid #000; letter-spacing: 0.5px; }
-table.pdf-table tr { page-break-inside: avoid; page-break-after: auto; }
 table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
 .item-name-main { font-weight: 700; color: #000; display:block; font-size: 11px; }
 .item-sub { font-size: 9px; color: #666; font-weight: normal; margin-top: 2px; display: block; }
-
-/* MIDDLE SECTION */
-.pdf-middle-section { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: flex-start; 
-    margin-top: 10px; 
-    page-break-inside: avoid; 
-    border-top: 1px solid #555; 
-    padding-top: 10px;
-}
-
+.pdf-middle-section { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 10px; page-break-inside: avoid; border-top: 1px solid #555; padding-top: 10px; }
 .pdf-notes-box { width: 60%; padding-right: 20px; }
 .pdf-notes-label { font-size: 10px; font-weight: 700; margin-bottom: 2px; display:block; }
 .pdf-notes-content { font-size: 10px; color: #555; line-height: 1.4; border: 1px dashed #ccc; padding: 5px; border-radius: 4px; min-height: 30px; }
 .pdf-total-box { width: 35%; }
-
-/* Total Row PDF */
-.pdf-total-row.grand { 
-    font-size: 15px; 
-    font-weight: 700; 
-    color: #116999; 
-    display: flex; 
-    justify-content: space-between;
-    margin-top: 0; 
-    padding-top: 0;
-}
-/* Style untuk teks PPN di PDF */
-.pdf-ppn-note {
-    font-style: italic;
-    font-size: 9px;
-    color: #555;
-    text-align: right;
-    margin-top: 2px;
-}
-
+.pdf-total-row.grand { font-size: 15px; font-weight: 700; color: #116999; display: flex; justify-content: space-between; margin-top: 0; padding-top: 0; }
+.pdf-ppn-note { font-style: italic; font-size: 9px; color: #555; text-align: right; margin-top: 2px; }
 .pdf-signature-wrapper { margin-top: 25px; display: flex; justify-content: space-between; page-break-inside: avoid; padding-bottom: 10px; }
 .sig-box { width: 200px; text-align: center; }
 .sig-title { font-size: 11px; font-weight: 700; color: #000; margin-bottom: 45px; }
@@ -314,72 +174,25 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
     </div>
     
     <nav class="aux-menu">
+        <div class="nav-item"><a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/" class="aux-link">Home</a></div>
         <div class="nav-item">
-            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/" class="aux-link">Home</a>
-        </div>
-
-        <div class="nav-item">
-            <div class="aux-link active">
-                Penjualan 
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
+            <div class="aux-link active">Penjualan <i class="fas fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></div>
             <div class="dropdown-menu">
                 <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Order%20Penjualan/" class="dropdown-item">Order Penjualan</a>
-                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Review%20Penjualan/" class="dropdown-item">Review Penjualan</a>
+                <a href="#" class="dropdown-item">Review Penjualan</a>
             </div>
         </div>
-
         <div class="nav-item">
-            <div class="aux-link">
-                Pembelian
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
+            <div class="aux-link">Produksi <i class="fas fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></div>
             <div class="dropdown-menu">
-                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/PurchaseOrder/index.html" class="dropdown-item">Pemesanan Pembelian</a>
-                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/CreateBill/index.html" class="dropdown-item">Daftar Tagihan</a>
-                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/entry/index.html" class="dropdown-item">Penerimaan Pemesanan</a>
-            </div>
-        </div>
-
-        <div class="nav-item">
-            <div class="aux-link">
-                Produksi
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            <div class="dropdown-menu">
-                <a href="#" onclick="alert('Modul belum tersedia')" class="dropdown-item">Persiapan Pemesanan</a>
-                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/" class="dropdown-item">Produksi Barang Jadi</a>
-                <a href="#" onclick="alert('Modul belum tersedia')" class="dropdown-item">Retur Penjualan</a>
-            </div>
-        </div>
-
-        <div class="nav-item">
-            <div class="aux-link">
-                Persediaan
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            <div class="dropdown-menu">
-                <a href="#" onclick="alert('Stok KPC')" class="dropdown-item">KPC</a>
-                <a href="#" onclick="alert('Stok Spandek')" class="dropdown-item">Spandek</a>
-                <a href="#" onclick="alert('Stok Non Spandek')" class="dropdown-item">Non Spandek</a>
-                <a href="#" onclick="alert('List Pre Order')" class="dropdown-item">Pre Order</a>
-                <a href="#" onclick="alert('Gudang BS')" class="dropdown-item">Gudang BS</a>
+                <a href="?page=production" class="dropdown-item">Persiapan Pesanan</a>
             </div>
         </div>
     </nav>
 
     <div class="user-panel">
-        <div class="user-details">
-            <span class="user-name">Admin Gudang</span>
-            <span class="user-role">CV Sukses Jaya</span>
-        </div>
+        <div class="user-details"><span class="user-name">Admin Gudang</span><span class="user-role">CV Sukses Jaya</span></div>
         <div class="user-avatar">AG</div>
-        <button class="logout-btn" onclick="if(confirm('Logout?')) location.href='https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/'" title="Keluar Akun">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M7.5 1v7h1V1h-1z"/>
-              <path d="M3 8.812a4.999 4.999 0 0 1 2.578-4.375l-.485-.874A6 6 0 1 0 11 3.616l-.501.865A5 5 0 1 1 3 8.812z"/>
-            </svg>
-        </button>
     </div>
 </div>
 
@@ -543,7 +356,9 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
 </div>
 
 <script>
-const baseURL = "https://script.google.com/macros/s/AKfycbxCYnBYUv8wLe1IcJ0vORsUxfLYYOXPsQLVhPB3mc66FHbeo58aW1pneKXHAndU-TIfkg/exec";
+// --- PASTIKAN BASE_URL INI SAMA PERSIS DENGAN YANG DI PRODUCTION HTML ---
+const baseURL = "https://script.google.com/macros/s/AKfycbxCqUJ1oQab9_kfJGqwmgn06bEqJe7O0oEmrcMvgjGKNFRtPC4h6UvlOaiWrsPzBz8i9A/exec"; 
+
 let allOrders = [];
 let currentFilter = 'All';
 
@@ -556,27 +371,19 @@ async function fetchData() {
         const res = await fetch(baseURL + "?action=getorders");
         const data = await res.json();
         if(Array.isArray(data)) { allOrders = data; renderTable(); } else { alert("Data Error"); }
-    } catch(e) { console.error(e); }
+    } catch(e) { console.error(e); tbody.innerHTML = '<tr><td colspan="8" style="color:red; text-align:center;">Failed to load data. Check URL.</td></tr>'; }
 }
 
 function parseDateStr(str) {
     if(!str) return null;
-    
-    // Jika format sudah Date object
     if (str instanceof Date) return str;
-
-    // Paksa jadi string untuk pengecekan
     const s = String(str);
-
-    // Cek format dd/mm/yyyy
     if(s.includes('/')) {
         const parts = s.split('/');
-        // Pastikan parts lengkap
         if(parts.length === 3) {
             return new Date(parts[2], parts[1]-1, parts[0]);
         }
     }
-    // Fallback parsing standar
     return new Date(str);
 }
 
@@ -597,8 +404,7 @@ function renderTable() {
             } else if (o.status !== currentFilter) return false;
         }
 
-        // 2. Search Text Filter (Direct from o.id from spreadsheet)
-        const fullId = String(o.id);
+        // 2. Search Text
         const searchStr = JSON.stringify(o).toLowerCase();
         if (searchVal && !searchStr.includes(searchVal)) return false;
 
@@ -610,23 +416,20 @@ function renderTable() {
             if (filterType === 'general order' && oType.includes('pre')) return false; 
         }
 
-        // 4. Date Range Filter
+        // 4. Date Range
         if (startVal || endVal) {
             const orderDate = parseDateStr(o.date);
             if(orderDate) {
                 if(startVal) {
-                    const s = new Date(startVal);
-                    s.setHours(0,0,0,0); orderDate.setHours(0,0,0,0);
+                    const s = new Date(startVal); s.setHours(0,0,0,0); orderDate.setHours(0,0,0,0);
                     if(orderDate < s) return false;
                 }
                 if(endVal) {
-                    const e = new Date(endVal);
-                    e.setHours(0,0,0,0); orderDate.setHours(0,0,0,0);
+                    const e = new Date(endVal); e.setHours(0,0,0,0); orderDate.setHours(0,0,0,0);
                     if(orderDate > e) return false;
                 }
             }
         }
-
         return true;
     });
 
@@ -636,7 +439,7 @@ function renderTable() {
     filtered.forEach(o => {
         let badge = 'badge-approve';
         if(o.status.includes('Cancel')) badge = 'badge-danger';
-        if(o.status.includes('Completed') || o.status.includes('Production')) badge = 'badge-success';
+        if(o.status.includes('Completed') || o.status.includes('Production') || o.status.includes('Process')) badge = 'badge-success';
         
         let typeBadgeClass = 'type-gen'; 
         if (o.type && o.type.toLowerCase().includes('pre')) typeBadgeClass = 'type-pre';
@@ -646,7 +449,6 @@ function renderTable() {
         tr.className = 'data-row';
         tr.onclick = function() { openModal(o.id); };
         
-        // NO PREFIX ADDED HERE (Raw Data)
         tr.innerHTML = `<td><strong>${o.id}</strong></td><td style="text-align:center;">${typeHtml}</td><td>${o.customer}</td><td>${o.date}</td><td>${o.estDelivery}</td><td>${o.dueDate}</td><td style="text-align:right;"><strong>${fmtMoneySimple(o.grandTotal)}</strong></td><td style="text-align:center;"><span class="badge ${badge}">${o.status}</span></td>`;
         tbody.appendChild(tr);
     });
@@ -667,7 +469,7 @@ function openModal(id) {
         const o = allOrders.find(x => String(x.id) === String(id));
         if(!o) { alert("Data tidak ditemukan"); return; }
 
-        const fullOrderId = o.id; // Use Raw ID
+        const fullOrderId = o.id;
 
         setTxt('webOrderNo', fullOrderId);
         setTxt('webStatusBadge', o.status);
@@ -700,7 +502,9 @@ function openModal(id) {
 
         let btns = `<button class="btn-action btn-close" onclick="closeModal()">Close</button>`;
         if(o.status === 'Awaiting Approval') {
-            btns += `<button class="btn-action btn-reject" onclick="updateStatus('${o.id}', 'Cancel Order')">Reject</button><button class="btn-action btn-approve" onclick="updateStatus('${o.id}', 'Awaiting Production')">Approve</button>`;
+            // PENTING: Approve kirim 'Awaiting Production', Reject kirim 'Cancel Order'
+            btns += `<button class="btn-action btn-reject" onclick="updateStatus('${o.id}', 'Cancel Order')">Reject</button>
+                     <button class="btn-action btn-approve" onclick="updateStatus('${o.id}', 'Awaiting Production')">Approve</button>`;
         } else if (o.status !== 'Cancel Order') {
             btns += `<button class="btn-action btn-pdf" onclick="dlPDF('${fullOrderId}')">Download PDF</button>`;
         }
@@ -715,15 +519,34 @@ function fmtNum(n) { return (Number(n)||0).toLocaleString('id-ID', {minimumFract
 function fmtMoneySimple(n) { return (Number(n)||0).toLocaleString('id-ID', {style:'currency', currency:'IDR', minimumFractionDigits:0}); }
 
 async function updateStatus(id, stat) {
-    if(!confirm('Update status to ' + stat + '?')) return;
+    let actionText = (stat === 'Awaiting Production') ? 'APPROVE' : 'REJECT';
+    if(!confirm(`Are you sure you want to ${actionText} order ${id}?`)) return;
+    
     document.getElementById('modalActions').innerHTML = 'Processing...';
-    await fetch(baseURL, {method:'POST', body:JSON.stringify({action:'updatestatus', id:id, status:stat})});
-    fetchData(); closeModal();
+    try {
+        const payload = { action: 'updatestatus', id: id, status: stat };
+        const response = await fetch(baseURL, {
+            method: 'POST', 
+            body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+        
+        if (result.result === 'success') {
+            alert("Status berhasil diupdate!");
+            fetchData(); 
+            closeModal();
+        } else {
+            alert("Gagal update status: " + result.message);
+            closeModal(); // tutup saja biar tidak stuck
+        }
+    } catch (e) {
+        alert("Error connecting to server: " + e);
+        closeModal();
+    }
 }
 
 function dlPDF(filenameId) {
     const el = document.getElementById('pdfContent');
-    // UKURAN 21.59cm x 13.97cm
     const opt = { 
         margin: [1, 0.75, 1, 0.75], 
         filename: `Faktur_${filenameId}.pdf`, 
