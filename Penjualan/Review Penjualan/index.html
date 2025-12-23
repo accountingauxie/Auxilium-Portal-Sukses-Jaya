@@ -54,7 +54,7 @@ body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background:
 select.form-control { min-width: 150px; background-color: #fff; cursor: pointer; }
 input[type="date"].form-control { color: #555; }
 
-/* Search Input (Updated to fit container) */
+/* Search Input */
 .search-wrapper { flex: 1; }
 .search-input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px; }
 
@@ -76,7 +76,7 @@ table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 .type-gen { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; } 
 .type-pre { background: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe; } 
 
-/* --- MODAL & PDF STYLES (Sama seperti sebelumnya) --- */
+/* --- MODAL & PDF STYLES --- */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 9000; backdrop-filter: blur(2px); }
 .modal-box { background: #fff; width: 1100px; max-width: 95%; height: 90vh; display: flex; flex-direction: column; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
 .modal-header { padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
@@ -93,8 +93,8 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 
 .web-totals { display: flex; justify-content: flex-end; }
 .web-total-box { width: 300px; background: #f9fafb; padding: 15px; border-radius: 8px; }
-.web-total-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 13px; }
-.web-total-row.grand { font-size: 18px; color: var(--primary-color); font-weight: bold; border-top: 1px solid #ddd; margin-top: 10px; padding-top: 10px; }
+/* Modified for Single Total Line */
+.web-total-row.grand { font-size: 20px; color: var(--primary-color); font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
 
 .modal-footer { padding: 15px 30px; background: #f9fafb; border-top: 1px solid #eee; text-align: right; }
 .btn-action { padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; color: white; font-weight: bold; margin-left: 10px; transition: 0.2s; }
@@ -129,8 +129,7 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
 .pdf-notes-label { font-size: 10px; font-weight: 700; margin-bottom: 2px; display:block; }
 .pdf-notes-content { font-size: 10px; color: #555; line-height: 1.4; border: 1px dashed #ccc; padding: 5px; border-radius: 4px; min-height: 30px; }
 .pdf-total-box { width: 35%; }
-.pdf-total-row { display: flex; justify-content: space-between; font-size: 10px; padding: 4px 0; color: #333; }
-.pdf-total-row.grand { font-size: 15px; font-weight: 700; color: #116999; margin-top: 10px; padding-top: 10px; border-top: 1px dotted #999; }
+.pdf-total-row.grand { font-size: 15px; font-weight: 700; color: #116999; margin-top: 0; padding-top: 0; display: flex; justify-content: space-between; }
 .pdf-signature-wrapper { margin-top: 25px; display: flex; justify-content: space-between; page-break-inside: avoid; padding-bottom: 10px; }
 .sig-box { width: 200px; text-align: center; }
 .sig-title { font-size: 11px; font-weight: 700; color: #000; margin-bottom: 45px; }
@@ -235,8 +234,6 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
             </table>
             <div class="web-totals">
                 <div class="web-total-box">
-                    <div class="web-total-row"><span>Total DPP</span><span id="webDPP">0</span></div>
-                    <div class="web-total-row"><span>PPN (11%)</span><span id="webPPN">0</span></div>
                     <div class="web-total-row grand"><span>Total</span><span id="webTotal">0</span></div>
                 </div>
             </div>
@@ -272,17 +269,17 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
             <thead><tr><th class="t-left" style="width:25%;">NAMA BARANG</th><th class="t-center" style="width:8%;">METER</th><th class="t-center" style="width:8%;">QTY</th><th class="t-center" style="width:10%;">SATUAN</th><th class="t-right" style="width:13%;">HARGA SATUAN</th><th class="t-right" style="width:12%;">DISKON</th><th class="t-right" style="width:12%;">HARGA NET</th><th class="t-right" style="width:12%;">TOTAL</th></tr></thead>
             <tbody id="pdfItemsBody"></tbody>
         </table>
+        
         <div class="pdf-middle-section">
             <div class="pdf-notes-box">
                 <span class="pdf-notes-label">CATATAN:</span>
                 <div class="pdf-notes-content" id="pdfNotes">-</div>
             </div>
             <div class="pdf-total-box">
-                <div class="pdf-total-row"><span>Total DPP</span><span id="pdfDPP">0</span></div>
-                <div class="pdf-total-row"><span>Total PPN (11%)</span><span id="pdfPPN">0</span></div>
                 <div class="pdf-total-row grand"><span>Total</span><span id="pdfTotal">0</span></div>
             </div>
         </div>
+
         <div class="pdf-signature-wrapper">
             <div class="sig-box">
                 <div class="sig-title">Penerima</div>
@@ -293,6 +290,7 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
                 <div class="sig-name">CV. SUKSES JAYA MAKMUR LESTARI</div>
             </div>
         </div>
+
         <div class="pdf-payment-wrapper">
             <span class="pdf-payment-title">Informasi Pembayaran</span>
             <div class="pdf-payment-container">
@@ -329,11 +327,9 @@ async function fetchData() {
 }
 
 function parseDateStr(str) {
-    // Assumes format DD/MM/YYYY or YYYY-MM-DD
     if(!str) return null;
     if(str.includes('/')) {
         const parts = str.split('/');
-        // parts[0]=DD, parts[1]=MM, parts[2]=YYYY
         return new Date(parts[2], parts[1]-1, parts[0]);
     }
     return new Date(str);
@@ -343,8 +339,8 @@ function renderTable() {
     const tbody = document.getElementById('tableBody');
     const searchVal = document.getElementById('searchInput').value.toLowerCase();
     const typeVal = document.getElementById('typeFilter').value;
-    const startVal = document.getElementById('startDate').value; // yyyy-mm-dd
-    const endVal = document.getElementById('endDate').value; // yyyy-mm-dd
+    const startVal = document.getElementById('startDate').value; 
+    const endVal = document.getElementById('endDate').value; 
 
     tbody.innerHTML = '';
 
@@ -356,17 +352,17 @@ function renderTable() {
             } else if (o.status !== currentFilter) return false;
         }
 
-        // 2. Search Text Filter
-        if (searchVal && !JSON.stringify(o).toLowerCase().includes(searchVal)) return false;
+        // 2. Search Text Filter (Include checking INV+ID)
+        const fullId = "INV" + o.id;
+        const searchStr = JSON.stringify(o).toLowerCase() + fullId.toLowerCase();
+        if (searchVal && !searchStr.includes(searchVal)) return false;
 
         // 3. Type Filter
         if (typeVal !== 'All') {
-            // Check if o.type contains 'Pre' for Pre Order or 'General' for General
-            // Case insensitive check
             const oType = (o.type || "").toLowerCase();
             const filterType = typeVal.toLowerCase();
             if (filterType === 'pre order' && !oType.includes('pre')) return false;
-            if (filterType === 'general order' && oType.includes('pre')) return false; // Assume not pre is general
+            if (filterType === 'general order' && oType.includes('pre')) return false; 
         }
 
         // 4. Date Range Filter
@@ -375,7 +371,6 @@ function renderTable() {
             if(orderDate) {
                 if(startVal) {
                     const s = new Date(startVal);
-                    // Reset jam agar perbandingan tanggal murni
                     s.setHours(0,0,0,0); orderDate.setHours(0,0,0,0);
                     if(orderDate < s) return false;
                 }
@@ -406,7 +401,8 @@ function renderTable() {
         tr.className = 'data-row';
         tr.onclick = function() { openModal(o.id); };
         
-        tr.innerHTML = `<td><strong>${o.id}</strong></td><td style="text-align:center;">${typeHtml}</td><td>${o.customer}</td><td>${o.date}</td><td>${o.estDelivery}</td><td>${o.dueDate}</td><td style="text-align:right;"><strong>${fmtMoneySimple(o.grandTotal)}</strong></td><td style="text-align:center;"><span class="badge ${badge}">${o.status}</span></td>`;
+        // TAMBAH INV DISINI
+        tr.innerHTML = `<td><strong>INV${o.id}</strong></td><td style="text-align:center;">${typeHtml}</td><td>${o.customer}</td><td>${o.date}</td><td>${o.estDelivery}</td><td>${o.dueDate}</td><td style="text-align:right;"><strong>${fmtMoneySimple(o.grandTotal)}</strong></td><td style="text-align:center;"><span class="badge ${badge}">${o.status}</span></td>`;
         tbody.appendChild(tr);
     });
 }
@@ -426,7 +422,10 @@ function openModal(id) {
         const o = allOrders.find(x => String(x.id) === String(id));
         if(!o) { alert("Data tidak ditemukan"); return; }
 
-        setTxt('webOrderNo', o.id);
+        // Tambah Prefix INV
+        const fullOrderId = "INV" + o.id;
+
+        setTxt('webOrderNo', fullOrderId);
         setTxt('webStatusBadge', o.status);
         const badgeEl = document.getElementById('webStatusBadge');
         if(badgeEl) badgeEl.className = 'badge ' + (o.status.includes('Cancel') ? 'badge-danger' : (o.status.includes('Awaiting Approval') ? 'badge-approve' : 'badge-success'));
@@ -435,7 +434,9 @@ function openModal(id) {
             setTxt(prefix+'Customer', o.customer); setTxt(prefix+'CustName', o.customer);
             setTxt(prefix+'Address', (o.address||"") + " " + (o.kec||"") + " " + (o.city||"")); setTxt(prefix+'Addr', o.address||""); setTxt(prefix+'Region', (o.kec||"") + ", " + (o.city||""));
             setTxt(prefix+'Date', o.date); setTxt(prefix+'Est', o.estDelivery); setTxt(prefix+'Due', o.dueDate);
-            setTxt(prefix+'CP', o.cp); setTxt(prefix+'NPWP', o.npwp); setTxt(prefix+'Notes', o.notes); setTxt(prefix+'OrderNo', o.id);
+            setTxt(prefix+'CP', o.cp); setTxt(prefix+'NPWP', o.npwp); setTxt(prefix+'Notes', o.notes); 
+            // Tambah Prefix INV disini juga
+            setTxt(prefix+'OrderNo', fullOrderId);
         });
 
         // Update nama penerima di kolom tanda tangan PDF
@@ -451,9 +452,8 @@ function openModal(id) {
             pdfTbody.innerHTML += `<tr><td class="t-left"><span class="item-name-main">${item.name}</span><span class="item-sub">${item.type}</span></td><td class="t-center">${item.meter || '-'}</td><td class="t-center">${item.qty}</td><td class="t-center">${item.unit || '-'}</td><td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.price)}</span></div></td><td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.disc)}</span></div></td><td><div class="currency-cell"><span>Rp</span><span>${fmtNum(net)}</span></div></td><td><div class="currency-cell"><span>Rp</span><span>${fmtNum(item.total)}</span></div></td></tr>`;
         });
 
+        // REVISI: HANYA SET TOTAL, HAPUS DPP & PPN
         ['web','pdf'].forEach(prefix => {
-            setTxt(prefix+'DPP', fmtMoneySimple(o.totalDPP));
-            setTxt(prefix+'PPN', fmtMoneySimple(o.totalPPN));
             setTxt(prefix+'Total', fmtMoneySimple(o.grandTotal));
         });
 
@@ -482,7 +482,8 @@ async function updateStatus(id, stat) {
 
 function dlPDF(id) {
     const el = document.getElementById('pdfContent');
-    const opt = { margin: [1, 0.75, 1, 0.75], filename: `Faktur_${id}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'cm', format: 'a5', orientation: 'landscape' } };
+    // Filename juga diberi INV
+    const opt = { margin: [1, 0.75, 1, 0.75], filename: `Faktur_INV${id}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'cm', format: 'a5', orientation: 'landscape' } };
     const btn = document.querySelector('.btn-pdf'); btn.textContent = "Generating...";
     html2pdf().set(opt).from(el).save().then(() => btn.textContent = "Download PDF");
 }
