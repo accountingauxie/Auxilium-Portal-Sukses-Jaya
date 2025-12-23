@@ -9,7 +9,15 @@
 
 <style>
 /* --- 1. SYSTEM STYLE (Web UI) --- */
-:root { --primary-color: #116999; --bg-color: #f4f7f6; --text-color: #333; }
+:root { 
+    --primary-color: #116999; 
+    --xero-blue: #116999; /* Added for consistency */
+    --bg-color: #f4f7f6; 
+    --text-color: #333; 
+    --red-bg: #fee2e2; 
+    --red-text: #991b1b;
+}
+
 * { box-sizing: border-box; }
 body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background: var(--bg-color); color: var(--text-color); }
 
@@ -21,11 +29,120 @@ body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background:
 /* TRICK: Currency Alignment */
 .currency-cell { display: flex; justify-content: space-between; align-items: center; width: 100%; }
 
-/* Navbar */
-.aux-navbar { background: #fff; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
-.aux-logo img { height: 32px; }
-.aux-menu a { text-decoration: none; color: #555; font-weight: 600; margin-right: 20px; font-size: 14px; }
-.aux-menu a.active { color: var(--primary-color); }
+/* --- NAVIGATION BAR (UPDATED) --- */
+.aux-navbar {
+    background-color: #ffffff;
+    height: 70px; /* Tinggi disesuaikan */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+    position: sticky; top: 0; z-index: 10000; /* Z-index tinggi */
+}
+
+.aux-logo img { height: 40px; width: auto; display: block; }
+
+/* Wrapper Menu Utama */
+.aux-menu { 
+    display: flex; 
+    gap: 10px; 
+    align-items: center; 
+    height: 100%; 
+}
+
+/* Item Menu Individual */
+.nav-item {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+/* Link Menu Utama */
+.aux-link { 
+    text-decoration: none; 
+    color: #666; 
+    font-weight: 600; 
+    font-size: 14px; 
+    padding: 8px 14px; 
+    border-radius: 6px; 
+    transition: all 0.2s; 
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.aux-link:hover, .nav-item:hover .aux-link { 
+    color: #1d2939; 
+    background-color: #f9fafb; 
+}
+
+.aux-link.active { 
+    color: var(--primary-color); 
+    background-color: #eff8ff; 
+    font-weight: 700; 
+}
+
+/* --- DROPDOWN STYLES --- */
+.dropdown-menu {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    top: 90%; 
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background: white;
+    min-width: 220px;
+    border: 1px solid #eaecf0;
+    border-radius: 8px;
+    box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08);
+    padding: 6px;
+    z-index: 100000;
+    transition: all 0.2s ease;
+}
+
+/* Jembatan Transparan */
+.dropdown-menu::before {
+    content: "";
+    position: absolute;
+    top: -20px; left: 0; width: 100%; height: 20px; background: transparent;
+}
+
+/* Show Dropdown on Hover */
+.nav-item:hover .dropdown-menu {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Item Dropdown */
+.dropdown-item {
+    display: block;
+    padding: 10px 12px;
+    color: #344054;
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 6px;
+    transition: background 0.2s;
+    text-align: left;
+    font-weight: 400;
+}
+
+.dropdown-item:hover {
+    background-color: #f9fafb;
+    color: #2f54eb;
+}
+
+/* --- USER PANEL --- */
+.user-panel { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid #eee; }
+.user-details { display: flex; flex-direction: column; text-align: right; line-height: 1.3; }
+.user-name { font-weight: 700; font-size: 13px; color: #333; }
+.user-role { font-size: 11px; color: #888; }
+.user-avatar { width: 36px; height: 36px; background-color: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; user-select: none; }
+.logout-btn { background: none; border: 1px solid #ddd; color: #666; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 14px; }
+.logout-btn:hover { background-color: var(--red-bg); color: var(--red-text); border-color: var(--red-bg); }
 
 /* --- DASHBOARD LAYOUT --- */
 .page-wrap { padding: 30px 40px; max-width: 98%; margin: 0 auto; }
@@ -192,10 +309,77 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
 <body>
 
 <div class="aux-navbar">
-    <div class="aux-logo"><img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png" alt="Auxilium"></div>
-    <div class="aux-menu">
-        <a href="#" class="active">Review Penjualan</a>
-        <a href="production_dashboard.html">Production</a>
+    <div class="aux-logo">
+        <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png" alt="Auxilium Logo">
+    </div>
+    
+    <nav class="aux-menu">
+        <div class="nav-item">
+            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/" class="aux-link">Home</a>
+        </div>
+
+        <div class="nav-item">
+            <div class="aux-link active">
+                Penjualan 
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="dropdown-menu">
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Order%20Penjualan/" class="dropdown-item">Order Penjualan</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Review%20Penjualan/" class="dropdown-item">Review Penjualan</a>
+            </div>
+        </div>
+
+        <div class="nav-item">
+            <div class="aux-link">
+                Pembelian
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="dropdown-menu">
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/PurchaseOrder/index.html" class="dropdown-item">Pemesanan Pembelian</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/CreateBill/index.html" class="dropdown-item">Daftar Tagihan</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/entry/index.html" class="dropdown-item">Penerimaan Pemesanan</a>
+            </div>
+        </div>
+
+        <div class="nav-item">
+            <div class="aux-link">
+                Produksi
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="dropdown-menu">
+                <a href="#" onclick="alert('Modul belum tersedia')" class="dropdown-item">Persiapan Pemesanan</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/" class="dropdown-item">Produksi Barang Jadi</a>
+                <a href="#" onclick="alert('Modul belum tersedia')" class="dropdown-item">Retur Penjualan</a>
+            </div>
+        </div>
+
+        <div class="nav-item">
+            <div class="aux-link">
+                Persediaan
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="dropdown-menu">
+                <a href="#" onclick="alert('Stok KPC')" class="dropdown-item">KPC</a>
+                <a href="#" onclick="alert('Stok Spandek')" class="dropdown-item">Spandek</a>
+                <a href="#" onclick="alert('Stok Non Spandek')" class="dropdown-item">Non Spandek</a>
+                <a href="#" onclick="alert('List Pre Order')" class="dropdown-item">Pre Order</a>
+                <a href="#" onclick="alert('Gudang BS')" class="dropdown-item">Gudang BS</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="user-panel">
+        <div class="user-details">
+            <span class="user-name">Admin Gudang</span>
+            <span class="user-role">CV Sukses Jaya</span>
+        </div>
+        <div class="user-avatar">AG</div>
+        <button class="logout-btn" onclick="if(confirm('Logout?')) location.href='https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/'" title="Keluar Akun">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M7.5 1v7h1V1h-1z"/>
+              <path d="M3 8.812a4.999 4.999 0 0 1 2.578-4.375l-.485-.874A6 6 0 1 0 11 3.616l-.501.865A5 5 0 1 1 3 8.812z"/>
+            </svg>
+        </button>
     </div>
 </div>
 
