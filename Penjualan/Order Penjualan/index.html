@@ -291,7 +291,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 </div>
 
 <script>
-const baseURL = "https://script.google.com/macros/s/AKfycbxxTTQMvbHJb-EIk1UnjVyRrsp0vg_cTFw-o4pCZ1g3SQUumSNkjv62_wMFQG65Jau-/exec";
+const baseURL = "https://script.google.com/macros/s/AKfycbwSRwB31ClUA8PLJRzo3Cl5sNZE3DgmCt8PnhvfRBrI2UOO8E0-Q0kg0irPUDHLyBTtjg/exec";
 
 let customerData=[], listSpandek=[], listNonSpandek=[], priceSpan=[], priceNon=[], unitSpan=[], unitNon=[], stockSpan=[], stockNon=[];
 let choiceCustomer, choiceOrderType;
@@ -306,33 +306,6 @@ function showToast(msg, type="info") {
 function formatMoney(n) { return (Number(n)||0).toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2}); }
 function parseMoney(s) { return parseFloat((s||"").replace(/,/g,"")) || 0; }
 
-// === FUNGSI FORMAT ID (REVISI: POTONG PREFIX) ===
-function formatInvoiceID(dateVal, rawID) {
-    let dateObj = new Date();
-    if (dateVal) {
-        const parts = dateVal.split('-'); 
-        dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
-    }
-
-    const yy = String(dateObj.getFullYear()).slice(-2);
-    const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const dd = String(dateObj.getDate()).padStart(2, '0');
-    
-    // Konversi rawID ke string
-    let seq = String(rawID);
-
-    // Jika panjangnya lebih dari 3 digit (misal 251000006), potong 3 digit terakhir (006)
-    if(seq.length > 3) {
-        seq = seq.slice(-3);
-    } else {
-        // Jika kurang (misal 1), pad dengan 0 di depan (001)
-        seq = seq.padStart(3, '0');
-    }
-
-    // Format Akhir: INV + YYMMDD + XXX
-    return "INV" + yy + mm + dd + seq;
-}
-
 window.onload = async function () {
   choiceCustomer = new Choices("#customerSelect", { searchEnabled: true, shouldSort: false, placeholder: true, placeholderValue: "Pilih Pelanggan", itemSelectText:"" });
   choiceOrderType = new Choices("#orderType", { searchEnabled: false, shouldSort: false, itemSelectText:"" });
@@ -343,11 +316,11 @@ window.onload = async function () {
 
   document.getElementById("issueDate").addEventListener("change", calculateDueDate);
   
-  // Jika tanggal berubah, update tampilan ID
-  document.getElementById("issueDate").addEventListener("change", fetchNextOrderID);
+  // Karena backend sekarang handle logic, kita tidak kirim tanggal ke backend untuk estimasi
+  // Backend akan return estimasi berdasarkan tanggal server
+  fetchNextOrderID();
 
   await loadDropdowns();
-  fetchNextOrderID(); // Load awal
 
   for(let i=0; i<3; i++) addRow();
   new Sortable(document.getElementById("itemsBody"), { handle: ".drag-cell", animation: 150 });
@@ -356,17 +329,12 @@ window.onload = async function () {
 
 async function fetchNextOrderID() {
     const titleEl = document.getElementById("xeroOrderTitle");
-    const issueDate = document.getElementById("issueDate").value;
-
     try {
         titleEl.textContent = "Memuat..."; 
         const res = await fetch(baseURL + "?action=getnextid");
-        const nextID = await res.text(); // Server balikin ID mentah (misal: 251000006 atau 1)
-        
-        // Format di sisi klien: INV251223006
-        const formattedID = formatInvoiceID(issueDate, nextID);
-        titleEl.textContent = "Order #" + formattedID; 
-
+        // Backend sekarang mengembalikan full string: INV251223001
+        const fullID = await res.text(); 
+        titleEl.textContent = "Order #" + fullID; 
     } catch (e) {
         titleEl.textContent = "Order #Error";
     }
@@ -608,17 +576,16 @@ function forceSubmitOrder() {
     fetch(baseURL + "?action=submitorder&payload=" + encodeURIComponent(JSON.stringify(payload)))
     .then(res => res.text()).then(txt => {
         if(txt.startsWith("OK")) { 
-            const rawID = txt.split(":")[1] || "";
-            // --- UPDATE: Gunakan format ID baru di notifikasi sukses ---
-            const issueDate = document.getElementById("issueDate").value;
-            const generatedOrderNum = formatInvoiceID(issueDate, rawID);
+            // Server response: "OK:INV251223001"
+            // Kita tinggal menampilkan saja apa yang dikembalikan server
+            const finalID = txt.split(":")[1] || "";
             
             const xeroTitle = document.getElementById("xeroOrderTitle");
             const xeroBadge = document.getElementById("xeroStatusBadge");
-            xeroTitle.textContent = "Order #" + generatedOrderNum;
+            xeroTitle.textContent = "Order #" + finalID;
             xeroBadge.textContent = "TERKIRIM";
             xeroBadge.classList.remove("badge-draft"); xeroBadge.classList.add("badge-sent");
-            showToast("Berhasil! No. Order: " + generatedOrderNum, "success"); 
+            showToast("Berhasil! No. Order: " + finalID, "success"); 
             btn.textContent="Terkirim";
             setTimeout(()=>location.reload(), 3000); 
         } else { throw new Error(txt); }
