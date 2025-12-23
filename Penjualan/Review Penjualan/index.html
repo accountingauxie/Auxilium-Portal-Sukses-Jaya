@@ -139,9 +139,37 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
     font-size: 15px; font-weight: 700; color: #116999; margin-top: 10px; padding-top: 10px; border-top: 1px dotted #999; 
 }
 
+/* --- SIGNATURE SECTION --- */
+.pdf-signature-wrapper {
+    margin-top: 25px;
+    display: flex;
+    justify-content: space-between;
+    page-break-inside: avoid;
+    padding-bottom: 10px;
+}
+.sig-box {
+    width: 200px;
+    text-align: center;
+}
+.sig-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 45px; /* Jarak untuk tanda tangan */
+}
+.sig-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: #000;
+    border-top: 1px solid #333;
+    display: inline-block;
+    padding-top: 4px;
+    min-width: 140px;
+}
+
 /* --- PAYMENT FOOTER --- */
 .pdf-payment-wrapper {
-    margin-top: 20px; 
+    margin-top: 15px; 
     border-top: 1px solid #ccc;
     padding-top: 8px;
     page-break-inside: avoid;
@@ -164,33 +192,6 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
 }
 .bank-name { font-weight: 700; color: #000; }
 
-/* --- NEW SIGNATURE SECTION --- */
-.pdf-signature-wrapper {
-    margin-top: 20px;
-    display: flex;
-    justify-content: space-between;
-    page-break-inside: avoid;
-    padding-bottom: 10px;
-}
-.sig-box {
-    width: 200px;
-    text-align: center;
-}
-.sig-title {
-    font-size: 11px;
-    font-weight: 700;
-    color: #000;
-    margin-bottom: 40px; /* Space for signature */
-}
-.sig-name {
-    font-size: 11px;
-    font-weight: 700;
-    color: #000;
-    border-top: 1px solid #333;
-    display: inline-block;
-    padding-top: 2px;
-    min-width: 120px;
-}
 
 .skeleton { height: 20px; background: #eee; width: 100%; border-radius: 4px; animation: pulse 1s infinite; }
 @keyframes pulse { 0% {opacity: 0.6;} 50% {opacity: 1;} 100% {opacity: 0.6;} }
@@ -258,7 +259,7 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
                 <div class="web-total-box">
                     <div class="web-total-row"><span>Total DPP</span><span id="webDPP">0</span></div>
                     <div class="web-total-row"><span>PPN (11%)</span><span id="webPPN">0</span></div>
-                    <div class="web-total-row grand"><span>Grand Total</span><span id="webTotal">0</span></div>
+                    <div class="web-total-row grand"><span>Total</span><span id="webTotal">0</span></div>
                 </div>
             </div>
             <div style="margin-top:20px; padding:10px; background:#fdfdfd; border:1px dashed #ddd; border-radius:4px;"><strong style="font-size:11px; color:#555;">NOTES:</strong><span id="webNotes" style="font-size:12px; color:#333; margin-left:5px;">-</span></div>
@@ -302,7 +303,18 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
             <div class="pdf-total-box">
                 <div class="pdf-total-row"><span>Total DPP</span><span id="pdfDPP">0</span></div>
                 <div class="pdf-total-row"><span>Total PPN (11%)</span><span id="pdfPPN">0</span></div>
-                <div class="pdf-total-row grand"><span>Total Akhir</span><span id="pdfTotal">0</span></div>
+                <div class="pdf-total-row grand"><span>Total</span><span id="pdfTotal">0</span></div>
+            </div>
+        </div>
+
+        <div class="pdf-signature-wrapper">
+            <div class="sig-box">
+                <div class="sig-title">Penerima</div>
+                <div class="sig-name" id="pdfSigCustName"></div>
+            </div>
+            <div class="sig-box">
+                <div class="sig-title">Hormat Kami</div>
+                <div class="sig-name">CV. SUKSES JAYA MAKMUR LESTARI</div>
             </div>
         </div>
 
@@ -319,17 +331,6 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
                     <div>Bank: BRI</div>
                     <div>No. Rek: 0646 01000 656568</div>
                 </div>
-            </div>
-        </div>
-
-        <div class="pdf-signature-wrapper">
-            <div class="sig-box">
-                <div class="sig-title">Penerima</div>
-                <div class="sig-name">( ........................................ )</div>
-            </div>
-            <div class="sig-box">
-                <div class="sig-title">Hormat Kami</div>
-                <div class="sig-name">CV. SUKSES JAYA MAKMUR LESTARI</div>
             </div>
         </div>
 
@@ -404,6 +405,9 @@ function openModal(id) {
             setTxt(prefix+'CP', o.cp); setTxt(prefix+'NPWP', o.npwp); setTxt(prefix+'Notes', o.notes); setTxt(prefix+'OrderNo', o.id);
         });
 
+        // Update nama penerima di kolom tanda tangan PDF sesuai nama customer
+        setTxt('pdfSigCustName', o.customer);
+
         const webTbody = document.getElementById('webItemsBody');
         const pdfTbody = document.getElementById('pdfItemsBody');
         webTbody.innerHTML = ''; pdfTbody.innerHTML = '';
@@ -445,7 +449,6 @@ async function updateStatus(id, stat) {
 
 function dlPDF(id) {
     const el = document.getElementById('pdfContent');
-    // Adjust margin or scale if necessary for A5 Landscape
     const opt = { margin: [1, 0.75, 1, 0.75], filename: `Faktur_${id}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'cm', format: 'a5', orientation: 'landscape' } };
     const btn = document.querySelector('.btn-pdf'); btn.textContent = "Generating...";
     html2pdf().set(opt).from(el).save().then(() => btn.textContent = "Download PDF");
