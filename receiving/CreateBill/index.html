@@ -57,6 +57,9 @@
         
         .filter-pill.active { background-color: #ccfbf1; color: #0f766e; border-color: #99f6e4; font-weight: 700; }
         .filter-pill.inactive { background-color: white; color: #64748b; border-color: #e2e8f0; }
+
+        /* Table Specific Styles */
+        .table-row-hover:hover td { background-color: #f8fafc; }
     </style>
 </head>
 <body class="text-slate-800 font-sans antialiased">
@@ -122,7 +125,27 @@
         </div>
 
         <div id="content-area" class="min-h-[300px]">
-            <div id="listContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 animate-fade-in"></div>
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-slate-50 text-slate-500 font-bold border-b border-slate-200 uppercase text-[11px] tracking-wider">
+                            <tr>
+                                <th class="px-6 py-4 w-[25%]">PO Details</th>
+                                <th class="px-6 py-4 w-[25%]">Vendor</th>
+                                <th class="px-6 py-4 w-[20%]">Invoice Ref</th>
+                                <th class="px-6 py-4 w-[15%] text-center">Status</th>
+                                <th class="px-6 py-4 w-[15%] text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listContainer" class="divide-y divide-slate-100 bg-white">
+                            </tbody>
+                    </table>
+                </div>
+                <div id="empty-state" class="hidden py-10 text-center">
+                    <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-2"><i class="fas fa-search text-slate-300"></i></div>
+                    <p class="text-slate-400 text-sm">Tidak ada data yang cocok.</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -283,7 +306,7 @@
 
     <script>
         // ================= CONFIGURATION =================
-        const API_URL = "https://script.google.com/macros/s/AKfycbwJGooUwp5j_LdPFh2hpGxlCHFmYQWvf-FEfiaSh4lPIoED7W8kVb4gErd_KDxAOsmh/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbwGXId_yDeMjIyaI9ZlpJk0JdoBbeZIWrSBrYCYH6KI8mr20MGHWACdZ8fErv7QAGyV/exec"; 
         const TAX_RATE = 0.11;
 
         // ================= GLOBAL VARIABLES =================
@@ -301,6 +324,7 @@
         async function fetchData() {
             toggleLoading(true);
             document.getElementById('listContainer').innerHTML = '';
+            document.getElementById('empty-state').classList.add('hidden');
 
             try {
                 const response = await fetch(`${API_URL}?t=${new Date().getTime()}`);
@@ -353,16 +377,15 @@
 
         function renderCards(data) {
             const container = document.getElementById('listContainer');
+            const emptyState = document.getElementById('empty-state');
             container.innerHTML = '';
             document.getElementById('count-total').innerText = allData.length;
 
             if (data.length === 0) {
-                container.innerHTML = `
-                <div class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-10 bg-white rounded-xl border border-dashed border-slate-300">
-                    <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-2"><i class="fas fa-search text-slate-300"></i></div>
-                    <p class="text-slate-400 text-sm">Tidak ada data yang cocok.</p>
-                </div>`;
+                emptyState.classList.remove('hidden');
                 return;
+            } else {
+                emptyState.classList.add('hidden');
             }
 
             data.forEach(po => {
@@ -370,73 +393,76 @@
                 let secondaryBtn = ""; 
 
                 if (po.status === 'Pending') {
-                    statusClass = 'bg-amber-50 text-amber-600 border-amber-100';
+                    statusClass = 'bg-amber-100 text-amber-700 border-amber-200';
                     statusBadge = 'Pending';
                     btnText = 'Create Bill';
                     btnIcon = '<i class="fas fa-plus"></i>';
-                    btnClass = 'text-white bg-primary hover:bg-primary-hover shadow-md border-transparent';
-                    secondaryBtn = `<button onclick="openRejectModal('${po.id}')" class="w-full mt-2 py-2 rounded-lg font-bold text-xs text-red-600 border border-red-100 hover:bg-red-50 transition"><i class="fas fa-ban mr-1"></i> Reject PO</button>`;
+                    btnClass = 'text-white bg-primary hover:bg-primary-hover border-transparent';
+                    secondaryBtn = `<button onclick="openRejectModal('${po.id}')" class="px-2 py-1.5 rounded-lg font-bold text-[10px] text-red-500 border border-red-100 hover:bg-red-50 transition ml-2" title="Reject PO"><i class="fas fa-ban"></i></button>`;
                 } else if (po.status === 'Partial') {
-                    statusClass = 'bg-indigo-50 text-indigo-600 border-indigo-100';
+                    statusClass = 'bg-indigo-100 text-indigo-700 border-indigo-200';
                     statusBadge = 'Partial';
                     btnText = 'Add Bill (Partial)';
                     btnIcon = '<i class="fas fa-plus"></i>';
-                    btnClass = 'text-white bg-indigo-500 hover:bg-indigo-600 shadow-md border-transparent';
+                    btnClass = 'text-white bg-indigo-500 hover:bg-indigo-600 border-transparent';
                     secondaryBtn = ""; 
                 } else if (po.status === 'Rejected') {
-                    statusClass = 'bg-red-50 text-red-600 border-red-100';
+                    statusClass = 'bg-red-100 text-red-700 border-red-200';
                     statusBadge = 'Rejected';
                     btnText = 'View Data';
                     btnIcon = '<i class="fas fa-eye"></i>';
-                    // REVISI: Tombol diaktifkan (tidak ada cursor-not-allowed)
-                    btnClass = 'text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:text-primary shadow-sm';
-                    secondaryBtn = `<button onclick="revertPO('${po.id}')" class="w-full mt-2 py-2 rounded-lg font-bold text-sm text-amber-600 bg-amber-50 border border-amber-200 hover:bg-amber-100 transition shadow-sm"><i class="fas fa-undo mr-1"></i> Revert Status</button>`;
+                    btnClass = 'text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:text-primary';
+                    secondaryBtn = `<button onclick="revertPO('${po.id}')" class="px-2 py-1.5 rounded-lg font-bold text-[10px] text-amber-600 border border-amber-200 hover:bg-amber-50 transition ml-2" title="Revert Status"><i class="fas fa-undo"></i></button>`;
                 } else {
-                    statusClass = 'bg-emerald-50 text-emerald-600 border-emerald-100'; 
-                    if(po.status === 'Process to Import') statusClass = 'bg-orange-50 text-orange-600 border-orange-100';
+                    statusClass = 'bg-emerald-100 text-emerald-700 border-emerald-200'; 
+                    if(po.status === 'Process to Import') statusClass = 'bg-orange-100 text-orange-700 border-orange-200';
                     else if(po.status === 'Success Imported') statusClass = 'bg-emerald-100 text-emerald-700 border-emerald-200';
                     else if(po.status === 'PO Diselesaikan') statusClass = 'bg-teal-100 text-teal-800 border-teal-200';
 
                     statusBadge = po.status;
-                    btnText = 'Lihat Detail';
+                    btnText = 'Detail';
                     btnIcon = '<i class="fas fa-eye"></i>';
-                    btnClass = 'text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:text-primary shadow-sm';
+                    btnClass = 'text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:text-primary';
                 }
 
                 let invInfo = "";
                 if (po.status !== 'Pending' && po.status !== 'Partial' && po.invNumber && po.invNumber !== '-') {
-                    invInfo = `<div class="mt-2 text-[11px] font-mono bg-green-50 border border-green-200 rounded px-2 py-1 inline-flex items-center text-green-700 w-full"><i class="fas fa-file-invoice mr-2 text-xs"></i>${po.invNumber}</div>`;
+                    invInfo = `<span class="bg-green-50 text-green-700 px-2 py-0.5 rounded border border-green-100">${po.invNumber}</span>`;
+                } else {
+                    invInfo = `<span class="text-slate-300">-</span>`;
                 }
 
-                // REVISI: Tombol utama selalu aktif
+                // REVISI: Layout Table Row
                 const mainBtnAction = `onclick="openBillModal('${po.id}')"`;
 
                 const html = `
-                <div class="bg-white rounded-xl p-5 border border-slate-200 hover:shadow-lg hover:border-primary/30 transition-all duration-300 flex flex-col justify-between h-full group relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-1 h-full bg-slate-200 group-hover:bg-primary transition-colors"></div>
-                    <div>
-                        <div class="flex justify-between items-start mb-3 pl-2">
-                            <div>
-                                <h3 class="font-bold text-slate-800 text-lg tracking-tight">${po.id}</h3>
-                                <p class="text-xs text-slate-500 font-medium truncate w-40" title="${po.vendor}">${po.vendor}</p>
-                            </div>
-                            <span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border ${statusClass}">${statusBadge}</span>
-                        </div>
+                <tr class="table-row-hover transition-colors border-b border-slate-50">
+                    <td class="px-6 py-4">
+                        <div class="font-bold text-slate-800 text-sm tracking-tight">${po.id}</div>
+                        <div class="text-[10px] text-slate-400 mt-1 flex items-center"><i class="far fa-calendar-alt mr-1"></i> ${formatDate(po.tanggalInput)}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-xs font-bold text-slate-600 truncate w-48" title="${po.vendor}">${po.vendor}</div>
+                    </td>
+                    <td class="px-6 py-4 text-xs font-mono">
                         ${invInfo}
-                        <div class="text-xs text-slate-400 mt-4 mb-5 flex items-center pl-2"><i class="far fa-calendar-alt mr-2"></i> ${formatDate(po.tanggalInput)}</div>
-                    </div>
-                    <div>
-                        <button ${mainBtnAction} class="w-full py-2.5 rounded-lg font-bold text-sm transition-all transform active:scale-95 ${btnClass} flex justify-center items-center gap-2">
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${statusClass}">${statusBadge}</span>
+                    </td>
+                    <td class="px-6 py-4 text-center flex justify-center items-center">
+                        <button ${mainBtnAction} class="px-3 py-1.5 rounded-lg font-bold text-xs transition-all shadow-sm flex items-center gap-1 ${btnClass}">
                             ${btnIcon} ${btnText}
                         </button>
                         ${secondaryBtn}
-                    </div>
-                </div>`;
+                    </td>
+                </tr>`;
                 
                 container.innerHTML += html;
             });
         }
 
+        // ================= REJECT / REVERT LOGIC =================
         let rejectTargetId = "";
 
         function openRejectModal(idPO) {
@@ -507,6 +533,7 @@
             }
         }
 
+        // ================= BILL MODAL FUNCTIONS =================
         async function openBillModal(idPO) {
             const poFromList = allData.find(d => d.id === idPO);
             if (!poFromList) return;
@@ -523,7 +550,6 @@
                 const jsonRem = await resRem.json();
                 const history = jsonRem.history || {};
 
-                // REVISI: 'Rejected' dianggap sebagai mode create (ambil data master) tapi nanti dilock
                 let isCreateMode = (poFromList.status === 'Pending' || poFromList.status === 'Partial' || poFromList.status === 'Rejected');
                 let existingBillData = null;
 
@@ -536,10 +562,8 @@
                 if (existingBillData && !isCreateMode) {
                     setupViewMode(existingBillData, history);
                 } else {
-                    // Masuk sini jika Pending, Partial, atau Rejected
                     setupCreateMode(poFromList, history);
                     
-                    // REVISI: Jika Rejected, kunci form setelah setup selesai
                     if (poFromList.status === 'Rejected') {
                         setFormState(false);
                         document.getElementById('btn-save').classList.add('hidden');
