@@ -3,365 +3,520 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Inventory Stok - Auxilium</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<title>Dashboard Inventory - Auxilium</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
 :root {
-  --primary: #0075c9;
-  --bg: #f5f7fa;
-  --card-bg: #ffffff;
-  --border: #e2e8f0;
-  --text-main: #1e293b;
-  --text-muted: #64748b;
-  --danger: #ef4444;
-  --success: #10b981;
-  --warning: #f59e0b;
+  /* Color Palette */
+  --primary: #2563eb;
+  --primary-dark: #1e40af;
+  --bg-body: #f1f5f9;
+  --bg-card: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  
+  /* Status Colors */
+  --success-bg: #dcfce7;
+  --success-text: #166534;
+  --warning-bg: #fef9c3;
+  --warning-text: #854d0e;
+  --danger-bg: #fee2e2;
+  --danger-text: #991b1b;
 }
 
 * { box-sizing: border-box; }
 
-body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); font-size: 14px; }
+body { 
+  margin: 0; 
+  font-family: 'Inter', sans-serif; 
+  background-color: var(--bg-body); 
+  color: var(--text-main); 
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
 
-/* NAVBAR */
-.top-bar { background: white; border-bottom: 1px solid var(--border); padding: 12px 30px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
-.brand { font-weight: 700; font-size: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;}
-.brand span { font-weight: 400; color: var(--text-muted); font-size: 14px; }
-.nav-link { text-decoration: none; color: var(--text-muted); font-weight: 500; margin-left: 20px; transition: 0.2s; }
-.nav-link:hover { color: var(--primary); }
+/* --- NAVBAR --- */
+.navbar {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
 
-/* CONTAINER */
-.container { max-width: 1400px; margin: 30px auto; padding: 0 20px; }
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--primary);
+}
 
-/* HEADER */
-.header-action { background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 24px; display: flex; flex-direction: column; gap: 15px; }
-.header-top { display: flex; justify-content: space-between; align-items: center; }
-.page-title { font-size: 20px; font-weight: 700; color: var(--text-main); margin: 0; }
-.btn-refresh { background: white; border: 1px solid var(--border); padding: 8px 16px; border-radius: 6px; cursor: pointer; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
-.btn-refresh:hover { background: #f0f9ff; border-color: var(--primary); }
+.brand span {
+  background: #eff6ff;
+  color: var(--primary-dark);
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
 
-/* SELECTOR */
-.selector-area { display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border); }
-.selector-label { font-weight: 600; color: var(--text-muted); font-size: 13px; }
-.type-select { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: 600; color: var(--text-main); font-size: 14px; min-width: 200px; outline: none; cursor: pointer; }
-.type-select:focus { border-color: var(--primary); ring: 2px solid #bae6fd; }
+.nav-links a {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-left: 24px;
+  transition: 0.2s;
+  font-size: 13px;
+}
+.nav-links a:hover { color: var(--primary); }
+.nav-active { color: var(--primary) !important; font-weight: 600 !important; }
+
+/* --- MAIN LAYOUT --- */
+.container { max-width: 1280px; margin: 32px auto; padding: 0 24px; }
+
+/* --- HEADER AREA --- */
+.header-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.page-title h1 { margin: 0; font-size: 24px; font-weight: 700; color: var(--text-main); }
+.page-title p { margin: 4px 0 0; color: var(--text-muted); font-size: 14px; }
+
+.btn-refresh {
+  background: white;
+  border: 1px solid var(--border);
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text-main);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: 0.2s;
+  font-size: 13px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+.btn-refresh:hover { background: #f8fafc; border-color: #cbd5e1; transform: translateY(-1px); }
+.btn-refresh:active { transform: translateY(0); }
+
+/* --- TABS NAVIGATION --- */
+.tabs-container {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+  padding-bottom: 4px; /* for scrollbar spacing if needed */
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.tab-btn:hover { background: #e2e8f0; color: var(--text-main); }
+.tab-btn.active {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+}
+
+/* --- CARD & TABLE STYLE --- */
+.card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+}
+.card-title { font-size: 16px; font-weight: 700; margin: 0; }
+
+.search-wrapper { position: relative; }
+.search-input {
+  padding: 10px 16px 10px 36px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  width: 280px;
+  outline: none;
+  transition: 0.2s;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 10px center;
+}
+.search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+
+/* TABLE */
+.table-responsive { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 800px; }
+th {
+  text-align: left;
+  padding: 14px 24px;
+  background: #f8fafc;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border);
+}
+td { padding: 16px 24px; border-bottom: 1px solid var(--border); color: var(--text-main); font-size: 14px; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background-color: #f8fafc; }
+
+/* BADGES FOR STOCK */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.badge-safe { background: var(--success-bg); color: var(--success-text); }
+.badge-low { background: var(--warning-bg); color: var(--warning-text); }
+.badge-empty { background: var(--danger-bg); color: var(--danger-text); }
+
+/* COMING SOON SECTION */
+.coming-soon-wrapper {
+  text-align: center;
+  padding: 80px 20px;
+  background: white;
+  border-radius: 16px;
+  border: 2px dashed var(--border);
+}
+.cs-icon { font-size: 48px; margin-bottom: 16px; display: block; }
+.cs-title { font-size: 20px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
+.cs-desc { color: var(--text-muted); max-width: 400px; margin: 0 auto; line-height: 1.5; }
 
 /* UTILITY */
 .d-none { display: none !important; }
-
-/* CARD & TABLE */
-.card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 30px; overflow: hidden; }
-.card-header { padding: 16px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #fafafa; }
-.card-title { font-size: 16px; font-weight: 600; margin: 0; color: var(--text-main); }
-.search-input { padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; width: 250px; outline: none; }
-.table-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; min-width: 600px; }
-th { text-align: left; padding: 12px 24px; background: #f8fafc; color: var(--text-muted); font-size: 12px; font-weight: 600; text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; }
-td { padding: 12px 24px; border-bottom: 1px solid var(--border); color: #334155; }
-tr:last-child td { border-bottom: none; }
-tr:hover td { background-color: #f1f5f9; }
-
-/* STATUS COLORS */
-.stock-val { font-weight: 700; text-align: right; }
-.stock-safe { color: var(--success); }
-.stock-low { color: var(--warning); }
-.stock-empty { color: var(--danger); background: #fef2f2; }
-
-/* LOADER & ERROR MSG */
-.loader-box { padding: 40px; text-align: center; color: var(--text-muted); }
-.spinner { width: 24px; height: 24px; border: 3px solid #e2e8f0; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+.text-right { text-align: right; }
+.loader-box { padding: 60px; text-align: center; color: var(--text-muted); }
+.spinner { width: 30px; height: 30px; border: 3px solid #e2e8f0; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
 @keyframes spin { to { transform: rotate(360deg); } }
-.error-msg { color: var(--danger); font-weight: bold; padding: 20px; text-align: center; }
+.error-msg { background: var(--danger-bg); color: var(--danger-text); padding: 16px; border-radius: 8px; margin: 20px; text-align: center; font-weight: 600; }
+
 </style>
 </head>
 <body>
 
-<div class="top-bar">
-  <div class="brand">AUXILIUM <span>Warehouse Monitor</span></div>
-  <nav>
-    <a href="../index.html" class="nav-link">Kembali ke Order Form</a>
-    <a href="#" class="nav-link" style="color:var(--primary); font-weight:600;">Stok Gudang</a>
-  </nav>
-</div>
+<nav class="navbar">
+  <div class="brand">AUXILIUM <span>Warehouse</span></div>
+  <div class="nav-links">
+    <a href="../index.html">← Form Order</a>
+    <a href="#" class="nav-active">Monitoring Stok</a>
+  </div>
+</nav>
 
 <div class="container">
-  
-  <div class="header-action">
-    <div class="header-top">
-      <h1 class="page-title">Laporan Stok Barang</h1>
-      <button class="btn-refresh" onclick="loadData(true)"><span>↻</span> Refresh Data</button>
-    </div>
+  
+  <div class="header-wrapper">
+    <div class="page-title">
+      <h1>Laporan Stok Barang</h1>
+      <p>Monitoring ketersediaan material dan barang jadi secara real-time.</p>
+    </div>
+    <button class="btn-refresh" onclick="loadData(true)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38"/></svg>
+      Refresh Data
+    </button>
+  </div>
 
-    <div class="selector-area">
-      <span class="selector-label">Tampilkan Laporan:</span>
-      <select id="viewSelector" class="type-select" onchange="toggleView()">
-        <option value="kpc">⚙️ Stok KPC</option>
-        <option value="spandek">📦 Stok Spandek</option>
-        <option value="nonspandek">📄 Stok Non-Spandek</option>
-      </select>
-    </div>
-  </div>
+  <div class="tabs-container">
+    <button class="tab-btn active" onclick="switchTab('kpc', this)">⚙️ Stok KPC</button>
+    <button class="tab-btn" onclick="switchTab('spandek', this)">📦 Stok Spandek</button>
+    <button class="tab-btn" onclick="switchTab('nonspandek', this)">📄 Non-Spandek</button>
+    <button class="tab-btn" onclick="switchTab('bs', this)">🚧 Stock BS (Bad Stock)</button>
+  </div>
 
-    <div id="container-kpc">
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title">Stok KPC (Summary KPC: Kolom A-E)</h3>
-        <input type="text" class="search-input" placeholder="Cari Kode/Nama Produk..." onkeyup="searchTable(this, 'tableKPC')">
-      </div>
-      <div class="table-wrap">
-        <table id="tableKPC">
-          <thead>
-            <tr>
-              <th>Nama Produk</th>
-              <th>KPC</th>
-              <th style="text-align:right">Panjang Awal</th>
-              <th style="text-align:right">Terpakai</th>
-              <th style="text-align:right">Panjang Sisa</th>
-            </tr>
-          </thead>
-          <tbody id="bodyKPC"></tbody>
-        </table>
-        <div id="loadingKPC" class="loader-box"><div class="spinner"></div> Mengambil data Stok KPC...</div>
-        <div id="errorKPC" class="error-msg d-none"></div>
-      </div>
-    </div>
-  </div>
-  
-    <div id="container-spandek" class="d-none">
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title">Stok Spandek (Summary Spandek: Kolom C-G)</h3>
-        <input type="text" class="search-input" placeholder="Cari Nama/Satuan..." onkeyup="searchTable(this, 'tableSpandek')">
-      </div>
-      <div class="table-wrap">
-        <table id="tableSpandek">
-          <thead>
-            <tr>
-              <th>Nama Produk</th> 
-              <th>Satuan</th>
-              <th style="text-align:right">Stok</th>
-              <th style="text-align:right">Pending</th>
-              <th style="text-align:right">Stok Setelah Pending</th>
-            </tr>
-          </thead>
-          <tbody id="bodySpandek"></tbody>
-        </table>
-        <div id="loadingSpandek" class="loader-box"><div class="spinner"></div> Mengambil data Stok Spandek...</div>
-        <div id="errorSpandek" class="error-msg d-none"></div>
-      </div>
-    </div>
-  </div>
+  <div id="view-kpc" class="view-section">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Data Stok Coil (KPC)</h3>
+        <div class="search-wrapper">
+          <input type="text" class="search-input" placeholder="Cari Kode Coil / Produk..." onkeyup="searchTable(this, 'tableKPC')">
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table id="tableKPC">
+          <thead>
+            <tr>
+              <th>Nama Produk</th>
+              <th>Kode KPC</th>
+              <th class="text-right">Panjang Awal</th>
+              <th class="text-right">Terpakai</th>
+              <th class="text-right">Sisa (M)</th>
+            </tr>
+          </thead>
+          <tbody id="bodyKPC"></tbody>
+        </table>
+        <div id="loadingKPC" class="loader-box"><div class="spinner"></div>Sedang mengambil data KPC...</div>
+        <div id="errorKPC" class="error-msg d-none"></div>
+      </div>
+    </div>
+  </div>
 
-    <div id="container-nonspandek" class="d-none">
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title">Stok Non-Spandek (Summary Non Spandek: Kolom C-G)</h3>
-        <input type="text" class="search-input" placeholder="Cari Nama/Satuan..." onkeyup="searchTable(this, 'tableNon')">
-      </div>
-      <div class="table-wrap">
-        <table id="tableNon">
-          <thead>
-            <tr>
-              <th>Nama Produk</th> 
-              <th>Satuan</th>
-              <th style="text-align:right">Stok</th>
-              <th style="text-align:right">Pending</th>
-              <th style="text-align:right">Stok Setelah Pending</th>
-            </tr>
-          </thead>
-          <tbody id="bodyNon"></tbody>
-        </table>
-        <div id="loadingNon" class="loader-box"><div class="spinner"></div> Mengambil data Non Spandek...</div>
-        <div id="errorNon" class="error-msg d-none"></div>
-      </div>
-    </div>
-  </div>
+  <div id="view-spandek" class="view-section d-none">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Data Stok Spandek</h3>
+        <div class="search-wrapper">
+          <input type="text" class="search-input" placeholder="Cari Jenis Spandek..." onkeyup="searchTable(this, 'tableSpandek')">
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table id="tableSpandek">
+          <thead>
+            <tr>
+              <th>Nama Produk</th> 
+              <th>Satuan</th>
+              <th class="text-right">Stok Fisik</th>
+              <th class="text-right">Pending Order</th>
+              <th class="text-right">Stok Tersedia</th>
+            </tr>
+          </thead>
+          <tbody id="bodySpandek"></tbody>
+        </table>
+        <div id="loadingSpandek" class="loader-box"><div class="spinner"></div>Sedang mengambil data Spandek...</div>
+        <div id="errorSpandek" class="error-msg d-none"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-nonspandek" class="view-section d-none">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Data Stok Non-Spandek & Aksesoris</h3>
+        <div class="search-wrapper">
+          <input type="text" class="search-input" placeholder="Cari Item..." onkeyup="searchTable(this, 'tableNon')">
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table id="tableNon">
+          <thead>
+            <tr>
+              <th>Nama Produk</th> 
+              <th>Satuan</th>
+              <th class="text-right">Stok Fisik</th>
+              <th class="text-right">Pending Order</th>
+              <th class="text-right">Stok Tersedia</th>
+            </tr>
+          </thead>
+          <tbody id="bodyNon"></tbody>
+        </table>
+        <div id="loadingNon" class="loader-box"><div class="spinner"></div>Sedang mengambil data Non-Spandek...</div>
+        <div id="errorNon" class="error-msg d-none"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-bs" class="view-section d-none">
+    <div class="coming-soon-wrapper">
+      <span class="cs-icon">🚧</span>
+      <h3 class="cs-title">Fitur Sedang Dalam Pengembangan</h3>
+      <p class="cs-desc">Modul Inventory Bad Stock (BS) akan segera hadir untuk memantau barang reject atau sisa produksi yang tidak layak jual reguler.</p>
+    </div>
+  </div>
 
 </div>
 
 <script>
-  // =========================================================
-  // GANTI URL DI BAWAH INI DENGAN URL DEPLOY TERBARU KAMU
-  // =========================================================
-  // PASTIKAN URL INI MENGAMBIL DATA KPC, SPANDEK, dan NON SPANDEK
-  const API_URL = "https://script.google.com/macros/s/AKfycby5N2auQ__JVSp-RdO-5xtUwanRZZW7YZMZ163j2NP61N3SIfVnPxr8PBXYbgBC6LJH/exec"; 
+  // =========================================================
+  // GANTI URL DI BAWAH INI DENGAN URL DEPLOY SCRIPT KAMU
+  // =========================================================
+  const API_URL = "https://script.google.com/macros/s/AKfycby5N2auQ__JVSp-RdO-5xtUwanRZZW7YZMZ163j2NP61N3SIfVnPxr8PBXYbgBC6LJH/exec"; 
+  
+  let inventoryData = {}; // Cache data
 
-  let inventoryData = {}; // Cache data yang sudah diambil
-  
-  window.onload = () => {
-    loadData(false).then(() => { // Ambil data saat awal, jangan paksa refresh
-      toggleView(); // Tampilkan view default (KPC)
-    });
-  }
+  window.onload = () => {
+    loadData(false);
+  }
 
-  function toggleView() {
-    const val = document.getElementById("viewSelector").value;
-    const containers = ['container-kpc', 'container-spandek', 'container-nonspandek'];
+  // --- TAB LOGIC ---
+  function switchTab(viewName, btnElement) {
+    // 1. Hide all sections
+    document.querySelectorAll('.view-section').forEach(el => el.classList.add('d-none'));
+    
+    // 2. Show selected section
+    document.getElementById(`view-${viewName}`).classList.remove('d-none');
+    
+    // 3. Update Button State
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    if(btnElement) {
+        btnElement.classList.add('active');
+    }
+  }
 
-    containers.forEach(id => {
-      const div = document.getElementById(id);
-      if (`container-${val}` === id) {
-        div.classList.remove("d-none");
-      } else {
-        div.classList.add("d-none");
-      }
-    });
-  }
+  // --- DATA FETCHING ---
+  async function loadData(forceRefresh = false) {
+    if (Object.keys(inventoryData).length > 0 && !forceRefresh) {
+      renderAllTables(inventoryData);
+      return;
+    }
 
-  async function loadData(forceRefresh = false) {
-    // Jika data sudah ada di cache dan tidak dipaksa refresh, gunakan data cache
-    if (Object.keys(inventoryData).length > 0 && !forceRefresh) {
-      renderAllTables(inventoryData);
-      return;
-    }
+    // Show loaders
+    ['loadingKPC', 'loadingSpandek', 'loadingNon'].forEach(id => {
+      const loader = document.getElementById(id);
+      if(loader) loader.style.display = "block";
+      
+      const tbody = document.getElementById(id.replace('loading', 'body'));
+      if(tbody) tbody.innerHTML = "";
+      
+      const err = document.getElementById(id.replace('loading', 'error'));
+      if(err) err.classList.add("d-none");
+    });
 
-    // Tampilkan loader untuk semua
-    ['loadingKPC', 'loadingSpandek', 'loadingNon'].forEach(id => {
-      document.getElementById(id).style.display = "block";
-      document.getElementById(id.replace('loading', 'body')).innerHTML = "";
-      document.getElementById(id.replace('loading', 'error')).classList.add("d-none");
-    });
+    try {
+      const response = await fetch(API_URL + "?action=getInventoryData", {
+        method: "GET",
+        redirect: "follow"
+      });
 
+      if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+      
+      const data = await response.json();
+      inventoryData = data; 
+      renderAllTables(data);
 
-    try {
-      const response = await fetch(API_URL + "?action=getInventoryData", {
-        method: "GET",
-        redirect: "follow"
-      });
+    } catch (err) {
+      console.error(err);
+      showGlobalError(err.message);
+    }
+  }
+  
+  function renderAllTables(data) {
+    // KPC: Kolom 0,1,2,3,4. Yang angka: 2,3,4
+    renderTable("bodyKPC", "loadingKPC", data.kpc || [], 5, "errorKPC", [2, 3, 4]); 
+    
+    // Spandek & Non: Kolom 0,1,2,3,4. Yang angka: 2,3,4
+    renderTable("bodySpandek", "loadingSpandek", data.spandek || [], 5, "errorSpandek", [2, 3, 4]); 
+    renderTable("bodyNon", "loadingNon", data.nonSpandek || [], 5, "errorNon", [2, 3, 4]); 
+  }
 
-      if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-      
-      const text = await response.text();
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch (e) {
-        throw new Error("Gagal membaca JSON. Pastikan Script di-Deploy dengan benar.");
-      }
-      
-      inventoryData = data; // Simpan ke cache
-      renderAllTables(data);
+  function renderTable(tbodyId, loaderId, rows, expectedCols, errorId, numberIndices) {
+    const tbody = document.getElementById(tbodyId);
+    document.getElementById(loaderId).style.display = "none";
+    document.getElementById(errorId).classList.add("d-none");
 
-    } catch (err) {
-      console.error(err);
-      showError(err.message);
-    }
-  }
-  
-  function renderAllTables(data) {
-    // KPC: 5 Kolom (A-E)
-    renderTable("bodyKPC", "loadingKPC", data.kpc || [], 5, "errorKPC", [2, 3, 4]); // Kolom yang perlu diformat: 2, 3, 4 (Panjang Awal, Terpakai, Panjang Sisa)
-    
-    // Spandek: 5 Kolom (C-G)
-    // Kolom di Sheet: C(Nama), D(Satuan), E(Stok), F(Pending), G(Stok Setelah Pending)
-    // Indeks Array: 0(Nama), 1(Satuan), 2(Stok), 3(Pending), 4(Stok Setelah Pending)
-    renderTable("bodySpandek", "loadingSpandek", data.spandek || [], 5, "errorSpandek", [2, 3, 4]); // Kolom yang perlu diformat: 2, 3, 4
-    
-    // Non Spandek: 5 Kolom (C-G)
-    renderTable("bodyNon", "loadingNon", data.nonSpandek || [], 5, "errorNon", [2, 3, 4]); // Kolom yang perlu diformat: 2, 3, 4
-    
-    // Panggil toggleView untuk memastikan tampilan yang benar muncul
-    toggleView();
-  }
+    if (!Array.isArray(rows) || rows.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="${expectedCols}" style="text-align:center; padding: 40px; color:#94a3b8;">Tidak ada data ditemukan.</td></tr>`;
+      return;
+    }
+    
+    rows.forEach(row => {
+      if (!row || !row[0]) return; 
 
+      const tr = document.createElement("tr");
+      let html = "";
+      
+      for (let idx = 0; idx < expectedCols; idx++) {
+        let cell = row[idx] !== undefined ? row[idx] : ""; 
+        let content = cell;
+        let className = "";
 
-  /**
-   * Merender data ke tabel dengan penyesuaian desimal.
-   * @param {string} tbodyId ID tbody
-   * @param {string} loaderId ID loader
-   * @param {Array<Array<any>>} rows Data baris
-   * @param {number} expectedCols Jumlah kolom yang diharapkan
-   * @param {string} errorId ID error
-   * @param {number[]} stockIndices Indeks kolom yang merupakan nilai stok dan perlu diformat/diberi warna.
-   */
-  function renderTable(tbodyId, loaderId, rows, expectedCols, errorId, stockIndices) {
-    const tbody = document.getElementById(tbodyId);
-    document.getElementById(loaderId).style.display = "none";
-    document.getElementById(errorId).classList.add("d-none");
+        // Cek apakah kolom ini harus diformat sebagai angka
+        if (numberIndices.includes(idx)) {
+          className = "text-right ";
+          content = formatDecimal(cell);
+          
+          // Logic pewarnaan khusus kolom TERAKHIR (Stok Akhir / Sisa)
+          if (idx === expectedCols - 1) {
+            let num = parseFloat(String(cell).replace(/,/g, ''));
+            if (isNaN(num)) num = 0;
+            
+            let badgeClass = "badge-safe";
+            if (num <= 0) badgeClass = "badge-empty";
+            else if (num < 10) badgeClass = "badge-low"; // Threshold stok sedikit
+            
+            content = `<span class="badge ${badgeClass}">${content}</span>`;
+            className = "text-right"; // Reset class agar badge align correctly
+          } else {
+             // Agar kolom angka selain stok akhir tebal
+             className += " font-medium"; 
+          }
+        } else {
+            // Kolom Teks biasa (Nama Produk)
+            if(idx === 0) className = "font-weight-bold";
+        }
 
-    if (!Array.isArray(rows) || rows.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="${expectedCols}" style="text-align:center; padding: 20px;">Data Kosong atau tidak ditemukan.</td></tr>`;
-      return;
-    }
-    
-    // Fungsi untuk memformat angka dengan maks 2 desimal
-    function formatDecimal(value) {
-      let num = parseFloat(String(value).replace(/,/g, ''));
-      if (isNaN(num)) return value;
-      
-      return num.toLocaleString('id-ID', {
-        minimumFractionDigits: 0, 
-        maximumFractionDigits: 2 // Maksimal 2 desimal
-      });
-    }
+        html += `<td class="${className}">${content}</td>`;
+      }
+      tr.innerHTML = html;
+      tbody.appendChild(tr);
+    });
+  }
 
-    rows.forEach(row => {
-      if (!row || !row[0]) return; 
+  function formatDecimal(value) {
+    let num = parseFloat(String(value).replace(/,/g, ''));
+    if (isNaN(num)) return value;
+    return num.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  }
 
-      const tr = document.createElement("tr");
-      let html = "";
-      
-      for (let idx = 0; idx < expectedCols; idx++) {
-        let cell = row[idx] !== undefined ? row[idx] : ""; 
-        let content = cell;
-        let className = "";
+  function showGlobalError(msg) {
+     // Tampilkan error di tab yang aktif saja agar tidak berantakan
+     // (Sederhana: inject ke tab KPC sebagai default error location)
+     document.getElementById("loadingKPC").style.display = "none";
+     const errDiv = document.getElementById("errorKPC");
+     errDiv.textContent = "Gagal memuat data: " + msg;
+     errDiv.classList.remove("d-none");
+  }
 
-        if (stockIndices.includes(idx)) {
-          // Ini adalah kolom Stok/Angka yang perlu diformat/diberi warna
-          
-          // Format desimal
-          content = formatDecimal(cell);
-          className = "stock-val "; 
-          
-          // Logika penentuan warna hanya diterapkan pada kolom terakhir (Stok/Sisa Akhir)
-          if (idx === expectedCols - 1) {
-            let num = parseFloat(String(cell).replace(/,/g, ''));
-            if (isNaN(num)) num = 0;
-            
-            if (num <= 0) className += "stock-empty";
-            else if (num < 10) className += "stock-low";
-            else className += "stock-safe";
-          }
-        }
+  function searchTable(input, tableId) {
+    const filter = input.value.toUpperCase();
+    const table = document.getElementById(tableId);
+    const tr = table.getElementsByTagName("tr");
 
-        html += `<td class="${className}">${content}</td>`;
-      }
-      tr.innerHTML = html;
-      tbody.appendChild(tr);
-    });
-  }
-
-  function showError(msg) {
-    // Tampilkan pesan error di div yang sedang aktif
-    const currentView = document.getElementById("viewSelector").value;
-    
-    const errorId = `error${currentView.charAt(0).toUpperCase() + currentView.slice(1)}`;
-    const loadingId = `loading${currentView.charAt(0).toUpperCase() + currentView.slice(1)}`;
-
-    document.getElementById(loadingId).style.display = "none";
-    document.getElementById(errorId).textContent = msg;
-    document.getElementById(errorId).classList.remove("d-none");
-  }
-
-  // SEARCH Function (tetap tidak berubah)
-  function searchTable(input, tableId) {
-    const filter = input.value.toUpperCase();
-    const table = document.getElementById(tableId);
-    const tr = table.getElementsByTagName("tr");
-
-    for (let i = 1; i < tr.length; i++) {
-      const tds = tr[i].getElementsByTagName("td");
-      let found = false;
-      
-      for (let j = 0; j < tds.length; j++) {
-        if (tds[j].textContent.toUpperCase().indexOf(filter) > -1) {
-          found = true;
-          break; 
-        }
-      }
-      tr[i].style.display = found ? "" : "none";
-    }
-  }
+    for (let i = 1; i < tr.length; i++) {
+      const tds = tr[i].getElementsByTagName("td");
+      let found = false;
+      for (let j = 0; j < tds.length; j++) {
+        if (tds[j].textContent.toUpperCase().indexOf(filter) > -1) {
+          found = true;
+          break; 
+        }
+      }
+      tr[i].style.display = found ? "" : "none";
+    }
+  }
 </script>
 
 </body>
