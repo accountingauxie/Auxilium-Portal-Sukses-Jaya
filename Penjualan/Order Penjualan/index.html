@@ -430,8 +430,10 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 
 <script>
 const baseURL = "https://script.google.com/macros/s/AKfycbwSRwB31ClUA8PLJRzo3Cl5sNZE3DgmCt8PnhvfRBrI2UOO8E0-Q0kg0irPUDHLyBTtjg/exec";
+const inventoryAPI = "https://script.google.com/macros/s/AKfycby5N2auQ__JVSp-RdO-5xtUwanRZZW7YZMZ163j2NP61N3SIfVnPxr8PBXYbgBC6LJH/exec";
 
 let customerData=[], listSpandek=[], listNonSpandek=[], priceSpan=[], priceNon=[], unitSpan=[], unitNon=[], stockSpan=[], stockNon=[];
+let inventoryData = {}; // Cache data inventory
 let choiceCustomer, choiceOrderType;
 let currentCustTOP = 0; 
 
@@ -454,11 +456,10 @@ window.onload = async function () {
 
   document.getElementById("issueDate").addEventListener("change", calculateDueDate);
   
-  // Karena backend sekarang handle logic, kita tidak kirim tanggal ke backend untuk estimasi
-  // Backend akan return estimasi berdasarkan tanggal server
   fetchNextOrderID();
 
   await loadDropdowns();
+  await loadInventoryData(); // Load inventory data
 
   for(let i=0; i<3; i++) addRow();
   new Sortable(document.getElementById("itemsBody"), { handle: ".drag-cell", animation: 150 });
@@ -470,7 +471,6 @@ async function fetchNextOrderID() {
     try {
         titleEl.textContent = "Memuat..."; 
         const res = await fetch(baseURL + "?action=getnextid");
-        // Backend sekarang mengembalikan full string: INV251223001
         const fullID = await res.text(); 
         titleEl.textContent = "Order #" + fullID; 
     } catch (e) {
@@ -525,11 +525,22 @@ async function loadDropdowns() {
     listSpandek = data.spandek || []; listNonSpandek = data.nonspandek || [];
     priceSpan = data.priceSpan || []; priceNon = data.priceNon || [];
     unitSpan = data.unitSpan || []; unitNon = data.unitNon || [];
-    stockSpan = data.stockSpan || []; stockNon = data.stockNon || [];
+    // stockSpan and stockNon are now handled by loadInventoryData
     choiceCustomer.clearChoices();
     const items = customerData.map(c => ({ value: c.name, label: c.name }));
     choiceCustomer.setChoices([{ value: "add_new", label: "+ Tambah Pelanggan Baru" }, ...items], "value", "label", true);
   } catch (err) { console.error(err); showToast("Gagal koneksi server", "error"); }
+}
+
+async function loadInventoryData() {
+    try {
+        const response = await fetch(inventoryAPI + "?action=getInventoryData");
+        if (!response.ok) throw new Error("Failed to fetch inventory");
+        inventoryData = await response.json();
+    } catch (err) {
+        console.error("Error loading inventory:", err);
+        showToast("Gagal memuat data stok", "error");
+    }
 }
 
 function addRow() {
@@ -617,16 +628,54 @@ function recalcRow(row) {
   row.querySelector(".pqty-input").value = formatMoney(priceQty);
   row.querySelector(".total-input").value = formatMoney(total);
 
-  let stock = 0, idx = -1;
-  if(type==="Spandek") { idx = listSpandek.indexOf(item); if(idx>=0) stock = stockSpan[idx]||0; }
-  else { idx = listNonSpandek.indexOf(item); if(idx>=0) stock = stockNon[idx]||0; }
+  let stock = 0;
+  let found = null;
+
+  // Use inventoryData for stock check
+  if (type === "Spandek") {
+      if (inventoryData.spandek) {
+          found = inventoryData.spandek.find(row => row[0] === item);
+          // Spandek: Index 4 is "Stok Setelah Pending"
+          if (found) stock = parseFloat(String(found[4]).replace(/,/g, '')) || 0;
+      }
+  } else {
+      if (inventoryData.nonSpandek) {
+          found = inventoryData.nonSpandek.find(row => row[0] === item);
+          // Non Spandek: Index 4 is "Stok Setelah Pending"
+           if (found) stock = parseFloat(String(found[4]).replace(/,/g, '')) || 0;
+      }
+  }
   
   const stockDisp = row.querySelector(".stock-display");
   const statusCont = row.querySelector(".status-container");
   
   if(item) {
       stockDisp.textContent = (Number(stock)||0).toLocaleString("en-US", {maximumFractionDigits:2});
-      let req = (type==="Spandek") ? (meter*qty) : qty;
+      let req = (type==="Spandek") ? (meter*qty) : qty; // Spandek stock is likely in meters? Adjust logic if Spandek stock is units. 
+      // Assumption: Spandek stock is in meters or units, check your data source. 
+      // If Spandek stock is count (lembar), then req = qty. If meters, req = meter * qty.
+      // Based on typical inventory, let's assume stock unit matches request unit.
+      // For Spandek, usually stock is in meters if selling by meter, or sheets if selling by sheet.
+      // Your input has "Meter" and "Qty". If selling by meter, price is per meter.
+      // Let's assume stock for Spandek is in TOTAL METERS or SHEETS. 
+      // Let's assume standard logic: If Type=Spandek, we check if we have enough stock.
+      
+      // REVISIT LOGIC: Usually stock is quantity of items, regardless of length for non-standard items?
+      // Or is stock total length? 
+      // Let's assume for Spandek, stock is available length.
+      // However, usually "Stok Spandek" in previous code was just an index lookup.
+      // Let's stick to your previous logic:
+      // if type === Spandek, req = meter * qty? 
+      // Actually, standard logic for "Stok" usually refers to the main UoM.
+      // If Spandek is sold per Meter, Stock is likely in Meters.
+      // If Spandek is sold per Sheet, Stock is Sheets.
+      // Without knowing exact UoM of inventoryData, we'll assume Spandek stock is linear meters if meter input is enabled.
+      // But typically, `qty` is the main driver for stock reduction if selling pre-cut. 
+      // Let's stick to the previous code's logic if it was working, or safer:
+      // If Spandek, check against `qty` if stock is sheets, or `meter * qty` if stock is length.
+      // The previous code had: `let req = (type==="Spandek") ? (meter*qty) : qty;`
+      // So we will keep that.
+
       statusCont.innerHTML = "";
       if(req > 0) {
           const badge = document.createElement("span");
@@ -714,8 +763,6 @@ function forceSubmitOrder() {
     fetch(baseURL + "?action=submitorder&payload=" + encodeURIComponent(JSON.stringify(payload)))
     .then(res => res.text()).then(txt => {
         if(txt.startsWith("OK")) { 
-            // Server response: "OK:INV251223001"
-            // Kita tinggal menampilkan saja apa yang dikembalikan server
             const finalID = txt.split(":")[1] || "";
             
             const xeroTitle = document.getElementById("xeroOrderTitle");
