@@ -164,14 +164,9 @@ table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-ali
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/gh/accountingauxie/Auxilium-Portal-Sukses-Jaya/assets/config.js"></script>
-
 <script>
-// --- PERBAIKAN: URL SCRIPT LANGSUNG (BYPASS CDN) ---
-const FALLBACK_URL = "https://script.google.com/macros/s/AKfycbzfKcHIntwRj30cfl2tcqfNHmtnT6E6BOUFLZ6JzH3smAlMdrwgWxMBbnJIrVOV68ApxQ/exec";
-const BASE_URL = window.GAS_URL || FALLBACK_URL;
-
-if (!BASE_URL) alert("Error: GAS_URL tidak ditemukan. Cek config.js.");
+// --- KONFIGURASI API LANGSUNG ---
+const API_URL = "https://script.google.com/macros/s/AKfycbzfKcHIntwRj30cfl2tcqfNHmtnT6E6BOUFLZ6JzH3smAlMdrwgWxMBbnJIrVOV68ApxQ/exec";
 
 let currentOrders = {}; 
 let activeOrderId = null;
@@ -209,7 +204,12 @@ function switchTab(tabName) {
     if(tabName === 'Completed') btnId = 'tab-completed';
     if(tabName === 'Delivered') btnId = 'tab-delivery';
     if(tabName === 'Cancel') btnId = 'tab-cancel';
-    document.getElementById(btnId).classList.add('active');
+    
+    // Check if element exists before accessing classList
+    const btn = document.getElementById(btnId);
+    if (btn) {
+        btn.classList.add('active');
+    }
     loadOrders(tabName);
 }
 
@@ -217,7 +217,7 @@ async function loadOrders(status) {
     const tbody = document.getElementById('dashboardBody');
     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px;">Loading...</td></tr>';
     try {
-        const response = await fetch(`${BASE_URL}?action=getProductionOrders&status=${encodeURIComponent(status)}`);
+        const response = await fetch(`${API_URL}?action=getProductionOrders&status=${encodeURIComponent(status)}`);
         const data = await response.json();
         renderDashboard(data, status);
     } catch (err) {
@@ -225,8 +225,6 @@ async function loadOrders(status) {
     }
 }
 
-// ... (SISA KODE FUNCTION LAINNYA: renderDashboard, openSetup, dll BIARKAN SAMA) ...
-// Pastikan kode di bawah ini ada
 function renderDashboard(data, status) {
     const tbody = document.getElementById('dashboardBody');
     tbody.innerHTML = '';
@@ -499,7 +497,7 @@ async function cancelOrder(id) { await sendAPI('cancelOrder', { orderId: id }); 
 async function sendAPI(action, payload) {
     try {
         payload.action = action;
-        const res = await fetch(BASE_URL, { method: 'POST', body: JSON.stringify(payload) });
+        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
         const json = await res.json();
         if(json.result === 'error') throw json.message;
         alert("Sukses!"); closeModal(); loadOrders(currentTab);
@@ -512,8 +510,13 @@ function generatePDF(type) {
     document.getElementById('pdfCustomer').innerText = o.customer;
     document.getElementById('pdfDate').innerText = fmtDate(new Date()); 
     document.getElementById('pdfTitle').innerText = (type === 'SPK') ? "SURAT PERINTAH KERJA" : "SURAT JALAN";
-    document.getElementById('pdfSign1').innerText = (type === 'SPK') ? "Admin Produksi" : "Penerima";
-    document.getElementById('pdfSign2').innerText = (type === 'SPK') ? "Kepala Produksi" : "Pengirim";
+    
+    // Check if element exists before accessing innerText
+    const sign1 = document.getElementById('pdfSign1');
+    if (sign1) sign1.innerText = (type === 'SPK') ? "Admin Produksi" : "Penerima";
+    
+    const sign2 = document.getElementById('pdfSign2');
+    if (sign2) sign2.innerText = (type === 'SPK') ? "Kepala Produksi" : "Pengirim";
 
     const headDetail = document.getElementById('pdfHeadDetail');
     const headWE = document.getElementById('pdfHeadWE');
