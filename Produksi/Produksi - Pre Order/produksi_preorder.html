@@ -7,39 +7,20 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-/* --- 1. SYSTEM STYLE (Sama persis dengan Review Penjualan) --- */
-:root { 
-    --primary-color: #116999; 
-    --bg-color: #f4f7f6; 
-    --text-color: #333; 
-    --red-bg: #fee2e2; 
-    --red-text: #991b1b;
-}
-
+/* --- 1. SYSTEM STYLE --- */
+:root { --primary-color: #116999; --bg-color: #f4f7f6; --text-color: #333; --red-bg: #fee2e2; --red-text: #991b1b; }
 * { box-sizing: border-box; }
 body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background: var(--bg-color); color: var(--text-color); }
 
 /* --- NAVIGATION BAR --- */
-.aux-navbar {
-    background-color: #ffffff;
-    height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 40px;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.05);
-    position: sticky; top: 0; z-index: 10000;
-}
+.aux-navbar { background-color: #ffffff; height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; box-shadow: 0 1px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10000; }
 .aux-logo img { height: 40px; width: auto; display: block; }
 .aux-menu { display: flex; gap: 10px; align-items: center; height: 100%; }
 .nav-item { position: relative; height: 100%; display: flex; align-items: center; }
 .aux-link { text-decoration: none; color: #666; font-weight: 600; font-size: 14px; padding: 8px 14px; border-radius: 6px; transition: all 0.2s; cursor: pointer; display: flex; align-items: center; gap: 4px; }
 .aux-link:hover, .nav-item:hover .aux-link { color: #1d2939; background-color: #f9fafb; }
 .aux-link.active { color: var(--primary-color); background-color: #eff8ff; font-weight: 700; }
-
-/* Dropdown */
 .dropdown-menu { visibility: hidden; opacity: 0; position: absolute; top: 90%; left: 50%; transform: translateX(-50%) translateY(-10px); background: white; min-width: 220px; border: 1px solid #eaecf0; border-radius: 8px; box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08); padding: 6px; z-index: 100000; transition: all 0.2s ease; }
-.dropdown-menu::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
 .nav-item:hover .dropdown-menu { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
 .dropdown-item { display: block; padding: 10px 12px; color: #344054; text-decoration: none; font-size: 14px; border-radius: 6px; transition: background 0.2s; text-align: left; font-weight: 400; }
 .dropdown-item:hover { background-color: #f9fafb; color: #2f54eb; }
@@ -50,15 +31,12 @@ body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background:
 .user-name { font-weight: 700; font-size: 13px; color: #333; }
 .user-role { font-size: 11px; color: #888; }
 .user-avatar { width: 36px; height: 36px; background-color: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; user-select: none; }
-.logout-btn { background: none; border: 1px solid #ddd; color: #666; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 14px; }
-.logout-btn:hover { background-color: var(--red-bg); color: var(--red-text); border-color: var(--red-bg); }
 
 /* --- CONTENT STYLE --- */
 .page-wrap { padding: 30px 40px; max-width: 98%; margin: 0 auto; }
 .category-tabs { margin-bottom: 20px; border-bottom: 2px solid #ddd; }
 .cat-btn { background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; }
 .cat-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
-
 .table-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; }
 table.xero-table { width: 100%; border-collapse: collapse; }
 table.xero-table th { text-align: left; padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; color: #555; font-size: 12px; text-transform: uppercase; font-weight: bold; }
@@ -70,11 +48,8 @@ table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 .prod-input { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
 .prod-select { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; background: #fff; }
 .prod-input[readonly] { background-color: #eee; color: #666; }
-
-/* Split Row Styling */
-.split-row { background-color: #fffde7; } /* Kuning tipis */
+.split-row { background-color: #fffde7; }
 .main-row { background-color: #fff; }
-
 .btn-sm { padding: 4px 8px; font-size: 11px; border-radius: 3px; cursor: pointer; border: 1px solid transparent; }
 .btn-split { background: #f3e8ff; color: #6b21a8; border-color: #d8b4fe; }
 .btn-remove { background: #fef2f2; color: #991b1b; border-color: #fee2e2; }
@@ -85,18 +60,18 @@ table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 .modal-header { padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
 .modal-body { flex: 1; overflow-y: auto; padding: 20px; background: #fff; }
 .modal-footer { padding: 15px 30px; background: #f9fafb; border-top: 1px solid #eee; text-align: right; }
-
 .btn-action { padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; color: white; font-weight: bold; margin-left: 10px; transition: 0.2s; }
 .btn-close { background: #fff; color: #333; border: 1px solid #ccc; }
 .btn-process { background: #116999; }
+.badge { padding: 5px 12px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; display: inline-block; }
+.badge-approve { background: #fff7e6; color: #b75900; border: 1px solid #ffe8cc; }
 
-/* --- PDF STYLE (SURAT JALAN) --- */
+/* --- PDF STYLE --- */
 #pdf-hidden-container { position: absolute; left: -9999px; top: 0; }
 #pdfContent { background: #fff; width: 100%; padding: 0; font-family: "Arial", sans-serif; color: #000; }
 .pdf-header { display: flex; justify-content: space-between; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
 .pdf-title { font-size: 24px; font-weight: 800; text-transform: uppercase; color: #000; }
 .pdf-subtitle { font-size: 14px; font-weight: bold; color: #444; margin-top: 5px; text-transform: uppercase; }
-
 table.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
 table.pdf-table th { font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 8px 4px; border: 1px solid #000; background: #eee; }
 table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; border: 1px solid #000; }
@@ -122,7 +97,6 @@ table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; bor
             <div class="aux-link active">Produksi <i class="fas fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></div>
             <div class="dropdown-menu">
                 <a href="#" class="dropdown-item">Persiapan Pesanan</a>
-                <a href="#" onclick="alert('Coming soon')" class="dropdown-item">Produksi Barang Jadi</a>
             </div>
         </div>
     </nav>
@@ -134,7 +108,7 @@ table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; bor
 </div>
 
 <div class="page-wrap">
-    <h2>Persiapan Produksi (General Order)</h2>
+    <h2>Persiapan Produksi (Pre-Order)</h2>
     
     <div class="category-tabs">
         <button class="cat-btn active" id="tab-awaiting" onclick="loadOrders()">Awaiting Production</button>
@@ -214,12 +188,10 @@ table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; bor
                 <div style="font-size:11px;">Date: <span id="pdfDate">-</span></div>
             </div>
         </div>
-
         <div style="margin-bottom:20px; border:1px solid #000; padding:10px;">
             <strong>Customer:</strong> <span id="pdfCustomer">-</span><br>
             <strong>Delivery Est:</strong> <span id="pdfEst">-</span>
         </div>
-
         <table class="pdf-table">
             <thead>
                 <tr>
@@ -232,33 +204,29 @@ table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; bor
             </thead>
             <tbody id="pdfItemsBody"></tbody>
         </table>
-
         <div style="margin-top:40px; display:flex; justify-content:space-between; text-align:center;">
             <div style="width:30%;">
-                <div>Dibuat Oleh,</div>
-                <br><br><br>
+                <div>Dibuat Oleh,</div><br><br><br>
                 <div style="border-top:1px solid #000; width:80%; margin:0 auto;">( Admin Produksi )</div>
             </div>
             <div style="width:30%;">
-                <div>Diterima Oleh,</div>
-                <br><br><br>
+                <div>Diterima Oleh,</div><br><br><br>
                 <div style="border-top:1px solid #000; width:80%; margin:0 auto;">( Operator Mesin )</div>
             </div>
             <div style="width:30%;">
-                <div>Diketahui Oleh,</div>
-                <br><br><br>
+                <div>Diketahui Oleh,</div><br><br><br>
                 <div style="border-top:1px solid #000; width:80%; margin:0 auto;">( Kepala Produksi )</div>
             </div>
         </div>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/gh/accountingauxie/Auxilium-Portal-Sukses-Jaya/assets/config.js"></script>
+
 <script>
-// =========================================================
-// KONFIGURASI BASE URL
-// Silakan Ganti URL ini dengan URL Web App Deployment Anda
-// =========================================================
-const BASE_URL = "https://script.google.com/macros/s/AKfycbwzPYOC27iO8kqKmsdwhcjKaJe_qHdCQWwmuxHzyREV1FOxbukb6U6MWuM54naRnrSvKQ/exec"; 
+// HARDCODE FALLBACK: Agar langsung jalan walaupun CDN belum refresh cache
+const FALLBACK_URL = "https://script.google.com/macros/s/AKfycbyNycnkFGHj_bHBWNz_jqfj7_C6xksFbYOgGvIioHs0e2JmqAEmJw7BkDptQuD-Y8Uy6g/exec";
+const BASE_URL = window.GAS_URL || FALLBACK_URL;
 
 let currentOrders = {}; 
 let activeOrderId = null;
@@ -271,18 +239,13 @@ async function loadOrders() {
     tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px;">Loading Data...</td></tr>';
     
     try {
-        // Panggil Action "getProductionOrders" di Backend
-        // Pastikan Anda sudah update Main.gs untuk handle "getProductionOrders" via doGet
-        // atau update Main.gs untuk return JSON jika action=getProductionOrders
-        
-        // Asumsi: Kita pakai endpoint yang sama, tapi param action beda
-        const response = await fetch(BASE_URL + "?action=getProductionOrders");
+        // Penting: Tambahkan &category=preorder
+        const response = await fetch(BASE_URL + "?action=getProductionOrders&category=preorder&status=Awaiting");
         const data = await response.json();
-        
         renderDashboard(data);
     } catch (err) {
         console.error(err);
-        tbody.innerHTML = `<tr><td colspan="6" style="color:red; text-align:center;">Error Loading Data. Pastikan Script sudah di-deploy dengan akses 'Anyone'.<br>${err}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="color:red; text-align:center;">Error Loading Data: ${err}</td></tr>`;
     }
 }
 
@@ -290,14 +253,12 @@ function renderDashboard(data) {
     const tbody = document.getElementById('dashboardBody');
     tbody.innerHTML = '';
     
-    // Jika data kosong atau error object kosong
     if (!data || Object.keys(data).length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#999;">Tidak ada pesanan "Awaiting Production".</td></tr>';
         return;
     }
 
     currentOrders = data; 
-
     Object.keys(data).forEach(key => {
         const o = data[key];
         const tr = document.createElement('tr');
@@ -396,9 +357,7 @@ function openSetup(orderId) {
     document.getElementById('setupModal').style.display = 'flex';
 }
 
-function closeModal() {
-    document.getElementById('setupModal').style.display = 'none';
-}
+function closeModal() { document.getElementById('setupModal').style.display = 'none'; }
 
 // --- 3. SPLIT & WE LOGIC ---
 function generateWE(el) {
@@ -417,11 +376,8 @@ function generateWE(el) {
 function splitRow(btn, groupId) {
     const originalRow = btn.closest('tr');
     const newRow = originalRow.cloneNode(true);
-    
     newRow.classList.remove('main-row');
     newRow.classList.add('split-row');
-    
-    // Reset Inputs
     newRow.querySelector('.qty-input').value = 0;
     newRow.querySelectorAll('select').forEach(s => {
         s.value = "";
@@ -429,11 +385,8 @@ function splitRow(btn, groupId) {
     });
     newRow.querySelector('.we-code-input').value = "";
     newRow.querySelector('.target-qty').parentElement.innerHTML = ""; 
-
-    // Ubah tombol
     const actionTd = newRow.lastElementChild;
     actionTd.innerHTML = `<button class="btn-sm btn-remove" onclick="removeSplit(this, ${groupId})"><i class="fas fa-trash"></i></button>`;
-    
     newRow.querySelector('.qty-input').onchange = function() { validateQty(groupId); };
     originalRow.after(newRow);
 }
@@ -446,7 +399,6 @@ function removeSplit(btn, groupId) {
 function validateQty(groupId) {
     const tbody = document.getElementById('setupBody');
     const rows = tbody.querySelectorAll(`tr[data-id="${groupId}"]`);
-    
     let target = 0;
     let totalAssigned = 0;
 
@@ -458,14 +410,10 @@ function validateQty(groupId) {
     });
 
     const msg = document.getElementById('validationMsg');
-    
     rows.forEach(r => {
         const input = r.querySelector('.qty-input');
-        if(totalAssigned !== target) {
-            input.style.borderColor = 'red';
-        } else {
-            input.style.borderColor = '#ccc';
-        }
+        if(totalAssigned !== target) input.style.borderColor = 'red';
+        else input.style.borderColor = '#ccc';
     });
 
     if(totalAssigned !== target) {
@@ -525,7 +473,6 @@ async function submitProduction() {
                 itemData.machine = machine;
                 itemData.kpc = kpc;
                 itemData.we = we;
-
                 pdfItem.detail = `${machine} / ${kpc} / ${type}`;
                 pdfItem.we = we;
             }
@@ -539,10 +486,8 @@ async function submitProduction() {
         return;
     }
 
-    // Generate PDF dulu
     generatePDF(activeOrderId, pdfData);
 
-    // Kirim Data ke Backend
     const btn = document.querySelector('.btn-process');
     const oldText = btn.innerText;
     btn.innerText = "Processing...";
@@ -552,10 +497,10 @@ async function submitProduction() {
         const payload = {
             action: 'submitProduction',
             orderId: activeOrderId,
+            category: 'preorder', // PENTING: Penanda agar masuk ke Sheet PreOrder
             data: submitData
         };
 
-        // Gunakan POST untuk kirim data
         const res = await fetch(BASE_URL, {
             method: 'POST',
             body: JSON.stringify(payload)
@@ -579,7 +524,6 @@ async function submitProduction() {
 
 function generatePDF(orderId, items) {
     const o = currentOrders[orderId];
-    
     document.getElementById('pdfOrderNo').innerText = orderId;
     document.getElementById('pdfDate').innerText = new Date().toLocaleDateString('id-ID');
     document.getElementById('pdfCustomer').innerText = o.customer;
@@ -593,16 +537,8 @@ function generatePDF(orderId, items) {
     });
 
     const el = document.getElementById('pdfContent');
-    const opt = { 
-        margin: [0.5, 0.5, 0.5, 0.5], 
-        filename: `SPK_${orderId}.pdf`, 
-        image: { type: 'jpeg', quality: 0.98 }, 
-        html2canvas: { scale: 2 }, 
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } 
-    };
-    html2pdf().set(opt).from(el).save();
+    html2pdf().set({ margin: [0.5, 0.5, 0.5, 0.5], filename: `SPK_${orderId}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }).from(el).save();
 }
 </script>
-
 </body>
 </html>
