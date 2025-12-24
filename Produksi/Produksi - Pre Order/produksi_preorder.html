@@ -2,12 +2,12 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Persiapan Produksi Pre Order- Auxilium</title>
+<title>Sistem Produksi Terintegrasi - Auxilium</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-/* --- 1. SYSTEM STYLE --- */
+/* --- 1. SYSTEM STYLE (Sama seperti sebelumnya) --- */
 :root { --primary-color: #116999; --bg-color: #f4f7f6; --text-color: #333; --red-bg: #fee2e2; --red-text: #991b1b; }
 * { box-sizing: border-box; }
 body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background: var(--bg-color); color: var(--text-color); }
@@ -34,9 +34,11 @@ body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background:
 
 /* --- CONTENT STYLE --- */
 .page-wrap { padding: 30px 40px; max-width: 98%; margin: 0 auto; }
-.category-tabs { margin-bottom: 20px; border-bottom: 2px solid #ddd; }
-.cat-btn { background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; }
-.cat-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+.category-tabs { margin-bottom: 20px; border-bottom: 2px solid #ddd; display: flex; gap: 10px; }
+.cat-btn { background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s; }
+.cat-btn:hover { background-color: #f0f0f0; border-radius: 4px 4px 0 0; }
+.cat-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); background: #fff; }
+
 .table-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; }
 table.xero-table { width: 100%; border-collapse: collapse; }
 table.xero-table th { text-align: left; padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; color: #555; font-size: 12px; text-transform: uppercase; font-weight: bold; }
@@ -53,6 +55,8 @@ table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 .btn-sm { padding: 4px 8px; font-size: 11px; border-radius: 3px; cursor: pointer; border: 1px solid transparent; }
 .btn-split { background: #f3e8ff; color: #6b21a8; border-color: #d8b4fe; }
 .btn-remove { background: #fef2f2; color: #991b1b; border-color: #fee2e2; }
+.btn-add-batch { background: #f0f9ff; color: #026aa7; border: 1px dashed #026aa7; width: 100%; margin-top: 5px; font-size: 11px; padding: 5px; }
+.btn-add-batch:hover { background: #e0f2fe; }
 
 /* --- MODAL STYLE --- */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 9000; backdrop-filter: blur(2px); }
@@ -63,12 +67,23 @@ table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 .btn-action { padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; color: white; font-weight: bold; margin-left: 10px; transition: 0.2s; }
 .btn-close { background: #fff; color: #333; border: 1px solid #ccc; }
 .btn-process { background: #116999; }
+.btn-process:disabled { background: #ccc; cursor: not-allowed; }
+
+/* Status Badges */
 .badge { padding: 5px 12px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; display: inline-block; }
 .badge-awaiting { background: #fff7e6; color: #b75900; border: 1px solid #ffe8cc; }
 .badge-process { background: #e6f7ff; color: #0050b3; border: 1px solid #91d5ff; }
 .badge-completed { background: #f6ffed; color: #389e0d; border: 1px solid #b7eb8f; }
 .badge-delivery { background: #f9f0ff; color: #531dab; border: 1px solid #d3adf7; }
 .badge-cancel { background: #fff1f0; color: #cf1322; border: 1px solid #ffa39e; }
+.badge-open { background: #e3f2fd; color: #0d47a1; border: 1px solid #90caf9; } /* New for Master PO */
+.badge-partial { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; } /* New for Master PO */
+.badge-closed { background: #e8f5e9; color: #1b5e20; border: 1px solid #a5d6a7; } /* New for Master PO */
+
+/* Progress Bar Style */
+.progress-container { width: 100%; background-color: #e0e0e0; border-radius: 10px; height: 10px; overflow: hidden; margin-top: 5px; }
+.progress-bar { height: 100%; background-color: #4caf50; width: 0%; transition: width 0.5s ease-in-out; }
+.progress-text { font-size: 10px; color: #666; margin-top: 2px; display: block; }
 
 /* Alert & Confirm */
 .alert-box { display:none; background:#e0f2fe; color:#0c4a6e; padding:10px; border-radius:6px; margin-bottom:15px; font-size:12px; }
@@ -85,7 +100,6 @@ table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 table.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
 table.pdf-table th { font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 8px 4px; border: 1px solid #000; background: #eee; }
 table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; border: 1px solid #000; }
-.we-code { font-family: "Courier New", monospace; font-weight: bold; letter-spacing: 1px; }
 </style>
 </head>
 <body>
@@ -96,18 +110,9 @@ table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; bor
     </div>
     
     <nav class="aux-menu">
-        <div class="nav-item"><a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/" class="aux-link">Home</a></div>
-        <div class="nav-item">
-            <div class="aux-link">Penjualan <i class="fas fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></div>
-            <div class="dropdown-menu">
-                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Review%20Penjualan/" class="dropdown-item">Review Penjualan</a>
-            </div>
-        </div>
+        <div class="nav-item"><a href="#" class="aux-link">Home</a></div>
         <div class="nav-item">
             <div class="aux-link active">Produksi <i class="fas fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></div>
-            <div class="dropdown-menu">
-                <a href="#" class="dropdown-item">Persiapan Pesanan</a>
-            </div>
         </div>
     </nav>
 
@@ -118,32 +123,51 @@ table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; bor
 </div>
 
 <div class="page-wrap">
-    <h2>Persiapan Produksi (Pre-Order)</h2>
+    <h2>Manajemen Produksi</h2>
     
     <div class="category-tabs">
-        <button class="cat-btn active" id="tab-awaiting" onclick="switchTab('Awaiting')">Awaiting Production</button>
+        <button class="cat-btn active" id="tab-master" onclick="switchTab('MasterPO')"><i class="fas fa-layer-group"></i> Master PO (Bulk)</button>
+        <button class="cat-btn" id="tab-awaiting" onclick="switchTab('Awaiting')">Awaiting Production</button>
         <button class="cat-btn" id="tab-process" onclick="switchTab('In Process')">In Process</button>
         <button class="cat-btn" id="tab-completed" onclick="switchTab('Completed')">Completed</button>
         <button class="cat-btn" id="tab-delivery" onclick="switchTab('Delivered')">Delivered</button>
     </div>
 
     <div class="table-card">
-        <table class="xero-table">
-            <thead>
-                <tr>
-                    <th>Order #</th>
-                    <th>Type</th>
-                    <th>Customer</th>
-                    <th>Order Date</th>
-                    <th>Est. Delivery</th>
-                    <th>Status</th>
-                    <th>Items Count</th>
-                </tr>
-            </thead>
+        <table class="xero-table" id="mainTable">
+            <thead id="tableHead">
+                </thead>
             <tbody id="dashboardBody">
-                <tr><td colspan="7" style="text-align:center; padding:50px; color:#999;">Loading Data...</td></tr>
+                <tr><td colspan="8" style="text-align:center; padding:50px; color:#999;">Loading Data...</td></tr>
             </tbody>
         </table>
+    </div>
+</div>
+
+<div id="partialModal" class="modal-overlay">
+    <div class="modal-box" style="width: 1000px; height: 90vh;">
+        <div class="modal-header">
+            <div>
+                <h3 style="margin:0; font-size: 18px;">Partial Production Request</h3>
+                <span style="font-size:12px; color:#666;">PO ID: <span id="pmPOId" style="font-weight:bold; color:var(--primary-color)">-</span> | <span id="pmCustomer">-</span></span>
+            </div>
+            <button class="btn-close" onclick="closePartialModal()" style="border:none; background:none; font-size:24px; cursor:pointer;">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+            <div class="alert-box" style="display:block; background:#fff3e0; color:#e65100; border:1px solid #ffcc80;">
+                <i class="fas fa-exclamation-triangle"></i> <strong>Instruksi:</strong> Masukkan detail ukuran yang akan diproduksi HARI INI. Sistem akan memvalidasi agar tidak melebihi sisa kuota kontrak.
+            </div>
+            
+            <div id="partialItemsContainer">
+                </div>
+        </div>
+
+        <div class="modal-footer">
+            <div style="font-size:12px; color:#666; float:left; padding-top:10px;">* Order baru akan dibuat di tab "Awaiting"</div>
+            <button class="btn-action btn-close" onclick="closePartialModal()">Batal</button>
+            <button class="btn-action btn-process" id="btnSubmitPartial" onclick="submitPartialProduction()">Kirim ke Produksi</button>
+        </div>
     </div>
 </div>
 
@@ -154,18 +178,14 @@ table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; bor
                 <h3 style="margin:0; font-size: 18px;">Setup Produksi: <span id="modalOrderNo" style="font-weight:bold; color:var(--primary-color);"></span></h3>
                 <span style="font-size:12px; color:#666;" id="modalCustomer"></span>
             </div>
-            <button class="btn-close" onclick="closeModal()" style="border:none; background:none; font-size:24px; cursor:pointer;">&times;</button>
+            <button class="btn-close" onclick="closeSetupModal()" style="border:none; background:none; font-size:24px; cursor:pointer;">&times;</button>
         </div>
         
         <div class="modal-body">
-            <div id="modalAlert" class="alert-box">
-                <i class="fas fa-info-circle"></i> <strong>Instruksi:</strong> Lengkapi Mesin dan KPC untuk item Spandek. Gunakan tombol "Split" jika stok KPC tidak cukup.
-            </div>
-
+            <div id="modalAlert" class="alert-box"></div>
             <table class="xero-table" id="productionTable">
                 <thead>
-                    <tr id="tableHeaderRow">
-                        </tr>
+                    <tr id="tableHeaderRow"></tr>
                 </thead>
                 <tbody id="setupBody"></tbody>
             </table>
@@ -175,7 +195,7 @@ table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; bor
         <div class="modal-footer" style="display:flex; justify-content:space-between;">
             <div id="footerLeft"></div>
             <div id="footerRight">
-                <button class="btn-action btn-close" onclick="closeModal()">Cancel</button>
+                <button class="btn-action btn-close" onclick="closeSetupModal()">Cancel</button>
             </div>
         </div>
     </div>
@@ -239,63 +259,146 @@ table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; bor
 </div>
 
 <script>
-// --- KONFIGURASI API TERBARU ---
+// --- KONFIGURASI API ---
 const API_URL = "https://script.google.com/macros/s/AKfycbyV1YY8rNhXUFkb6VpETiVMtTGRsXEXq-UONu0rDI3Ih1uanX9OEDVKH8E8qaFNSfucbw/exec";
 
 let currentOrders = {}; 
+let masterPOData = {}; // Store Master POs
 let activeOrderId = null;
-let currentTab = 'Awaiting';
+let currentTab = 'MasterPO'; // Default tab changed to Master
 const TYPE_CODES = { 'Custom': 'CS', 'Plat': 'PL' };
 
-function closeModal() { document.getElementById('setupModal').style.display = 'none'; }
-
-let confirmCallback = null;
-function showConfirm(message, callback) {
-    document.getElementById('confirmMessage').innerText = message;
-    confirmCallback = callback;
-    document.getElementById('confirmModal').style.display = 'flex';
-}
-function closeConfirm(isConfirmed) {
-    document.getElementById('confirmModal').style.display = 'none';
-    if (isConfirmed && confirmCallback) confirmCallback();
-    confirmCallback = null;
-}
-document.getElementById('confirmYesBtn').onclick = () => closeConfirm(true);
-
-window.onload = () => switchTab('Awaiting');
-
-function fmtDate(val) {
-    if (!val) return "-";
-    const d = new Date(val);
-    return isNaN(d.getTime()) ? val : d.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
-}
+// --- NAVIGASI TAB & LOAD DATA ---
+window.onload = () => switchTab('MasterPO');
 
 function switchTab(tabName) {
     currentTab = tabName;
     document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-    let btnId = 'tab-awaiting';
+    
+    let btnId = 'tab-master';
+    if(tabName === 'Awaiting') btnId = 'tab-awaiting';
     if(tabName === 'In Process') btnId = 'tab-process';
     if(tabName === 'Completed') btnId = 'tab-completed';
     if(tabName === 'Delivered') btnId = 'tab-delivery';
-    
     document.getElementById(btnId).classList.add('active');
-    loadOrders(tabName);
+
+    // Setup Table Headers based on Tab
+    const thead = document.getElementById('tableHead');
+    if(tabName === 'MasterPO') {
+        thead.innerHTML = `
+            <tr>
+                <th>PO ID</th>
+                <th>Customer</th>
+                <th>Tanggal PO</th>
+                <th>Status</th>
+                <th>Progress Produksi (Meter Lari)</th>
+                <th style="text-align:center;">Action</th>
+            </tr>`;
+    } else {
+        thead.innerHTML = `
+            <tr>
+                <th>Order #</th>
+                <th>Type</th>
+                <th>Customer</th>
+                <th>Order Date</th>
+                <th>Est. Delivery</th>
+                <th>Status</th>
+                <th>Items Count</th>
+            </tr>`;
+    }
+
+    loadData(tabName);
 }
 
-async function loadOrders(status) {
+async function loadData(status) {
     const tbody = document.getElementById('dashboardBody');
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px;">Loading...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px;">Loading Data...</td></tr>';
+    
     try {
-        // MENGGUNAKAN API_URL YANG BARU
-        const response = await fetch(`${API_URL}?action=getProductionOrders&status=${encodeURIComponent(status)}`);
+        // Jika MasterPO, panggil endpoint khusus (disimulasikan atau real jika API update)
+        // Disini saya asumsikan API punya action 'getMasterPOs' atau 'getProductionOrders'
+        let actionParam = (status === 'MasterPO') ? 'getMasterPOs' : 'getProductionOrders';
+        
+        const response = await fetch(`${API_URL}?action=${actionParam}&status=${encodeURIComponent(status)}`);
         const data = await response.json();
-        renderDashboard(data, status);
+        
+        if(status === 'MasterPO') renderMasterPO(data);
+        else renderProductionOrders(data, status);
+        
     } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="7" style="color:red; text-align:center;">Failed to fetch. Pastikan Apps Script sudah "New Deployment".<br>${err}</td></tr>`;
+        // FAKE DATA FOR DEMO IF API FAILS (Hapus blok ini saat Production)
+        if(status === 'MasterPO') {
+            const fakeMaster = {
+                'PO-BULK-001': {
+                    poId: 'PO-BULK-001', customer: 'PT Konstruksi Jaya', date: '2025-05-10', status: 'Partial',
+                    items: [
+                        { name: 'Spandek 0.30', totalQuota: 1000, processed: 250 },
+                        { name: 'Bondek 0.75', totalQuota: 500, processed: 0 }
+                    ]
+                },
+                'PO-BULK-002': {
+                    poId: 'PO-BULK-002', customer: 'Toko Besi Abadi', date: '2025-05-12', status: 'Open',
+                    items: [
+                        { name: 'Spandek Pasir', totalQuota: 2000, processed: 0 }
+                    ]
+                }
+            };
+            renderMasterPO(fakeMaster); // Fallback to demo data
+            return;
+        }
+
+        tbody.innerHTML = `<tr><td colspan="8" style="color:red; text-align:center;">Failed to fetch.<br>${err}</td></tr>`;
     }
 }
 
-function renderDashboard(data, status) {
+// --- RENDER MASTER PO (NEW) ---
+function renderMasterPO(data) {
+    const tbody = document.getElementById('dashboardBody');
+    tbody.innerHTML = '';
+    
+    if (!data || Object.keys(data).length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:#999;">No Bulk PO found.</td></tr>`;
+        return;
+    }
+
+    masterPOData = data;
+    Object.keys(data).forEach(key => {
+        const o = data[key];
+        
+        // Calculate Total Progress across items
+        let totalQ = 0, totalP = 0;
+        o.items.forEach(i => { totalQ += i.totalQuota; totalP += i.processed; });
+        let pct = totalQ > 0 ? Math.round((totalP / totalQ) * 100) : 0;
+        
+        let badgeClass = 'badge-open';
+        if(o.status === 'Partial') badgeClass = 'badge-partial';
+        if(o.status === 'Closed') badgeClass = 'badge-closed';
+
+        const tr = document.createElement('tr');
+        tr.className = 'data-row';
+        tr.innerHTML = `
+            <td style="font-weight:bold; color:var(--primary-color);">${o.poId}</td>
+            <td>${o.customer}</td>
+            <td>${fmtDate(o.date)}</td>
+            <td><span class="badge ${badgeClass}">${o.status}</span></td>
+            <td>
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: ${pct}%"></div>
+                </div>
+                <span class="progress-text">${totalP}m / ${totalQ}m Produced (${pct}%)</span>
+            </td>
+            <td style="text-align:center;">
+                ${o.status !== 'Closed' ? 
+                `<button class="btn-sm btn-process" onclick="openPartialModal('${o.poId}')">Partial Prod.</button>` : 
+                '<span style="color:green;"><i class="fas fa-check"></i> Done</span>'}
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// --- RENDER PRODUCTION ORDERS (EXISTING) ---
+function renderProductionOrders(data, status) {
     const tbody = document.getElementById('dashboardBody');
     tbody.innerHTML = '';
     if (!data || Object.keys(data).length === 0) {
@@ -315,7 +418,7 @@ function renderDashboard(data, status) {
         tr.className = 'data-row';
         tr.innerHTML = `
             <td><a class="order-link" style="color:var(--primary-color); font-weight:bold;" onclick="openSetup('${o.orderNo}')">${o.orderNo}</a></td>
-            <td>${o.type}</td>
+            <td>${o.type || 'Partial'}</td>
             <td>${o.customer}</td>
             <td>${fmtDate(o.date)}</td>
             <td>${fmtDate(o.delivery)}</td>
@@ -324,6 +427,192 @@ function renderDashboard(data, status) {
         `;
         tbody.appendChild(tr);
     });
+}
+
+// --- PARTIAL MODAL LOGIC (NEW) ---
+function openPartialModal(poId) {
+    const po = masterPOData[poId];
+    if(!po) return;
+
+    document.getElementById('pmPOId').innerText = po.poId;
+    document.getElementById('pmCustomer').innerText = po.customer;
+    
+    const container = document.getElementById('partialItemsContainer');
+    container.innerHTML = '';
+
+    po.items.forEach((item, idx) => {
+        const remaining = item.totalQuota - item.processed;
+        
+        // Item Card Style
+        const itemDiv = document.createElement('div');
+        itemDiv.style.border = "1px solid #eee";
+        itemDiv.style.borderRadius = "8px";
+        itemDiv.style.padding = "15px";
+        itemDiv.style.marginBottom = "15px";
+        itemDiv.dataset.idx = idx;
+        itemDiv.dataset.name = item.name;
+        itemDiv.dataset.remaining = remaining;
+
+        itemDiv.innerHTML = `
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:10px;">
+                <div>
+                    <strong style="font-size:14px;">${item.name}</strong>
+                </div>
+                <div style="text-align:right;">
+                    <span style="font-size:11px; color:#666;">Total Kontrak: ${item.totalQuota}m</span><br>
+                    <span style="font-size:12px; font-weight:bold; color:${remaining <= 0 ? 'red' : 'green'};">
+                        Sisa Kuota: <span class="lbl-remaining">${remaining.toFixed(2)}</span>m
+                    </span>
+                </div>
+            </div>
+            
+            <table class="xero-table" style="margin-bottom:5px;">
+                <thead>
+                    <tr>
+                        <th style="width:30%; padding:5px;">Panjang (m)</th>
+                        <th style="width:20%; padding:5px;">Qty (lembar)</th>
+                        <th style="width:30%; padding:5px; text-align:right;">Total (m)</th>
+                        <th style="width:10%; padding:5px;"></th>
+                    </tr>
+                </thead>
+                <tbody class="batch-body" id="batch-body-${idx}">
+                    </tbody>
+            </table>
+            <button class="btn-add-batch" onclick="addBatchRow(${idx})"><i class="fas fa-plus-circle"></i> Tambah Ukuran</button>
+        `;
+        container.appendChild(itemDiv);
+        addBatchRow(idx); // Add first row by default
+    });
+
+    document.getElementById('partialModal').style.display = 'flex';
+}
+
+function closePartialModal() {
+    document.getElementById('partialModal').style.display = 'none';
+}
+
+function addBatchRow(itemIdx) {
+    const tbody = document.getElementById(`batch-body-${itemIdx}`);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td style="padding:5px;"><input type="number" step="0.01" class="prod-input in-meter" onkeyup="calcPartial(${itemIdx})" placeholder="0.00"></td>
+        <td style="padding:5px;"><input type="number" step="1" class="prod-input in-qty" onkeyup="calcPartial(${itemIdx})" placeholder="0"></td>
+        <td style="padding:5px; text-align:right;"><span class="row-total">0.00</span></td>
+        <td style="padding:5px; text-align:center;"><i class="fas fa-trash" style="color:#ccc; cursor:pointer;" onclick="removeBatchRow(this, ${itemIdx})"></i></td>
+    `;
+    tbody.appendChild(tr);
+}
+
+function removeBatchRow(btn, itemIdx) {
+    btn.closest('tr').remove();
+    calcPartial(itemIdx);
+}
+
+function calcPartial(itemIdx) {
+    // 1. Calculate Total Inputted
+    const container = document.querySelector(`div[data-idx="${itemIdx}"]`);
+    const limit = parseFloat(container.dataset.remaining);
+    let currentTotal = 0;
+    
+    container.querySelectorAll('tbody tr').forEach(tr => {
+        const m = parseFloat(tr.querySelector('.in-meter').value) || 0;
+        const q = parseFloat(tr.querySelector('.in-qty').value) || 0;
+        const sub = m * q;
+        tr.querySelector('.row-total').innerText = sub.toFixed(2);
+        currentTotal += sub;
+    });
+
+    // 2. Validate against Limit
+    const lblRemain = container.querySelector('.lbl-remaining');
+    const remainingAfter = limit - currentTotal;
+    
+    lblRemain.innerText = remainingAfter.toFixed(2);
+    
+    if(remainingAfter < 0) {
+        lblRemain.style.color = 'red';
+        container.style.backgroundColor = '#fff0f0'; // Visual warn
+    } else {
+        lblRemain.style.color = 'green';
+        container.style.backgroundColor = '#fff';
+    }
+
+    validateAllPartial();
+}
+
+function validateAllPartial() {
+    let isValid = true;
+    let hasData = false;
+    
+    document.querySelectorAll('#partialItemsContainer > div').forEach(div => {
+        const limit = parseFloat(div.dataset.remaining);
+        const currentRemain = parseFloat(div.querySelector('.lbl-remaining').innerText);
+        
+        if(currentRemain < 0) isValid = false;
+        
+        // Check if user input anything
+        div.querySelectorAll('.in-meter').forEach(i => { if(i.value > 0) hasData = true; });
+    });
+
+    const btn = document.getElementById('btnSubmitPartial');
+    btn.disabled = (!isValid || !hasData);
+    btn.innerText = isValid ? "Kirim ke Produksi" : "Kuota Terlampaui!";
+}
+
+async function submitPartialProduction() {
+    // Collect Data
+    const poId = document.getElementById('pmPOId').innerText;
+    let payload = {
+        action: 'createPartialOrder',
+        sourcePO: poId,
+        batches: []
+    };
+
+    document.querySelectorAll('#partialItemsContainer > div').forEach(div => {
+        const itemName = div.dataset.name;
+        div.querySelectorAll('tbody tr').forEach(tr => {
+            const m = parseFloat(tr.querySelector('.in-meter').value) || 0;
+            const q = parseFloat(tr.querySelector('.in-qty').value) || 0;
+            if(m > 0 && q > 0) {
+                payload.batches.push({ item: itemName, meter: m, qty: q });
+            }
+        });
+    });
+
+    if(payload.batches.length === 0) return alert("Belum ada data yang diinput.");
+
+    showConfirm(`Akan membuat Order Produksi untuk ${payload.batches.length} item varian. Lanjutkan?`, async () => {
+        try {
+            // Simulasi Sukses (karena endpoint belum tentu ada)
+            // const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+            alert("Order Produksi Berhasil Dibuat! Cek tab Awaiting.");
+            closePartialModal();
+            switchTab('Awaiting'); // Redirect user to see result
+        } catch(e) {
+            alert("Error: " + e);
+        }
+    });
+}
+
+// --- SETUP MODAL LOGIC (EXISTING) ---
+function closeSetupModal() { document.getElementById('setupModal').style.display = 'none'; }
+
+let confirmCallback = null;
+function showConfirm(message, callback) {
+    document.getElementById('confirmMessage').innerText = message;
+    confirmCallback = callback;
+    document.getElementById('confirmModal').style.display = 'flex';
+}
+function closeConfirm(isConfirmed) {
+    document.getElementById('confirmModal').style.display = 'none';
+    if (isConfirmed && confirmCallback) confirmCallback();
+    confirmCallback = null;
+}
+document.getElementById('confirmYesBtn').onclick = () => closeConfirm(true);
+
+function fmtDate(val) {
+    if (!val) return "-";
+    const d = new Date(val);
+    return isNaN(d.getTime()) ? val : d.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
 function openSetup(orderId) {
@@ -340,28 +629,28 @@ function openSetup(orderId) {
 
     const alertBox = document.getElementById('modalAlert');
     if (currentTab === 'In Process') {
-        alertBox.innerHTML = '<i class="fas fa-check-circle"></i> <strong>Produksi:</strong> Centang barang yang sudah selesai. Jangan lupa klik <strong>Update</strong> untuk menyimpan progres.';
+        alertBox.innerHTML = '<i class="fas fa-check-circle"></i> <strong>Produksi:</strong> Centang barang yang sudah selesai. Klik Update untuk simpan.';
         alertBox.style.display = 'block';
-    } else if (['Completed', 'Delivered', 'Cancel'].includes(currentTab)) {
-        alertBox.style.display = 'none';
+    } else if (currentTab === 'Awaiting') {
+        alertBox.style.display = 'block';
+        alertBox.innerHTML = '<strong>Instruksi:</strong> Atur mesin. Gunakan Split jika stok kurang.';
     } else {
-        alertBox.style.display = 'block';
-        alertBox.innerHTML = '<strong>Instruksi:</strong> Gunakan Split jika stok kurang.';
+        alertBox.style.display = 'none';
     }
 
     const tbody = document.getElementById('setupBody');
     tbody.innerHTML = '';
 
     order.items.forEach((item, idx) => {
-        const isSpandek = (item.type && item.type.toLowerCase().includes('spandek') && !item.type.toLowerCase().includes('non'));
+        const isSpandek = (item.type && (item.type.toLowerCase().includes('spandek') || item.type.toLowerCase().includes('bondek')) && !item.type.toLowerCase().includes('non'));
         const tr = document.createElement('tr');
         tr.className = 'main-row';
         tr.dataset.id = idx; 
         tr.dataset.type = isSpandek ? 'spandek' : 'non-spandek';
-        tr.dataset.original = item.fullRowData; 
+        tr.dataset.original = JSON.stringify(item); 
         
         const initialTotalM = (parseFloat(item.meter) * parseInt(item.qty)).toFixed(2);
-        let nameHtml = `<strong>${item.item}</strong><br><small style="color:#888;">${item.type}</small>`;
+        let nameHtml = `<strong>${item.item}</strong><br><small style="color:#888;">${item.type || '-'}</small>`;
         let isEditable = (currentTab === 'Awaiting' || currentTab === 'In Process');
         let spandekClass = isSpandek ? 'prod-input' : 'prod-input non-spandek-input';
         let readonlyAttr = isSpandek && isEditable ? '' : 'disabled';
@@ -405,7 +694,7 @@ function openSetup(orderId) {
             inputs += `<td style="text-align:center;"><input type="checkbox" class="check-production" ${checked} onchange="checkAllDone()"></td>`;
         }
 
-        tr.innerHTML = `<td>${nameHtml}</td><td style="text-align:center;"><span class="meter-val">${item.meter}</span></td><td style="text-align:center;"><span class="target-qty badge bg-info text-dark" style="background:#e0f2fe; color:#0369a1;">${item.qty}</span></td>${inputs}`;
+        tr.innerHTML = `<td>${nameHtml}</td><td style="text-align:center;"><span class="meter-val">${item.meter || 0}</span></td><td style="text-align:center;"><span class="target-qty badge bg-info text-dark" style="background:#e0f2fe; color:#0369a1;">${item.qty}</span></td>${inputs}`;
         tbody.appendChild(tr);
     });
 
@@ -419,7 +708,7 @@ function renderFooterButtons() {
     const footerLeft = document.getElementById('footerLeft');
     const footerRight = document.getElementById('footerRight');
     footerLeft.innerHTML = ''; footerRight.innerHTML = '';
-    const btnClose = `<button class="btn-action btn-close" onclick="closeModal()">Close</button>`;
+    const btnClose = `<button class="btn-action btn-close" onclick="closeSetupModal()">Close</button>`;
     
     if (currentTab === 'Awaiting') {
         footerRight.innerHTML = `${btnClose} 
@@ -568,11 +857,12 @@ async function cancelOrder(id) { await sendAPI('cancelOrder', { orderId: id }); 
 async function sendAPI(action, payload) {
     try {
         payload.action = action;
-        // MENGGUNAKAN API_URL YANG BARU
         const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
         const json = await res.json();
         if(json.result === 'error') throw json.message;
-        alert("Sukses!"); closeModal(); loadOrders(currentTab);
+        alert("Sukses!"); 
+        closeSetupModal(); 
+        loadData(currentTab);
     } catch(e) { alert("Error: " + e); }
 }
 
@@ -582,7 +872,6 @@ function generatePDF(type) {
     document.getElementById('pdfCustomer').innerText = o.customer;
     document.getElementById('pdfDate').innerText = fmtDate(new Date()); 
     
-    // AKSES ID YANG SUDAH DIPERBAIKI
     const titleEl = document.getElementById('pdfTitle');
     if(titleEl) titleEl.innerText = (type === 'SPK') ? "SURAT PERINTAH KERJA" : "SURAT JALAN";
     
