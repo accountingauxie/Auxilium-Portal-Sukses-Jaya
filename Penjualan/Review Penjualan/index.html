@@ -6,96 +6,47 @@
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <style>
 /* --- 1. SYSTEM STYLE (Web UI) --- */
-:root { 
-    --primary-color: #116999; 
-    --xero-blue: #116999; 
-    --bg-color: #f4f7f6; 
-    --text-color: #333; 
-    --red-bg: #fee2e2; 
-    --red-text: #991b1b;
-}
-
+:root { --primary-color: #116999; --xero-blue: #116999; --bg-color: #f4f7f6; --text-color: #333; --red-bg: #fee2e2; --red-text: #991b1b; }
 * { box-sizing: border-box; }
 body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background: var(--bg-color); color: var(--text-color); }
-
-/* Utility Alignment */
-.t-left { text-align: left; }
-.t-center { text-align: center; }
-.t-right { text-align: right; }
+.t-left { text-align: left; } .t-center { text-align: center; } .t-right { text-align: right; }
 .currency-cell { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-
-/* --- NAVIGATION BAR --- */
-.aux-navbar {
-    background-color: #ffffff;
-    height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 40px;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.05);
-    position: sticky; top: 0; z-index: 10000;
-}
-
+.aux-navbar { background-color: #ffffff; height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; box-shadow: 0 1px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10000; }
 .aux-logo img { height: 40px; width: auto; display: block; }
-
 .aux-menu { display: flex; gap: 10px; align-items: center; height: 100%; }
 .nav-item { position: relative; height: 100%; display: flex; align-items: center; }
-
-.aux-link { 
-    text-decoration: none; color: #666; font-weight: 600; font-size: 14px; 
-    padding: 8px 14px; border-radius: 6px; transition: all 0.2s; cursor: pointer; 
-    display: flex; align-items: center; gap: 4px;
-}
+.aux-link { text-decoration: none; color: #666; font-weight: 600; font-size: 14px; padding: 8px 14px; border-radius: 6px; transition: all 0.2s; cursor: pointer; display: flex; align-items: center; gap: 4px; }
 .aux-link:hover, .nav-item:hover .aux-link { color: #1d2939; background-color: #f9fafb; }
 .aux-link.active { color: var(--primary-color); background-color: #eff8ff; font-weight: 700; }
-
-/* DROPDOWN */
-.dropdown-menu {
-    visibility: hidden; opacity: 0; position: absolute; top: 90%; left: 50%;
-    transform: translateX(-50%) translateY(-10px); background: white; min-width: 220px;
-    border: 1px solid #eaecf0; border-radius: 8px; box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08);
-    padding: 6px; z-index: 100000; transition: all 0.2s ease;
-}
+.dropdown-menu { visibility: hidden; opacity: 0; position: absolute; top: 90%; left: 50%; transform: translateX(-50%) translateY(-10px); background: white; min-width: 220px; border: 1px solid #eaecf0; border-radius: 8px; box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08); padding: 6px; z-index: 100000; transition: all 0.2s ease; }
 .nav-item:hover .dropdown-menu { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
-.dropdown-item {
-    display: block; padding: 10px 12px; color: #344054; text-decoration: none;
-    font-size: 14px; border-radius: 6px; transition: background 0.2s; text-align: left;
-}
+.dropdown-item { display: block; padding: 10px 12px; color: #344054; text-decoration: none; font-size: 14px; border-radius: 6px; transition: background 0.2s; text-align: left; }
 .dropdown-item:hover { background-color: #f9fafb; color: #2f54eb; }
-
-/* USER PANEL */
 .user-panel { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid #eee; }
 .user-details { display: flex; flex-direction: column; text-align: right; line-height: 1.3; }
 .user-name { font-weight: 700; font-size: 13px; color: #333; }
 .user-role { font-size: 11px; color: #888; }
 .user-avatar { width: 36px; height: 36px; background-color: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; user-select: none; }
-.logout-btn { background: none; border: 1px solid #ddd; color: #666; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 14px; }
-.logout-btn:hover { background-color: var(--red-bg); color: var(--red-text); border-color: var(--red-bg); }
-
-/* --- DASHBOARD --- */
 .page-wrap { padding: 30px 40px; max-width: 98%; margin: 0 auto; }
 .category-tabs { margin-bottom: 20px; border-bottom: 2px solid #ddd; }
 .cat-btn { background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; }
 .cat-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
-
 .filter-container { display: flex; gap: 15px; margin-bottom: 15px; align-items: center; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
 .filter-group { display: flex; flex-direction: column; gap: 5px; }
 .filter-label { font-size: 11px; font-weight: bold; color: #666; text-transform: uppercase; }
 .form-control { padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px; outline: none; }
 .search-wrapper { flex: 1; }
 .search-input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px; }
-
 .table-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; }
 table.xero-table { width: 100%; border-collapse: collapse; }
 table.xero-table th { text-align: left; padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; color: #555; font-size: 12px; text-transform: uppercase; font-weight: bold; }
 table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-align: middle; }
 table.xero-table tr.data-row { cursor: pointer; transition: background-color 0.2s; }
 table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
-
-/* BADGES */
 .badge { padding: 5px 12px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; display: inline-block; }
 .badge-approve { background: #fff7e6; color: #b75900; border: 1px solid #ffe8cc; }
 .badge-success { background: #ecfdf5; color: #047857; border: 1px solid #d1fae5; }
@@ -103,8 +54,6 @@ table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 .type-badge { font-size: 10px; padding: 4px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; display: inline-block; white-space: nowrap; }
 .type-gen { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; } 
 .type-pre { background: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe; } 
-
-/* --- MODAL --- */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 9000; backdrop-filter: blur(2px); }
 .modal-box { background: #fff; width: 1100px; max-width: 95%; height: 90vh; display: flex; flex-direction: column; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
 .modal-header { padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
@@ -125,8 +74,6 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 .btn-reject { background: #dc2626; }
 .btn-approve { background: #10b981; }
 .btn-pdf { background: #2563eb; }
-
-/* --- PDF STYLE (HIDDEN) --- */
 #pdf-hidden-container { position: absolute; left: -9999px; top: 0; }
 #pdfContent { background: #fff; width: 100%; padding: 0; font-family: "Arial", sans-serif; color: #000; }
 .pdf-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
@@ -185,7 +132,7 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
         <div class="nav-item">
             <div class="aux-link">Produksi <i class="fas fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></div>
             <div class="dropdown-menu">
-                <a href="?page=production" class="dropdown-item">Persiapan Pesanan</a>
+                <a href="produksi_general.html" class="dropdown-item">Persiapan Pesanan</a>
             </div>
         </div>
     </nav>
@@ -355,9 +302,11 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/gh/accountingauxie/Auxilium-Portal-Sukses-Jaya/assets/config.js"></script>
+
 <script>
-// --- PASTIKAN BASE_URL INI SAMA PERSIS DENGAN YANG DI PRODUCTION HTML ---
-const baseURL = "https://script.google.com/macros/s/AKfycbzeJC426C7jgD11Fy9Btp_aYjWTzkUz0toZoXtWSHld4qjUxaD9XZU1ngv7d1BNkNXttg/exec"; 
+const baseURL = window.GAS_URL;
+if (!baseURL) alert("Error: GAS_URL tidak ditemukan. Cek config.js.");
 
 let allOrders = [];
 let currentFilter = 'All';
@@ -502,7 +451,6 @@ function openModal(id) {
 
         let btns = `<button class="btn-action btn-close" onclick="closeModal()">Close</button>`;
         if(o.status === 'Awaiting Approval') {
-            // PENTING: Approve kirim 'Awaiting Production', Reject kirim 'Cancel Order'
             btns += `<button class="btn-action btn-reject" onclick="updateStatus('${o.id}', 'Cancel Order')">Reject</button>
                      <button class="btn-action btn-approve" onclick="updateStatus('${o.id}', 'Awaiting Production')">Approve</button>`;
         } else if (o.status !== 'Cancel Order') {
@@ -537,7 +485,7 @@ async function updateStatus(id, stat) {
             closeModal();
         } else {
             alert("Gagal update status: " + result.message);
-            closeModal(); // tutup saja biar tidak stuck
+            closeModal(); 
         }
     } catch (e) {
         alert("Error connecting to server: " + e);
