@@ -2,110 +2,58 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Pre-Order Management - Auxilium</title>
+<title>Pre-Order Management</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-/* --- STYLES --- */
-:root { --primary: #116999; --bg: #f4f7f6; --text: #333; --purple: #7e22ce; --green: #047857; }
-* { box-sizing: border-box; }
+/* CSS MINIMALIS & BERSIH */
+:root { --primary: #7e22ce; --bg: #f4f7f6; --text: #333; }
 body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background: var(--bg); color: var(--text); }
-.aux-navbar { background: #fff; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
-.aux-brand { font-weight: bold; font-size: 16px; color: #555; display: flex; align-items: center; gap: 10px; }
-.aux-link { text-decoration: none; color: #666; font-weight: 600; padding: 8px 14px; border-radius: 6px; }
-.aux-link.active { color: var(--purple); background: #f3e8ff; }
 .page-wrap { padding: 30px; max-width: 1200px; margin: 0 auto; }
-.header-sect { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.category-tabs { margin-bottom: 15px; border-bottom: 2px solid #ddd; }
-.cat-btn { background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; }
-.cat-btn.active { color: var(--purple); border-bottom-color: var(--purple); }
 .table-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; }
-table.xero-table { width: 100%; border-collapse: collapse; }
-table.xero-table th { text-align: left; padding: 12px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; color: #555; font-size: 12px; font-weight: bold; text-transform: uppercase; }
-table.xero-table td { padding: 12px 15px; border-bottom: 1px solid #eee; vertical-align: middle; color: #444; }
-.order-link { color: var(--purple); font-weight: bold; text-decoration: none; cursor: pointer; }
-.progress-wrap { width: 100%; background: #e5e7eb; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 5px; }
-.progress-fill { height: 100%; background: var(--green); width: 0%; transition: width 0.5s ease; }
-.progress-info { display: flex; justify-content: space-between; font-size: 10px; color: #666; margin-bottom: 2px; }
-.badge { padding: 3px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; text-transform: uppercase; display: inline-block; }
-.badge-open { background: #eff6ff; color: #1d4ed8; border: 1px solid #dbeafe; }
-.badge-partial { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
-.badge-closed { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: flex-start; justify-content: center; z-index: 1000; padding-top: 50px; overflow-y: auto; }
-.modal-box { background: #fff; width: 850px; max-width: 95%; border-radius: 8px; margin-bottom: 50px; display: flex; flex-direction: column; }
-.modal-header, .modal-footer { padding: 20px; border-bottom: 1px solid #eee; } 
-.modal-footer { border-top: 1px solid #eee; border-bottom: none; text-align: right; }
-.modal-body { padding: 20px; max-height: 70vh; overflow-y: auto; background: #fafafa; }
-.item-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 15px; margin-bottom: 15px; }
-.item-head { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed #eee; padding-bottom: 8px; }
-.batch-table { width: 100%; margin-top: 10px; border: 1px solid #eee; border-collapse: collapse; }
-.batch-table th { background: #f3f4f6; font-size: 11px; padding: 6px; text-align: left; }
-.batch-table td { padding: 5px; border-top: 1px solid #eee; }
-.inp-sm { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
-.btn { padding: 8px 16px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; color: white; }
-.btn-primary { background: var(--purple); }
-.btn-secondary { background: #fff; border: 1px solid #ccc; color: #333; }
-.btn-add { background: #dbeafe; color: #1e40af; padding: 5px 10px; font-size: 11px; margin-top: 8px; display: inline-block; }
-.btn-loading { opacity: 0.7; cursor: wait; }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; padding: 12px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+td { padding: 12px 15px; border-bottom: 1px solid #eee; vertical-align: middle; }
+.btn { padding: 8px 16px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; color: white; background: var(--primary); }
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: flex-start; justify-content: center; z-index: 1000; padding-top: 50px; }
+.modal-box { background: #fff; width: 850px; max-width: 95%; border-radius: 8px; padding: 20px; }
+/* Tambahkan style lain sesuai selera jika perlu */
 </style>
 </head>
 <body>
 
-<div class="aux-navbar">
-    <div class="aux-brand"><i class="fas fa-cubes"></i> AUXILIUM PRE-ORDER</div>
-    <div class="aux-menu"><a href="#" class="aux-link active">Dashboard</a></div>
-</div>
-
 <div class="page-wrap">
-    <div class="header-sect">
-        <h2>Daftar Pre-Order (Bulk)</h2>
-        <button class="btn btn-secondary" onclick="loadData()"><i class="fas fa-sync"></i> Refresh</button>
+    <h2>Daftar Pre-Order (Bulk)</h2>
+    <div style="margin-bottom:15px;">
+        <button class="btn" style="background:#fff; color:#333; border:1px solid #ccc;" onclick="switchTab('Open')">Open & Partial</button>
+        <button class="btn" style="background:#fff; color:#333; border:1px solid #ccc;" onclick="switchTab('Closed')">History Closed</button>
+        <button class="btn" onclick="loadData()">Refresh</button>
     </div>
-    <div class="category-tabs">
-        <button class="cat-btn active" id="tab-open" onclick="switchTab('Open')">Open & Partial</button>
-        <button class="cat-btn" id="tab-closed" onclick="switchTab('Closed')">History Closed</button>
-    </div>
+
     <div class="table-card">
-        <table class="xero-table">
+        <table id="poTable">
             <thead>
-                <tr>
-                    <th>No. PO</th>
-                    <th>Customer</th>
-                    <th>Tanggal Issue</th>
-                    <th style="width: 30%;">Progress Produksi</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                </tr>
+                <tr><th>No. PO</th><th>Customer</th><th>Date</th><th>Progress</th><th>Status</th><th>Action</th></tr>
             </thead>
-            <tbody id="tableBody">
-                <tr><td colspan="6" style="text-align:center; padding:30px;">Loading Data...</td></tr>
-            </tbody>
+            <tbody id="tableBody"><tr><td colspan="6" style="text-align:center;">Loading...</td></tr></tbody>
         </table>
     </div>
 </div>
 
 <div id="prodModal" class="modal-overlay">
     <div class="modal-box">
-        <div class="modal-header">
-            <div>
-                <h3 style="margin:0; color:var(--purple);">Produksi Partial</h3>
-                <div style="font-size:11px; color:#666;" id="modalTitle"></div>
-            </div>
-            <button onclick="closeModal()" style="background:none; border:none; font-size:18px; cursor:pointer;">&times;</button>
-        </div>
-        <div class="modal-body" id="modalItems"></div>
-        <div class="modal-footer">
-            <span style="font-size:11px; color:#666; margin-right:auto;">*Total Produksi akan mengurangi sisa kuota order.</span>
-            <button class="btn btn-secondary" onclick="closeModal()">Batal</button>
-            <button class="btn btn-primary" onclick="submitProduction()" id="btnSubmit">Kirim ke Produksi</button>
+        <h3>Produksi Partial: <span id="modalTitle"></span></h3>
+        <div id="modalItems" style="max-height:60vh; overflow-y:auto; margin-bottom:20px;"></div>
+        <div style="text-align:right;">
+            <button class="btn" style="background:#ccc;" onclick="closeModal()">Close</button>
+            <button class="btn" onclick="submitProduction()" id="btnSubmit">Submit</button>
         </div>
     </div>
 </div>
 
 <script>
-// --- CONFIG PENTING ---
-// Ganti URL ini dengan URL Web App Anda yang berakhiran /exec
-// Caranya: Deploy > Manage Deployment > Copy Web App URL
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO98ahTIDmfzeDRIpUkb_CuVx3KVkmHa8nSIrOhhv_T2wglzg_zHXbNZqfWqu5cCu7Kg/exec"; 
+// --- CONFIG WAJIB ---
+// PASTE URL DEPLOYMENT ANDA DI SINI (YANG AKHIRANNYA /exec)
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwZ6f8Fi8UzG9buCOVydjGsg4Hyk_Pgyv1rDfTZ1Gm97kopgw8dCufB53SdlNzKk61slA/exec"; 
 
 let currentData = [];
 let activePO = null;
@@ -115,65 +63,60 @@ window.onload = loadData;
 
 function switchTab(tab) {
     currentTab = tab;
-    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(tab === 'Open' ? 'tab-open' : 'tab-closed').classList.add('active');
-    renderTable();
+    loadData(); // Reload agar filter fresh
 }
 
 async function loadData() {
     const tbody = document.getElementById('tableBody');
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px;">Mengambil data...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Loading Data...</td></tr>';
+    
     try {
-        const response = await fetch(`${SCRIPT_URL}?action=getPreOrders&status=Open`);
+        const response = await fetch(`${SCRIPT_URL}?action=getPreOrders&status=${currentTab}`);
         const result = await response.json();
+        
+        if (result.error) {
+             tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Backend Error: ${result.message}</td></tr>`;
+             return;
+        }
+
         currentData = result;
-        renderTable();
+        renderTable(currentData);
     } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Error Fetching: ${err} <br> (Coba Deploy > New Version)</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Connection Error: ${err}. <br>Pastikan "Who has access" = "Anyone" saat deploy.</td></tr>`;
     }
 }
 
-function renderTable() {
+function renderTable(data) {
     const tbody = document.getElementById('tableBody');
     tbody.innerHTML = '';
     
-    const filtered = currentData.filter(po => {
-        if(currentTab === 'Open') return po.status !== 'Closed';
-        return po.status === 'Closed';
-    });
-
-    if(filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:#999;">Tidak ada data.</td></tr>';
+    if(!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#999;">Tidak ada data.</td></tr>';
         return;
     }
 
-    filtered.forEach(po => {
-        let totalM = 0; let doneM = 0;
-        po.items.forEach(i => { totalM += i.totalMeter; doneM += i.processedMeter; });
-        const pct = totalM > 0 ? (doneM / totalM) * 100 : 0;
+    data.forEach(po => {
+        let total = 0, done = 0;
+        po.items.forEach(i => { total += i.totalMeter; done += i.processedMeter; });
+        let pct = total > 0 ? (done/total)*100 : 0;
         
-        let badge = po.status === 'Closed' ? 'badge-closed' : (po.status === 'Partial' ? 'badge-partial' : 'badge-open');
-
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td><a class="order-link" onclick="openModal('${po.poId}')">${po.poId}</a></td>
+            <td>${po.poId}</td>
             <td>${po.customer}</td>
             <td>${po.date}</td>
-            <td>
-                <div class="progress-info"><span>${doneM.toFixed(1)} / ${totalM.toFixed(1)} m</span><span>${pct.toFixed(0)}%</span></div>
-                <div class="progress-wrap"><div class="progress-fill" style="width:${pct}%"></div></div>
-            </td>
-            <td><span class="badge ${badge}">${po.status}</span></td>
-            <td>${po.status !== 'Closed' ? `<button class="btn btn-primary" style="padding:4px 10px; font-size:11px;" onclick="openModal('${po.poId}')"><i class="fas fa-industry"></i> Produksi</button>` : '<i class="fas fa-check-circle" style="color:green"></i> Selesai'}</td>
+            <td>${done.toFixed(2)} / ${total.toFixed(2)} m (${pct.toFixed(0)}%)</td>
+            <td>${po.status}</td>
+            <td>${po.status !== 'Closed' ? `<button class="btn" style="font-size:11px;" onclick="openModal('${po.poId}')">Produksi</button>` : 'Done'}</td>
         `;
         tbody.appendChild(tr);
     });
 }
 
+// --- MODAL & SUBMIT LOGIC (Simplified) ---
 function openModal(poId) {
     activePO = currentData.find(p => p.poId === poId);
-    if(!activePO) return;
-    document.getElementById('modalTitle').innerText = `${activePO.poId} - ${activePO.customer}`;
+    document.getElementById('modalTitle').innerText = poId;
     const container = document.getElementById('modalItems');
     container.innerHTML = '';
 
@@ -182,105 +125,64 @@ function openModal(poId) {
         const remain = item.totalMeter - item.processedMeter;
         
         const div = document.createElement('div');
-        div.className = 'item-card';
-        div.dataset.rowIndex = item.rowIndex;
+        div.style.border = "1px solid #eee"; div.style.padding="10px"; div.style.marginBottom="10px";
+        div.dataset.rowIndex = item.rowIndex; 
         div.dataset.itemName = item.name;
-        div.dataset.remain = remain;
 
         div.innerHTML = `
-            <div class="item-head">
-                <div><strong>${item.name}</strong><br><small>Spec: ${item.meterDim}m x ${item.qty} lbr</small></div>
-                <div style="text-align:right;"><div style="font-size:10px;">Total: ${item.totalMeter.toFixed(2)} m</div><div style="font-weight:bold; color:var(--purple);">Sisa: <span class="remain-txt">${remain.toFixed(2)}</span> m</div></div>
+            <div style="display:flex; justify-content:space-between;">
+                <b>${item.name}</b>
+                <span>Sisa: <b style="color:red">${remain.toFixed(2)}m</b></span>
             </div>
-            <table class="batch-table">
-                <thead><tr><th>Panjang (m)</th><th>Qty</th><th>Total (m)</th><th></th></tr></thead>
-                <tbody id="tbody-${item.rowIndex}"></tbody>
-            </table>
-            <button class="btn btn-add" onclick="addRow(${item.rowIndex})">+ Tambah Ukuran</button>
-            <div id="msg-${item.rowIndex}" style="color:red; font-size:11px; margin-top:5px; display:none;">Over Limit!</div>
+            <div style="margin-top:5px; font-size:12px;">Batch Input:</div>
+            <div id="inputs-${item.rowIndex}">
+                <div style="display:flex; gap:5px; margin-bottom:5px;">
+                    <input type="number" placeholder="Panjang (m)" class="inp-len" style="width:80px">
+                    <input type="number" placeholder="Qty" class="inp-qty" style="width:50px">
+                </div>
+            </div>
         `;
         container.appendChild(div);
-        addRow(item.rowIndex);
     });
     document.getElementById('prodModal').style.display = 'flex';
 }
 
 function closeModal() { document.getElementById('prodModal').style.display = 'none'; }
 
-function addRow(idx) {
-    const tbody = document.getElementById(`tbody-${idx}`);
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-        <td><input type="number" step="0.01" class="inp-sm inp-len" oninput="calc(${idx})"></td>
-        <td><input type="number" class="inp-sm inp-qty" oninput="calc(${idx})"></td>
-        <td><input type="text" class="inp-sm" value="0" readonly style="background:#f9fafb;"></td>
-        <td style="text-align:center;"><i class="fas fa-trash" style="color:#faa; cursor:pointer;" onclick="delRow(this, ${idx})"></i></td>
-    `;
-    tbody.appendChild(tr);
-}
-
-function delRow(el, idx) { el.closest('tr').remove(); calc(idx); }
-
-function calc(idx) {
-    const card = document.querySelector(`.item-card[data-row-index="${idx}"]`);
-    const remainMax = parseFloat(card.dataset.remain);
-    const tbody = document.getElementById(`tbody-${idx}`);
-    let totalInput = 0;
-    
-    tbody.querySelectorAll('tr').forEach(tr => {
-        const len = parseFloat(tr.querySelector('.inp-len').value) || 0;
-        const qty = parseFloat(tr.querySelector('.inp-qty').value) || 0;
-        const sum = len * qty;
-        tr.querySelector('input[readonly]').value = sum.toFixed(2);
-        totalInput += sum;
-    });
-
-    const remainTxt = card.querySelector('.remain-txt');
-    const msg = document.getElementById(`msg-${idx}`);
-    const currentRemain = remainMax - totalInput;
-    remainTxt.innerText = currentRemain.toFixed(2);
-
-    if(currentRemain < -0.1) {
-        remainTxt.style.color = 'red'; msg.style.display = 'block'; return false;
-    } else {
-        remainTxt.style.color = 'var(--purple)'; msg.style.display = 'none'; return true;
-    }
-}
-
 async function submitProduction() {
-    const cards = document.querySelectorAll('.item-card');
-    let payloadBatch = [];
-    let hasError = false;
-
-    cards.forEach(card => {
-        const idx = card.dataset.rowIndex;
-        if(!calc(idx)) hasError = true;
-        const tbody = document.getElementById(`tbody-${idx}`);
-        tbody.querySelectorAll('tr').forEach(tr => {
-            const len = parseFloat(tr.querySelector('.inp-len').value) || 0;
-            const qty = parseFloat(tr.querySelector('.inp-qty').value) || 0;
-            if(len > 0 && qty > 0) {
-                payloadBatch.push({
-                    rowIndex: idx,
-                    itemName: card.dataset.itemName,
-                    length: len, qty: qty, totalMeter: len * qty
-                });
-            }
-        });
+    // Logic simpel untuk demo, ambil input pertama saja per item
+    // (Anda bisa kembangkan ke multi-row seperti kode sebelumnya)
+    let batches = [];
+    const items = document.querySelectorAll('[data-row-index]');
+    
+    items.forEach(div => {
+        const len = parseFloat(div.querySelector('.inp-len').value) || 0;
+        const qty = parseFloat(div.querySelector('.inp-qty').value) || 0;
+        if(len > 0 && qty > 0) {
+            batches.push({
+                rowIndex: div.dataset.rowIndex,
+                itemName: div.dataset.itemName,
+                length: len, qty: qty, totalMeter: len * qty
+            });
+        }
     });
 
-    if(hasError) return alert("Cek kembali inputan merah!");
-    if(payloadBatch.length === 0) return alert("Belum ada data.");
-    if(!confirm("Kirim ke Produksi?")) return;
-
+    if(batches.length === 0) return alert("Isi minimal 1 data produksi.");
+    
     const btn = document.getElementById('btnSubmit');
-    btn.innerText = "Mengirim...";
+    btn.innerText = "Processing...";
+    
     try {
-        const payload = { poId: activePO.poId, customer: activePO.customer, batches: payloadBatch };
-        await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'submitPartialPO', data: payload }) });
-        alert("Sukses!"); closeModal(); loadData();
-    } catch(e) { alert("Error: " + e); } 
-    finally { btn.innerText = "Kirim ke Produksi"; }
+        const payload = { poId: activePO.poId, customer: activePO.customer, batches: batches };
+        await fetch(SCRIPT_URL, { 
+            method: 'POST', 
+            body: JSON.stringify({ action: 'submitPartialPO', data: payload }) 
+        });
+        alert("Success!");
+        closeModal();
+        loadData();
+    } catch(e) { alert("Error: " + e); }
+    finally { btn.innerText = "Submit"; }
 }
 </script>
 </body>
