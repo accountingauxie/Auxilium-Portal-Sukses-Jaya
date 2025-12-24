@@ -5,202 +5,212 @@
 <title>Pre-Order Management - Auxilium</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-/* --- STYLES SAMA DENGAN SEBELUMNYA (CONSISTENCY) --- */
-:root { --primary: #116999; --bg: #f4f7f6; --text: #333; --red: #b91c1c; --green: #047857; --orange: #b75900; --purple: #7e22ce; }
+/* --- BASE STYLES --- */
+:root { --primary: #116999; --bg: #f4f7f6; --text: #333; --red: #b91c1c; --green: #047857; --purple: #7e22ce; }
 * { box-sizing: border-box; }
 body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background: var(--bg); color: var(--text); }
 
 /* NAVBAR */
-.aux-navbar { background: #fff; height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; box-shadow: 0 1px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
-.aux-menu { display: flex; gap: 10px; height: 100%; align-items: center; }
+.aux-navbar { background: #fff; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
+.aux-brand { font-weight: bold; font-size: 16px; color: #555; display: flex; align-items: center; gap: 10px; }
 .aux-link { text-decoration: none; color: #666; font-weight: 600; padding: 8px 14px; border-radius: 6px; }
-.aux-link.active { color: var(--purple); background: #f3e8ff; } /* Ungu untuk PO */
+.aux-link.active { color: var(--purple); background: #f3e8ff; }
 
-/* CONTENT */
-.page-wrap { padding: 30px 40px; max-width: 98%; margin: 0 auto; }
-.category-tabs { margin-bottom: 20px; border-bottom: 2px solid #ddd; }
-.cat-btn { background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; }
+/* CONTENT WRAPPER */
+.page-wrap { padding: 30px; max-width: 1200px; margin: 0 auto; }
+.header-sect { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.header-sect h2 { margin: 0; color: #333; }
+
+/* TABS */
+.category-tabs { margin-bottom: 15px; border-bottom: 2px solid #ddd; }
+.cat-btn { background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s; }
+.cat-btn:hover { color: var(--purple); }
 .cat-btn.active { color: var(--purple); border-bottom-color: var(--purple); }
 
+/* TABLE CARD */
 .table-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; }
 table.xero-table { width: 100%; border-collapse: collapse; }
-table.xero-table th { text-align: left; padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; color: #555; font-size: 12px; font-weight: bold; text-transform: uppercase; }
-table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-align: middle; }
-table.xero-table tr:hover { background-color: #f9fafb; }
+table.xero-table th { text-align: left; padding: 12px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; color: #555; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+table.xero-table td { padding: 12px 15px; border-bottom: 1px solid #eee; vertical-align: middle; color: #444; }
+table.xero-table tr:hover { background-color: #fcfcfc; }
 .order-link { color: var(--purple); font-weight: bold; text-decoration: none; cursor: pointer; }
 
-/* PROGRESS BAR STYLES */
-.progress-container { width: 100%; background-color: #e5e7eb; border-radius: 4px; height: 10px; overflow: hidden; margin-top: 5px; }
-.progress-bar { height: 100%; background-color: var(--green); width: 0%; transition: width 0.3s; }
-.progress-text { font-size: 10px; color: #666; margin-top: 2px; display: flex; justify-content: space-between; }
+/* PROGRESS BAR */
+.progress-wrap { width: 100%; background: #e5e7eb; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 5px; }
+.progress-fill { height: 100%; background: var(--green); width: 0%; transition: width 0.5s ease; }
+.progress-info { display: flex; justify-content: space-between; font-size: 10px; color: #666; margin-bottom: 2px; }
 
-/* MODAL & FORMS */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: flex-start; justify-content: center; z-index: 10000; padding-top: 50px; overflow-y: auto; }
-.modal-box { background: #fff; width: 900px; max-width: 98%; border-radius: 8px; display: flex; flex-direction: column; margin-bottom: 50px; }
-.modal-header, .modal-footer { padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-.modal-footer { background: #f9fafb; border-top: 1px solid #eee; border-bottom: none; justify-content: flex-end; gap: 10px;}
-.modal-body { padding: 20px; overflow-y: auto; max-height: 70vh; }
-
-.po-item-card { border: 1px solid #e5e7eb; border-radius: 6px; padding: 15px; margin-bottom: 15px; background: #fff; }
-.po-header { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed #eee; padding-bottom: 10px; }
-.batch-table { width: 100%; margin-top: 10px; border: 1px solid #eee; }
-.batch-table th { background: #f3f4f6; padding: 5px; font-size: 11px; }
-.batch-table td { padding: 5px; }
-.inp-sm { width: 100%; padding: 5px; border: 1px solid #ccc; border-radius: 3px; }
-.btn { padding: 8px 16px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; color: white; }
-.btn-primary { background: var(--purple); }
-.btn-secondary { background: #fff; border: 1px solid #ccc; color: #333; }
-.btn-add { background: #dbeafe; color: #1e40af; padding: 4px 8px; font-size: 11px; }
-.btn-del { background: #fee2e2; color: #991b1b; padding: 4px 8px; }
-
-/* Badge Status */
-.badge { padding: 4px 8px; border-radius: 20px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+/* BADGES */
+.badge { padding: 3px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; text-transform: uppercase; display: inline-block; }
 .badge-open { background: #eff6ff; color: #1d4ed8; border: 1px solid #dbeafe; }
 .badge-partial { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
 .badge-closed { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
+
+/* MODAL */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: flex-start; justify-content: center; z-index: 1000; padding-top: 50px; overflow-y: auto; }
+.modal-box { background: #fff; width: 850px; max-width: 95%; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; margin-bottom: 50px; }
+.modal-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+.modal-body { padding: 20px; max-height: 70vh; overflow-y: auto; background: #fafafa; }
+.modal-footer { padding: 15px 20px; background: #fff; border-top: 1px solid #eee; text-align: right; }
+
+/* MODAL CARDS */
+.item-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+.item-head { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed #eee; padding-bottom: 8px; }
+.batch-table { width: 100%; margin-top: 10px; border: 1px solid #eee; border-collapse: collapse; }
+.batch-table th { background: #f3f4f6; font-size: 11px; padding: 6px; text-align: left; }
+.batch-table td { padding: 5px; border-top: 1px solid #eee; }
+.inp-sm { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
+.inp-readonly { background: #f9fafb; color: #666; border-color: #eee; pointer-events: none; }
+
+/* BUTTONS */
+.btn { padding: 8px 16px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; color: white; transition: 0.2s; }
+.btn-primary { background: var(--purple); }
+.btn-secondary { background: #fff; border: 1px solid #ccc; color: #333; }
+.btn-add { background: #dbeafe; color: #1e40af; padding: 5px 10px; font-size: 11px; margin-top: 8px; display: inline-block; }
+.btn-del { background: #fee2e2; color: #991b1b; padding: 5px 8px; font-size: 11px; }
+.btn-loading { opacity: 0.7; cursor: wait; }
 </style>
 </head>
 <body>
 
 <div class="aux-navbar">
-    <div style="display:flex; align-items:center; gap:10px;">
-        <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png" style="height:40px;">
-        <span style="font-weight:bold; color:#555; font-size:16px; margin-left:10px;">Pre-Order Portal</span>
+    <div class="aux-brand">
+        <i class="fas fa-cubes"></i> AUXILIUM PRE-ORDER
     </div>
-    <nav class="aux-menu">
-        <div class="nav-item"><a href="#" class="aux-link active">Pre-Order List</a></div>
-    </nav>
+    <div class="aux-menu">
+        <a href="#" class="aux-link active">Dashboard</a>
+    </div>
 </div>
 
 <div class="page-wrap">
-    <h2>Daftar Pre-Order (Kontrak/Bulk)</h2>
+    <div class="header-sect">
+        <h2>Daftar Pre-Order (Bulk)</h2>
+        <button class="btn btn-secondary" onclick="loadData()"><i class="fas fa-sync"></i> Refresh</button>
+    </div>
+
     <div class="category-tabs">
         <button class="cat-btn active" id="tab-open" onclick="switchTab('Open')">Open & Partial</button>
-        <button class="cat-btn" id="tab-closed" onclick="switchTab('Closed')">Completed History</button>
+        <button class="cat-btn" id="tab-closed" onclick="switchTab('Closed')">History Closed</button>
     </div>
-    
+
     <div class="table-card">
         <table class="xero-table">
             <thead>
                 <tr>
-                    <th>PO Number</th>
+                    <th>No. PO</th>
                     <th>Customer</th>
-                    <th>Tanggal PO</th>
-                    <th>Progress Total (Meter)</th>
+                    <th>Tanggal Issue</th>
+                    <th style="width: 30%;">Progress Produksi</th>
                     <th>Status</th>
-                    <th>Action</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
-            <tbody id="poTableBody">
-                <tr><td colspan="6" style="text-align:center; padding:30px;">Loading...</td></tr>
+            <tbody id="tableBody">
+                <tr><td colspan="6" style="text-align:center; padding:30px;">Loading Data...</td></tr>
             </tbody>
         </table>
     </div>
 </div>
 
-<div id="productionModal" class="modal-overlay">
+<div id="prodModal" class="modal-overlay">
     <div class="modal-box">
         <div class="modal-header">
             <div>
-                <h3 style="margin:0; color:var(--purple);">Proses Produksi Partial</h3>
-                <small id="modalPoNumber" style="color:#666;">PO-XXX</small>
+                <h3 style="margin:0; color:var(--purple);">Produksi Partial</h3>
+                <div style="font-size:11px; color:#666;" id="modalTitle"></div>
             </div>
-            <button onclick="closeModal()" style="border:none; background:none; font-size:20px; cursor:pointer;">&times;</button>
+            <button onclick="closeModal()" style="background:none; border:none; font-size:18px; cursor:pointer;">&times;</button>
         </div>
-        
-        <div class="modal-body" id="modalItemsContainer">
+        <div class="modal-body" id="modalItems">
             </div>
-
         <div class="modal-footer">
-            <div style="margin-right:auto; font-size:12px; color:#666;">
-                *Pastikan Total Request tidak melebihi Sisa Meter.
-            </div>
+            <span style="font-size:11px; color:#666; margin-right:auto;">*Total Produksi akan mengurangi sisa kuota order.</span>
             <button class="btn btn-secondary" onclick="closeModal()">Batal</button>
-            <button class="btn btn-primary" onclick="submitPartialProduction()">Kirim ke Produksi</button>
+            <button class="btn btn-primary" onclick="submitProduction()" id="btnSubmit">Kirim ke Produksi</button>
         </div>
     </div>
 </div>
 
 <script>
-// --- CONFIG API ---
-const BASE_URL = "https://script.google.com/macros/s/AKfycbxksKfVA9jDqHbgSdZ0EZg9tt3F4zoLZk_pRDylBMLQyCJ5wBZwzkD215-Bw3HKLjbVQg/exec"; 
+// CONFIG (URL Web App Anda)
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby3xt_Wa3bQZV3ZoH_YMM-SPMISNWS9Q4BhLf1xRE8guANZwJE6lrQwKURiwtG8F9i_-g/exec"; 
 
-// --- STATE MANAGEMENT ---
-let currentPOList = [];
+let currentData = [];
 let activePO = null;
-let productionDraft = {}; // Menyimpan draft input user
+let currentTab = 'Open';
 
-// --- MOCK DATA (Untuk Demo, nanti ganti dengan fetch API) ---
-const mockData = [
-    {
-        poId: "PO-241201", customer: "PT. Maju Mundur", date: "2024-12-20", status: "Partial",
-        items: [
-            { id: 1, name: "Spandek 0.35", totalMeter: 1000, processedMeter: 250 }, // Total order 1000m, sudah jadi 250m
-            { id: 2, name: "Bondek 0.75", totalMeter: 500, processedMeter: 0 }
-        ]
-    },
-    {
-        poId: "PO-241205", customer: "CV. Abadi Jaya", date: "2024-12-22", status: "Open",
-        items: [
-            { id: 1, name: "Atap Pasir Merah", totalMeter: 200, processedMeter: 0 }
-        ]
-    }
-];
-
-window.onload = () => switchTab('Open');
+window.onload = loadData;
 
 function switchTab(tab) {
+    currentTab = tab;
     document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(tab === 'Open' ? 'tab-open' : 'tab-closed').classList.add('active');
-    loadPO(tab);
+    renderTable();
 }
 
-// Simulasi Load Data
-async function loadPO(status) {
-    const tbody = document.getElementById('poTableBody');
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Loading...</td></tr>';
+async function loadData() {
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px;">Mengambil data terbaru...</td></tr>';
     
-    // NANTI: const res = await fetch(`${BASE_URL}?action=getPreOrders&status=${status}`);
-    // const data = await res.json();
-    
-    // SIMULASI FILTER MOCK DATA
-    setTimeout(() => {
-        currentPOList = mockData; // Ganti dengan data real dari API
-        renderTable(currentPOList);
-    }, 500);
+    try {
+        const response = await fetch(`${SCRIPT_URL}?action=getPreOrders&status=Open`); // Ambil semua Open dulu
+        const result = await response.json();
+        currentData = result;
+        renderTable();
+    } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Error: ${err}</td></tr>`;
+    }
 }
 
-function renderTable(data) {
-    const tbody = document.getElementById('poTableBody');
+function renderTable() {
+    const tbody = document.getElementById('tableBody');
     tbody.innerHTML = '';
     
-    data.forEach(po => {
-        // Hitung Global Progress per PO
-        let totalM = 0;
+    // Filter Client-Side berdasarkan Tab
+    const filtered = currentData.filter(po => {
+        if(currentTab === 'Open') return po.status !== 'Closed';
+        return po.status === 'Closed';
+    });
+
+    if(filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:#999;">Tidak ada data.</td></tr>';
+        return;
+    }
+
+    filtered.forEach(po => {
+        // Hitung Global Progress
+        let totalM = 0; 
         let doneM = 0;
-        po.items.forEach(i => { totalM += i.totalMeter; doneM += i.processedMeter; });
-        let percent = (doneM / totalM) * 100;
-        let badgeClass = po.status === 'Open' ? 'badge-open' : (po.status === 'Partial' ? 'badge-partial' : 'badge-closed');
+        po.items.forEach(i => {
+            totalM += i.totalMeter;
+            doneM += i.processedMeter;
+        });
+        const pct = totalM > 0 ? (doneM / totalM) * 100 : 0;
+        
+        let badge = 'badge-open';
+        if(po.status === 'Partial') badge = 'badge-partial';
+        if(po.status === 'Closed') badge = 'badge-closed';
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td><a class="order-link" onclick="openProductionModal('${po.poId}')">${po.poId}</a></td>
+            <td><a class="order-link" onclick="openModal('${po.poId}')">${po.poId}</a></td>
             <td>${po.customer}</td>
             <td>${po.date}</td>
-            <td style="width:300px;">
-                <div class="progress-text">
+            <td>
+                <div class="progress-info">
                     <span>${doneM.toFixed(1)} / ${totalM.toFixed(1)} m</span>
-                    <span>${percent.toFixed(0)}%</span>
+                    <span>${pct.toFixed(0)}%</span>
                 </div>
-                <div class="progress-container">
-                    <div class="progress-bar" style="width:${percent}%"></div>
+                <div class="progress-wrap">
+                    <div class="progress-fill" style="width:${pct}%"></div>
                 </div>
             </td>
-            <td><span class="badge ${badgeClass}">${po.status}</span></td>
+            <td><span class="badge ${badge}">${po.status}</span></td>
             <td>
-                <button class="btn btn-add" onclick="openProductionModal('${po.poId}')">
+                ${po.status !== 'Closed' ? 
+                `<button class="btn btn-primary" style="padding:4px 10px; font-size:11px;" onclick="openModal('${po.poId}')">
                     <i class="fas fa-industry"></i> Produksi
-                </button>
+                 </button>` : '<i class="fas fa-check-circle" style="color:green"></i> Selesai'}
             </td>
         `;
         tbody.appendChild(tr);
@@ -208,182 +218,164 @@ function renderTable(data) {
 }
 
 // --- MODAL LOGIC ---
-
-function openProductionModal(poId) {
-    activePO = currentPOList.find(p => p.poId === poId);
+function openModal(poId) {
+    activePO = currentData.find(p => p.poId === poId);
     if(!activePO) return;
-
-    document.getElementById('modalPoNumber').innerText = activePO.poId + " - " + activePO.customer;
-    const container = document.getElementById('modalItemsContainer');
+    
+    document.getElementById('modalTitle').innerText = `${activePO.poId} - ${activePO.customer}`;
+    const container = document.getElementById('modalItems');
     container.innerHTML = '';
-    productionDraft = {}; // Reset draft
 
     activePO.items.forEach(item => {
-        // Init draft container for this item
-        productionDraft[item.id] = []; 
+        // Skip item yang sudah closed penuh
+        if(item.isLineClosed) return;
 
-        const remaining = item.totalMeter - item.processedMeter;
-        const percent = (item.processedMeter / item.totalMeter) * 100;
+        const remain = item.totalMeter - item.processedMeter;
+        
+        const div = document.createElement('div');
+        div.className = 'item-card';
+        div.dataset.rowIndex = item.rowIndex; // Simpan rowIndex
+        div.dataset.itemName = item.name;
+        div.dataset.remain = remain;
 
-        const card = document.createElement('div');
-        card.className = 'po-item-card';
-        card.innerHTML = `
-            <div class="po-header">
+        div.innerHTML = `
+            <div class="item-head">
                 <div>
-                    <strong>${item.name}</strong>
-                    <div style="font-size:11px; color:#666;">Total Order: ${item.totalMeter} m</div>
+                    <strong>${item.name}</strong><br>
+                    <small>Spec: ${item.meterDim}m x ${item.qty} lbr</small>
                 </div>
                 <div style="text-align:right;">
-                    <div style="font-weight:bold; color:${remaining > 0 ? '#b75900' : 'green'}">
-                        Sisa: <span id="remain-disp-${item.id}">${remaining.toFixed(2)}</span> m
-                    </div>
-                    <div style="font-size:10px;">Sudah Proses: ${item.processedMeter} m</div>
+                    <div style="font-size:10px; color:#666;">Total: ${item.totalMeter.toFixed(2)} m</div>
+                    <div style="font-weight:bold; color:var(--purple);">Sisa: <span class="remain-txt">${remain.toFixed(2)}</span> m</div>
                 </div>
             </div>
             
-            <div class="progress-container" style="height:6px; margin-bottom:10px;">
-                <div class="progress-bar" style="width:${percent}%"></div>
-            </div>
-
             <table class="batch-table">
-                <thead>
-                    <tr>
-                        <th style="width:30%">Panjang (m)</th>
-                        <th style="width:20%">Qty</th>
-                        <th style="width:30%">Total (m)</th>
-                        <th style="width:10%"></th>
-                    </tr>
-                </thead>
-                <tbody id="batch-body-${item.id}">
+                <thead><tr><th>Panjang (m)</th><th>Qty</th><th>Total (m)</th><th></th></tr></thead>
+                <tbody id="tbody-${item.rowIndex}">
                     </tbody>
             </table>
-            <div style="margin-top:10px;">
-                <button class="btn-add" onclick="addBatchRow(${item.id})">+ Tambah Ukuran</button>
-                <span id="validation-${item.id}" style="color:red; font-size:11px; font-weight:bold; margin-left:10px;"></span>
-            </div>
+            <button class="btn btn-add" onclick="addRow(${item.rowIndex})">+ Tambah Ukuran</button>
+            <div class="validation-msg" id="msg-${item.rowIndex}" style="color:red; font-size:11px; margin-top:5px; display:none;">Over Limit!</div>
         `;
-        container.appendChild(card);
-        // Tambahkan 1 baris kosong default
-        addBatchRow(item.id); 
+        container.appendChild(div);
+        addRow(item.rowIndex); // Add 1 row default
     });
 
-    document.getElementById('productionModal').style.display = 'flex';
+    document.getElementById('prodModal').style.display = 'flex';
 }
 
 function closeModal() {
-    document.getElementById('productionModal').style.display = 'none';
+    document.getElementById('prodModal').style.display = 'none';
 }
 
-function addBatchRow(itemId) {
-    const tbody = document.getElementById(`batch-body-${itemId}`);
+function addRow(idx) {
+    const tbody = document.getElementById(`tbody-${idx}`);
     const tr = document.createElement('tr');
     tr.innerHTML = `
-        <td><input type="number" step="0.01" class="inp-sm inp-len" placeholder="Pjg" onkeyup="calcBatch(${itemId})"></td>
-        <td><input type="number" class="inp-sm inp-qty" placeholder="Qty" onkeyup="calcBatch(${itemId})"></td>
-        <td><input type="text" class="inp-sm inp-tot" readonly style="background:#f3f4f6;" value="0"></td>
-        <td style="text-align:center;"><button class="btn-del" onclick="removeBatch(this, ${itemId})"><i class="fas fa-times"></i></button></td>
+        <td><input type="number" step="0.01" class="inp-sm inp-len" oninput="calc(${idx})"></td>
+        <td><input type="number" class="inp-sm inp-qty" oninput="calc(${idx})"></td>
+        <td><input type="text" class="inp-sm inp-readonly inp-tot" value="0"></td>
+        <td style="text-align:center;"><i class="fas fa-trash" style="color:#faa; cursor:pointer;" onclick="delRow(this, ${idx})"></i></td>
     `;
     tbody.appendChild(tr);
 }
 
-function removeBatch(btn, itemId) {
-    btn.closest('tr').remove();
-    calcBatch(itemId);
+function delRow(el, idx) {
+    el.closest('tr').remove();
+    calc(idx);
 }
 
-function calcBatch(itemId) {
-    const item = activePO.items.find(i => i.id === itemId);
-    const tbody = document.getElementById(`batch-body-${itemId}`);
-    const rows = tbody.querySelectorAll('tr');
+function calc(idx) {
+    const card = document.querySelector(`.item-card[data-row-index="${idx}"]`);
+    const remainMax = parseFloat(card.dataset.remain);
+    const tbody = document.getElementById(`tbody-${idx}`);
     
-    let currentDraftTotal = 0;
-
-    // Hitung total dari inputan user saat ini
-    rows.forEach(r => {
-        const len = parseFloat(r.querySelector('.inp-len').value) || 0;
-        const qty = parseFloat(r.querySelector('.inp-qty').value) || 0;
-        const subTotal = len * qty;
-        r.querySelector('.inp-tot').value = subTotal.toFixed(2);
-        currentDraftTotal += subTotal;
+    let totalInput = 0;
+    
+    tbody.querySelectorAll('tr').forEach(tr => {
+        const len = parseFloat(tr.querySelector('.inp-len').value) || 0;
+        const qty = parseFloat(tr.querySelector('.inp-qty').value) || 0;
+        const sum = len * qty;
+        tr.querySelector('.inp-tot').value = sum.toFixed(2);
+        totalInput += sum;
     });
 
-    // Validasi
-    const remainingQuota = item.totalMeter - item.processedMeter;
-    const msgEl = document.getElementById(`validation-${itemId}`);
-    const remainDisp = document.getElementById(`remain-disp-${itemId}`);
+    // Update UI Sisa
+    const remainTxt = card.querySelector('.remain-txt');
+    const msg = document.getElementById(`msg-${idx}`);
     
-    // Update Sisa Realtime Visual (Sisa Awal - Draft Input)
-    let liveRemain = remainingQuota - currentDraftTotal;
-    remainDisp.innerText = liveRemain.toFixed(2);
+    const currentRemain = remainMax - totalInput;
+    remainTxt.innerText = currentRemain.toFixed(2);
 
-    if (liveRemain < 0) {
-        msgEl.innerText = `OVER LIMIT! (+${Math.abs(liveRemain).toFixed(2)} m)`;
-        remainDisp.style.color = 'red';
-        return false; // Error state
+    if(currentRemain < -0.1) { // Toleransi sedikit
+        remainTxt.style.color = 'red';
+        msg.style.display = 'block';
+        return false;
     } else {
-        msgEl.innerText = "";
-        remainDisp.style.color = '#b75900';
-        return true; // Valid state
+        remainTxt.style.color = 'var(--purple)';
+        msg.style.display = 'none';
+        return true;
     }
 }
 
-async function submitPartialProduction() {
-    // 1. Validasi Semua Item
-    let isValid = true;
-    let payload = {
-        poId: activePO.poId,
-        customer: activePO.customer,
-        batches: [] 
-    };
+async function submitProduction() {
+    const cards = document.querySelectorAll('.item-card');
+    let payloadBatch = [];
+    let hasError = false;
 
-    activePO.items.forEach(item => {
-        const tbody = document.getElementById(`batch-body-${item.id}`);
-        const rows = tbody.querySelectorAll('tr');
-        
-        // Loop setiap baris inputan
-        rows.forEach(r => {
-            const len = parseFloat(r.querySelector('.inp-len').value) || 0;
-            const qty = parseFloat(r.querySelector('.inp-qty').value) || 0;
+    cards.forEach(card => {
+        const idx = card.dataset.rowIndex;
+        if(!calc(idx)) hasError = true; // Cek validasi ulang
+
+        const tbody = document.getElementById(`tbody-${idx}`);
+        tbody.querySelectorAll('tr').forEach(tr => {
+            const len = parseFloat(tr.querySelector('.inp-len').value) || 0;
+            const qty = parseFloat(tr.querySelector('.inp-qty').value) || 0;
             
-            if (len > 0 && qty > 0) {
-                payload.batches.push({
-                    itemId: item.id,
-                    itemName: item.name,
+            if(len > 0 && qty > 0) {
+                payloadBatch.push({
+                    rowIndex: idx, // ID Baris Excel
+                    itemName: card.dataset.itemName,
                     length: len,
                     qty: qty,
                     totalMeter: len * qty
                 });
             }
         });
-        
-        // Cek limit lagi
-        if (!calcBatch(item.id)) isValid = false;
     });
 
-    if (!isValid) return alert("Total produksi melebihi sisa kuota order! Harap kurangi qty.");
-    if (payload.batches.length === 0) return alert("Belum ada data produksi yang diinput.");
+    if(hasError) return alert("Cek kembali inputan merah (melebihi kuota)!");
+    if(payloadBatch.length === 0) return alert("Belum ada data produksi yang diisi.");
 
-    if(!confirm("Yakin kirim data ini ke Bagian Produksi? (Akan masuk ke Awaiting Production)")) return;
+    if(!confirm("Kirim data ke Bagian Produksi (Awaiting)?")) return;
 
-    // --- SEND TO BACKEND ---
-    console.log("Sending Payload:", payload);
+    // SEND TO BACKEND
+    const btn = document.getElementById('btnSubmit');
+    btn.innerText = "Mengirim...";
+    btn.classList.add('btn-loading');
     
-    /* LOGIKA BACKEND (Google Apps Script) YANG HARUS DIBUAT:
-    1. Terima payload.
-    2. Update Database PreOrder: Tambahkan 'processedMeter' pada item terkait. Update Status jika penuh.
-    3. Create New Order di sheet 'Production': 
-       - Source: "Pre-Order"
-       - Items: Payload batches tadi.
-       - Status: "Awaiting"
-    */
-
     try {
-        // const res = await fetch(BASE_URL, { method: 'POST', body: JSON.stringify({ action: 'submitPartialPO', data: payload }) });
-        alert("Sukses! Order produksi baru telah dibuat.");
+        const payload = {
+            poId: activePO.poId,
+            customer: activePO.customer,
+            batches: payloadBatch
+        };
+
+        await fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'submitPartialPO', data: payload })
+        });
+
+        alert("Sukses! Data terkirim.");
         closeModal();
-        loadPO('Open'); // Refresh data
-    } catch (e) {
-        alert("Error: " + e);
+        loadData(); // Refresh
+
+    } catch(e) {
+        alert("Gagal: " + e);
+    } finally {
+        btn.innerText = "Kirim ke Produksi";
+        btn.classList.remove('btn-loading');
     }
 }
 </script>
