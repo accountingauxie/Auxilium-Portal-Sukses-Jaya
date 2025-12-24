@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Purchase Order - User Profile Header</title>
+<title>Purchase Order - CV Sukses Jaya</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -430,6 +430,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 
 <script>
 const baseURL = "https://script.google.com/macros/s/AKfycbwSRwB31ClUA8PLJRzo3Cl5sNZE3DgmCt8PnhvfRBrI2UOO8E0-Q0kg0irPUDHLyBTtjg/exec";
+// UPDATE: URL Script Inventory
 const inventoryAPI = "https://script.google.com/macros/s/AKfycby5N2auQ__JVSp-RdO-5xtUwanRZZW7YZMZ163j2NP61N3SIfVnPxr8PBXYbgBC6LJH/exec";
 
 let customerData=[], listSpandek=[], listNonSpandek=[], priceSpan=[], priceNon=[], unitSpan=[], unitNon=[], stockSpan=[], stockNon=[];
@@ -537,6 +538,7 @@ async function loadInventoryData() {
         const response = await fetch(inventoryAPI + "?action=getInventoryData");
         if (!response.ok) throw new Error("Failed to fetch inventory");
         inventoryData = await response.json();
+        console.log("Inventory Loaded:", inventoryData); // Debugging
     } catch (err) {
         console.error("Error loading inventory:", err);
         showToast("Gagal memuat data stok", "error");
@@ -630,20 +632,21 @@ function recalcRow(row) {
 
   let stock = 0;
   let found = null;
+  const cleanNum = (val) => parseFloat(String(val).replace(/,/g, '')) || 0;
 
-  // Use inventoryData for stock check
-  if (type === "Spandek") {
-      if (inventoryData.spandek) {
-          found = inventoryData.spandek.find(row => row[0] === item);
-          // Spandek: Index 4 is "Stok Setelah Pending"
-          if (found) stock = parseFloat(String(found[4]).replace(/,/g, '')) || 0;
-      }
-  } else {
-      if (inventoryData.nonSpandek) {
-          found = inventoryData.nonSpandek.find(row => row[0] === item);
-          // Non Spandek: Index 4 is "Stok Setelah Pending"
-           if (found) stock = parseFloat(String(found[4]).replace(/,/g, '')) || 0;
-      }
+  // --- LOGIC STOK DIPERBARUI SESUAI SCRIPT GAS ---
+  // Script mengembalikan 5 kolom (Index 0 s/d 4).
+  // Index 0 = Nama Item (Kolom C)
+  // Index 4 = Stok Akhir (Kolom G)
+  
+  if (type === "Spandek" && inventoryData.spandek) {
+      // Cari di array spandek
+      found = inventoryData.spandek.find(r => r[0] === item);
+      if (found) stock = cleanNum(found[4]); // Ambil dari index 4
+  } else if (type === "Non Spandek" && inventoryData.nonSpandek) {
+      // Cari di array nonSpandek
+      found = inventoryData.nonSpandek.find(r => r[0] === item);
+      if (found) stock = cleanNum(found[4]); // Ambil dari index 4
   }
   
   const stockDisp = row.querySelector(".stock-display");
@@ -651,34 +654,14 @@ function recalcRow(row) {
   
   if(item) {
       stockDisp.textContent = (Number(stock)||0).toLocaleString("en-US", {maximumFractionDigits:2});
-      let req = (type==="Spandek") ? (meter*qty) : qty; // Spandek stock is likely in meters? Adjust logic if Spandek stock is units. 
-      // Assumption: Spandek stock is in meters or units, check your data source. 
-      // If Spandek stock is count (lembar), then req = qty. If meters, req = meter * qty.
-      // Based on typical inventory, let's assume stock unit matches request unit.
-      // For Spandek, usually stock is in meters if selling by meter, or sheets if selling by sheet.
-      // Your input has "Meter" and "Qty". If selling by meter, price is per meter.
-      // Let's assume stock for Spandek is in TOTAL METERS or SHEETS. 
-      // Let's assume standard logic: If Type=Spandek, we check if we have enough stock.
       
-      // REVISIT LOGIC: Usually stock is quantity of items, regardless of length for non-standard items?
-      // Or is stock total length? 
-      // Let's assume for Spandek, stock is available length.
-      // However, usually "Stok Spandek" in previous code was just an index lookup.
-      // Let's stick to your previous logic:
-      // if type === Spandek, req = meter * qty? 
-      // Actually, standard logic for "Stok" usually refers to the main UoM.
-      // If Spandek is sold per Meter, Stock is likely in Meters.
-      // If Spandek is sold per Sheet, Stock is Sheets.
-      // Without knowing exact UoM of inventoryData, we'll assume Spandek stock is linear meters if meter input is enabled.
-      // But typically, `qty` is the main driver for stock reduction if selling pre-cut. 
-      // Let's stick to the previous code's logic if it was working, or safer:
-      // If Spandek, check against `qty` if stock is sheets, or `meter * qty` if stock is length.
-      // The previous code had: `let req = (type==="Spandek") ? (meter*qty) : qty;`
-      // So we will keep that.
-
+      // Req logic: Spandek (meter*qty) vs Qty, tergantung satuan stok
+      let req = (type==="Spandek") ? (meter*qty) : qty; 
+      
       statusCont.innerHTML = "";
       if(req > 0) {
           const badge = document.createElement("span");
+          // Bandingkan Stock dengan Request
           if(stock >= req) { badge.className = "status-badge status-ok"; badge.textContent = "Tersedia"; } 
           else { badge.className = "status-badge status-oos"; badge.textContent = "Tidak Tersedia"; }
           statusCont.appendChild(badge);
