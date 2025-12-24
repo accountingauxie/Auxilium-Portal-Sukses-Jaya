@@ -5,7 +5,7 @@
 <title>Pre-Order Management</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-/* CSS MINIMALIS & BERSIH */
+/* CSS MINIMALIS */
 :root { --primary: #7e22ce; --bg: #f4f7f6; --text: #333; }
 body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background: var(--bg); color: var(--text); }
 .page-wrap { padding: 30px; max-width: 1200px; margin: 0 auto; }
@@ -14,9 +14,10 @@ table { width: 100%; border-collapse: collapse; }
 th { text-align: left; padding: 12px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; font-size: 12px; font-weight: bold; text-transform: uppercase; }
 td { padding: 12px 15px; border-bottom: 1px solid #eee; vertical-align: middle; }
 .btn { padding: 8px 16px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; color: white; background: var(--primary); }
+.btn-sec { background: #fff; color: #333; border: 1px solid #ccc; }
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: flex-start; justify-content: center; z-index: 1000; padding-top: 50px; }
 .modal-box { background: #fff; width: 850px; max-width: 95%; border-radius: 8px; padding: 20px; }
-/* Tambahkan style lain sesuai selera jika perlu */
+.inp-sm { padding:5px; border:1px solid #ccc; border-radius:3px; }
 </style>
 </head>
 <body>
@@ -24,8 +25,8 @@ td { padding: 12px 15px; border-bottom: 1px solid #eee; vertical-align: middle; 
 <div class="page-wrap">
     <h2>Daftar Pre-Order (Bulk)</h2>
     <div style="margin-bottom:15px;">
-        <button class="btn" style="background:#fff; color:#333; border:1px solid #ccc;" onclick="switchTab('Open')">Open & Partial</button>
-        <button class="btn" style="background:#fff; color:#333; border:1px solid #ccc;" onclick="switchTab('Closed')">History Closed</button>
+        <button class="btn btn-sec" onclick="switchTab('Open')">Open & Partial</button>
+        <button class="btn btn-sec" onclick="switchTab('Closed')">History Closed</button>
         <button class="btn" onclick="loadData()">Refresh</button>
     </div>
 
@@ -44,16 +45,16 @@ td { padding: 12px 15px; border-bottom: 1px solid #eee; vertical-align: middle; 
         <h3>Produksi Partial: <span id="modalTitle"></span></h3>
         <div id="modalItems" style="max-height:60vh; overflow-y:auto; margin-bottom:20px;"></div>
         <div style="text-align:right;">
-            <button class="btn" style="background:#ccc;" onclick="closeModal()">Close</button>
-            <button class="btn" onclick="submitProduction()" id="btnSubmit">Submit</button>
+            <button class="btn btn-sec" onclick="closeModal()">Close</button>
+            <button class="btn" onclick="submitProduction()" id="btnSubmit">Submit ke Produksi</button>
         </div>
     </div>
 </div>
 
 <script>
 // --- CONFIG WAJIB ---
-// PASTE URL DEPLOYMENT ANDA DI SINI (YANG AKHIRANNYA /exec)
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwZ6f8Fi8UzG9buCOVydjGsg4Hyk_Pgyv1rDfTZ1Gm97kopgw8dCufB53SdlNzKk61slA/exec"; 
+// Kode ini mengambil URL otomatis. Jika masih error, ganti manual.
+const SCRIPT_URL = "<?= ScriptApp.getService().getUrl() ?>"; 
 
 let currentData = [];
 let activePO = null;
@@ -63,7 +64,7 @@ window.onload = loadData;
 
 function switchTab(tab) {
     currentTab = tab;
-    loadData(); // Reload agar filter fresh
+    loadData(); 
 }
 
 async function loadData() {
@@ -82,7 +83,7 @@ async function loadData() {
         currentData = result;
         renderTable(currentData);
     } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Connection Error: ${err}. <br>Pastikan "Who has access" = "Anyone" saat deploy.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Connection Error: ${err}. <br>Pastikan Deployment sudah "New Version".</td></tr>`;
     }
 }
 
@@ -113,7 +114,7 @@ function renderTable(data) {
     });
 }
 
-// --- MODAL & SUBMIT LOGIC (Simplified) ---
+// --- MODAL & SUBMIT LOGIC ---
 function openModal(poId) {
     activePO = currentData.find(p => p.poId === poId);
     document.getElementById('modalTitle').innerText = poId;
@@ -134,12 +135,10 @@ function openModal(poId) {
                 <b>${item.name}</b>
                 <span>Sisa: <b style="color:red">${remain.toFixed(2)}m</b></span>
             </div>
-            <div style="margin-top:5px; font-size:12px;">Batch Input:</div>
-            <div id="inputs-${item.rowIndex}">
-                <div style="display:flex; gap:5px; margin-bottom:5px;">
-                    <input type="number" placeholder="Panjang (m)" class="inp-len" style="width:80px">
-                    <input type="number" placeholder="Qty" class="inp-qty" style="width:50px">
-                </div>
+            <div style="margin-top:5px; font-size:12px;">Input Potongan:</div>
+            <div style="display:flex; gap:5px; margin-bottom:5px;">
+                <input type="number" placeholder="Panjang (m)" class="inp-sm inp-len" style="width:100px">
+                <input type="number" placeholder="Qty (Lembar)" class="inp-sm inp-qty" style="width:100px">
             </div>
         `;
         container.appendChild(div);
@@ -150,8 +149,6 @@ function openModal(poId) {
 function closeModal() { document.getElementById('prodModal').style.display = 'none'; }
 
 async function submitProduction() {
-    // Logic simpel untuk demo, ambil input pertama saja per item
-    // (Anda bisa kembangkan ke multi-row seperti kode sebelumnya)
     let batches = [];
     const items = document.querySelectorAll('[data-row-index]');
     
@@ -170,19 +167,27 @@ async function submitProduction() {
     if(batches.length === 0) return alert("Isi minimal 1 data produksi.");
     
     const btn = document.getElementById('btnSubmit');
+    const oriText = btn.innerText;
     btn.innerText = "Processing...";
+    btn.disabled = true;
     
     try {
         const payload = { poId: activePO.poId, customer: activePO.customer, batches: batches };
-        await fetch(SCRIPT_URL, { 
+        const res = await fetch(SCRIPT_URL, { 
             method: 'POST', 
             body: JSON.stringify({ action: 'submitPartialPO', data: payload }) 
         });
-        alert("Success!");
-        closeModal();
-        loadData();
+        const json = await res.json();
+        
+        if(json.result === 'success') {
+            alert("Sukses! Data dikirim ke Awaiting Production.");
+            closeModal();
+            loadData();
+        } else {
+            alert("Error: " + json.message);
+        }
     } catch(e) { alert("Error: " + e); }
-    finally { btn.innerText = "Submit"; }
+    finally { btn.innerText = oriText; btn.disabled = false; }
 }
 </script>
 </body>
