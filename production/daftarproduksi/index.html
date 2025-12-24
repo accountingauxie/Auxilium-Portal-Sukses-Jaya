@@ -6,11 +6,8 @@
 <title>Production Management</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
-
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
@@ -19,7 +16,7 @@
   .inactive-tab { color: #64748b; border-bottom: 2px solid transparent; }
   .inactive-tab:hover { color: #334155; border-bottom: 2px solid #e2e8f0; }
   
-  /* Style untuk Sub-Menu Pills */
+  /* Sub-Menu Pills */
   .sub-pill { padding: 4px 12px; border-radius: 9999px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
   .sub-pill-active { background-color: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
   .sub-pill-inactive { background-color: white; color: #64748b; border-color: #e2e8f0; }
@@ -32,6 +29,11 @@
   .input-xs:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
   .input-readonly { background-color: #f8fafc; color: #64748b; cursor: not-allowed; border-color: #e2e8f0; }
   select.input-xs { background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em; padding-right: 2.5rem; appearance: none; }
+
+  /* === FIX PENTING: Memaksa SweetAlert muncul di atas Modal (z-index modal kita 9999) === */
+  .swal2-container {
+    z-index: 100000 !important;
+  }
 </style>
 </head>
 
@@ -109,47 +111,58 @@
 
 </div>
 
-<div id="modalResult" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-  <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-    <div class="fixed inset-0 bg-gray-900 bg-opacity-50 transition-opacity backdrop-blur-sm" aria-hidden="true"></div>
-    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-    <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-7xl sm:w-full">
-      
-      <div class="bg-white px-6 py-5 border-b border-slate-100 flex justify-between items-start">
-        <div>
-          <h3 class="text-xl font-bold text-slate-900" id="modal-title">Input Production Result</h3>
-          <div class="mt-1 text-sm text-slate-500">Entry ID: <span id="modal-batch-id" class="font-mono font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded"></span></div>
-        </div>
-        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 transition"><i class="fas fa-times text-xl"></i></button>
-      </div>
+<div id="modalResult" class="relative z-[9999] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  
+  <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity backdrop-blur-sm"></div>
 
-      <div class="bg-slate-50 px-6 py-6">
-        <div class="overflow-visible rounded-lg border border-slate-200 shadow-sm">
-          <table class="min-w-full divide-y divide-slate-200 bg-white">
-            <thead class="bg-slate-50">
-              <tr id="modal-table-header"></tr>
-            </thead>
-            <tbody id="modal-table-body" class="divide-y divide-slate-200"></tbody>
-          </table>
-          <div id="add-row-container" class="hidden bg-slate-50 px-4 py-3 border-t border-slate-200">
-             <button onclick="addNewRow()" class="text-sm text-blue-600 font-semibold hover:text-blue-800 flex items-center"><i class="fas fa-plus-circle mr-2"></i> Add Row</button>
+  <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+    <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+      
+      <div class="relative transform overflow-visible rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-7xl">
+        
+        <div class="bg-white px-6 py-5 border-b border-slate-100 flex justify-between items-start rounded-t-lg">
+          <div>
+            <h3 class="text-xl font-bold text-slate-900" id="modal-title">Input Production Result</h3>
+            <div class="mt-1 text-sm text-slate-500">Entry ID: <span id="modal-batch-id" class="font-mono font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded"></span></div>
+          </div>
+          <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 transition p-1">
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </div>
+
+        <div class="bg-slate-50 px-6 py-6 overflow-visible">
+          <div class="overflow-visible rounded-lg border border-slate-200 shadow-sm bg-white">
+            <table class="min-w-full divide-y divide-slate-200">
+              <thead class="bg-slate-50">
+                <tr id="modal-table-header"></tr>
+              </thead>
+              <tbody id="modal-table-body" class="divide-y divide-slate-200"></tbody>
+            </table>
+            
+            <div id="add-row-container" class="hidden bg-slate-50 px-4 py-3 border-t border-slate-200">
+               <button onclick="addNewRow()" class="text-sm text-blue-600 font-semibold hover:text-blue-800 flex items-center">
+                 <i class="fas fa-plus-circle mr-2"></i> Add Row
+               </button>
+            </div>
+          </div>
+
+          <div class="mt-4 flex items-start p-3 bg-amber-50 border border-amber-200 rounded-lg" id="modal-warning">
+            <i class="fas fa-exclamation-circle text-amber-500 mt-0.5 mr-2"></i>
+            <p class="text-xs text-amber-700" id="modal-warning-text"></p>
           </div>
         </div>
-        <div class="mt-4 flex items-start p-3 bg-amber-50 border border-amber-200 rounded-lg" id="modal-warning">
-          <i class="fas fa-exclamation-circle text-amber-500 mt-0.5 mr-2"></i>
-          <p class="text-xs text-amber-700" id="modal-warning-text"></p>
-        </div>
-      </div>
 
-      <div class="bg-white px-6 py-4 flex flex-row-reverse gap-3 border-t border-slate-100" id="modal-footer"></div>
+        <div class="bg-white px-6 py-4 flex flex-row-reverse gap-3 border-t border-slate-100 rounded-b-lg" id="modal-footer"></div>
+        
+      </div>
     </div>
   </div>
 </div>
 
 <script>
 // =================================================================
-// GANTI URL API ANDA DI SINI
-const API_URL = "https://script.google.com/macros/s/AKfycbwTDlBQQvDdLFpyXNq_b4YhXaE9YsFBgt5WY1fdK3mMuDyoQ3NqcZ8jRhZfdHN8Wf3l/exec"; 
+// URL API ANDA (Sesuaikan jika perlu)
+const API_URL = "https://script.google.com/macros/s/AKfycbycec9G9iX-y_X0QZNowHmyTPKRP9JD7NkOsIbZVKX9rC42ZqqR88ceb9JqnSeLv1XV/exec"; 
 // =================================================================
 
 let RAW_DATA = [];
@@ -161,7 +174,7 @@ let CURRENT_BATCH_ID = null;
 let CURRENT_BATCH_DATE = null;
 let CURRENT_MODE = ''; 
 
-// STATUS BARU (Disamakan dengan Backend)
+// STATUS
 const MONITORING_STATUSES = ['Proses', 'Sukses', 'Gagal'];
 
 window.addEventListener('DOMContentLoaded', () => { fetchData(); });
@@ -187,7 +200,7 @@ async function fetchData() {
 function processData() {
   GROUPED_DATA = {};
   RAW_DATA.forEach(row => {
-    // FILTER UTAMA: Memastikan status yang masuk sesuai
+    // FILTER UTAMA
     const allowed = ['Siap Untuk Di Produksi', 'Sudah Di Produksi', 'Siap Import', ...MONITORING_STATUSES];
     
     if(!allowed.includes(row.status)) return;
@@ -241,7 +254,6 @@ function switchSubTab(subName) {
     let id = 'sub-' + p; 
     let el = document.getElementById(id);
     
-    // LOGIC MATCHING BARU
     let isMatch = false;
     if (subName === 'all' && p === 'all') isMatch = true;
     if (subName === 'Proses' && p === 'proses') isMatch = true;
@@ -310,7 +322,6 @@ function renderData() {
     } else if (CURRENT_TAB === 'import') {
        actionBtn = `<button onclick="syncXero('${batch.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition flex items-center"><i class="fas fa-cloud-upload-alt mr-2"></i> Sync Xero</button>`;
     } else if (CURRENT_TAB === 'monitoring') {
-       // BADGE BARU
        let badgeClass = "bg-gray-100 text-gray-600 border-gray-200";
        let icon = "";
        
@@ -330,7 +341,16 @@ function renderData() {
 
     let itemRows = '';
     batch.items.forEach(item => {
-      const resultDisplay = (CURRENT_TAB !== 'queue') ? `<div class="ml-auto text-xs font-mono text-slate-600 bg-slate-100 px-2 py-1 rounded border border-slate-200 flex gap-3"><span>Qty: <b>${item.qty}</b></span><span>M: <b>${item.meter}</b></span><span>Kg: <b>${item.weight}</b></span></div>` : '<div class="ml-auto"></div>';
+      // === FEATURE BARU: AMBIL DATA SISA KPC ===
+      const kpcData = OPTIONS.kpcs.find(k => k.name === item.kpc);
+      const sisaVal = kpcData ? kpcData.sisa : 0;
+      const sisaDisplay = new Intl.NumberFormat('id-ID').format(sisaVal);
+      // ==========================================
+
+      // Tampilkan Total, bukan Weight. NOTE: Di card view saya tetap tampilkan "Weight" jika sudah ada result, 
+      // tapi karena request hanya minta ubah input form, saya sesuaikan agar menampilkan berat di hasil view.
+      const resultDisplay = (CURRENT_TAB !== 'queue') ? `<div class="ml-auto text-xs font-mono text-slate-600 bg-slate-100 px-2 py-1 rounded border border-slate-200 flex gap-3"><span>Qty: <b>${item.qty}</b></span><span>Berat: <b>${item.weight} kg</b></span></div>` : '<div class="ml-auto"></div>';
+      
       itemRows += `
         <div class="flex items-center justify-between py-2 border-b border-slate-50 last:border-0 hover:bg-slate-50 transition px-2 -mx-2 rounded">
            <div class="flex items-center flex-1 gap-4">
@@ -338,7 +358,12 @@ function renderData() {
              <div class="w-32 text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-1 rounded text-center">${item.machine}</div>
              <div class="text-sm font-medium text-slate-700 w-48">${item.item}</div>
              <div class="text-xs text-slate-400 font-mono">${item.kpc}</div>
-           </div>
+             
+             <div class="ml-6 pl-6 border-l border-slate-200">
+                <div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Sisa KPC</div>
+                <div class="text-xs font-mono font-bold text-slate-600">${sisaDisplay}</div>
+             </div>
+             </div>
            ${resultDisplay}
         </div>`;
     });
@@ -369,39 +394,38 @@ function openInputModal(batchId, mode) {
   let title = "Form";
   let warning = "";
   
+  const thead = document.getElementById('modal-table-header');
+  
+  // === LOGIC TAMPILAN HEADER BERDASARKAN MODE ===
   if (CURRENT_MODE === 'plan_edit') {
       title = "Edit Production Plan";
-      warning = "<strong>Mode Edit Plan:</strong> Ubah Mesin/Item/KPC atau tambah baris. Angka hasil produksi belum diinput.";
-  } else if (CURRENT_MODE === 'result_input') {
-      title = "Input Production Result";
-      warning = "<strong>Mode Input Hasil:</strong> Masukkan angka aktual (Qty/Meter/Berat). Mesin & Item terkunci.";
-  } else if (CURRENT_MODE === 'result_revise') {
-      title = "Revisi Production Result";
-      warning = "<strong>Mode Revisi:</strong> Perbaiki angka salah input. Data Mesin & Item tetap terkunci.";
+      warning = "<strong>Mode Edit Plan:</strong> Ubah Mesin, Item, atau KPC. Kolom hasil produksi disembunyikan.";
+      
+      thead.innerHTML = `
+        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-40">Machine</th>
+        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-56">Item</th>
+        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-56">KPC</th>
+        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">WE Number</th>
+        <th class="px-2 py-3 w-10">Action</th>`;
+
+  } else if (CURRENT_MODE === 'result_input' || CURRENT_MODE === 'result_revise') {
+      title = (CURRENT_MODE === 'result_revise') ? "Revisi Production Result" : "Input Production Result";
+      warning = "<strong>Mode Input Hasil:</strong> Masukkan Qty dan Berat Coil (Kg).";
+      
+      // === UPDATE: Tambah Kolom Sisa Coil & Hapus Meter/Total ===
+      thead.innerHTML = `
+        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-32">Machine</th>
+        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-40">Item</th>
+        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-32">KPC</th>
+        <th class="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase w-32 bg-slate-100">Sisa Coil</th>
+        <th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase w-24">Qty</th>
+        <th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase w-32">Berat (Kg)</th>
+        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">WE Number</th>`;
   }
 
   document.getElementById('modal-title').innerText = title;
   document.getElementById('modal-warning-text').innerHTML = warning;
   document.getElementById('add-row-container').classList.toggle('hidden', CURRENT_MODE !== 'plan_edit');
-
-  const thead = document.getElementById('modal-table-header');
-  if (CURRENT_MODE === 'plan_edit') {
-    thead.innerHTML = `
-      <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-40">Machine</th>
-      <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-56">Item</th>
-      <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-56">KPC</th>
-      <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">WE Number</th>
-      <th class="px-2 py-3 w-10">Action</th>`;
-  } else {
-    thead.innerHTML = `
-      <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-40">Machine</th>
-      <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-48">Item</th>
-      <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-48">KPC</th>
-      <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-24">Meter</th>
-      <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-24">Qty</th>
-      <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-24">Berat (kg)</th>
-      <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">WE Number</th>`;
-  }
 
   const tbody = document.getElementById('modal-table-body');
   tbody.innerHTML = '';
@@ -413,17 +437,19 @@ function openInputModal(batchId, mode) {
 function renderModalRow(item = null) {
   const tbody = document.getElementById('modal-table-body');
   const rowIndex = item ? item.rowIndex : 'new';
+  
   const itemVal = item ? item.item : '';
   const machineVal = item ? item.machine : '';
   const kpcVal = item ? item.kpc : '';
-  const meterVal = item ? item.meter : 0;
-  const qtyVal = item ? item.qty : 0;
-  const weightVal = item ? item.weight : 0;
   const weVal = item ? item.weNumber : '';
+  
+  const qtyVal = item ? (item.qty || 0) : 0;
+  const weightVal = item ? (item.weight || 0) : 0; 
 
   let html = '';
 
   if (CURRENT_MODE === 'plan_edit') {
+    // === MODE EDIT PLAN (DROPDOWN, NO NUMBERS) ===
     const machineOpts = [...new Set(OPTIONS.items.map(i => i.machine))].sort();
     let machineEl = `<select class="input-xs machine-select bg-white" onchange="onMachineChange(this)">
                         <option value="">Select Machine</option>
@@ -441,13 +467,23 @@ function renderModalRow(item = null) {
       <td class="px-2 py-3 text-center">${deleteBtn}</td>
     `;
   } else {
+    // === MODE INPUT RESULT (DENGAN KOLOM SISA COIL) ===
+    
+    // Cari data sisa KPC
+    const kpcObj = OPTIONS.kpcs.find(k => k.name === kpcVal);
+    const sisaVal = kpcObj ? new Intl.NumberFormat('id-ID').format(kpcObj.sisa) : '0';
+
     html = `
       <td class="px-4 py-3"><input type="text" class="input-xs input-readonly machine-select" value="${machineVal}" readonly></td>
-      <td class="px-4 py-3"><span class="text-sm font-medium text-slate-700">${itemVal}</span></td>
+      <td class="px-4 py-3"><span class="text-sm font-medium text-slate-700 item-text">${itemVal}</span></td>
       <td class="px-4 py-3"><input type="text" class="input-xs input-readonly kpc-select" value="${kpcVal}" readonly></td>
-      <td class="px-4 py-3"><input type="number" class="input-xs input-meter text-center font-mono" value="${meterVal}" min="0"></td>
-      <td class="px-4 py-3"><input type="number" class="input-xs input-qty text-center font-mono" value="${qtyVal}" min="0"></td>
-      <td class="px-4 py-3"><input type="number" class="input-xs input-weight text-center font-mono" value="${weightVal}" min="0"></td>
+      
+      <td class="px-4 py-3 bg-slate-50 border-x border-slate-100">
+        <input type="text" class="input-xs input-readonly text-right font-mono font-bold text-slate-600 bg-transparent border-0" value="${sisaVal}" readonly>
+      </td>
+
+      <td class="px-4 py-3"><input type="number" class="input-xs input-qty text-center font-mono border-blue-300 focus:ring-blue-200" value="${qtyVal}" min="0"></td>
+      <td class="px-4 py-3"><input type="number" class="input-xs input-weight text-center font-mono border-blue-300 focus:ring-blue-200" value="${weightVal}" min="0"></td>
       <td class="px-4 py-3"><input type="text" class="input-xs bg-slate-50 text-slate-500 we-preview font-mono text-xs cursor-not-allowed" value="${weVal}" readonly></td>
     `;
   }
@@ -457,6 +493,7 @@ function renderModalRow(item = null) {
   tr.innerHTML = html;
   tbody.appendChild(tr);
 
+  // Trick untuk memicu pengisian dropdown otomatis saat mode edit dibuka
   if (CURRENT_MODE === 'plan_edit' && machineVal) {
     setTimeout(() => { onMachineChange(tr.querySelector('.machine-select'), false); }, 0);
   }
@@ -495,7 +532,7 @@ function updateRowWE(el) {
   const tr = el.closest('tr');
   const machine = tr.querySelector('.machine-select').value;
   const kpc = tr.querySelector('.kpc-select').value;
-  let item = (CURRENT_MODE === 'plan_edit') ? tr.querySelector('.item-select').value : tr.querySelector('span').innerText;
+  let item = (CURRENT_MODE === 'plan_edit') ? tr.querySelector('.item-select').value : tr.querySelector('.item-text').innerText;
   
   if(!machine || !item || !kpc) return;
 
@@ -534,33 +571,52 @@ function renderFooterButtons() {
 
 function closeModal() { document.getElementById('modalResult').classList.add('hidden'); }
 
-// === FUNGSI NOTIFIKASI MODERN (SweetAlert2) ===
-
 async function submitForm(action, forceComplete = false) {
   const rows = document.querySelectorAll('#modal-table-body tr');
   const items = [];
+  let isError = false;
+
   rows.forEach(tr => {
     let itemVal = "";
+    
+    // === VALIDASI FORM EDIT ===
     if (CURRENT_MODE === 'plan_edit') {
-        itemVal = tr.querySelector('.item-select').value;
+         itemVal = tr.querySelector('.item-select').value;
+         const machineVal = tr.querySelector('.machine-select').value;
+         const kpcVal = tr.querySelector('.kpc-select').value;
+
+         // Cek jika ada yang kosong
+         if(!itemVal || !machineVal || !kpcVal) {
+             isError = true;
+             tr.classList.add('bg-red-50'); // Highlight error
+         } else {
+             tr.classList.remove('bg-red-50');
+         }
     } else {
-        itemVal = tr.querySelector('td:nth-child(2) span').innerText;
+         itemVal = tr.querySelector('.item-text').innerText;
     }
+
+    // Hanya ambil Qty dan Berat
+    const qty = (CURRENT_MODE === 'plan_edit') ? 0 : parseFloat(tr.querySelector('.input-qty').value) || 0;
+    const weight = (CURRENT_MODE === 'plan_edit') ? 0 : parseFloat(tr.querySelector('.input-weight').value) || 0;
 
     items.push({
       rowIndex: tr.getAttribute('data-row-index'),
       item: itemVal,
       machine: tr.querySelector('.machine-select').value,
       kpc: tr.querySelector('.kpc-select').value,
-      meter: (CURRENT_MODE === 'plan_edit') ? 0 : tr.querySelector('.input-meter').value,
-      qty: (CURRENT_MODE === 'plan_edit') ? 0 : tr.querySelector('.input-qty').value,
-      weight: (CURRENT_MODE === 'plan_edit') ? 0 : tr.querySelector('.input-weight').value,
+      qty: qty,
+      weight: weight, // Kirim parameter berat
       weNumber: tr.querySelector('.we-preview').value,
       date: CURRENT_BATCH_DATE
     });
   });
 
-  // CONFIRMATION POP-UP
+  if(isError) {
+      Swal.fire('Data Belum Lengkap', 'Mohon lengkapi semua kolom (Mesin, Item, KPC) sebelum menyimpan.', 'warning');
+      return;
+  }
+
   const result = await Swal.fire({
     title: 'Simpan Data?',
     text: "Pastikan data yang diinput sudah benar.",
@@ -585,7 +641,6 @@ async function postAction(action, payload) {
     const result = await res.json();
     
     if(result.status === 'success') { 
-      // SUCCESS POP-UP
       await Swal.fire({
         title: 'Berhasil!',
         text: 'Data telah berhasil disimpan.',
@@ -599,7 +654,6 @@ async function postAction(action, payload) {
     else throw new Error(result.message);
 
   } catch(e) { 
-    // ERROR POP-UP
     Swal.fire({
       title: 'Gagal!',
       text: "Terjadi kesalahan: " + e.message,
