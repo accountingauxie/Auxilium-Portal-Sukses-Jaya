@@ -224,320 +224,385 @@ table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; bor
 <script src="https://cdn.jsdelivr.net/gh/accountingauxie/Auxilium-Portal-Sukses-Jaya/assets/config.js"></script>
 
 <script>
-// HARDCODE FALLBACK: Agar langsung jalan walaupun CDN belum refresh cache
-const FALLBACK_URL = "https://script.google.com/macros/s/AKfycbyNycnkFGHj_bHBWNz_jqfj7_C6xksFbYOgGvIioHs0e2JmqAEmJw7BkDptQuD-Y8Uy6g/exec";
+// --- PERBAIKAN: URL SCRIPT LANGSUNG (BYPASS CDN) ---
+const FALLBACK_URL = "https://script.google.com/macros/s/AKfycbzfKcHIntwRj30cfl2tcqfNHmtnT6E6BOUFLZ6JzH3smAlMdrwgWxMBbnJIrVOV68ApxQ/exec";
 const BASE_URL = window.GAS_URL || FALLBACK_URL;
+
+if (!BASE_URL) alert("Error: GAS_URL tidak ditemukan. Cek config.js.");
 
 let currentOrders = {}; 
 let activeOrderId = null;
+let currentTab = 'Awaiting';
+const TYPE_CODES = { 'Custom': 'CS', 'Plat': 'PL' };
 
-window.onload = loadOrders;
+function closeModal() { document.getElementById('setupModal').style.display = 'none'; }
 
-// --- 1. LOAD DATA (FETCH API) ---
-async function loadOrders() {
+let confirmCallback = null;
+function showConfirm(message, callback) {
+    document.getElementById('confirmMessage').innerText = message;
+    confirmCallback = callback;
+    document.getElementById('confirmModal').style.display = 'flex';
+}
+function closeConfirm(isConfirmed) {
+    document.getElementById('confirmModal').style.display = 'none';
+    if (isConfirmed && confirmCallback) confirmCallback();
+    confirmCallback = null;
+}
+document.getElementById('confirmYesBtn').onclick = () => closeConfirm(true);
+
+window.onload = () => switchTab('Awaiting');
+
+function fmtDate(val) {
+    if (!val) return "-";
+    const d = new Date(val);
+    return isNaN(d.getTime()) ? val : d.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function switchTab(tabName) {
+    currentTab = tabName;
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    let btnId = 'tab-awaiting';
+    if(tabName === 'In Process') btnId = 'tab-process';
+    if(tabName === 'Completed') btnId = 'tab-completed';
+    if(tabName === 'Delivered') btnId = 'tab-delivery';
+    if(tabName === 'Cancel') btnId = 'tab-cancel';
+    document.getElementById(btnId).classList.add('active');
+    loadOrders(tabName);
+}
+
+async function loadOrders(status) {
     const tbody = document.getElementById('dashboardBody');
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px;">Loading Data...</td></tr>';
-    
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px;">Loading...</td></tr>';
     try {
-        // Penting: Tambahkan &category=preorder
-        const response = await fetch(BASE_URL + "?action=getProductionOrders&category=preorder&status=Awaiting");
+        const response = await fetch(`${BASE_URL}?action=getProductionOrders&status=${encodeURIComponent(status)}`);
         const data = await response.json();
-        renderDashboard(data);
+        renderDashboard(data, status);
     } catch (err) {
-        console.error(err);
-        tbody.innerHTML = `<tr><td colspan="6" style="color:red; text-align:center;">Error Loading Data: ${err}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="color:red; text-align:center;">Failed to fetch. Pastikan Apps Script sudah "New Deployment".<br>${err}</td></tr>`;
     }
 }
 
-function renderDashboard(data) {
+// ... (SISA KODE FUNCTION LAINNYA: renderDashboard, openSetup, dll BIARKAN SAMA) ...
+// Pastikan kode di bawah ini ada
+function renderDashboard(data, status) {
     const tbody = document.getElementById('dashboardBody');
     tbody.innerHTML = '';
-    
     if (!data || Object.keys(data).length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#999;">Tidak ada pesanan "Awaiting Production".</td></tr>';
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:#999;">No orders found in ${status}</td></tr>`;
         return;
     }
-
     currentOrders = data; 
     Object.keys(data).forEach(key => {
         const o = data[key];
+        let badgeClass = 'badge-awaiting';
+        if (o.status === 'In Process') badgeClass = 'badge-process';
+        if (o.status === 'Completed Production') badgeClass = 'badge-completed';
+        if (o.status === 'Delivered') badgeClass = 'badge-delivery';
+        if (o.status === 'Cancel Production') badgeClass = 'badge-cancel';
+
         const tr = document.createElement('tr');
         tr.className = 'data-row';
         tr.innerHTML = `
-            <td><strong>${o.orderNo}</strong></td>
+            <td><a class="order-link" onclick="openSetup('${o.orderNo}')">${o.orderNo}</a></td>
+            <td>${o.type}</td>
             <td>${o.customer}</td>
-            <td>${o.date}</td>
-            <td>${o.delivery || '-'}</td>
+            <td>${fmtDate(o.date)}</td>
+            <td>${fmtDate(o.delivery)}</td>
+            <td><span class="badge ${badgeClass}">${o.status}</span></td>
             <td>${o.items.length} Items</td>
-            <td style="text-align:center;">
-                <button class="btn-action btn-process" style="padding:5px 10px; font-size:11px;" onclick="openSetup('${o.orderNo}')">Setup</button>
-            </td>
         `;
         tbody.appendChild(tr);
     });
 }
 
-// --- 2. MODAL & SETUP LOGIC ---
 function openSetup(orderId) {
     activeOrderId = orderId;
     const order = currentOrders[orderId];
-    
     document.getElementById('modalOrderNo').innerText = orderId;
-    document.getElementById('modalCustomer').innerText = order.customer;
     
+    // Header Setup
+    const headerRow = document.getElementById('tableHeaderRow');
+    let headers = `<th style="width:20%">Item</th><th style="width:5%; text-align:center;">M</th><th style="width:5%; text-align:center;">Qty</th><th style="width:8%; text-align:center;">Set Qty</th><th style="width:8%; text-align:center;">Tot M'</th><th style="width:12%">Mesin</th><th style="width:14%">KPC</th><th style="width:8%">Type</th><th style="width:14%">WE Code</th><th style="width:5%; text-align:center;">Act</th>`;
+    if (currentTab === 'In Process') headers += `<th style="width:5%; text-align:center;">Selesai?</th>`;
+    headerRow.innerHTML = headers;
+
+    const alertBox = document.getElementById('modalAlert');
+    if (currentTab === 'In Process') {
+        alertBox.innerHTML = '<i class="fas fa-check-circle"></i> <strong>Produksi:</strong> Centang barang yang sudah selesai. Jangan lupa klik <strong>Update</strong> untuk menyimpan progres.';
+        alertBox.style.display = 'block';
+    } else if (['Completed', 'Delivered', 'Cancel'].includes(currentTab)) {
+        alertBox.style.display = 'none';
+    } else {
+        alertBox.style.display = 'block';
+        alertBox.innerHTML = '<strong>Instruksi:</strong> Gunakan Split jika stok kurang.';
+    }
+
     const tbody = document.getElementById('setupBody');
     tbody.innerHTML = '';
 
     order.items.forEach((item, idx) => {
         const isSpandek = (item.type && item.type.toLowerCase().includes('spandek') && !item.type.toLowerCase().includes('non'));
-        
         const tr = document.createElement('tr');
         tr.className = 'main-row';
         tr.dataset.id = idx; 
         tr.dataset.type = isSpandek ? 'spandek' : 'non-spandek';
         tr.dataset.original = item.fullRowData; 
-        tr.dataset.rowindex = item.rowIndex;
+        
+        const initialTotalM = (parseFloat(item.meter) * parseInt(item.qty)).toFixed(2);
+        let nameHtml = `<strong>${item.item}</strong><br><small style="color:#888;">${item.type}</small>`;
+        let isEditable = (currentTab === 'Awaiting' || currentTab === 'In Process');
+        let spandekClass = isSpandek ? 'prod-input' : 'prod-input non-spandek-input';
+        let readonlyAttr = isSpandek && isEditable ? '' : 'disabled';
+        
+        let valMesin = item.machine || "";
+        let valKPC = item.kpc || "";
+        let valType = "Custom"; 
+        if(item.we && item.we.includes('_PL_')) valType = "Plat";
 
-        let html = `
+        let inputs = `
+            <td><input type="number" class="${spandekClass} qty-input" value="${item.qty}" min="1" ${readonlyAttr} onchange="validateQty(${idx}); updateCalc(this)"></td>
+            <td style="text-align:center;"><span class="total-m">${initialTotalM}</span></td>
             <td>
-                <strong>${item.item}</strong>
-                <div style="font-size:10px; color:#666;">Original Type: ${item.type}</div>
+                <select class="${spandekClass} machine-select" ${readonlyAttr} onchange="generateWE(this)">
+                    <option value="">-</option>
+                    <option value="PM08" ${valMesin==='PM08'?'selected':''}>PM08</option>
+                    <option value="PM14" ${valMesin==='PM14'?'selected':''}>PM14</option>
+                </select>
             </td>
-            <td style="text-align:center;">${item.meter || '-'}</td>
+            <td>
+                <select class="${spandekClass} kpc-select" ${readonlyAttr} onchange="generateWE(this)">
+                    <option value="">-</option>
+                    <option value="KPC-001" ${valKPC==='KPC-001'?'selected':''}>KPC-001</option>
+                    <option value="KPC-002" ${valKPC==='KPC-002'?'selected':''}>KPC-002</option>
+                </select>
+            </td>
+            <td>
+                <select class="${spandekClass} type-select" ${readonlyAttr} onchange="generateWE(this)">
+                    <option value="Custom" ${valType==='Custom'?'selected':''}>Custom</option>
+                    <option value="Plat" ${valType==='Plat'?'selected':''}>Plat</option>
+                </select>
+            </td>
+            <td><input type="text" class="${spandekClass} we-code" readonly value="${item.we||''}"></td>
             <td style="text-align:center;">
-                <span class="target-qty badge badge-approve" style="font-size:12px;">${item.qty}</span>
+                ${isSpandek && isEditable ? `<button class="btn-sm btn-split" onclick="splitRow(this, ${idx})"><i class="fas fa-plus"></i></button>` : '-'}
             </td>
         `;
 
-        if (isSpandek) {
-            html += `
-                <td><input type="number" class="prod-input qty-input" value="${item.qty}" min="1" onchange="validateQty(${idx})"></td>
-                <td>
-                    <select class="prod-select machine-select" onchange="generateWE(this)">
-                        <option value="">- Pilih -</option>
-                        <option value="PM08">MX PUMA 08</option>
-                        <option value="PM14">MX PUMA 14</option>
-                    </select>
-                </td>
-                <td>
-                    <select class="prod-select kpc-select" onchange="generateWE(this)">
-                        <option value="">- Pilih KPC -</option>
-                        <option value="KPC-001">KPC-001 (Stock: 500m)</option>
-                        <option value="KPC-002">KPC-002 (Stock: 120m)</option>
-                    </select>
-                </td>
-                <td>
-                    <select class="prod-select type-select" onchange="generateWE(this)">
-                        <option value="Custom">Custom</option>
-                        <option value="Plat">Plat</option>
-                    </select>
-                </td>
-                <td>
-                    <input type="text" class="prod-input we-code-input" readonly placeholder="Auto...">
-                </td>
-                <td style="text-align:center;">
-                    <button class="btn-sm btn-split" onclick="splitRow(this, ${idx})"><i class="fas fa-code-branch"></i> Split</button>
-                </td>
-            `;
-        } else {
-            html += `
-                <td style="text-align:center;"><input type="hidden" class="qty-input" value="${item.qty}">${item.qty}</td>
-                <td colspan="4" style="text-align:center; color:#999; font-style:italic; background:#f9f9f9;">
-                    Non-Spandek (Tidak perlu setup)
-                </td>
-                <td style="text-align:center;">-</td>
-            `;
+        if (currentTab === 'In Process') {
+            let checked = item.isFinished ? 'checked' : '';
+            inputs += `<td style="text-align:center;"><input type="checkbox" class="check-production" ${checked} onchange="checkAllDone()"></td>`;
         }
-        
-        tr.innerHTML = html;
+
+        tr.innerHTML = `<td>${nameHtml}</td><td style="text-align:center;"><span class="meter-val">${item.meter}</span></td><td style="text-align:center;"><span class="target-qty badge bg-info text-dark" style="background:#e0f2fe; color:#0369a1;">${item.qty}</span></td>${inputs}`;
         tbody.appendChild(tr);
     });
 
+    renderFooterButtons();
     document.getElementById('validationMsg').style.display = 'none';
     document.getElementById('setupModal').style.display = 'flex';
+    if(currentTab === 'In Process') checkAllDone();
 }
 
-function closeModal() { document.getElementById('setupModal').style.display = 'none'; }
-
-// --- 3. SPLIT & WE LOGIC ---
-function generateWE(el) {
-    const row = el.closest('tr');
-    const machine = row.querySelector('.machine-select').value;
-    const kpc = row.querySelector('.kpc-select').value;
-    const output = row.querySelector('.we-code-input');
+function renderFooterButtons() {
+    const footerLeft = document.getElementById('footerLeft');
+    const footerRight = document.getElementById('footerRight');
+    footerLeft.innerHTML = ''; footerRight.innerHTML = '';
+    const btnClose = `<button class="btn btn-secondary" onclick="closeModal()">Close</button>`;
     
-    if(machine && kpc) {
-        output.value = `${machine}_${kpc}_${activeOrderId}`;
+    if (currentTab === 'Awaiting') {
+        footerRight.innerHTML = `${btnClose} 
+            <button class="btn btn-cancel" onclick="triggerAction('cancel')">Cancel Production</button>
+            <button class="btn btn-process" onclick="triggerAction('process')">Process</button>`;
+    } else if (currentTab === 'In Process') {
+        footerLeft.innerHTML = `<button class="btn btn-print" onclick="generatePDF('SPK')"><i class="fas fa-print"></i> Print SPK</button>`;
+        footerRight.innerHTML = `${btnClose} <button class="btn btn-cancel" onclick="triggerAction('cancel')">Cancel</button><button class="btn btn-process" onclick="triggerAction('update')">Update</button><button class="btn btn-complete" id="btnComplete" onclick="triggerAction('complete')" disabled>Selesai Produksi</button>`;
+    } else if (currentTab === 'Completed') {
+        footerRight.innerHTML = `${btnClose} <button class="btn btn-deliver" onclick="triggerAction('deliver')">Delivery (Kirim)</button>`;
+    } else if (currentTab === 'Delivered') {
+        footerLeft.innerHTML = `<button class="btn btn-print" onclick="generatePDF('SJ')"><i class="fas fa-print"></i> Print Surat Jalan</button>`;
+        footerRight.innerHTML = btnClose;
     } else {
-        output.value = '';
+        footerRight.innerHTML = btnClose;
     }
+}
+
+function checkAllDone() {
+    const checkboxes = document.querySelectorAll('#setupBody tr:not(.disabled-row) .check-production');
+    let allChecked = true;
+    if (checkboxes.length === 0) allChecked = false;
+    checkboxes.forEach(cb => { if (!cb.checked) allChecked = false; });
+    const btn = document.getElementById('btnComplete');
+    if(btn) btn.disabled = !allChecked;
+}
+
+function triggerAction(actionType) {
+    let msg = "";
+    let func = null;
+    if (actionType === 'process') { msg = "Yakin data sudah benar?"; func = () => submitProduction('new'); }
+    else if (actionType === 'update') { msg = "Simpan perubahan?"; func = () => submitProduction('update'); }
+    else if (actionType === 'complete') { msg = "Barang fisik sudah selesai?"; func = () => completeOrder(activeOrderId); }
+    else if (actionType === 'deliver') { msg = "Kirim barang sekarang?"; func = () => deliverOrder(activeOrderId); }
+    else if (actionType === 'cancel') { msg = "Yakin batalkan produksi?"; func = () => cancelOrder(activeOrderId); }
+    if (msg && func) showConfirm(msg, func);
 }
 
 function splitRow(btn, groupId) {
     const originalRow = btn.closest('tr');
+    if (!originalRow.classList.contains('disabled-row')) {
+        originalRow.classList.add('disabled-row');
+        originalRow.querySelector('.qty-input').value = 0; 
+        originalRow.querySelector('.total-m').innerText = "0.00";
+        originalRow.querySelectorAll('input, select').forEach(el => el.disabled = true);
+        const cb = originalRow.querySelector('.check-production');
+        if(cb) cb.disabled = true; 
+    }
     const newRow = originalRow.cloneNode(true);
-    newRow.classList.remove('main-row');
+    newRow.classList.remove('main-row', 'disabled-row');
     newRow.classList.add('split-row');
-    newRow.querySelector('.qty-input').value = 0;
-    newRow.querySelectorAll('select').forEach(s => {
-        s.value = "";
-        s.onchange = function() { generateWE(this); };
-    });
-    newRow.querySelector('.we-code-input').value = "";
-    newRow.querySelector('.target-qty').parentElement.innerHTML = ""; 
-    const actionTd = newRow.lastElementChild;
-    actionTd.innerHTML = `<button class="btn-sm btn-remove" onclick="removeSplit(this, ${groupId})"><i class="fas fa-trash"></i></button>`;
-    newRow.querySelector('.qty-input').onchange = function() { validateQty(groupId); };
-    originalRow.after(newRow);
+    const qtyInput = newRow.querySelector('.qty-input');
+    qtyInput.value = 0; qtyInput.disabled = false;
+    newRow.querySelectorAll('select').forEach(s => { s.value = ""; s.disabled = false; s.onchange = function(){ generateWE(this); } });
+    newRow.querySelector('.we-code').value = "";
+    const newCb = newRow.querySelector('.check-production');
+    if(newCb) { newCb.disabled = false; newCb.checked = false; newCb.onchange = checkAllDone; }
+    newRow.querySelector('.target-qty').parentElement.innerHTML = '<small>(Split)</small>';
+    const btnContainer = newRow.querySelector('.btn-split').parentElement;
+    btnContainer.innerHTML = `<button class="btn-sm btn-remove" onclick="removeSplit(this, ${groupId})"><i class="fas fa-trash"></i></button>`;
+    const tbody = originalRow.parentNode;
+    const groupRows = tbody.querySelectorAll(`tr[data-id="${groupId}"]`);
+    groupRows[groupRows.length-1].after(newRow);
+    qtyInput.onchange = function() { validateQty(groupId); updateCalc(this); };
+    if(currentTab === 'In Process') checkAllDone();
 }
 
 function removeSplit(btn, groupId) {
-    btn.closest('tr').remove();
+    const row = btn.closest('tr');
+    const tbody = row.parentNode;
+    row.remove();
+    const remainingSplits = tbody.querySelectorAll(`.split-row[data-id="${groupId}"]`);
+    if(remainingSplits.length === 0) {
+        const main = tbody.querySelector(`.main-row[data-id="${groupId}"]`);
+        main.classList.remove('disabled-row');
+        const target = parseInt(main.querySelector('.target-qty').innerText);
+        main.querySelector('.qty-input').value = target;
+        main.querySelectorAll('select, input').forEach(el => el.disabled = false);
+        const cb = main.querySelector('.check-production');
+        if(cb) cb.disabled = false;
+        updateCalc(main.querySelector('.qty-input'));
+    }
     validateQty(groupId);
+    if(currentTab === 'In Process') checkAllDone();
+}
+
+function updateCalc(input) {
+    const row = input.closest('tr');
+    if(row.classList.contains('disabled-row')) return;
+    const m = parseFloat(row.querySelector('.meter-val').innerText || 0);
+    const q = parseInt(input.value || 0);
+    row.querySelector('.total-m').innerText = (m * q).toFixed(2);
+}
+
+function generateWE(el) {
+    const row = el.closest('tr');
+    const mach = row.querySelector('.machine-select').value;
+    const kpc = row.querySelector('.kpc-select').value;
+    const type = TYPE_CODES[row.querySelector('.type-select').value] || 'XX';
+    if(mach && kpc) row.querySelector('.we-code').value = `${mach}_${kpc}_${type}_${activeOrderId}`;
 }
 
 function validateQty(groupId) {
     const tbody = document.getElementById('setupBody');
-    const rows = tbody.querySelectorAll(`tr[data-id="${groupId}"]`);
-    let target = 0;
-    let totalAssigned = 0;
-
-    rows.forEach(r => {
-        if(r.classList.contains('main-row')) {
-            target = parseInt(r.querySelector('.target-qty').innerText);
-        }
-        totalAssigned += parseInt(r.querySelector('.qty-input').value || 0);
+    const main = tbody.querySelector(`.main-row[data-id="${groupId}"]`);
+    const target = parseInt(main.querySelector('.target-qty').innerText);
+    let current = 0;
+    tbody.querySelectorAll(`tr[data-id="${groupId}"]:not(.disabled-row)`).forEach(r => {
+        current += parseInt(r.querySelector('.qty-input').value || 0);
     });
-
     const msg = document.getElementById('validationMsg');
+    const isErr = current !== target;
+    tbody.querySelectorAll(`tr[data-id="${groupId}"] .qty-input`).forEach(el => el.style.borderColor = isErr ? 'red' : '#ccc');
+    if(isErr) { msg.style.display = 'block'; msg.innerText = `Total Qty (${current}) != Target (${target})`; } 
+    else { msg.style.display = 'none'; }
+    return !isErr;
+}
+
+async function submitProduction(mode) {
+    if(document.getElementById('validationMsg').style.display === 'block') return alert("Perbaiki error Qty!");
+    const rows = document.querySelectorAll('#setupBody tr:not(.disabled-row)');
+    let data = [], valid = true;
     rows.forEach(r => {
-        const input = r.querySelector('.qty-input');
-        if(totalAssigned !== target) input.style.borderColor = 'red';
-        else input.style.borderColor = '#ccc';
-    });
-
-    if(totalAssigned !== target) {
-        msg.style.display = 'block';
-        msg.innerText = `Total Qty Item Group ini (${totalAssigned}) tidak sama dengan Target (${target}).`;
-        return false;
-    } else {
-        msg.style.display = 'none';
-        return true;
-    }
-}
-
-// --- 4. SUBMIT & PRINT ---
-async function submitProduction() {
-    const tbody = document.getElementById('setupBody');
-    const rows = tbody.querySelectorAll('tr');
-    let isValid = true;
-    let submitData = [];
-    let pdfData = [];
-
-    if(document.getElementById('validationMsg').style.display === 'block') {
-        alert("Harap perbaiki jumlah Qty (Split) yang tidak sesuai target.");
-        return;
-    }
-
-    rows.forEach(row => {
-        const isSpandek = row.dataset.type === 'spandek';
-        const qty = row.querySelector('.qty-input').value;
-        
-        let itemData = {
-            originalData: row.dataset.original,
-            originalRowIndex: row.classList.contains('main-row') ? row.dataset.rowindex : null,
-            isSplit: row.classList.contains('split-row'),
-            qty: qty,
-            machine: '', kpc: '', we: ''
-        };
-
-        let pdfItem = {
-            name: row.cells[0].querySelector('strong').innerText,
-            meter: row.cells[1].innerText,
-            qty: qty,
-            detail: '-',
-            we: '-'
-        };
-
-        if(isSpandek) {
-            const machine = row.querySelector('.machine-select').value;
-            const kpc = row.querySelector('.kpc-select').value;
-            const we = row.querySelector('.we-code-input').value;
-            const type = row.querySelector('.type-select').value;
-
-            if(!machine || !kpc || !we || qty <= 0) {
-                row.style.backgroundColor = '#fee2e2'; 
-                isValid = false;
-            } else {
-                row.style.backgroundColor = row.classList.contains('split-row') ? '#fffde7' : '#fff';
-                itemData.machine = machine;
-                itemData.kpc = kpc;
-                itemData.we = we;
-                pdfItem.detail = `${machine} / ${kpc} / ${type}`;
-                pdfItem.we = we;
-            }
+        const type = r.dataset.type;
+        const q = r.querySelector('.qty-input')?.value;
+        let item = { originalData: r.dataset.original, qty: q, isSplit: r.classList.contains('split-row') };
+        if(currentTab === 'In Process') item.isFinished = r.querySelector('.check-production')?.checked || false;
+        if(type === 'spandek') {
+            const m = r.querySelector('.machine-select').value;
+            const k = r.querySelector('.kpc-select').value;
+            const w = r.querySelector('.we-code').value;
+            if(!m || !k) { r.style.backgroundColor = '#fee2e2'; valid = false; }
+            else { item.machine = m; item.kpc = k; item.we = w; }
         }
-        submitData.push(itemData);
-        pdfData.push(pdfItem);
+        data.push(item);
     });
-
-    if(!isValid) {
-        alert("Mohon lengkapi Mesin dan KPC untuk semua item Spandek.");
-        return;
-    }
-
-    generatePDF(activeOrderId, pdfData);
-
-    const btn = document.querySelector('.btn-process');
-    const oldText = btn.innerText;
-    btn.innerText = "Processing...";
-    btn.disabled = true;
-
-    try {
-        const payload = {
-            action: 'submitProduction',
-            orderId: activeOrderId,
-            category: 'preorder', // PENTING: Penanda agar masuk ke Sheet PreOrder
-            data: submitData
-        };
-
-        const res = await fetch(BASE_URL, {
-            method: 'POST',
-            body: JSON.stringify(payload)
-        });
-        
-        const result = await res.json();
-        
-        if(result.result === 'error') throw new Error(result.message);
-
-        alert("Sukses! " + (result.message || "Data berhasil diproses."));
-        closeModal();
-        loadOrders(); 
-
-    } catch (e) {
-        alert("Error submit: " + e.message);
-    } finally {
-        btn.innerText = oldText;
-        btn.disabled = false;
-    }
+    if(!valid) return alert("Lengkapi Data Mesin/KPC!");
+    await sendAPI(mode === 'new' ? 'submitProduction' : 'updateProductionData', { orderId: activeOrderId, data: data });
+    if(mode === 'new') generatePDF('SPK'); 
 }
 
-function generatePDF(orderId, items) {
-    const o = currentOrders[orderId];
-    document.getElementById('pdfOrderNo').innerText = orderId;
-    document.getElementById('pdfDate').innerText = new Date().toLocaleDateString('id-ID');
+async function completeOrder(id) { await sendAPI('completeOrder', { orderId: id }); }
+async function deliverOrder(id) { await sendAPI('deliverOrder', { orderId: id }); }
+async function cancelOrder(id) { await sendAPI('cancelOrder', { orderId: id }); }
+
+async function sendAPI(action, payload) {
+    try {
+        payload.action = action;
+        const res = await fetch(BASE_URL, { method: 'POST', body: JSON.stringify(payload) });
+        const json = await res.json();
+        if(json.result === 'error') throw json.message;
+        alert("Sukses!"); closeModal(); loadOrders(currentTab);
+    } catch(e) { alert("Error: " + e); }
+}
+
+function generatePDF(type) {
+    const o = currentOrders[activeOrderId];
+    document.getElementById('pdfOrderNo').innerText = activeOrderId;
     document.getElementById('pdfCustomer').innerText = o.customer;
-    document.getElementById('pdfEst').innerText = o.delivery;
+    document.getElementById('pdfDate').innerText = fmtDate(new Date()); 
+    document.getElementById('pdfTitle').innerText = (type === 'SPK') ? "SURAT PERINTAH KERJA" : "SURAT JALAN";
+    document.getElementById('pdfSign1').innerText = (type === 'SPK') ? "Admin Produksi" : "Penerima";
+    document.getElementById('pdfSign2').innerText = (type === 'SPK') ? "Kepala Produksi" : "Pengirim";
+
+    const headDetail = document.getElementById('pdfHeadDetail');
+    const headWE = document.getElementById('pdfHeadWE');
+    if (type === 'SJ') {
+        headDetail.innerText = "Keterangan";
+        headWE.style.display = 'none'; 
+    } else {
+        headDetail.innerText = "Detail Mesin/KPC";
+        headWE.style.display = 'table-cell'; 
+    }
+
+    let itemsToPrint = [];
+    if (type === 'SJ') {
+        let grouped = {};
+        o.items.forEach(item => {
+            let key = `${item.item}_${item.meter}_${item.type}`;
+            if (!grouped[key]) { grouped[key] = { ...item, qty: 0, we: '', machine: '', kpc: '' }; }
+            grouped[key].qty += parseInt(item.qty);
+        });
+        itemsToPrint = Object.values(grouped);
+    } else { itemsToPrint = o.items; }
 
     const tbody = document.getElementById('pdfItemsBody');
     tbody.innerHTML = '';
-    
-    items.forEach(item => {
-        tbody.innerHTML += `<tr><td>${item.name}</td><td style="text-align:center;">${item.meter}</td><td style="text-align:center;">${item.qty}</td><td>${item.detail}</td><td class="we-code">${item.we}</td></tr>`;
+    itemsToPrint.forEach((i, idx) => {
+        let weCell = (type === 'SPK') ? `<td style="border:1px solid #000; padding:5px;">${i.we||'-'}</td>` : '';
+        let detail = (type === 'SPK') ? `${i.machine||'-'} / ${i.kpc||'-'}` : ''; 
+        tbody.innerHTML += `<tr><td style="border:1px solid #000; text-align:center; padding:5px;">${idx+1}</td><td style="border:1px solid #000; padding:5px;">${i.item}<br><small>${i.type}</small></td><td style="border:1px solid #000; text-align:center; padding:5px;">${i.meter}</td><td style="border:1px solid #000; text-align:center; padding:5px;">${i.qty}</td><td style="border:1px solid #000; padding:5px;">${detail}</td>${weCell}</tr>`;
     });
 
     const el = document.getElementById('pdfContent');
-    html2pdf().set({ margin: [0.5, 0.5, 0.5, 0.5], filename: `SPK_${orderId}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }).from(el).save();
+    html2pdf().set({ margin: [0.3, 0.3], filename: `${type}_${activeOrderId}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a5', orientation: 'landscape' } }).from(el).save();
 }
 </script>
 </body>
