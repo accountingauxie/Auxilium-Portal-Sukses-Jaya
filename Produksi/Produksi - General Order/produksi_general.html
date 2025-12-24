@@ -165,12 +165,13 @@ table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-ali
 </div>
 
 <script src="https://cdn.jsdelivr.net/gh/accountingauxie/Auxilium-Portal-Sukses-Jaya/assets/config.js"></script>
+
 <script>
-// --- KONFIGURASI URL (FALLBACK) ---
-const FALLBACK_URL = "https://script.google.com/macros/s/AKfycbyNycnkFGHj_bHBWNz_jqfj7_C6xksFbYOgGvIioHs0e2JmqAEmJw7BkDptQuD-Y8Uy6g/exec";
+// --- PERBAIKAN: URL SCRIPT LANGSUNG (BYPASS CDN) ---
+const FALLBACK_URL = "https://script.google.com/macros/s/AKfycbzfKcHIntwRj30cfl2tcqfNHmtnT6E6BOUFLZ6JzH3smAlMdrwgWxMBbnJIrVOV68ApxQ/exec";
 const BASE_URL = window.GAS_URL || FALLBACK_URL;
 
-if (!BASE_URL) alert("Error: GAS_URL tidak ditemukan.");
+if (!BASE_URL) alert("Error: GAS_URL tidak ditemukan. Cek config.js.");
 
 let currentOrders = {}; 
 let activeOrderId = null;
@@ -220,10 +221,12 @@ async function loadOrders(status) {
         const data = await response.json();
         renderDashboard(data, status);
     } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="7" style="color:red; text-align:center;">Error: ${err}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="color:red; text-align:center;">Failed to fetch. Pastikan Apps Script sudah "New Deployment".<br>${err}</td></tr>`;
     }
 }
 
+// ... (SISA KODE FUNCTION LAINNYA: renderDashboard, openSetup, dll BIARKAN SAMA) ...
+// Pastikan kode di bawah ini ada
 function renderDashboard(data, status) {
     const tbody = document.getElementById('dashboardBody');
     tbody.innerHTML = '';
