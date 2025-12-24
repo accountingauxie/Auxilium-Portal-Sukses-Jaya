@@ -303,9 +303,12 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
 </div>
 
 <script src="https://cdn.jsdelivr.net/gh/accountingauxie/Auxilium-Portal-Sukses-Jaya/assets/config.js"></script>
-
 <script>
-const baseURL = window.GAS_URL;
+// --- KONFIGURASI URL (FALLBACK) ---
+// Jika CDN belum update, gunakan URL ini langsung:
+const FALLBACK_URL = "https://script.google.com/macros/s/AKfycbyNycnkFGHj_bHBWNz_jqfj7_C6xksFbYOgGvIioHs0e2JmqAEmJw7BkDptQuD-Y8Uy6g/exec";
+const baseURL = window.GAS_URL || FALLBACK_URL;
+
 if (!baseURL) alert("Error: GAS_URL tidak ditemukan. Cek config.js.");
 
 let allOrders = [];
