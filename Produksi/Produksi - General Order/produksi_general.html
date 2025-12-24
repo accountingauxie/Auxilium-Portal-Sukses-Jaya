@@ -165,11 +165,12 @@ table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-ali
 </div>
 
 <script src="https://cdn.jsdelivr.net/gh/accountingauxie/Auxilium-Portal-Sukses-Jaya/assets/config.js"></script>
-
 <script>
-// AMBIL URL DARI CDN
-const BASE_URL = window.GAS_URL;
-if (!BASE_URL) alert("Error: GAS_URL tidak ditemukan. Pastikan assets/config.js sudah dibuat di GitHub.");
+// --- KONFIGURASI URL (FALLBACK) ---
+const FALLBACK_URL = "https://script.google.com/macros/s/AKfycbyNycnkFGHj_bHBWNz_jqfj7_C6xksFbYOgGvIioHs0e2JmqAEmJw7BkDptQuD-Y8Uy6g/exec";
+const BASE_URL = window.GAS_URL || FALLBACK_URL;
+
+if (!BASE_URL) alert("Error: GAS_URL tidak ditemukan.");
 
 let currentOrders = {}; 
 let activeOrderId = null;
