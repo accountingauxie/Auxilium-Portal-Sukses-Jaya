@@ -5,81 +5,54 @@
 <title>Pre-Order Management - Auxilium</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-/* --- BASE STYLES --- */
-:root { --primary: #116999; --bg: #f4f7f6; --text: #333; --red: #b91c1c; --green: #047857; --purple: #7e22ce; }
+/* --- STYLES --- */
+:root { --primary: #116999; --bg: #f4f7f6; --text: #333; --purple: #7e22ce; --green: #047857; }
 * { box-sizing: border-box; }
 body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background: var(--bg); color: var(--text); }
-
-/* NAVBAR */
 .aux-navbar { background: #fff; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
 .aux-brand { font-weight: bold; font-size: 16px; color: #555; display: flex; align-items: center; gap: 10px; }
 .aux-link { text-decoration: none; color: #666; font-weight: 600; padding: 8px 14px; border-radius: 6px; }
 .aux-link.active { color: var(--purple); background: #f3e8ff; }
-
-/* CONTENT WRAPPER */
 .page-wrap { padding: 30px; max-width: 1200px; margin: 0 auto; }
 .header-sect { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.header-sect h2 { margin: 0; color: #333; }
-
-/* TABS */
 .category-tabs { margin-bottom: 15px; border-bottom: 2px solid #ddd; }
-.cat-btn { background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s; }
-.cat-btn:hover { color: var(--purple); }
+.cat-btn { background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; }
 .cat-btn.active { color: var(--purple); border-bottom-color: var(--purple); }
-
-/* TABLE CARD */
 .table-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; }
 table.xero-table { width: 100%; border-collapse: collapse; }
 table.xero-table th { text-align: left; padding: 12px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; color: #555; font-size: 12px; font-weight: bold; text-transform: uppercase; }
 table.xero-table td { padding: 12px 15px; border-bottom: 1px solid #eee; vertical-align: middle; color: #444; }
-table.xero-table tr:hover { background-color: #fcfcfc; }
 .order-link { color: var(--purple); font-weight: bold; text-decoration: none; cursor: pointer; }
-
-/* PROGRESS BAR */
 .progress-wrap { width: 100%; background: #e5e7eb; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 5px; }
 .progress-fill { height: 100%; background: var(--green); width: 0%; transition: width 0.5s ease; }
 .progress-info { display: flex; justify-content: space-between; font-size: 10px; color: #666; margin-bottom: 2px; }
-
-/* BADGES */
 .badge { padding: 3px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; text-transform: uppercase; display: inline-block; }
 .badge-open { background: #eff6ff; color: #1d4ed8; border: 1px solid #dbeafe; }
 .badge-partial { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
 .badge-closed { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
-
-/* MODAL */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: flex-start; justify-content: center; z-index: 1000; padding-top: 50px; overflow-y: auto; }
-.modal-box { background: #fff; width: 850px; max-width: 95%; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; margin-bottom: 50px; }
-.modal-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+.modal-box { background: #fff; width: 850px; max-width: 95%; border-radius: 8px; margin-bottom: 50px; display: flex; flex-direction: column; }
+.modal-header, .modal-footer { padding: 20px; border-bottom: 1px solid #eee; } 
+.modal-footer { border-top: 1px solid #eee; border-bottom: none; text-align: right; }
 .modal-body { padding: 20px; max-height: 70vh; overflow-y: auto; background: #fafafa; }
-.modal-footer { padding: 15px 20px; background: #fff; border-top: 1px solid #eee; text-align: right; }
-
-/* MODAL CARDS */
-.item-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+.item-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 15px; margin-bottom: 15px; }
 .item-head { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed #eee; padding-bottom: 8px; }
 .batch-table { width: 100%; margin-top: 10px; border: 1px solid #eee; border-collapse: collapse; }
 .batch-table th { background: #f3f4f6; font-size: 11px; padding: 6px; text-align: left; }
 .batch-table td { padding: 5px; border-top: 1px solid #eee; }
 .inp-sm { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
-.inp-readonly { background: #f9fafb; color: #666; border-color: #eee; pointer-events: none; }
-
-/* BUTTONS */
-.btn { padding: 8px 16px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; color: white; transition: 0.2s; }
+.btn { padding: 8px 16px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; color: white; }
 .btn-primary { background: var(--purple); }
 .btn-secondary { background: #fff; border: 1px solid #ccc; color: #333; }
 .btn-add { background: #dbeafe; color: #1e40af; padding: 5px 10px; font-size: 11px; margin-top: 8px; display: inline-block; }
-.btn-del { background: #fee2e2; color: #991b1b; padding: 5px 8px; font-size: 11px; }
 .btn-loading { opacity: 0.7; cursor: wait; }
 </style>
 </head>
 <body>
 
 <div class="aux-navbar">
-    <div class="aux-brand">
-        <i class="fas fa-cubes"></i> AUXILIUM PRE-ORDER
-    </div>
-    <div class="aux-menu">
-        <a href="#" class="aux-link active">Dashboard</a>
-    </div>
+    <div class="aux-brand"><i class="fas fa-cubes"></i> AUXILIUM PRE-ORDER</div>
+    <div class="aux-menu"><a href="#" class="aux-link active">Dashboard</a></div>
 </div>
 
 <div class="page-wrap">
@@ -87,12 +60,10 @@ table.xero-table tr:hover { background-color: #fcfcfc; }
         <h2>Daftar Pre-Order (Bulk)</h2>
         <button class="btn btn-secondary" onclick="loadData()"><i class="fas fa-sync"></i> Refresh</button>
     </div>
-
     <div class="category-tabs">
         <button class="cat-btn active" id="tab-open" onclick="switchTab('Open')">Open & Partial</button>
         <button class="cat-btn" id="tab-closed" onclick="switchTab('Closed')">History Closed</button>
     </div>
-
     <div class="table-card">
         <table class="xero-table">
             <thead>
@@ -121,8 +92,7 @@ table.xero-table tr:hover { background-color: #fcfcfc; }
             </div>
             <button onclick="closeModal()" style="background:none; border:none; font-size:18px; cursor:pointer;">&times;</button>
         </div>
-        <div class="modal-body" id="modalItems">
-            </div>
+        <div class="modal-body" id="modalItems"></div>
         <div class="modal-footer">
             <span style="font-size:11px; color:#666; margin-right:auto;">*Total Produksi akan mengurangi sisa kuota order.</span>
             <button class="btn btn-secondary" onclick="closeModal()">Batal</button>
@@ -132,8 +102,10 @@ table.xero-table tr:hover { background-color: #fcfcfc; }
 </div>
 
 <script>
-// CONFIG (URL Web App Anda)
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyDMEfgDjGVpuRCbGo_ClJnxzJC6Vrv0Rr1qYafddsUSl7_L_zRkhQYPyL1zlppKGgsUw/exec"; 
+// --- CONFIG PENTING ---
+// Ganti URL ini dengan URL Web App Anda yang berakhiran /exec
+// Caranya: Deploy > Manage Deployment > Copy Web App URL
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO98ahTIDmfzeDRIpUkb_CuVx3KVkmHa8nSIrOhhv_T2wglzg_zHXbNZqfWqu5cCu7Kg/exec"; 
 
 let currentData = [];
 let activePO = null;
@@ -150,15 +122,14 @@ function switchTab(tab) {
 
 async function loadData() {
     const tbody = document.getElementById('tableBody');
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px;">Mengambil data terbaru...</td></tr>';
-    
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px;">Mengambil data...</td></tr>';
     try {
-        const response = await fetch(`${SCRIPT_URL}?action=getPreOrders&status=Open`); // Ambil semua Open dulu
+        const response = await fetch(`${SCRIPT_URL}?action=getPreOrders&status=Open`);
         const result = await response.json();
         currentData = result;
         renderTable();
     } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Error: ${err}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Error Fetching: ${err} <br> (Coba Deploy > New Version)</td></tr>`;
     }
 }
 
@@ -166,7 +137,6 @@ function renderTable() {
     const tbody = document.getElementById('tableBody');
     tbody.innerHTML = '';
     
-    // Filter Client-Side berdasarkan Tab
     const filtered = currentData.filter(po => {
         if(currentTab === 'Open') return po.status !== 'Closed';
         return po.status === 'Closed';
@@ -178,18 +148,11 @@ function renderTable() {
     }
 
     filtered.forEach(po => {
-        // Hitung Global Progress
-        let totalM = 0; 
-        let doneM = 0;
-        po.items.forEach(i => {
-            totalM += i.totalMeter;
-            doneM += i.processedMeter;
-        });
+        let totalM = 0; let doneM = 0;
+        po.items.forEach(i => { totalM += i.totalMeter; doneM += i.processedMeter; });
         const pct = totalM > 0 ? (doneM / totalM) * 100 : 0;
         
-        let badge = 'badge-open';
-        if(po.status === 'Partial') badge = 'badge-partial';
-        if(po.status === 'Closed') badge = 'badge-closed';
+        let badge = po.status === 'Closed' ? 'badge-closed' : (po.status === 'Partial' ? 'badge-partial' : 'badge-open');
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -197,77 +160,52 @@ function renderTable() {
             <td>${po.customer}</td>
             <td>${po.date}</td>
             <td>
-                <div class="progress-info">
-                    <span>${doneM.toFixed(1)} / ${totalM.toFixed(1)} m</span>
-                    <span>${pct.toFixed(0)}%</span>
-                </div>
-                <div class="progress-wrap">
-                    <div class="progress-fill" style="width:${pct}%"></div>
-                </div>
+                <div class="progress-info"><span>${doneM.toFixed(1)} / ${totalM.toFixed(1)} m</span><span>${pct.toFixed(0)}%</span></div>
+                <div class="progress-wrap"><div class="progress-fill" style="width:${pct}%"></div></div>
             </td>
             <td><span class="badge ${badge}">${po.status}</span></td>
-            <td>
-                ${po.status !== 'Closed' ? 
-                `<button class="btn btn-primary" style="padding:4px 10px; font-size:11px;" onclick="openModal('${po.poId}')">
-                    <i class="fas fa-industry"></i> Produksi
-                 </button>` : '<i class="fas fa-check-circle" style="color:green"></i> Selesai'}
-            </td>
+            <td>${po.status !== 'Closed' ? `<button class="btn btn-primary" style="padding:4px 10px; font-size:11px;" onclick="openModal('${po.poId}')"><i class="fas fa-industry"></i> Produksi</button>` : '<i class="fas fa-check-circle" style="color:green"></i> Selesai'}</td>
         `;
         tbody.appendChild(tr);
     });
 }
 
-// --- MODAL LOGIC ---
 function openModal(poId) {
     activePO = currentData.find(p => p.poId === poId);
     if(!activePO) return;
-    
     document.getElementById('modalTitle').innerText = `${activePO.poId} - ${activePO.customer}`;
     const container = document.getElementById('modalItems');
     container.innerHTML = '';
 
     activePO.items.forEach(item => {
-        // Skip item yang sudah closed penuh
         if(item.isLineClosed) return;
-
         const remain = item.totalMeter - item.processedMeter;
         
         const div = document.createElement('div');
         div.className = 'item-card';
-        div.dataset.rowIndex = item.rowIndex; // Simpan rowIndex
+        div.dataset.rowIndex = item.rowIndex;
         div.dataset.itemName = item.name;
         div.dataset.remain = remain;
 
         div.innerHTML = `
             <div class="item-head">
-                <div>
-                    <strong>${item.name}</strong><br>
-                    <small>Spec: ${item.meterDim}m x ${item.qty} lbr</small>
-                </div>
-                <div style="text-align:right;">
-                    <div style="font-size:10px; color:#666;">Total: ${item.totalMeter.toFixed(2)} m</div>
-                    <div style="font-weight:bold; color:var(--purple);">Sisa: <span class="remain-txt">${remain.toFixed(2)}</span> m</div>
-                </div>
+                <div><strong>${item.name}</strong><br><small>Spec: ${item.meterDim}m x ${item.qty} lbr</small></div>
+                <div style="text-align:right;"><div style="font-size:10px;">Total: ${item.totalMeter.toFixed(2)} m</div><div style="font-weight:bold; color:var(--purple);">Sisa: <span class="remain-txt">${remain.toFixed(2)}</span> m</div></div>
             </div>
-            
             <table class="batch-table">
                 <thead><tr><th>Panjang (m)</th><th>Qty</th><th>Total (m)</th><th></th></tr></thead>
-                <tbody id="tbody-${item.rowIndex}">
-                    </tbody>
+                <tbody id="tbody-${item.rowIndex}"></tbody>
             </table>
             <button class="btn btn-add" onclick="addRow(${item.rowIndex})">+ Tambah Ukuran</button>
-            <div class="validation-msg" id="msg-${item.rowIndex}" style="color:red; font-size:11px; margin-top:5px; display:none;">Over Limit!</div>
+            <div id="msg-${item.rowIndex}" style="color:red; font-size:11px; margin-top:5px; display:none;">Over Limit!</div>
         `;
         container.appendChild(div);
-        addRow(item.rowIndex); // Add 1 row default
+        addRow(item.rowIndex);
     });
-
     document.getElementById('prodModal').style.display = 'flex';
 }
 
-function closeModal() {
-    document.getElementById('prodModal').style.display = 'none';
-}
+function closeModal() { document.getElementById('prodModal').style.display = 'none'; }
 
 function addRow(idx) {
     const tbody = document.getElementById(`tbody-${idx}`);
@@ -275,47 +213,37 @@ function addRow(idx) {
     tr.innerHTML = `
         <td><input type="number" step="0.01" class="inp-sm inp-len" oninput="calc(${idx})"></td>
         <td><input type="number" class="inp-sm inp-qty" oninput="calc(${idx})"></td>
-        <td><input type="text" class="inp-sm inp-readonly inp-tot" value="0"></td>
+        <td><input type="text" class="inp-sm" value="0" readonly style="background:#f9fafb;"></td>
         <td style="text-align:center;"><i class="fas fa-trash" style="color:#faa; cursor:pointer;" onclick="delRow(this, ${idx})"></i></td>
     `;
     tbody.appendChild(tr);
 }
 
-function delRow(el, idx) {
-    el.closest('tr').remove();
-    calc(idx);
-}
+function delRow(el, idx) { el.closest('tr').remove(); calc(idx); }
 
 function calc(idx) {
     const card = document.querySelector(`.item-card[data-row-index="${idx}"]`);
     const remainMax = parseFloat(card.dataset.remain);
     const tbody = document.getElementById(`tbody-${idx}`);
-    
     let totalInput = 0;
     
     tbody.querySelectorAll('tr').forEach(tr => {
         const len = parseFloat(tr.querySelector('.inp-len').value) || 0;
         const qty = parseFloat(tr.querySelector('.inp-qty').value) || 0;
         const sum = len * qty;
-        tr.querySelector('.inp-tot').value = sum.toFixed(2);
+        tr.querySelector('input[readonly]').value = sum.toFixed(2);
         totalInput += sum;
     });
 
-    // Update UI Sisa
     const remainTxt = card.querySelector('.remain-txt');
     const msg = document.getElementById(`msg-${idx}`);
-    
     const currentRemain = remainMax - totalInput;
     remainTxt.innerText = currentRemain.toFixed(2);
 
-    if(currentRemain < -0.1) { // Toleransi sedikit
-        remainTxt.style.color = 'red';
-        msg.style.display = 'block';
-        return false;
+    if(currentRemain < -0.1) {
+        remainTxt.style.color = 'red'; msg.style.display = 'block'; return false;
     } else {
-        remainTxt.style.color = 'var(--purple)';
-        msg.style.display = 'none';
-        return true;
+        remainTxt.style.color = 'var(--purple)'; msg.style.display = 'none'; return true;
     }
 }
 
@@ -326,59 +254,34 @@ async function submitProduction() {
 
     cards.forEach(card => {
         const idx = card.dataset.rowIndex;
-        if(!calc(idx)) hasError = true; // Cek validasi ulang
-
+        if(!calc(idx)) hasError = true;
         const tbody = document.getElementById(`tbody-${idx}`);
         tbody.querySelectorAll('tr').forEach(tr => {
             const len = parseFloat(tr.querySelector('.inp-len').value) || 0;
             const qty = parseFloat(tr.querySelector('.inp-qty').value) || 0;
-            
             if(len > 0 && qty > 0) {
                 payloadBatch.push({
-                    rowIndex: idx, // ID Baris Excel
+                    rowIndex: idx,
                     itemName: card.dataset.itemName,
-                    length: len,
-                    qty: qty,
-                    totalMeter: len * qty
+                    length: len, qty: qty, totalMeter: len * qty
                 });
             }
         });
     });
 
-    if(hasError) return alert("Cek kembali inputan merah (melebihi kuota)!");
-    if(payloadBatch.length === 0) return alert("Belum ada data produksi yang diisi.");
+    if(hasError) return alert("Cek kembali inputan merah!");
+    if(payloadBatch.length === 0) return alert("Belum ada data.");
+    if(!confirm("Kirim ke Produksi?")) return;
 
-    if(!confirm("Kirim data ke Bagian Produksi (Awaiting)?")) return;
-
-    // SEND TO BACKEND
     const btn = document.getElementById('btnSubmit');
     btn.innerText = "Mengirim...";
-    btn.classList.add('btn-loading');
-    
     try {
-        const payload = {
-            poId: activePO.poId,
-            customer: activePO.customer,
-            batches: payloadBatch
-        };
-
-        await fetch(SCRIPT_URL, {
-            method: 'POST',
-            body: JSON.stringify({ action: 'submitPartialPO', data: payload })
-        });
-
-        alert("Sukses! Data terkirim.");
-        closeModal();
-        loadData(); // Refresh
-
-    } catch(e) {
-        alert("Gagal: " + e);
-    } finally {
-        btn.innerText = "Kirim ke Produksi";
-        btn.classList.remove('btn-loading');
-    }
+        const payload = { poId: activePO.poId, customer: activePO.customer, batches: payloadBatch };
+        await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'submitPartialPO', data: payload }) });
+        alert("Sukses!"); closeModal(); loadData();
+    } catch(e) { alert("Error: " + e); } 
+    finally { btn.innerText = "Kirim ke Produksi"; }
 }
 </script>
-
 </body>
 </html>
