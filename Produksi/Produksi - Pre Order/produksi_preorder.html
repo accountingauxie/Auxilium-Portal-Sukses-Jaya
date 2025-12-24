@@ -64,7 +64,17 @@ table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 .btn-close { background: #fff; color: #333; border: 1px solid #ccc; }
 .btn-process { background: #116999; }
 .badge { padding: 5px 12px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; display: inline-block; }
-.badge-approve { background: #fff7e6; color: #b75900; border: 1px solid #ffe8cc; }
+.badge-awaiting { background: #fff7e6; color: #b75900; border: 1px solid #ffe8cc; }
+.badge-process { background: #e6f7ff; color: #0050b3; border: 1px solid #91d5ff; }
+.badge-completed { background: #f6ffed; color: #389e0d; border: 1px solid #b7eb8f; }
+.badge-delivery { background: #f9f0ff; color: #531dab; border: 1px solid #d3adf7; }
+.badge-cancel { background: #fff1f0; color: #cf1322; border: 1px solid #ffa39e; }
+
+/* Alert & Confirm */
+.alert-box { display:none; background:#e0f2fe; color:#0c4a6e; padding:10px; border-radius:6px; margin-bottom:15px; font-size:12px; }
+.confirm-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 11000; }
+.confirm-box { background: #fff; padding: 20px; border-radius: 8px; width: 300px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+.confirm-btns { margin-top: 20px; display: flex; justify-content: center; gap: 10px; }
 
 /* --- PDF STYLE --- */
 #pdf-hidden-container { position: absolute; left: -9999px; top: 0; }
@@ -111,9 +121,10 @@ table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; bor
     <h2>Persiapan Produksi (Pre-Order)</h2>
     
     <div class="category-tabs">
-        <button class="cat-btn active" id="tab-awaiting" onclick="loadOrders()">Awaiting Production</button>
-        <button class="cat-btn" id="tab-process" onclick="alert('Fitur Process View akan segera hadir')">In Process</button>
-        <button class="cat-btn" id="tab-completed" onclick="alert('History selesai akan segera hadir')">Completed</button>
+        <button class="cat-btn active" id="tab-awaiting" onclick="switchTab('Awaiting')">Awaiting Production</button>
+        <button class="cat-btn" id="tab-process" onclick="switchTab('In Process')">In Process</button>
+        <button class="cat-btn" id="tab-completed" onclick="switchTab('Completed')">Completed</button>
+        <button class="cat-btn" id="tab-delivery" onclick="switchTab('Delivered')">Delivered</button>
     </div>
 
     <div class="table-card">
@@ -121,15 +132,16 @@ table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; bor
             <thead>
                 <tr>
                     <th>Order #</th>
+                    <th>Type</th>
                     <th>Customer</th>
                     <th>Order Date</th>
                     <th>Est. Delivery</th>
+                    <th>Status</th>
                     <th>Items Count</th>
-                    <th style="text-align:center;">Action</th>
                 </tr>
             </thead>
             <tbody id="dashboardBody">
-                <tr><td colspan="6" style="text-align:center; padding:50px; color:#999;">Loading Data...</td></tr>
+                <tr><td colspan="7" style="text-align:center; padding:50px; color:#999;">Loading Data...</td></tr>
             </tbody>
         </table>
     </div>
@@ -146,32 +158,36 @@ table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; bor
         </div>
         
         <div class="modal-body">
-            <div class="alert" style="background:#e0f2fe; color:#0c4a6e; padding:10px; border-radius:6px; margin-bottom:15px; font-size:12px;">
+            <div id="modalAlert" class="alert-box">
                 <i class="fas fa-info-circle"></i> <strong>Instruksi:</strong> Lengkapi Mesin dan KPC untuk item Spandek. Gunakan tombol "Split" jika stok KPC tidak cukup.
             </div>
 
             <table class="xero-table" id="productionTable">
                 <thead>
-                    <tr>
-                        <th style="width:20%">Nama Barang</th>
-                        <th style="width:8%; text-align:center;">Meter</th>
-                        <th style="width:8%; text-align:center;">Total Qty</th>
-                        <th style="width:10%; text-align:center;">Assigned Qty</th>
-                        <th style="width:12%">Mesin</th>
-                        <th style="width:15%">KPC Code (Stok)</th>
-                        <th style="width:10%">Type</th>
-                        <th style="width:12%">Work Effort Code</th>
-                        <th style="width:5%">Action</th>
-                    </tr>
+                    <tr id="tableHeaderRow">
+                        </tr>
                 </thead>
                 <tbody id="setupBody"></tbody>
             </table>
             <div id="validationMsg" style="color:red; font-weight:bold; margin-top:10px; display:none;"></div>
         </div>
 
-        <div class="modal-footer">
-            <button class="btn-action btn-close" onclick="closeModal()">Cancel</button>
-            <button class="btn-action btn-process" onclick="submitProduction()">Process & Print PDF</button>
+        <div class="modal-footer" style="display:flex; justify-content:space-between;">
+            <div id="footerLeft"></div>
+            <div id="footerRight">
+                <button class="btn-action btn-close" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="confirmModal" class="confirm-overlay">
+    <div class="confirm-box">
+        <h3>Konfirmasi</h3>
+        <p id="confirmMessage">Yakin ingin melanjutkan?</p>
+        <div class="confirm-btns">
+            <button class="btn-sm btn-close" onclick="closeConfirm(false)" style="padding:8px 20px;">Batal</button>
+            <button class="btn-sm btn-process" id="confirmYesBtn" style="padding:8px 20px; color:white;">Ya, Lanjutkan</button>
         </div>
     </div>
 </div>
@@ -180,8 +196,8 @@ table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; bor
     <div id="pdfContent">
         <div class="pdf-header">
             <div>
-                <div class="pdf-title">SURAT PERINTAH KERJA</div>
-                <div class="pdf-subtitle">Produksi (Internal Use Only)</div>
+                <div class="pdf-title" id="pdfTitle">SURAT PERINTAH KERJA</div>
+                <div class="pdf-subtitle" id="pdfSubTitle">Produksi (Internal Use Only)</div>
             </div>
             <div style="text-align:right;">
                 <div style="font-size:16px; font-weight:bold;" id="pdfOrderNo">-</div>
@@ -195,18 +211,19 @@ table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; bor
         <table class="pdf-table">
             <thead>
                 <tr>
+                    <th style="width:5%; text-align:center;">No</th>
                     <th>Nama Barang</th>
                     <th style="text-align:center;">Meter</th>
                     <th style="text-align:center;">Qty</th>
-                    <th>Mesin / KPC / Type</th>
-                    <th>Work Effort Code</th>
+                    <th id="pdfHeadDetail">Mesin / KPC / Type</th>
+                    <th id="pdfHeadWE">Work Effort Code</th>
                 </tr>
             </thead>
             <tbody id="pdfItemsBody"></tbody>
         </table>
         <div style="margin-top:40px; display:flex; justify-content:space-between; text-align:center;">
             <div style="width:30%;">
-                <div>Dibuat Oleh,</div><br><br><br>
+                <div id="pdfSign1">Dibuat Oleh,</div><br><br><br>
                 <div style="border-top:1px solid #000; width:80%; margin:0 auto;">( Admin Produksi )</div>
             </div>
             <div style="width:30%;">
@@ -214,21 +231,16 @@ table.pdf-table td { padding: 8px 4px; font-size: 11px; vertical-align: top; bor
                 <div style="border-top:1px solid #000; width:80%; margin:0 auto;">( Operator Mesin )</div>
             </div>
             <div style="width:30%;">
-                <div>Diketahui Oleh,</div><br><br><br>
+                <div id="pdfSign2">Diketahui Oleh,</div><br><br><br>
                 <div style="border-top:1px solid #000; width:80%; margin:0 auto;">( Kepala Produksi )</div>
             </div>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/gh/accountingauxie/Auxilium-Portal-Sukses-Jaya/assets/config.js"></script>
-
 <script>
-// --- PERBAIKAN: URL SCRIPT LANGSUNG (BYPASS CDN) ---
-const FALLBACK_URL = "https://script.google.com/macros/s/AKfycbzfKcHIntwRj30cfl2tcqfNHmtnT6E6BOUFLZ6JzH3smAlMdrwgWxMBbnJIrVOV68ApxQ/exec";
-const BASE_URL = window.GAS_URL || FALLBACK_URL;
-
-if (!BASE_URL) alert("Error: GAS_URL tidak ditemukan. Cek config.js.");
+// --- KONFIGURASI API TERBARU ---
+const API_URL = "https://script.google.com/macros/s/AKfycbzfKcHIntwRj30cfl2tcqfNHmtnT6E6BOUFLZ6JzH3smAlMdrwgWxMBbnJIrVOV68ApxQ/exec";
 
 let currentOrders = {}; 
 let activeOrderId = null;
@@ -265,7 +277,7 @@ function switchTab(tabName) {
     if(tabName === 'In Process') btnId = 'tab-process';
     if(tabName === 'Completed') btnId = 'tab-completed';
     if(tabName === 'Delivered') btnId = 'tab-delivery';
-    if(tabName === 'Cancel') btnId = 'tab-cancel';
+    
     document.getElementById(btnId).classList.add('active');
     loadOrders(tabName);
 }
@@ -274,7 +286,8 @@ async function loadOrders(status) {
     const tbody = document.getElementById('dashboardBody');
     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px;">Loading...</td></tr>';
     try {
-        const response = await fetch(`${BASE_URL}?action=getProductionOrders&status=${encodeURIComponent(status)}`);
+        // MENGGUNAKAN API_URL YANG BARU
+        const response = await fetch(`${API_URL}?action=getProductionOrders&status=${encodeURIComponent(status)}`);
         const data = await response.json();
         renderDashboard(data, status);
     } catch (err) {
@@ -282,8 +295,6 @@ async function loadOrders(status) {
     }
 }
 
-// ... (SISA KODE FUNCTION LAINNYA: renderDashboard, openSetup, dll BIARKAN SAMA) ...
-// Pastikan kode di bawah ini ada
 function renderDashboard(data, status) {
     const tbody = document.getElementById('dashboardBody');
     tbody.innerHTML = '';
@@ -303,7 +314,7 @@ function renderDashboard(data, status) {
         const tr = document.createElement('tr');
         tr.className = 'data-row';
         tr.innerHTML = `
-            <td><a class="order-link" onclick="openSetup('${o.orderNo}')">${o.orderNo}</a></td>
+            <td><a class="order-link" style="color:var(--primary-color); font-weight:bold;" onclick="openSetup('${o.orderNo}')">${o.orderNo}</a></td>
             <td>${o.type}</td>
             <td>${o.customer}</td>
             <td>${fmtDate(o.date)}</td>
@@ -319,6 +330,7 @@ function openSetup(orderId) {
     activeOrderId = orderId;
     const order = currentOrders[orderId];
     document.getElementById('modalOrderNo').innerText = orderId;
+    document.getElementById('modalCustomer').innerText = order.customer;
     
     // Header Setup
     const headerRow = document.getElementById('tableHeaderRow');
@@ -407,19 +419,19 @@ function renderFooterButtons() {
     const footerLeft = document.getElementById('footerLeft');
     const footerRight = document.getElementById('footerRight');
     footerLeft.innerHTML = ''; footerRight.innerHTML = '';
-    const btnClose = `<button class="btn btn-secondary" onclick="closeModal()">Close</button>`;
+    const btnClose = `<button class="btn-action btn-close" onclick="closeModal()">Close</button>`;
     
     if (currentTab === 'Awaiting') {
         footerRight.innerHTML = `${btnClose} 
-            <button class="btn btn-cancel" onclick="triggerAction('cancel')">Cancel Production</button>
-            <button class="btn btn-process" onclick="triggerAction('process')">Process</button>`;
+            <button class="btn-action btn-close" style="color:red; border:1px solid red;" onclick="triggerAction('cancel')">Cancel Production</button>
+            <button class="btn-action btn-process" onclick="triggerAction('process')">Process</button>`;
     } else if (currentTab === 'In Process') {
-        footerLeft.innerHTML = `<button class="btn btn-print" onclick="generatePDF('SPK')"><i class="fas fa-print"></i> Print SPK</button>`;
-        footerRight.innerHTML = `${btnClose} <button class="btn btn-cancel" onclick="triggerAction('cancel')">Cancel</button><button class="btn btn-process" onclick="triggerAction('update')">Update</button><button class="btn btn-complete" id="btnComplete" onclick="triggerAction('complete')" disabled>Selesai Produksi</button>`;
+        footerLeft.innerHTML = `<button class="btn-action btn-close" onclick="generatePDF('SPK')"><i class="fas fa-print"></i> Print SPK</button>`;
+        footerRight.innerHTML = `${btnClose} <button class="btn-action btn-close" onclick="triggerAction('cancel')">Cancel</button><button class="btn-action btn-process" onclick="triggerAction('update')">Update</button><button class="btn-action btn-process" style="background:green;" id="btnComplete" onclick="triggerAction('complete')" disabled>Selesai Produksi</button>`;
     } else if (currentTab === 'Completed') {
-        footerRight.innerHTML = `${btnClose} <button class="btn btn-deliver" onclick="triggerAction('deliver')">Delivery (Kirim)</button>`;
+        footerRight.innerHTML = `${btnClose} <button class="btn-action btn-process" onclick="triggerAction('deliver')">Delivery (Kirim)</button>`;
     } else if (currentTab === 'Delivered') {
-        footerLeft.innerHTML = `<button class="btn btn-print" onclick="generatePDF('SJ')"><i class="fas fa-print"></i> Print Surat Jalan</button>`;
+        footerLeft.innerHTML = `<button class="btn-action btn-close" onclick="generatePDF('SJ')"><i class="fas fa-print"></i> Print Surat Jalan</button>`;
         footerRight.innerHTML = btnClose;
     } else {
         footerRight.innerHTML = btnClose;
@@ -556,7 +568,8 @@ async function cancelOrder(id) { await sendAPI('cancelOrder', { orderId: id }); 
 async function sendAPI(action, payload) {
     try {
         payload.action = action;
-        const res = await fetch(BASE_URL, { method: 'POST', body: JSON.stringify(payload) });
+        // MENGGUNAKAN API_URL YANG BARU
+        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
         const json = await res.json();
         if(json.result === 'error') throw json.message;
         alert("Sukses!"); closeModal(); loadOrders(currentTab);
@@ -568,18 +581,26 @@ function generatePDF(type) {
     document.getElementById('pdfOrderNo').innerText = activeOrderId;
     document.getElementById('pdfCustomer').innerText = o.customer;
     document.getElementById('pdfDate').innerText = fmtDate(new Date()); 
-    document.getElementById('pdfTitle').innerText = (type === 'SPK') ? "SURAT PERINTAH KERJA" : "SURAT JALAN";
-    document.getElementById('pdfSign1').innerText = (type === 'SPK') ? "Admin Produksi" : "Penerima";
-    document.getElementById('pdfSign2').innerText = (type === 'SPK') ? "Kepala Produksi" : "Pengirim";
+    
+    // AKSES ID YANG SUDAH DIPERBAIKI
+    const titleEl = document.getElementById('pdfTitle');
+    if(titleEl) titleEl.innerText = (type === 'SPK') ? "SURAT PERINTAH KERJA" : "SURAT JALAN";
+    
+    const sign1 = document.getElementById('pdfSign1');
+    if(sign1) sign1.innerText = (type === 'SPK') ? "Dibuat Oleh," : "Dibuat Oleh,";
+
+    const sign2 = document.getElementById('pdfSign2');
+    if(sign2) sign2.innerText = (type === 'SPK') ? "Diketahui Oleh," : "Penerima,";
 
     const headDetail = document.getElementById('pdfHeadDetail');
     const headWE = document.getElementById('pdfHeadWE');
+    
     if (type === 'SJ') {
-        headDetail.innerText = "Keterangan";
-        headWE.style.display = 'none'; 
+        if(headDetail) headDetail.innerText = "Keterangan";
+        if(headWE) headWE.style.display = 'none'; 
     } else {
-        headDetail.innerText = "Detail Mesin/KPC";
-        headWE.style.display = 'table-cell'; 
+        if(headDetail) headDetail.innerText = "Detail Mesin/KPC";
+        if(headWE) headWE.style.display = 'table-cell'; 
     }
 
     let itemsToPrint = [];
