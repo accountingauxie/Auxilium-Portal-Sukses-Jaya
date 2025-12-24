@@ -302,14 +302,9 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/gh/accountingauxie/Auxilium-Portal-Sukses-Jaya/assets/config.js"></script>
-
 <script>
-// --- PERBAIKAN: URL SCRIPT LANGSUNG (BYPASS CDN) ---
-const FALLBACK_URL = "https://script.google.com/macros/s/AKfycbzfKcHIntwRj30cfl2tcqfNHmtnT6E6BOUFLZ6JzH3smAlMdrwgWxMBbnJIrVOV68ApxQ/exec";
-const baseURL = window.GAS_URL || FALLBACK_URL;
-
-if (!baseURL) alert("Error: GAS_URL tidak ditemukan.");
+// --- URL API SCRIPT LANGSUNG ---
+const API_URL = "https://script.google.com/macros/s/AKfycbzfKcHIntwRj30cfl2tcqfNHmtnT6E6BOUFLZ6JzH3smAlMdrwgWxMBbnJIrVOV68ApxQ/exec";
 
 let allOrders = [];
 let currentFilter = 'All';
@@ -320,16 +315,11 @@ async function fetchData() {
     const tbody = document.getElementById('tableBody');
     tbody.innerHTML = '<tr><td colspan="8"><div class="skeleton"></div></td></tr>';
     try {
-        const res = await fetch(baseURL + "?action=getorders");
+        const res = await fetch(API_URL + "?action=getorders");
         const data = await res.json();
         if(Array.isArray(data)) { allOrders = data; renderTable(); } else { alert("Data Error"); }
     } catch(e) { console.error(e); tbody.innerHTML = '<tr><td colspan="8" style="color:red; text-align:center;">Failed to fetch data. Pastikan Script sudah "New Deployment".</td></tr>'; }
 }
-
-// ... (Sisa fungsi ke bawah biarkan sama seperti sebelumnya: parseDateStr, renderTable, dll) ...
-// Pastikan tidak menghapus fungsi renderTable, openModal, dll.
-// Hanya ganti bagian deklarasi URL dan fetchData di atas.
-// Jika ragu, copas ulang fungsi pendukung dari kode lama Anda.
 
 function parseDateStr(str) {
     if(!str) return null;
@@ -481,7 +471,7 @@ async function updateStatus(id, stat) {
     document.getElementById('modalActions').innerHTML = 'Processing...';
     try {
         const payload = { action: 'updatestatus', id: id, status: stat };
-        const response = await fetch(baseURL, {
+        const response = await fetch(API_URL, {
             method: 'POST', 
             body: JSON.stringify(payload)
         });
