@@ -24,10 +24,13 @@ td { padding: 12px 15px; border-bottom: 1px solid #eee; vertical-align: middle; 
 
 <div class="page-wrap">
     <h2>Daftar Pre-Order (Bulk)</h2>
-    <div style="margin-bottom:15px;">
-        <button class="btn btn-sec" onclick="switchTab('Open')">Open & Partial</button>
-        <button class="btn btn-sec" onclick="switchTab('Closed')">History Closed</button>
-        <button class="btn" onclick="loadData()">Refresh</button>
+    <div style="margin-bottom:15px; display:flex; justify-content:space-between;">
+        <div>
+            <button class="btn btn-sec" onclick="switchTab('Open')">Open & Partial</button>
+            <button class="btn btn-sec" onclick="switchTab('Closed')">History Closed</button>
+            <button class="btn" onclick="loadData()">Refresh</button>
+        </div>
+        <a href="produksi_general.html" style="text-decoration:none; color:#7e22ce; font-weight:bold;">Ke General Production &rarr;</a>
     </div>
 
     <div class="table-card">
@@ -51,10 +54,11 @@ td { padding: 12px 15px; border-bottom: 1px solid #eee; vertical-align: middle; 
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/gh/accountingauxie/Auxilium-Portal-Sukses-Jaya/assets/config.js"></script>
+
 <script>
-// --- CONFIG WAJIB ---
-// Kode ini mengambil URL otomatis. Jika masih error, ganti manual.
-const SCRIPT_URL = "<?= ScriptApp.getService().getUrl() ?>"; 
+const SCRIPT_URL = window.GAS_URL;
+if (!SCRIPT_URL) alert("Error: GAS_URL tidak ditemukan. Cek config.js.");
 
 let currentData = [];
 let activePO = null;
@@ -83,7 +87,7 @@ async function loadData() {
         currentData = result;
         renderTable(currentData);
     } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Connection Error: ${err}. <br>Pastikan Deployment sudah "New Version".</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Connection Error: ${err}.</td></tr>`;
     }
 }
 
@@ -114,7 +118,6 @@ function renderTable(data) {
     });
 }
 
-// --- MODAL & SUBMIT LOGIC ---
 function openModal(poId) {
     activePO = currentData.find(p => p.poId === poId);
     document.getElementById('modalTitle').innerText = poId;
