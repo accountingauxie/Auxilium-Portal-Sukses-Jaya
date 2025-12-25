@@ -6,89 +6,217 @@
     <title>Auxilium - Daftar Tagihan</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script>
+    <script src="https://unpkg.com/feather-icons"></script> <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { primary: '#008080', 'primary-hover': '#006666', bglight: '#f8fafc', darktext: '#1e293b' },
+                    colors: { 
+                        primary: '#116999', /* Updated to Auxilium Blue */
+                        'primary-hover': '#0e5a85', 
+                        bglight: '#f8fafc', 
+                        darktext: '#1e293b' 
+                    },
                     fontFamily: { sans: ['Inter', 'sans-serif'] }
                 }
             }
         }
     </script>
+    
     <style>
-        body { background-color: #f8fafc; }
+        /* =========================================
+           1. STANDARD NAVBAR STYLES (Auxilium)
+           ========================================= */
+        :root { 
+            --primary-color: #116999; 
+            --primary-hover: #0e5a85;
+            --red-bg: #fee2e2; 
+            --red-text: #991b1b;
+        }
+
+        /* Reset & Base */
+        body { background-color: #f8fafc; font-family: 'Inter', sans-serif; margin: 0; }
+
+        /* Navbar Container */
+        .aux-navbar {
+            background-color: #ffffff;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+            position: sticky; top: 0; z-index: 50;
+        }
+
+        .aux-logo img { height: 40px; width: auto; display: block; }
+
+        /* Menu Wrapper */
+        .aux-menu { display: flex; gap: 10px; align-items: center; height: 100%; }
+        .nav-item { position: relative; height: 100%; display: flex; align-items: center; }
+
+        /* Links */
+        .aux-link { 
+            text-decoration: none; color: #666; font-weight: 600; font-size: 14px; 
+            padding: 8px 14px; border-radius: 6px; transition: all 0.2s; cursor: pointer;
+            display: flex; align-items: center; gap: 4px;
+        }
+        .aux-link:hover, .nav-item:hover .aux-link { color: #1d2939; background-color: #f9fafb; }
+        
+        /* Active State */
+        .aux-link.active { color: var(--primary-color); background-color: #eff8ff; font-weight: 700; }
+
+        /* Dropdown */
+        .dropdown-menu-aux {
+            visibility: hidden; opacity: 0; position: absolute; top: 90%; left: 50%;
+            transform: translateX(-50%) translateY(-10px); background: white; min-width: 220px;
+            border: 1px solid #eaecf0; border-radius: 8px; box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08);
+            padding: 6px; z-index: 10000; transition: all 0.2s ease;
+        }
+        .dropdown-menu-aux::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
+        .nav-item:hover .dropdown-menu-aux { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
+        
+        .dropdown-item-aux {
+            display: block; padding: 10px 12px; color: #344054; text-decoration: none;
+            font-size: 14px; border-radius: 6px; text-align: left; font-weight: 400;
+        }
+        .dropdown-item-aux:hover { background-color: #f9fafb; color: var(--primary-color); }
+
+        /* User Panel */
+        .user-panel { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid #eee; }
+        .user-details { display: flex; flex-direction: column; text-align: right; line-height: 1.3; }
+        .user-name { font-weight: 700; font-size: 13px; color: #333; }
+        .user-role { font-size: 11px; color: #888; }
+        .user-avatar { width: 36px; height: 36px; background-color: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; user-select: none; }
+        .logout-btn { background: none; border: 1px solid #ddd; color: #666; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 14px; }
+        .logout-btn:hover { background-color: var(--red-bg); color: var(--red-text); border-color: var(--red-bg); }
+
+        /* Logout Modal (CSS Plain) */
+        .modal-logout { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); }
+        .modal-logout-content { background-color: #fff; margin: 15% auto; padding: 32px; border-radius: 16px; width: 360px; text-align: center; font-family: 'Inter', sans-serif; }
+        .btn-modal { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; }
+        .btn-yes { background-color: #d92d20; color: #fff; }
+        .btn-cancel { background-color: #f2f4f7; color: #344054; }
+
+        /* =========================================
+           2. APP SPECIFIC STYLES
+           ========================================= */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
         .input-bare { background: transparent; border: 1px solid transparent; width: 100%; padding: 4px 8px; border-radius: 4px; }
         .input-bare:hover:not(:disabled) { border-color: #e2e8f0; background: white; }
-        .input-bare:focus { border-color: #008080; background: white; outline: none; }
-        .input-bare:disabled { color: #94a3b8; cursor: not-allowed; }
-        .bill-input:focus { ring: 2px; ring-color: #008080; border-color: #008080; outline: none; }
+        .input-bare:focus { border-color: #116999; background: white; outline: none; }
+        .bill-input:focus { ring: 2px; ring-color: #116999; border-color: #116999; outline: none; }
         .bill-input:disabled { background-color: #f1f5f9; color: #94a3b8; cursor: not-allowed; border-color: #e2e8f0; }
         
-        .filter-pill.active { background-color: #ccfbf1; color: #0f766e; border-color: #99f6e4; font-weight: 700; }
+        .filter-pill.active { background-color: #e0f2fe; color: #0284c7; border-color: #bae6fd; font-weight: 700; }
         .filter-pill.inactive { background-color: white; color: #64748b; border-color: #e2e8f0; }
         
         /* Dynamic Badges */
         .badge-billed { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; } 
         .badge-rejected { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; } 
         .badge-pending { background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; } 
-        /* Badge untuk Kelompok Impor Xero */
         .badge-siap { background-color: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
         .badge-proses { background-color: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
         .badge-sukses { background-color: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
         .badge-gagal { background-color: #ffe4e6; color: #be123c; border: 1px solid #fda4af; }
 
-        /* SweetAlert Customization to match Theme */
-        div:where(.swal2-container) {
-            z-index: 9999 !important;
-            font-family: 'Inter', sans-serif !important;
-        }
-        .swal2-popup {
-            border-radius: 1rem !important;
-            padding: 2rem !important;
-        }
-        .swal2-title {
-            font-size: 1.25rem !important;
-            color: #1e293b !important;
-        }
-        .swal2-html-container {
-            font-size: 0.95rem !important;
-            color: #64748b !important;
-        }
+        /* SweetAlert Customization */
+        div:where(.swal2-container) { z-index: 9999 !important; font-family: 'Inter', sans-serif !important; }
+        .swal2-popup { border-radius: 1rem !important; padding: 2rem !important; }
+        .swal2-title { font-size: 1.25rem !important; color: #1e293b !important; }
         
-        /* Checkbox Custom Style */
-        .xero-checkbox:checked {
-            background-color: #008080;
-            border-color: #008080;
-        }
+        .xero-checkbox:checked { background-color: #116999; border-color: #116999; }
     </style>
 </head>
 <body class="text-slate-800 font-sans antialiased" onclick="handleClickOutside(event)">
 
-    <nav class="fixed top-0 w-full bg-white border-b border-slate-200 z-40 px-6 py-3 flex justify-between items-center shadow-sm h-[70px]">
-        <div class="flex items-center gap-3">
-            <div class="font-black text-xl text-slate-800 flex items-center gap-2">
-                <i class="fa-solid fa-table-cells text-slate-300 text-lg mr-1"></i>
-                <span class="border-r-2 border-slate-200 pr-4">AUXILIUM</span>
-                <span class="font-normal text-sm text-slate-500 tracking-tight">Daftar Tagihan</span>
-            </div>
+    <div class="aux-navbar">
+        <div class="aux-logo">
+            <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png" alt="Auxilium Logo">
         </div>
-        <button onclick="fetchData()" class="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-600 hover:text-primary hover:bg-teal-50 hover:border-primary/30 transition shadow-sm" title="Refresh App">
-            <i class="fa-solid fa-arrow-rotate-right text-sm"></i>
-        </button>
-    </nav>
+        
+        <nav class="aux-menu">
+            <div class="nav-item">
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/" class="aux-link">Home</a>
+            </div>
+    
+            <div class="nav-item">
+                <div class="aux-link">
+                    Penjualan 
+                    <i data-feather="chevron-down" style="width:14px; height:14px;"></i>
+                </div>
+                <div class="dropdown-menu-aux">
+                    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Order%20Penjualan/" class="dropdown-item-aux">Order Penjualan</a>
+                    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Review%20Penjualan/" class="dropdown-item-aux">Review Penjualan</a>
+                </div>
+            </div>
+    
+            <div class="nav-item">
+                <div class="aux-link active">
+                    Pembelian
+                    <i data-feather="chevron-down" style="width:14px; height:14px;"></i>
+                </div>
+                <div class="dropdown-menu-aux">
+                    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/PurchaseOrder/index.html" class="dropdown-item-aux">Pemesanan Pembelian</a>
+                    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/CreateBill/index.html" class="dropdown-item-aux">Daftar Tagihan</a>
+                    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/entry/index.html" class="dropdown-item-aux">Penerimaan Pemesanan</a>
+                    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/ImportXeroPO/index.html" class="dropdown-item-aux">Import Xero PO</a>
+                </div>
+            </div>
+    
+            <div class="nav-item">
+                <div class="aux-link">
+                    Produksi
+                    <i data-feather="chevron-down" style="width:14px; height:14px;"></i>
+                </div>
+                <div class="dropdown-menu-aux">
+                    <a href="#" class="dropdown-item-aux">Persiapan Pemesanan</a>
+                    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/" class="dropdown-item-aux">Produksi Barang Jadi</a>
+                    <a href="#" class="dropdown-item-aux">Retur Penjualan</a>
+                </div>
+            </div>
+    
+            <div class="nav-item">
+                <div class="aux-link">
+                    Persediaan
+                    <i data-feather="chevron-down" style="width:14px; height:14px;"></i>
+                </div>
+                <div class="dropdown-menu-aux">
+                    <a href="#" class="dropdown-item-aux">Stok KPC</a>
+                    <a href="#" class="dropdown-item-aux">Stok Spandek</a>
+                    <a href="#" class="dropdown-item-aux">Gudang BS</a>
+                </div>
+            </div>
+        </nav>
+    
+        <div class="user-panel">
+            <div class="user-details">
+                <span class="user-name">Admin Gudang</span>
+                <span class="user-role">CV Sukses Jaya</span>
+            </div>
+            <div class="user-avatar">AG</div>
+            <button class="logout-btn" onclick="showLogoutModal()" title="Keluar Akun">
+                <i data-feather="log-out" style="width:16px; height:16px;"></i>
+            </button>
+        </div>
+    </div>
 
-    <div class="max-w-7xl mx-auto p-4 md:p-6 mt-20"> 
+    <div id="logoutModal" class="modal-logout">
+        <div class="modal-logout-content">
+          <p style="font-size:18px; font-weight:600; color:#101828; margin-bottom:10px;">Log out</p>
+          <p style="color:#667085; font-size:14px; margin-bottom:24px;">Are you sure you want to log out?</p>
+          <div style="display: flex; gap:12px;">
+            <button class="btn-modal btn-yes" onclick="logout()">Log out</button>
+            <button class="btn-modal btn-cancel" onclick="closeLogoutModal()">Cancel</button>
+          </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto p-4 md:p-6 mt-10"> 
         <div class="flex flex-col md:flex-row justify-between items-end mb-6 gap-4">
             <div>
                 <h1 class="text-2xl font-bold text-slate-900">List Overview</h1>
@@ -108,20 +236,20 @@
 
         <div class="flex items-end gap-2 border-b border-slate-200 mb-6 pl-1 overflow-x-auto">
             <button onclick="setFilterStatus('all')" class="bg-white px-5 py-3 rounded-t-xl font-bold text-sm flex items-center gap-2 border border-slate-200 border-b-0 min-w-max text-primary relative top-[1px] z-10 shadow-sm cursor-default hover:bg-slate-50 transition">
-                <div class="bg-teal-100 text-teal-700 w-6 h-6 flex items-center justify-center rounded text-xs">
+                <div class="bg-sky-100 text-primary w-6 h-6 flex items-center justify-center rounded text-xs">
                     <i class="fas fa-receipt"></i>
                 </div>
                 Daftar Tagihan
-                <span id="count-total" class="ml-1 bg-teal-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">0</span>
+                <span id="count-total" class="ml-1 bg-primary text-white text-[10px] px-2 py-0.5 rounded-full font-bold">0</span>
             </button>
 
-          <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/CreateBill/index.html" class="bg-slate-50 px-5 py-3 rounded-t-xl font-bold text-sm flex items-center gap-2 border border-transparent border-b border-b-slate-200 min-w-max text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition relative top-[1px] group">
-    <div class="bg-slate-200 text-slate-600 w-6 h-6 flex items-center justify-center rounded text-xs group-hover:bg-slate-300 transition">
-        <i class="fas fa-folder-open"></i>
-    </div>
-    Kelola Tagihan PO
-    <i class="fas fa-external-link-alt text-[10px] ml-1 text-slate-400"></i>
-</a>
+            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/CreateBill/index.html" class="bg-slate-50 px-5 py-3 rounded-t-xl font-bold text-sm flex items-center gap-2 border border-transparent border-b border-b-slate-200 min-w-max text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition relative top-[1px] group">
+                <div class="bg-slate-200 text-slate-600 w-6 h-6 flex items-center justify-center rounded text-xs group-hover:bg-slate-300 transition">
+                    <i class="fas fa-folder-open"></i>
+                </div>
+                Kelola Tagihan PO
+                <i class="fas fa-external-link-alt text-[10px] ml-1 text-slate-400"></i>
+            </a>
         </div>
 
         <div class="flex flex-wrap gap-2 mb-6 items-center">
@@ -195,11 +323,11 @@
         </div>
     </div>
 
-    <div id="billModal" class="fixed inset-0 z-[60] hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity">
+    <div id="billModal" class="fixed inset-0 z-[100] hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity">
         <div class="bg-white w-full max-w-7xl h-[95vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden relative border border-slate-200">
             <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white">
                 <div class="flex items-center gap-4">
-                    <div class="bg-teal-50 p-2.5 rounded-lg text-primary border border-teal-100 shadow-sm"><i class="fas fa-file-invoice-dollar text-xl"></i></div>
+                    <div class="bg-sky-50 p-2.5 rounded-lg text-primary border border-sky-100 shadow-sm"><i class="fas fa-file-invoice-dollar text-xl"></i></div>
                     <div>
                         <h2 class="text-lg font-bold text-slate-800">Bill Entry / Detail</h2>
                         <p class="text-xs text-slate-500">PO Ref: <span id="bill-po-id" class="font-mono font-bold text-slate-700"></span></p>
@@ -252,7 +380,7 @@
                 <div class="mb-6 bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-primary shadow-sm">
                     <label class="text-xs font-bold text-primary uppercase mb-2 block flex items-center gap-2"><i class="fas fa-paperclip"></i> Upload Invoice</label>
                     <div class="flex items-center gap-4">
-                        <input type="file" id="bill-file" class="bill-input text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-teal-50 file:text-primary hover:file:bg-teal-100 cursor-pointer">
+                        <input type="file" id="bill-file" class="bill-input text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-sky-50 file:text-primary hover:file:bg-sky-100 cursor-pointer">
                         <div id="existing-file-link" class="hidden text-sm">
                             <a href="#" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1"><i class="fas fa-external-link-alt"></i> View Existing File</a>
                         </div>
@@ -277,7 +405,7 @@
                         <tbody id="bill-items-body" class="divide-y divide-slate-100"></tbody>
                     </table>
                     <div id="action-buttons-container" class="p-4 bg-slate-50 border-t border-slate-200 flex gap-3">
-                        <button onclick="openProductModal()" class="action-btn text-xs font-bold text-primary hover:text-primary-hover flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg shadow-sm hover:bg-teal-50 transition">
+                        <button onclick="openProductModal()" class="action-btn text-xs font-bold text-primary hover:text-primary-hover flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg shadow-sm hover:bg-sky-50 transition">
                             <i class="fas fa-database"></i> Tambah Item Database
                         </button>
                         <button onclick="addCustomItem()" class="action-btn text-xs font-bold text-slate-600 hover:text-slate-800 flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg shadow-sm hover:bg-slate-100 transition">
@@ -336,7 +464,7 @@
         </div>
     </div>
 
-    <div id="rejectModal" class="fixed inset-0 z-[90] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity">
+    <div id="rejectModal" class="fixed inset-0 z-[110] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100 transform transition-all scale-100">
             <div class="bg-red-50 p-4 border-b border-red-100 flex items-center gap-3">
                 <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600">
@@ -360,7 +488,7 @@
         </div>
     </div>
 
-    <div id="productModal" class="fixed inset-0 z-[70] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity">
+    <div id="productModal" class="fixed inset-0 z-[120] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity">
         <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col h-[80vh]">
             <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
                 <div>
@@ -377,6 +505,17 @@
     </div>
 
     <script>
+        // --- NAVBAR & LOGOUT ---
+        feather.replace();
+        function showLogoutModal() { document.getElementById("logoutModal").style.display = "block"; }
+        function closeLogoutModal() { document.getElementById("logoutModal").style.display = "none"; }
+        function logout() {
+            setTimeout(() => {
+                localStorage.removeItem("uxilium_current_user");
+                window.location.href = "login.html"; 
+            }, 800);
+        }
+
         const API_URL = "https://script.google.com/macros/s/AKfycbxeoVZiywpVzH5cdgIn4a4pDY8ZlvUlkCvZ1iwRFfi_KNkZZ_99a_EvdQIE4qpX_ZzFyg/exec";
         
         const TAX_RATE = 0.11;
@@ -424,8 +563,6 @@
             event.stopPropagation();
             const dropdown = document.getElementById('xero-dropdown-menu');
             dropdown.classList.toggle('hidden');
-            
-            // Activate button style
             setFilterStatus('xero_group', false);
         }
 
@@ -438,15 +575,12 @@
         }
 
         function updateXeroFilter() {
-            // Keep the filter set to xero group but update data
             currentFilterStatus = 'xero_group';
             applyFilters();
         }
 
         function applyFilters() {
             const searchVal = document.getElementById('searchInput').value.toLowerCase();
-            
-            // Get selected checkbox values for Xero
             const checkedBoxes = document.querySelectorAll('.xero-checkbox:checked');
             const selectedXeroStatuses = Array.from(checkedBoxes).map(cb => cb.value);
 
@@ -461,7 +595,6 @@
                 } else if (currentFilterStatus === 'rejected') {
                     matchStatus = statusLower.includes('rejected') || statusLower.includes('batal');
                 } else if (currentFilterStatus === 'xero_group') {
-                    // Match any of the selected Xero categories
                     matchStatus = selectedXeroStatuses.some(status => statusLower.includes(status));
                 }
                 
@@ -527,7 +660,6 @@
                 
                 let displayTotal = formatRupiah(po.totalEst || 0);
 
-                // --- ACTION BUTTON ICONS (CUSTOM LOGIC) ---
                 let actionButtons = '';
                 
                 const viewBtn = `
@@ -600,14 +732,13 @@
             });
         }
 
-        // --- APPROVE FUNCTION WITH SWEETALERT2 ---
         async function approveBill(uniqueKey, idPO, invNumber) {
             if(!invNumber || invNumber === '-' || invNumber === 'null') {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Data Belum Lengkap',
                     text: 'Tagihan belum di-entry (Invoice No kosong). Silakan entry dulu.',
-                    confirmButtonColor: '#008080'
+                    confirmButtonColor: '#116999'
                 });
                 return;
             }
@@ -626,7 +757,7 @@
                 `,
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#008080',
+                confirmButtonColor: '#116999',
                 cancelButtonColor: '#cbd5e1',
                 confirmButtonText: '<i class="fas fa-check mr-1"></i> Ya, Setujui',
                 cancelButtonText: 'Batal',
@@ -635,7 +766,6 @@
             });
 
             if(result.isConfirmed) {
-                // Show Loading Alert
                 Swal.fire({
                     title: 'Memproses...',
                     text: 'Mohon tunggu sebentar',
@@ -658,7 +788,7 @@
                             icon: 'success',
                             title: 'Berhasil!',
                             text: json.message,
-                            confirmButtonColor: '#008080',
+                            confirmButtonColor: '#116999',
                             timer: 2000,
                             showConfirmButton: false
                         });
@@ -682,7 +812,6 @@
             }
         }
 
-        // --- SYNC TO XERO FUNCTION WITH SWEETALERT2 ---
         async function syncToXero(idPO, invNumber) {
             const result = await Swal.fire({
                 title: 'Sinkronisasi Xero',
@@ -713,7 +842,7 @@
                             icon: 'success',
                             title: 'Proses Dimulai',
                             text: "Status berubah menjadi 'Proses Impor'.",
-                            confirmButtonColor: '#008080'
+                            confirmButtonColor: '#116999'
                         });
                         fetchData(); 
                     } else {
@@ -757,10 +886,8 @@
 
             currentItems = po.items.map(i => ({...i, checked: true}));
             
-            // Logic Status Check
             const statusLower = (po.status || "").toLowerCase();
             
-            // Statuses that trigger Locking
             const isStatusLocked = statusLower.includes('rejected') || 
                                    statusLower.includes('siap impor') || 
                                    statusLower.includes('proses impor') || 
@@ -771,7 +898,6 @@
             
             renderBillItems(isFormLocked); 
             
-            // Rejection info
             const rejectContainer = document.getElementById('rejection-info-container');
             const rejectText = document.getElementById('rejection-reason-text');
             
@@ -813,7 +939,7 @@
                 text: "Apakah Anda yakin ingin merevisi data ini? Status akan berubah setelah disimpan.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#008080',
+                confirmButtonColor: '#116999',
                 cancelButtonColor: '#cbd5e1',
                 confirmButtonText: 'Ya, Revisi',
                 cancelButtonText: 'Batal'
@@ -910,9 +1036,7 @@
                 cancelButtonColor: '#cbd5e1',
                 confirmButtonText: 'Ya, Hapus',
                 cancelButtonText: 'Batal',
-                customClass: {
-                    popup: 'text-xs' // make it smaller
-                }
+                customClass: { popup: 'text-xs' }
             });
 
             if(result.isConfirmed) {
@@ -1039,10 +1163,9 @@
 
         function closeProductModal() { document.getElementById('productModal').classList.add('hidden'); }
 
-        // --- FUNGSI MODAL REJECT ---
         function openRejectModal() {
             document.getElementById('rejectModal').classList.remove('hidden');
-            document.getElementById('reject-reason').value = ''; // Reset
+            document.getElementById('reject-reason').value = ''; 
             document.getElementById('reject-error').classList.add('hidden');
             document.getElementById('reject-reason').focus();
         }
@@ -1058,7 +1181,6 @@
                 document.getElementById('reject-reason').classList.add('border-red-500');
                 return;
             }
-            // Kirim status Rejected DAN notes dari popup
             submitBill('Rejected', reason);
             closeRejectModal();
         }
@@ -1067,7 +1189,6 @@
             const invNum = document.getElementById('bill-inv-number').value;
             if(!invNum) { showNotification("Invoice Number wajib diisi!", 'warning'); return; }
 
-            // Gunakan overrideNotes (dari popup reject) jika ada, jika tidak pakai main notes
             let finalNotes = overrideNotes !== null ? overrideNotes : document.getElementById('bill-note').value;
 
             const activeItems = currentItems.filter(i => i.checked);
@@ -1128,7 +1249,6 @@
         function closeModal() { document.getElementById('billModal').classList.add('hidden'); }
         
         function showNotification(msg, type = 'info') {
-            // Mapping simple keywords to icon types if not provided
             if(type === 'info') {
                 if(msg.toLowerCase().includes('gagal') || msg.toLowerCase().includes('error')) type = 'error';
                 else if (msg.toLowerCase().includes('berhasil') || msg.toLowerCase().includes('sukses')) type = 'success';
