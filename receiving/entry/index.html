@@ -2,29 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Receiving PO Entry V2 (Final Tabs Edition)</title>
+  <title>Receiving PO Entry V2 - Auxilium</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
-
-  <style>
-    :root {
-      --ux-blue: #0077e4;
-      --ux-blue-soft: #ecf4ff;
-      --ux-border: #d3d7e3;
-      --ux-border-soft: #e5e9f2;
-      --ux-bg: #f5f7fa;
-      --ux-text-main: #1f2933;
-      --ux-text-sub: #55627a;
-      --ux-danger: #d33;
-      --ux-yellow-accent: #fbbf24;
-      --ux-green-accent: #10b981;
-      --ux-blue-accent: #3b82f6;
-      --ux-purple-accent: #8b5cf6;
-      --ux-purple-soft: #f3e8ff;
-      --ux-purple-text: #6b21a8;
+  <script src="https://unpkg.com/feather-icons"></script> <style>
+    /* =========================================
+       1. STANDARD NAVBAR STYLES (Auxilium)
+       ========================================= */
+    :root { 
+        --primary-color: #116999; 
+        --primary-hover: #0e5a85;
+        --red-bg: #fee2e2; 
+        --red-text: #991b1b;
+        
+        /* App Specific Vars */
+        --ux-blue: #116999; /* Adjusted to match Navbar */
+        --ux-blue-soft: #ecf4ff;
+        --ux-border: #d3d7e3;
+        --ux-border-soft: #e5e9f2;
+        --ux-bg: #f5f7fa;
+        --ux-text-main: #1f2933;
+        --ux-text-sub: #55627a;
+        --ux-danger: #d33;
+        --ux-yellow-accent: #fbbf24;
+        --ux-green-accent: #10b981;
+        --ux-blue-accent: #3b82f6;
+        --ux-purple-accent: #8b5cf6;
+        --ux-purple-soft: #f3e8ff;
+        --ux-purple-text: #6b21a8;
     }
 
     * { box-sizing: border-box; }
@@ -35,48 +43,84 @@
       font-size: 13px; color: #333;
     }
 
-    /* --- UTILITIES --- */
+    /* Navbar Container */
+    .aux-navbar {
+        background-color: #ffffff;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 40px;
+        box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+        position: sticky; top: 0; z-index: 1000;
+    }
+
+    .aux-logo img { height: 40px; width: auto; display: block; }
+
+    /* Menu Wrapper */
+    .aux-menu { display: flex; gap: 10px; align-items: center; height: 100%; }
+    .nav-item { position: relative; height: 100%; display: flex; align-items: center; }
+
+    /* Links */
+    .aux-link { 
+        text-decoration: none; color: #666; font-weight: 600; font-size: 14px; 
+        padding: 8px 14px; border-radius: 6px; transition: all 0.2s; cursor: pointer;
+        display: flex; align-items: center; gap: 4px;
+    }
+    .aux-link:hover, .nav-item:hover .aux-link { color: #1d2939; background-color: #f9fafb; }
+    
+    /* Active State */
+    .aux-link.active { color: var(--primary-color); background-color: #eff8ff; font-weight: 700; }
+
+    /* Dropdown */
+    .dropdown-menu-aux {
+        visibility: hidden; opacity: 0; position: absolute; top: 90%; left: 50%;
+        transform: translateX(-50%) translateY(-10px); background: white; min-width: 220px;
+        border: 1px solid #eaecf0; border-radius: 8px; box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08);
+        padding: 6px; z-index: 10000; transition: all 0.2s ease;
+    }
+    .dropdown-menu-aux::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
+    .nav-item:hover .dropdown-menu-aux { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
+    
+    .dropdown-item-aux {
+        display: block; padding: 10px 12px; color: #344054; text-decoration: none;
+        font-size: 14px; border-radius: 6px; text-align: left; font-weight: 400;
+    }
+    .dropdown-item-aux:hover { background-color: #f9fafb; color: var(--primary-color); }
+
+    /* User Panel */
+    .user-panel { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid #eee; }
+    .user-details { display: flex; flex-direction: column; text-align: right; line-height: 1.3; }
+    .user-name { font-weight: 700; font-size: 13px; color: #333; }
+    .user-role { font-size: 11px; color: #888; }
+    .user-avatar { width: 36px; height: 36px; background-color: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; user-select: none; }
+    .logout-btn { background: none; border: 1px solid #ddd; color: #666; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 14px; }
+    .logout-btn:hover { background-color: var(--red-bg); color: var(--red-text); border-color: var(--red-bg); }
+
+    /* Logout Modal */
+    .modal-logout { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); }
+    .modal-logout-content { background-color: #fff; margin: 15% auto; padding: 32px; border-radius: 16px; width: 360px; text-align: center; }
+    .btn-modal { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; }
+    .btn-yes { background-color: #d92d20; color: #fff; }
+    .btn-cancel { background-color: #f2f4f7; color: #344054; }
+
+    /* =========================================
+       2. APP SPECIFIC STYLES
+       ========================================= */
     .hidden { display: none !important; }
     .confidential-col { display: none !important; }
 
-    /* --- TOP BAR --- */
-    .top-bar {
-      padding: 10px 40px; background: #ffffff;
-      border-bottom: 1px solid #e3e6ea;
-      display: flex; align-items: center; justify-content: space-between;
-      position: sticky; top: 0; z-index: 100;
-    }
-    .logo-section {
-      display: flex; align-items: center; gap: 8px;
-      color: #1e1e1e; font-size: 19px; font-weight: 700;
-    }
-    .nav-menu { display: flex; gap: 10px; align-items: center; }
-    .nav-item {
-      text-decoration: none; color: #64748b;
-      font-size: 14px; font-weight: 600; padding: 8px 16px;
-      border-radius: 6px; transition: all 0.2s ease;
-      background-color: #f8fafc; border: 1px solid #e2e8f0;
-      display: flex; align-items: center; gap: 6px;
-    }
-    .nav-item:hover {
-      background-color: var(--ux-blue-soft); color: var(--ux-blue); border-color: #bfdbfe;
-    }
-    .nav-item.highlight {
-      color: #00838f; background-color: #e0f7fa; border-color: #b2ebf2;
-    }
-
-    /* --- LAYOUT PAGE --- */
     .page { 
         max-width: 98%; 
         margin: 32px auto; 
         padding: 0 20px 60px; 
     }
 
-    /* --- DASHBOARD STYLES --- */
+    /* DASHBOARD STYLES */
     .dashboard-header { margin-bottom: 25px; }
     .dashboard-title { font-size: 24px; font-weight: 800; color: #1f2933; margin-bottom: 15px; letter-spacing: -0.5px; }
     
-    /* --- TABS STYLE --- */
+    /* TABS */
     .tabs-container {
       display: flex; gap: 20px; margin-bottom: 20px;
       border-bottom: 1px solid #e2e8f0;
@@ -95,7 +139,7 @@
       border-radius: 3px 3px 0 0;
     }
 
-    /* --- FILTERS & SEARCH --- */
+    /* FILTERS & SEARCH */
     .filter-section { margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
     .filter-btn {
       background: white; border: 1px solid #e2e8f0; color: #64748b;
@@ -124,7 +168,7 @@
       color: #94a3b8;
     }
 
-    /* --- CARD LIST STYLE --- */
+    /* CARD LIST */
     .cards-list-container { display: flex; flex-direction: column; gap: 16px; margin-top: 25px; }
 
     .inv-list-card {
@@ -138,7 +182,7 @@
     .inv-list-card.status-partial { border-left-color: var(--ux-blue-accent); }
     .inv-list-card.status-completed { border-left-color: var(--ux-green-accent); }
 
-    /* HISTORY CARD SPECIFIC */
+    /* HISTORY CARD */
     .inv-list-card.history-card { border-left-color: var(--ux-purple-accent) !important; }
     .history-card .status-badge { background: var(--ux-purple-soft) !important; color: var(--ux-purple-text) !important; }
     .history-card .card-main-title { color: #4c1d95 !important; }
@@ -183,7 +227,7 @@
       text-align: center; padding: 50px 20px; color: #94a3b8; font-style: italic; background: #fff; border-radius: 12px; border: 1px dashed #cbd5e1;
     }
 
-    /* --- FORM STYLES --- */
+    /* FORM STYLES */
     .back-btn {
       display: inline-flex; align-items: center; gap: 6px;
       background: white; border: 1px solid #d1d5db; color: #374151;
@@ -299,7 +343,7 @@
     
     #loadingOverlay {
       position: fixed; inset: 0; background: rgba(255,255,255,.7);
-      backdrop-filter: blur(2px); z-index: 9999; display: none;
+      backdrop-filter: blur(2px); z-index: 99999; display: none;
       justify-content: center; align-items: center;
     }
     .loading-spinner {
@@ -308,10 +352,10 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* --- MODERN MODAL STYLES --- */
+    /* APP MODALS */
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.5); z-index: 10000;
+      background: rgba(0, 0, 0, 0.5); z-index: 20000;
       display: none; justify-content: center; align-items: center;
       backdrop-filter: blur(4px);
       opacity: 0; transition: opacity 0.3s ease;
@@ -346,26 +390,93 @@
 
 <div id="customModal" class="modal-overlay">
   <div class="modal-box">
-    <div id="modalIcon" class="modal-icon-wrapper">
-        </div>
+    <div id="modalIcon" class="modal-icon-wrapper"></div>
     <div id="modalTitle" class="modal-title">Attention</div>
     <div id="modalMessage" class="modal-text">Message goes here...</div>
     <button class="modal-btn" onclick="closeModal()">OK</button>
   </div>
 </div>
 
-<div class="top-bar">
-  <div class="logo-section">
-    AUXILIUM <span style="font-weight:300;color:#909090; font-size:13px; margin-left:6px;">Accounting Management</span>
-  </div>
-  <nav class="nav-menu">
-    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/index.html" class="nav-item">
-      Home Receiving
-    </a>
-    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/ImportXeroPO/index.html" class="nav-item highlight">
-      Import Xero PO
-    </a>
-  </nav>
+<div class="aux-navbar">
+    <div class="aux-logo">
+        <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png" alt="Auxilium Logo">
+    </div>
+    
+    <nav class="aux-menu">
+        <div class="nav-item">
+            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/" class="aux-link">Home</a>
+        </div>
+
+        <div class="nav-item">
+            <div class="aux-link">
+                Penjualan 
+                <i data-feather="chevron-down" style="width:14px; height:14px;"></i>
+            </div>
+            <div class="dropdown-menu-aux">
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Order%20Penjualan/" class="dropdown-item-aux">Order Penjualan</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Review%20Penjualan/" class="dropdown-item-aux">Review Penjualan</a>
+            </div>
+        </div>
+
+        <div class="nav-item">
+            <div class="aux-link active">
+                Pembelian
+                <i data-feather="chevron-down" style="width:14px; height:14px;"></i>
+            </div>
+            <div class="dropdown-menu-aux">
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/PurchaseOrder/index.html" class="dropdown-item-aux">Pemesanan Pembelian</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/CreateBill/index.html" class="dropdown-item-aux">Daftar Tagihan</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/entry/index.html" class="dropdown-item-aux" style="font-weight:700; color:#116999;">Penerimaan Pemesanan</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/ImportXeroPO/index.html" class="dropdown-item-aux">Import Xero PO</a>
+            </div>
+        </div>
+
+        <div class="nav-item">
+            <div class="aux-link">
+                Produksi
+                <i data-feather="chevron-down" style="width:14px; height:14px;"></i>
+            </div>
+            <div class="dropdown-menu-aux">
+                <a href="#" class="dropdown-item-aux">Persiapan Pemesanan</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/" class="dropdown-item-aux">Produksi Barang Jadi</a>
+                <a href="#" class="dropdown-item-aux">Retur Penjualan</a>
+            </div>
+        </div>
+
+        <div class="nav-item">
+            <div class="aux-link">
+                Persediaan
+                <i data-feather="chevron-down" style="width:14px; height:14px;"></i>
+            </div>
+            <div class="dropdown-menu-aux">
+                <a href="#" class="dropdown-item-aux">Stok KPC</a>
+                <a href="#" class="dropdown-item-aux">Stok Spandek</a>
+                <a href="#" class="dropdown-item-aux">Gudang BS</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="user-panel">
+        <div class="user-details">
+            <span class="user-name">Admin Gudang</span>
+            <span class="user-role">CV Sukses Jaya</span>
+        </div>
+        <div class="user-avatar">AG</div>
+        <button class="logout-btn" onclick="showLogoutModal()" title="Keluar Akun">
+            <i data-feather="log-out" style="width:16px; height:16px;"></i>
+        </button>
+    </div>
+</div>
+
+<div id="logoutModal" class="modal-logout">
+    <div class="modal-logout-content">
+      <p style="font-size:18px; font-weight:600; color:#101828; margin-bottom:10px;">Log out</p>
+      <p style="color:#667085; font-size:14px; margin-bottom:24px;">Are you sure you want to log out?</p>
+      <div style="display: flex; gap:12px;">
+        <button class="btn-modal btn-yes" onclick="logout()">Log out</button>
+        <button class="btn-modal btn-cancel" onclick="closeLogoutModal()">Cancel</button>
+      </div>
+    </div>
 </div>
 
 <div class="page">
@@ -478,7 +589,18 @@
 </div>
 
 <script>
-  // UPDATE URL KE SCRIPT TERBARU ANDA
+  // --- NAVBAR LOGIC ---
+  feather.replace();
+  function showLogoutModal() { document.getElementById("logoutModal").style.display = "block"; }
+  function closeLogoutModal() { document.getElementById("logoutModal").style.display = "none"; }
+  function logout() {
+      setTimeout(() => {
+          localStorage.removeItem("uxilium_current_user");
+          window.location.href = "login.html"; 
+      }, 800);
+  }
+
+  // --- APP LOGIC ---
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxIyzsDC-Y-euzQxfGxBz-yEw3Vcy4Bsff1wG_3sj2sJ_5oRvR4CdJCblsM1owt33hi7A/exec";
 
   let currentINV = "";
@@ -516,7 +638,6 @@
 
   function showAlert(message, type = 'error') {
     modalOverlay.style.display = 'flex';
-    // Trigger reflow
     void modalOverlay.offsetWidth;
     modalOverlay.classList.add('show');
     
@@ -600,7 +721,6 @@
     const query = document.getElementById("searchInput").value.toLowerCase();
     
     if (currentTab === 'new') {
-        // FILTER INVOICE
         const filtered = allInvoices.filter(item => {
             const term = (item.invNumber + " " + (item.poNumber||"") + " " + (item.supplier||"") + " " + (item.items||"")).toLowerCase();
             const matchText = term.includes(query);
@@ -615,7 +735,6 @@
         });
         renderCards(filtered);
     } else {
-        // FILTER HISTORY
         const filtered = allHistory.filter(item => {
             const term = (item.receivingId + " " + (item.invNumber||"") + " " + (item.date||"")).toLowerCase();
             return term.includes(query);
@@ -808,7 +927,6 @@
       });
     }
     
-    // Hilangkan border merah saat user mulai mengetik KPC
     const kpcInput = tr.querySelector(".kpc-new");
     if(kpcInput) {
         kpcInput.addEventListener('input', function(){ this.style.border = ""; });
@@ -843,15 +961,11 @@
     }
   }
 
-  // --- RENDER LINES (FIXED FOR SPLIT ITEMS & GROUPING) ---
   function renderLines(rawLines, useExistingQty) {
     tableBody.innerHTML = "";
-    
-    // Merge discount lines logic
     const lines = mergeDiscountLines(rawLines);
 
     if (!useExistingQty) {
-      // --- MODE BARU (NEW ENTRY) ---
       lines.forEach(ln => {
         const tr = document.createElement("tr");
         tr.dataset.rowIndex = ln.rowIndex;
@@ -878,7 +992,6 @@
         attachRowEvents(tr);
       });
     } else {
-      // --- MODE EDIT (EXISTING DATA) ---
       const groups = {};
       lines.forEach(ln => {
         const idxStr = String(ln.rowIndex || "");
@@ -929,7 +1042,6 @@
         tableBody.appendChild(baseTr);
         attachRowEvents(baseTr);
 
-        // Render Sub-Rows (Split)
         if (grp.splits.length > 1) {
           ensureParentModeForSplit(baseTr);
           grp.splits.slice(1).forEach(s => {
@@ -971,7 +1083,6 @@
     const subs = getSubRowsByIndex(idx);
     const po = baseTr.children[1].textContent;
     
-    // Perbaikan: Ambil konten original Item Code/Tipe Produk
     const ic = baseTr.querySelector(".kpc-original").textContent;
     
     const desc = baseTr.children[4].textContent;
@@ -991,7 +1102,6 @@
     const subTr = document.createElement("tr");
     subTr.classList.add("subline-row"); subTr.dataset.rowIndex = idx;
     
-    // Perbaikan: Pastikan kolom ke-3 (Tipe Produk) muncul juga di baris baru
     subTr.innerHTML = `
       <td class="row-handle">⋮⋮</td>
       <td>${po}</td>
@@ -1034,12 +1144,11 @@
       const q = Number(qtyInput.value) || 0;
       const k = kpcInput.value.trim();
       
-      // --- INTERNAL CONTROL KPC (MODAL VERSION) ---
       if (q > 0 && !kpcInput.readOnly && k === "") {
         kpcInput.style.border = "2px solid red";
         kpcInput.focus();
-        showAlert("Internal Control: KPC Wajib Diisi untuk baris yang diterima!", "error"); // Use Custom Modal
-        return "ERROR"; // Stop execution
+        showAlert("Internal Control: KPC Wajib Diisi untuk baris yang diterima!", "error"); 
+        return "ERROR"; 
       }
       
       if (!grp[idx]) grp[idx] = { rem: Number(r.querySelector(".remaining").value)||0, tot:0 };
@@ -1058,7 +1167,7 @@
   }
 
   function submitReceiving() {
-    const err = validateForm(); if(err) return; // Error handled by modal inside validateForm
+    const err = validateForm(); if(err) return; 
     
     showLoading();
     const groupMap = {};
@@ -1124,13 +1233,11 @@
     } catch(e) {}
   }
 
-  // UPDATE: LOGIKA REVERSAL PADA RELOAD INV
   async function loadInvDetail(inv) {
     if(!inv) return; 
     showLoading();
     try {
       let url = `${SCRIPT_URL}?action=getinvdetail&invNumber=${encodeURIComponent(inv)}`;
-      // Jika Edit Mode aktif, kirim excludeId agar stok di-reverse oleh backend
       if (isEditMode && receivingId.value) {
          url += `&excludeId=${encodeURIComponent(receivingId.value)}`;
       }
@@ -1199,7 +1306,6 @@
 
   function enterEditMode() {
       isEditMode = true;
-      // Clear table and summaries handled by data load
   }
 
   function reloadINV() {
