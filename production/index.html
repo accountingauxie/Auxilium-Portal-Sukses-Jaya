@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Production Entry</title>
+<title>Production Entry - Auxilium</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
@@ -28,13 +28,93 @@
 * { box-sizing: border-box; outline: none; }
 body { margin: 0; background: var(--bg-color); font-family: 'Inter', system-ui, -apple-system, sans-serif; font-size: 13.5px; color: var(--text-dark); -webkit-font-smoothing: antialiased; }
 
-/* --- 2. LAYOUT --- */
-.top-bar { padding: 14px 32px; background: #fff; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
-.brand { font-weight: 700; font-size: 16px; color: var(--text-dark); }
-.nav-menu { display: flex; gap: 6px; }
-.nav-item { text-decoration: none; color: var(--text-gray); padding: 8px 12px; border-radius: 6px; font-weight: 500; transition: all 0.2s; font-size: 13px; }
-.nav-item:hover, .nav-item.active { background: #eff6ff; color: var(--primary-blue); }
+/* --- 2. LAYOUT & NAVBAR (UPDATED) --- */
+.top-bar { 
+    padding: 0 32px; 
+    height: 60px;
+    background: #fff; 
+    border-bottom: 1px solid var(--border-color); 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    position: sticky; 
+    top: 0; 
+    z-index: 1000; /* Ensure menu stays on top */
+}
 
+.brand { font-weight: 700; font-size: 18px; color: var(--text-dark); display: flex; align-items: center; }
+.brand span { font-weight: 400; color: #94a3b8; font-size: 14px; margin-left: 6px; }
+
+/* Navbar Menu Styling */
+.nav-menu { display: flex; gap: 4px; height: 100%; align-items: center; }
+.nav-item-wrapper { position: relative; height: 100%; display: flex; align-items: center; }
+
+/* Main Menu Links */
+.nav-link { 
+    text-decoration: none; 
+    color: var(--text-gray); 
+    padding: 8px 16px; 
+    border-radius: 6px; 
+    font-weight: 500; 
+    transition: all 0.2s; 
+    font-size: 14px; 
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.nav-link:hover, .nav-item-wrapper:hover .nav-link { 
+    background: #eff6ff; 
+    color: var(--primary-blue); 
+}
+
+/* Dropdown Arrow */
+.arrow-down { margin-left: 6px; font-size: 10px; opacity: 0.6; transition: transform 0.2s; }
+.nav-item-wrapper:hover .arrow-down { transform: rotate(180deg); }
+
+/* Dropdown Menu Box */
+.dropdown-menu {
+    position: absolute;
+    top: 100%; /* Just below the navbar */
+    left: 0;
+    width: 200px;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.2s ease;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Show Dropdown on Hover */
+.nav-item-wrapper:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Dropdown Items */
+.dropdown-item {
+    text-decoration: none;
+    color: var(--text-dark);
+    padding: 10px 12px;
+    font-size: 13px;
+    border-radius: 6px;
+    transition: background 0.2s;
+    display: block;
+}
+.dropdown-item:hover { background: #f1f5f9; color: var(--primary-blue); }
+
+/* Active State Design (Optional) */
+.nav-link.active-page { background: #eff6ff; color: var(--primary-blue); font-weight: 600; }
+
+
+/* --- PAGE CONTAINER --- */
 .page { max-width: 1380px; margin: 32px auto; padding: 0 24px; }
 .card { background: #fff; border-radius: 12px; box-shadow: var(--shadow-sm); padding: 32px; border: 1px solid var(--border-color); }
 .card-title { font-size: 20px; font-weight: 700; margin-bottom: 24px; color: var(--text-dark); display: flex; justify-content: space-between; align-items: center; }
@@ -137,21 +217,63 @@ textarea:focus { border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(5
 <div id="loadingOverlay"><div class="spinner"></div></div>
 
 <div class="top-bar">
-  <div class="brand">AUXILIUM <span style="font-weight:400; color:#94a3b8; font-size:14px; margin-left:4px;">Accounting</span></div>
+  <div class="brand">AUXILIUM <span>Portal Sukses Jaya</span></div>
+  
   <nav class="nav-menu">
-    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/index.html" class="nav-item">Home</a>
-    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/" class="nav-item">Receiving</a>
-    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/" class="nav-item active">Production</a>
-    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/reviewinvoice/" class="nav-item">Review Invoice</a>
-    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/orderform/" class="nav-item">Sales Order</a>
+    <div class="nav-item-wrapper">
+      <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/" class="nav-link">
+        Home
+      </a>
+    </div>
+
+    <div class="nav-item-wrapper">
+      <div class="nav-link">
+        Penjualan <span class="arrow-down">▼</span>
+      </div>
+      <div class="dropdown-menu">
+        <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Order%20Penjualan/" class="dropdown-item">Order Penjualan</a>
+        <a href="#" class="dropdown-item" style="color:#cbd5e1; cursor:not-allowed;">Review Penjualan (Soon)</a>
+      </div>
+    </div>
+
+    <div class="nav-item-wrapper">
+      <div class="nav-link">
+        Pembelian <span class="arrow-down">▼</span>
+      </div>
+      <div class="dropdown-menu">
+        <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/PurchaseOrder/index.html" class="dropdown-item">Pemesanan Pembelian</a>
+        <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/CreateBill/index.html" class="dropdown-item">Daftar Tagihan</a>
+        <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/entry/index.html" class="dropdown-item">Penerimaan Pemesanan</a>
+      </div>
+    </div>
+
+    <div class="nav-item-wrapper">
+      <div class="nav-link active-page">
+        Produksi <span class="arrow-down">▼</span>
+      </div>
+      <div class="dropdown-menu">
+        <a href="#" class="dropdown-item" style="color:#cbd5e1; cursor:not-allowed;">Produksi Pemesanan (Soon)</a>
+        <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/" class="dropdown-item" style="font-weight:600; color:#3b82f6;">Produksi Barang Jadi</a>
+        <a href="#" class="dropdown-item" style="color:#cbd5e1; cursor:not-allowed;">Retur Penjualan (Soon)</a>
+      </div>
+    </div>
+
+    <div class="nav-item-wrapper">
+      <div class="nav-link">
+        Persediaan <span class="arrow-down">▼</span>
+      </div>
+      <div class="dropdown-menu">
+        <a href="#" class="dropdown-item" style="color:#cbd5e1; cursor:not-allowed;">Stock Opname (Soon)</a>
+        <a href="#" class="dropdown-item" style="color:#cbd5e1; cursor:not-allowed;">Mutasi Barang (Soon)</a>
+      </div>
+    </div>
   </nav>
 </div>
-
 <div class="page">
   <div class="card">
     <div class="card-title">
       Production Entry
-      <span style="font-size:12px; font-weight:500; color:#64748b; background:#f1f5f9; padding:4px 10px; border-radius:20px;">New Entry</span>
+      <span style="font-size:12px; font-weight:500; color:#64748b; background:#f1f5f9; padding:4px 10px; border-radius:20px;">Produksi Barang Jadi</span>
     </div>
 
     <div class="row-flex">
