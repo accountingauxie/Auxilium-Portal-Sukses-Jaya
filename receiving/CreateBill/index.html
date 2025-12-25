@@ -8,14 +8,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <script>
+    <script src="https://unpkg.com/feather-icons"></script> <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        primary: '#008080',
-                        'primary-hover': '#006666',
+                        primary: '#116999', /* Adjusted to Auxilium Blue */
+                        'primary-hover': '#0e5a85',
                         bglight: '#eef2f6',
                         darktext: '#1e293b'
                     },
@@ -37,7 +36,83 @@
     </script>
 
     <style>
-        body { background-color: #f8fafc; }
+        /* =========================================
+           1. STANDARD NAVBAR STYLES (Auxilium)
+           ========================================= */
+        :root { 
+            --primary-color: #116999; 
+            --primary-hover: #0e5a85;
+            --red-bg: #fee2e2; 
+            --red-text: #991b1b;
+        }
+
+        /* Reset & Base */
+        body { background-color: #f8fafc; font-family: 'Inter', sans-serif; margin: 0; }
+
+        /* Navbar Container */
+        .aux-navbar {
+            background-color: #ffffff;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+            position: sticky; top: 0; z-index: 50; /* Lower than App Modals */
+        }
+
+        .aux-logo img { height: 40px; width: auto; display: block; }
+
+        /* Menu Wrapper */
+        .aux-menu { display: flex; gap: 10px; align-items: center; height: 100%; }
+        .nav-item { position: relative; height: 100%; display: flex; align-items: center; }
+
+        /* Links */
+        .aux-link { 
+            text-decoration: none; color: #666; font-weight: 600; font-size: 14px; 
+            padding: 8px 14px; border-radius: 6px; transition: all 0.2s; cursor: pointer;
+            display: flex; align-items: center; gap: 4px;
+        }
+        .aux-link:hover, .nav-item:hover .aux-link { color: #1d2939; background-color: #f9fafb; }
+        
+        /* Active State */
+        .aux-link.active { color: var(--primary-color); background-color: #eff8ff; font-weight: 700; }
+
+        /* Dropdown */
+        .dropdown-menu-aux {
+            visibility: hidden; opacity: 0; position: absolute; top: 90%; left: 50%;
+            transform: translateX(-50%) translateY(-10px); background: white; min-width: 220px;
+            border: 1px solid #eaecf0; border-radius: 8px; box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08);
+            padding: 6px; z-index: 10000; transition: all 0.2s ease;
+        }
+        .dropdown-menu-aux::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
+        .nav-item:hover .dropdown-menu-aux { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
+        
+        .dropdown-item-aux {
+            display: block; padding: 10px 12px; color: #344054; text-decoration: none;
+            font-size: 14px; border-radius: 6px; text-align: left; font-weight: 400;
+        }
+        .dropdown-item-aux:hover { background-color: #f9fafb; color: var(--primary-color); }
+
+        /* User Panel */
+        .user-panel { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid #eee; }
+        .user-details { display: flex; flex-direction: column; text-align: right; line-height: 1.3; }
+        .user-name { font-weight: 700; font-size: 13px; color: #333; }
+        .user-role { font-size: 11px; color: #888; }
+        .user-avatar { width: 36px; height: 36px; background-color: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; user-select: none; }
+        .logout-btn { background: none; border: 1px solid #ddd; color: #666; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 14px; }
+        .logout-btn:hover { background-color: var(--red-bg); color: var(--red-text); border-color: var(--red-bg); }
+
+        /* Logout Modal (Plain CSS) */
+        .modal-logout { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); }
+        .modal-logout-content { background-color: #fff; margin: 15% auto; padding: 32px; border-radius: 16px; width: 360px; text-align: center; }
+        .btn-modal { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; }
+        .btn-yes { background-color: #d92d20; color: #fff; }
+        .btn-cancel { background-color: #f2f4f7; color: #344054; }
+
+        /* =========================================
+           2. APP SPECIFIC STYLES
+           ========================================= */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
@@ -48,14 +123,14 @@
             padding: 4px 8px; border-radius: 4px; transition: all 0.2s;
         }
         .input-bare:hover { border-color: #e2e8f0; background: white; }
-        .input-bare:focus { border-color: #008080; background: white; outline: none; box-shadow: 0 0 0 2px rgba(0, 128, 128, 0.1); }
+        .input-bare:focus { border-color: #116999; background: white; outline: none; box-shadow: 0 0 0 2px rgba(17, 105, 153, 0.1); }
         .bill-input:disabled { background-color: #f8fafc; color: #64748b; cursor: not-allowed; }
         
-        .tab-btn.active { color: #008080; background-color: white; border-color: #e2e8f0; border-bottom-color: white; }
+        .tab-btn.active { color: #116999; background-color: white; border-color: #e2e8f0; border-bottom-color: white; }
         .tab-btn.inactive { color: #64748b; background-color: transparent; border-color: transparent; }
         .tab-btn.inactive:hover { background-color: #e2e8f0; color: #334155; }
         
-        .filter-pill.active { background-color: #ccfbf1; color: #0f766e; border-color: #99f6e4; font-weight: 700; }
+        .filter-pill.active { background-color: #e0f2fe; color: #0284c7; border-color: #bae6fd; font-weight: 700; }
         .filter-pill.inactive { background-color: white; color: #64748b; border-color: #e2e8f0; }
 
         .table-row-hover:hover td { background-color: #f8fafc; }
@@ -63,22 +138,89 @@
 </head>
 <body class="text-slate-800 font-sans antialiased">
 
-    <nav class="fixed top-0 w-full bg-white border-b border-slate-200 z-40 px-6 py-3 flex justify-between items-center shadow-sm h-[70px]">
-        <div class="flex items-center gap-3">
-            <div class="font-black text-xl text-slate-800 flex items-center gap-2">
-                <i class="fa-solid fa-table-cells text-slate-300 text-lg mr-1"></i>
-                <span class="border-r-2 border-slate-200 pr-4">AUXILIUM</span>
-                <span class="font-normal text-sm text-slate-500 tracking-tight">Daftar PO Tagihan</span>
-            </div>
+    <div class="aux-navbar">
+        <div class="aux-logo">
+            <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png" alt="Auxilium Logo">
         </div>
-        <div class="flex items-center gap-6">
-            <button onclick="location.reload()" class="w-10 h-10 bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center text-slate-500 hover:text-primary hover:bg-teal-50 transition duration-200" title="Refresh App">
-                <i class="fas fa-sync-alt"></i>
+        
+        <nav class="aux-menu">
+            <div class="nav-item">
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/" class="aux-link">Home</a>
+            </div>
+    
+            <div class="nav-item">
+                <div class="aux-link">
+                    Penjualan 
+                    <i data-feather="chevron-down" style="width:14px; height:14px;"></i>
+                </div>
+                <div class="dropdown-menu-aux">
+                    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Order%20Penjualan/" class="dropdown-item-aux">Order Penjualan</a>
+                    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Review%20Penjualan/" class="dropdown-item-aux">Review Penjualan</a>
+                </div>
+            </div>
+    
+            <div class="nav-item">
+                <div class="aux-link active">
+                    Pembelian
+                    <i data-feather="chevron-down" style="width:14px; height:14px;"></i>
+                </div>
+                <div class="dropdown-menu-aux">
+                    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/PurchaseOrder/index.html" class="dropdown-item-aux">Pemesanan Pembelian</a>
+                    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/CreateBill/index.html" class="dropdown-item-aux" style="font-weight:700; color:#116999;">Daftar Tagihan</a>
+                    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/entry/index.html" class="dropdown-item-aux">Penerimaan Pemesanan</a>
+                    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/ImportXeroPO/index.html" class="dropdown-item-aux">Import Xero PO</a>
+                </div>
+            </div>
+    
+            <div class="nav-item">
+                <div class="aux-link">
+                    Produksi
+                    <i data-feather="chevron-down" style="width:14px; height:14px;"></i>
+                </div>
+                <div class="dropdown-menu-aux">
+                    <a href="#" class="dropdown-item-aux">Persiapan Pemesanan</a>
+                    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/" class="dropdown-item-aux">Produksi Barang Jadi</a>
+                    <a href="#" class="dropdown-item-aux">Retur Penjualan</a>
+                </div>
+            </div>
+    
+            <div class="nav-item">
+                <div class="aux-link">
+                    Persediaan
+                    <i data-feather="chevron-down" style="width:14px; height:14px;"></i>
+                </div>
+                <div class="dropdown-menu-aux">
+                    <a href="#" class="dropdown-item-aux">Stok KPC</a>
+                    <a href="#" class="dropdown-item-aux">Stok Spandek</a>
+                    <a href="#" class="dropdown-item-aux">Gudang BS</a>
+                </div>
+            </div>
+        </nav>
+    
+        <div class="user-panel">
+            <div class="user-details">
+                <span class="user-name">Admin Gudang</span>
+                <span class="user-role">CV Sukses Jaya</span>
+            </div>
+            <div class="user-avatar">AG</div>
+            <button class="logout-btn" onclick="showLogoutModal()" title="Keluar Akun">
+                <i data-feather="log-out" style="width:16px; height:16px;"></i>
             </button>
         </div>
-    </nav>
+    </div>
 
-    <div class="max-w-7xl mx-auto p-4 md:p-6 mt-20">  
+    <div id="logoutModal" class="modal-logout">
+        <div class="modal-logout-content">
+          <p style="font-size:18px; font-weight:600; color:#101828; margin-bottom:10px;">Log out</p>
+          <p style="color:#667085; font-size:14px; margin-bottom:24px;">Are you sure you want to log out?</p>
+          <div style="display: flex; gap:12px;">
+            <button class="btn-modal btn-yes" onclick="logout()">Log out</button>
+            <button class="btn-modal btn-cancel" onclick="closeLogoutModal()">Cancel</button>
+          </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto p-4 md:p-6 mt-10">  
         
         <div class="flex flex-col md:flex-row justify-between items-end mb-6 gap-4">
             <div>
@@ -98,9 +240,9 @@
 
         <div class="flex items-end gap-2 border-b border-slate-200 mb-6 pl-1 overflow-x-auto">
             <button class="tab-btn active px-6 py-3 rounded-t-xl font-bold text-sm flex items-center gap-2 border border-b-0 min-w-max relative top-[1px] cursor-default">
-                <div class="bg-teal-100 text-teal-700 w-6 h-6 flex items-center justify-center rounded text-xs"><i class="fas fa-folder-open"></i></div>
+                <div class="bg-sky-100 text-primary w-6 h-6 flex items-center justify-center rounded text-xs"><i class="fas fa-folder-open"></i></div>
                 Kelola Tagihan PO
-                <span id="count-total" class="ml-2 bg-teal-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">0</span>
+                <span id="count-total" class="ml-2 bg-primary text-white text-[10px] px-2 py-0.5 rounded-full font-bold">0</span>
             </button>
             
             <a href="listbill/index.html" class="tab-btn inactive px-6 py-3 rounded-t-xl font-bold text-sm flex items-center gap-2 border border-b-0 min-w-max relative top-[1px] group">
@@ -139,11 +281,11 @@
         </div>
     </div>
 
-    <div id="billModal" class="fixed inset-0 z-[60] hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-300">
+    <div id="billModal" class="fixed inset-0 z-[100] hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-300">
         <div class="bg-white w-full max-w-7xl h-[95vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden relative animate-fade-in border border-slate-200">
             <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white">
                 <div class="flex items-center gap-4">
-                    <div class="bg-teal-50 p-2.5 rounded-lg text-primary border border-teal-100 shadow-sm"><i class="fas fa-file-invoice-dollar text-xl"></i></div>
+                    <div class="bg-sky-50 p-2.5 rounded-lg text-primary border border-sky-100 shadow-sm"><i class="fas fa-file-invoice-dollar text-xl"></i></div>
                     <div>
                         <h2 class="text-lg font-bold text-slate-800" id="modal-title">Bill Entry</h2>
                         <p class="text-xs text-slate-500">PO Ref: <span id="bill-po-id" class="font-mono font-bold text-slate-700 bg-slate-100 px-1 rounded"></span></p>
@@ -187,11 +329,11 @@
                 <div class="mb-6 bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-primary shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
                     <div class="flex-1 w-full">
                         <label class="text-xs font-bold text-primary uppercase mb-2 block flex items-center gap-2"><i class="fas fa-paperclip"></i> Upload Invoice</label>
-                        <input type="file" id="bill-file" class="bill-input text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-teal-50 file:text-primary hover:file:bg-teal-100 cursor-pointer w-full">
+                        <input type="file" id="bill-file" class="bill-input text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-sky-50 file:text-primary hover:file:bg-sky-100 cursor-pointer w-full">
                     </div>
                     <div id="existing-file-container" class="hidden w-full md:w-auto text-right bg-slate-50 p-3 rounded-lg border border-slate-100">
                         <p class="text-[10px] text-slate-400 mb-1 uppercase font-bold">Current File</p>
-                        <a id="btn-view-file" href="#" target="_blank" class="inline-flex items-center justify-center px-4 py-2 bg-white text-primary rounded-lg border border-slate-200 text-sm font-bold hover:bg-teal-50 border-primary transition shadow-sm gap-2">
+                        <a id="btn-view-file" href="#" target="_blank" class="inline-flex items-center justify-center px-4 py-2 bg-white text-primary rounded-lg border border-slate-200 text-sm font-bold hover:bg-sky-50 border-primary transition shadow-sm gap-2">
                             <i class="fas fa-file-pdf text-red-500"></i> View Document
                         </a>
                     </div>
@@ -254,7 +396,7 @@
         </div>
     </div>
 
-    <div id="rejectModal" class="fixed inset-0 z-[70] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="rejectModal" class="fixed inset-0 z-[110] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-fade-in border border-red-100">
             <div class="p-4 bg-red-50 border-b border-red-100 flex items-center justify-between">
                 <h3 class="font-bold text-red-700 flex items-center gap-2"><i class="fas fa-ban"></i> Reject PO</h3>
@@ -271,7 +413,7 @@
         </div>
     </div>
 
-    <div id="productModal" class="fixed inset-0 z-[70] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity">
+    <div id="productModal" class="fixed inset-0 z-[120] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity">
         <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col h-[80vh] animate-fade-in">
             <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
                 <h3 class="font-bold text-slate-800">Pilih Produk Database</h3>
@@ -285,7 +427,7 @@
         </div>
     </div>
 
-    <div id="notificationModal" class="fixed inset-0 z-[80] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="notificationModal" class="fixed inset-0 z-[130] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden p-6 text-center animate-fade-in border border-slate-100">
             <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-50 mb-5 border border-red-100"><i class="fas fa-shield-halved text-3xl text-red-500"></i></div>
             <h3 class="text-lg font-bold text-slate-800 mb-2">Alert</h3>
@@ -295,6 +437,18 @@
     </div>
 
     <script>
+        // --- NAVBAR & LOGOUT LOGIC ---
+        feather.replace();
+        function showLogoutModal() { document.getElementById("logoutModal").style.display = "block"; }
+        function closeLogoutModal() { document.getElementById("logoutModal").style.display = "none"; }
+        function logout() {
+            // Simulasi Logout
+            setTimeout(() => {
+                localStorage.removeItem("uxilium_current_user");
+                window.location.href = "login.html"; 
+            }, 800);
+        }
+
         // ================= CONFIGURATION =================
         const API_URL = "https://script.google.com/macros/s/AKfycbwNckrkHcfNVrvaCiLNvbr_NBZ8I9rp8b0s7-SRKuYd88pVFIed0TZ7hq2xhkzP9ZQO/exec"; 
         const TAX_RATE = 0.11;
@@ -390,7 +544,6 @@
                 let statusClass, btnIcon, btnClass, statusBadge, mainTitle;
                 let secondaryBtn = ""; 
 
-                // REVISI: Menggunakan Icon Only Button
                 if (po.status === 'Pending') {
                     statusClass = 'bg-amber-100 text-amber-700 border-amber-200';
                     statusBadge = 'Pending';
