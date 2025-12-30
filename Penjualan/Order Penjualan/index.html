@@ -430,9 +430,11 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 </div>
 
 <script>
-// --- URL BACKEND UTAMA ---
-const baseURL = "https://script.google.com/macros/s/AKfycbz3sjgqH3cRXGi8Cl1-eGKSZ8GXveVr17sxOpwvofqFBB06DEVW7V9EcjMzYJTozTw6rw/exec";
-// --- URL BACKEND INVENTORY ---
+// --- KONFIGURASI URL BACKEND ---
+// GANTI DENGAN URL DEPLOYMENT BARU ANDA DARI LANGKAH 1
+const baseURL = "https://script.google.com/macros/s/AKfycbynhcG8gsL3an3gsXwqPLN6KOIRc2wPl5gaqiSOIHtUWOM86FiBi0YmHr0bR5-x-s87IA/exec";
+
+// --- URL INVENTORY ---
 const inventoryAPI = "https://script.google.com/macros/s/AKfycby5N2auQ__JVSp-RdO-5xtUwanRZZW7YZMZ163j2NP61N3SIfVnPxr8PBXYbgBC6LJH/exec";
 
 let customerData=[], listSpandek=[], listNonSpandek=[], priceSpan=[], priceNon=[], unitSpan=[], unitNon=[];
@@ -532,6 +534,12 @@ async function loadDropdowns() {
     choiceCustomer.clearChoices();
     const items = customerData.map(c => ({ value: c.name, label: c.name }));
     choiceCustomer.setChoices([{ value: "add_new", label: "+ Tambah Pelanggan Baru" }, ...items], "value", "label", true);
+
+    // Refresh existing rows in case they loaded before data
+    document.querySelectorAll("#itemsBody tr").forEach(row => {
+        const typeSel = row.querySelector(".type-select");
+        if(typeSel) typeSel.dispatchEvent(new Event('change'));
+    });
   } catch (err) { console.error(err); showToast("Gagal koneksi server", "error"); }
 }
 
@@ -575,8 +583,7 @@ function addRow() {
   const choiceType = new Choices(typeSel, { searchEnabled: false, shouldSort: false, itemSelectText:"", placeholder: true, placeholderValue: "Pilih Tipe", choices: [ { value: 'Spandek', label: 'Spandek' }, { value: 'Non Spandek', label: 'Non Spandek' } ] });
   const choiceItem = new Choices(itemSel, { searchEnabled: true, shouldSort: false, itemSelectText:"", placeholder: true, placeholderValue: "Pilih Barang" });
 
-  // --- FIX DROPDOWN KOSONG SAAT LOAD ---
-  // Inisialisasi awal agar dropdown barang langsung terisi list Spandek
+  // --- FIX DROPDOWN INITIALIZATION ---
   if (listSpandek.length > 0) {
       choiceItem.setChoices(listSpandek.map(n => ({ value: n, label: n })), "value", "label", true);
       meterInp.disabled = false;
@@ -632,7 +639,6 @@ function recalcRow(row) {
   const type = row.querySelector(".type-select").value;
   const item = row.querySelector(".item-select").value;
   
-  // Perhitungan Harga
   let meter = parseFloat(row.querySelector(".meter-input").value) || 0;
   if (type === "Non Spandek") meter = 1;
   const qty = parseFloat(row.querySelector(".qty-input").value) || 0;
@@ -707,14 +713,13 @@ async function submitNewCustomer() {
     if(!data.name) return showToast("Nama Pelanggan Wajib Diisi", "error");
     document.getElementById("modalSpinner").style.display="inline-block";
     
-    // --- UPDATED TO USE POST FOR ROBUSTNESS ---
+    // --- USING POST ---
     const postData = {
         action: "addcustomer",
-        payload: JSON.stringify(data) // Backend expects payload as a string
+        payload: JSON.stringify(data) 
     };
 
     try { 
-        // Menggunakan POST agar aman dari karakter khusus URL
         const res = await fetch(baseURL, {
             method: "POST",
             body: JSON.stringify(postData)
@@ -732,6 +737,8 @@ async function submitNewCustomer() {
             fillCustomerDetails(newEntry.name);
             closeCustomerModal(); showToast("Pelanggan Tersimpan!", "success"); 
             document.querySelectorAll("#modalAddCustomer input").forEach(i => i.value = "");
+        } else if (txt === "DUPLICATE") {
+             showToast("Nama Pelanggan Sudah Ada!", "error");
         } else {
              throw new Error(txt);
         }
@@ -779,7 +786,6 @@ function forceSubmitOrder() {
         }
     });
 
-    // --- PERUBAHAN UTAMA: MENGGUNAKAN POST ---
     const postData = {
         action: "submitorder",
         payload: payload
