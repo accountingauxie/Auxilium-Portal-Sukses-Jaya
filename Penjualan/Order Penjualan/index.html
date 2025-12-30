@@ -372,6 +372,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
           <select id="orderType">
               <option value="General Order" selected>General Order</option>
               <option value="Pre-Order">Pre-Order</option>
+              <option value="Back Order">Back Order</option>
           </select>
       </div>
       <div><span class="field-label">Tanggal</span><input type="date" id="issueDate" class="main-input"></div>
@@ -574,6 +575,14 @@ function addRow() {
   const choiceType = new Choices(typeSel, { searchEnabled: false, shouldSort: false, itemSelectText:"", placeholder: true, placeholderValue: "Pilih Tipe", choices: [ { value: 'Spandek', label: 'Spandek' }, { value: 'Non Spandek', label: 'Non Spandek' } ] });
   const choiceItem = new Choices(itemSel, { searchEnabled: true, shouldSort: false, itemSelectText:"", placeholder: true, placeholderValue: "Pilih Barang" });
 
+  // --- FIX DROPDOWN KOSONG SAAT LOAD ---
+  // Inisialisasi awal agar dropdown barang langsung terisi list Spandek
+  if (listSpandek.length > 0) {
+      choiceItem.setChoices(listSpandek.map(n => ({ value: n, label: n })), "value", "label", true);
+      meterInp.disabled = false;
+      meterInp.style.background = "transparent";
+  }
+
   const fixDropdownPos = (event) => {
       const container = event.target.closest('.choices');
       const dropdown = container.querySelector('.choices__list--dropdown');
@@ -735,6 +744,7 @@ document.querySelector(".approve-btn").addEventListener("click", () => {
     const type = document.getElementById("orderType").value;
     const oos = document.querySelectorAll(".status-oos").length > 0;
     if(!cust || cust==="add_new") return showToast("Pilih Pelanggan Dulu", "error");
+    // VALIDASI DIPERBARUI: Hanya blokir jika General Order
     if (type === "General Order" && oos) { return showToast("General Order harus semua Tersedia!", "error"); }
     openConfirmModal();
 });
