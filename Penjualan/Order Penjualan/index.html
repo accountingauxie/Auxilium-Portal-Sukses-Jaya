@@ -429,11 +429,13 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 </div>
 
 <script>
-const baseURL = "https://script.google.com/macros/s/AKfycbwSRwB31ClUA8PLJRzo3Cl5sNZE3DgmCt8PnhvfRBrI2UOO8E0-Q0kg0irPUDHLyBTtjg/exec";
+// --- URL BACKEND UTAMA ---
+const baseURL = "https://script.google.com/macros/s/AKfycbz3sjgqH3cRXGi8Cl1-eGKSZ8GXveVr17sxOpwvofqFBB06DEVW7V9EcjMzYJTozTw6rw/exec";
+// --- URL BACKEND INVENTORY ---
 const inventoryAPI = "https://script.google.com/macros/s/AKfycby5N2auQ__JVSp-RdO-5xtUwanRZZW7YZMZ163j2NP61N3SIfVnPxr8PBXYbgBC6LJH/exec";
 
 let customerData=[], listSpandek=[], listNonSpandek=[], priceSpan=[], priceNon=[], unitSpan=[], unitNon=[];
-let inventoryData = {}; // Cache data inventory
+let inventoryData = {}; 
 let choiceCustomer, choiceOrderType;
 let currentCustTOP = 0; 
 
@@ -458,10 +460,7 @@ window.onload = async function () {
   
   fetchNextOrderID();
 
-  // Load basic data
   await loadDropdowns();
-  
-  // Load inventory and trigger recalc when done
   loadInventoryData(); 
 
   for(let i=0; i<3; i++) addRow();
@@ -544,7 +543,6 @@ async function loadInventoryData() {
         console.log("Stok diterima:", inventoryData);
         showToast("Stok Terkini Berhasil Dimuat", "success");
         
-        // Recalculate all existing rows once stock is loaded
         document.querySelectorAll("#itemsBody tr").forEach(row => recalcRow(row));
     } catch (err) {
         console.error("Error loading inventory:", err);
@@ -640,17 +638,15 @@ function recalcRow(row) {
   row.querySelector(".pqty-input").value = formatMoney(priceQty);
   row.querySelector(".total-input").value = formatMoney(total);
 
-  // --- LOGIC STOK (PERBAIKAN CASE SENSITIVE) ---
+  // --- LOGIC STOK ---
   let stock = 0;
   let found = null;
   const cleanNum = (val) => parseFloat(String(val).replace(/,/g, '')) || 0;
   
-  // Normalisasi: Ubah ke String -> Hapus Spasi -> Ubah ke HURUF BESAR
   const norm = (str) => String(str || "").trim().toUpperCase();
 
   if (item) {
       if (type === "Spandek" && Array.isArray(inventoryData.spandek)) {
-          // Bandingkan dengan format yang sama (UPPERCASE)
           found = inventoryData.spandek.find(r => norm(r[0]) === norm(item));
           if (found) stock = cleanNum(found[4]); 
       } else if (type === "Non Spandek" && Array.isArray(inventoryData.nonSpandek)) {
@@ -659,13 +655,6 @@ function recalcRow(row) {
       }
   }
   
-  // Debug ke console untuk melihat perbandingan
-  if(item && stock === 0) {
-      console.log(`Checking Stock for: "${norm(item)}" vs Database...`);
-      if(found) console.log("Found raw row:", found);
-      else console.log("Not found in inventory");
-  }
-
   const stockDisp = row.querySelector(".stock-display");
   const statusCont = row.querySelector(".status-container");
   
@@ -678,7 +667,7 @@ function recalcRow(row) {
       if(item) {
           const badge = document.createElement("span");
           if(req === 0) {
-              // Jika qty 0, belum ada status
+              // Jika qty 0
           } else if(stock >= req) { 
               badge.className = "status-badge status-ok"; badge.textContent = "Tersedia"; 
           } else { 
@@ -708,19 +697,36 @@ async function submitNewCustomer() {
     };
     if(!data.name) return showToast("Nama Pelanggan Wajib Diisi", "error");
     document.getElementById("modalSpinner").style.display="inline-block";
+    
+    // --- UPDATED TO USE POST FOR ROBUSTNESS ---
+    const postData = {
+        action: "addcustomer",
+        payload: JSON.stringify(data) // Backend expects payload as a string
+    };
+
     try { 
-        await fetch(baseURL + "?action=addcustomer&payload=" + encodeURIComponent(JSON.stringify(data))); 
-        const newEntry = {
-            name: data.name.toUpperCase(), person: data.person.toUpperCase(), npwp: data.npwp.toUpperCase(),
-            address: data.address.toUpperCase(), kecamatan: data.kecamatan.toUpperCase(), kota: data.kota.toUpperCase(), top: data.top
-        };
-        customerData.push(newEntry);
-        choiceCustomer.setChoices([{value: newEntry.name, label: newEntry.name}], "value", "label", false);
-        choiceCustomer.setChoiceByValue(newEntry.name);
-        fillCustomerDetails(newEntry.name);
-        closeCustomerModal(); showToast("Pelanggan Tersimpan!", "success"); 
-        document.querySelectorAll("#modalAddCustomer input").forEach(i => i.value = "");
-    } catch(e) { showToast("Gagal koneksi server", "error"); }
+        // Menggunakan POST agar aman dari karakter khusus URL
+        const res = await fetch(baseURL, {
+            method: "POST",
+            body: JSON.stringify(postData)
+        });
+        const txt = await res.text();
+
+        if (txt === "OK") {
+            const newEntry = {
+                name: data.name.toUpperCase(), person: data.person.toUpperCase(), npwp: data.npwp.toUpperCase(),
+                address: data.address.toUpperCase(), kecamatan: data.kecamatan.toUpperCase(), kota: data.kota.toUpperCase(), top: data.top
+            };
+            customerData.push(newEntry);
+            choiceCustomer.setChoices([{value: newEntry.name, label: newEntry.name}], "value", "label", false);
+            choiceCustomer.setChoiceByValue(newEntry.name);
+            fillCustomerDetails(newEntry.name);
+            closeCustomerModal(); showToast("Pelanggan Tersimpan!", "success"); 
+            document.querySelectorAll("#modalAddCustomer input").forEach(i => i.value = "");
+        } else {
+             throw new Error(txt);
+        }
+    } catch(e) { showToast("Gagal: " + e.message, "error"); }
     document.getElementById("modalSpinner").style.display="none";
 }
 
@@ -763,8 +769,18 @@ function forceSubmitOrder() {
         }
     });
 
-    fetch(baseURL + "?action=submitorder&payload=" + encodeURIComponent(JSON.stringify(payload)))
-    .then(res => res.text()).then(txt => {
+    // --- PERUBAHAN UTAMA: MENGGUNAKAN POST ---
+    const postData = {
+        action: "submitorder",
+        payload: payload
+    };
+
+    fetch(baseURL, {
+        method: "POST",
+        body: JSON.stringify(postData)
+    })
+    .then(res => res.text())
+    .then(txt => {
         if(txt.startsWith("OK")) { 
             const finalID = txt.split(":")[1] || "";
             
