@@ -98,7 +98,8 @@ input.detail-readonly { background: transparent; border: none; border-bottom: 1p
 .table-container { 
     margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px 4px 0 0; 
     overflow-x: auto; width: 100%; position: relative; z-index: 5; background: #fff; padding-bottom: 0; 
-    min-height: 250px; /* Space for dropdowns */
+    /* min-height dihapus agar tidak ada gap kosong di bawah */
+    min-height: auto; 
 }
 table.xero-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1400px; }
 table.xero-table th { background: #f8f9fa; text-align: left; padding: 12px 10px; font-size: 12px; font-weight: 700; color: #333; border-bottom: 1px solid #ccc; border-right: 1px solid var(--border-light); white-space: nowrap; height: 40px; vertical-align: middle; }
@@ -187,7 +188,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
         <div class="nav-item">
             <div class="aux-link active">Penjualan</div>
         </div>
-        </nav>
+    </nav>
 
     <div class="user-panel">
         <div class="user-details">
@@ -433,7 +434,7 @@ async function loadInventoryData() {
     } catch (err) { console.error("Error loading inventory:", err); }
 }
 
-// --- FUNGSI BARIS TABEL (UPDATE FIX DROPDOWN) ---
+// --- FUNGSI BARIS TABEL (UPDATED: NO DEFAULT VALUE) ---
 function addRow() {
   const tr = document.createElement("tr");
   tr.innerHTML = `
@@ -457,16 +458,24 @@ function addRow() {
   const itemSel = tr.querySelector(".item-select");
   const meterInp = tr.querySelector(".meter-input");
   
-  // Setup Choices
+  // Setup Choices TIPE (KOSONGKAN DEFAULT)
   const choiceType = new Choices(typeSel, { 
       searchEnabled: false, shouldSort: false, itemSelectText:"", 
       position: 'bottom',
-      choices: [ { value: 'Spandek', label: 'Spandek' }, { value: 'Non Spandek', label: 'Non Spandek' } ] 
+      placeholder: true, // AKTIFKAN PLACEHOLDER
+      placeholderValue: "Pilih Tipe", // TEXT PLACEHOLDER
+      choices: [ 
+        // JANGAN ADA YANG SELECTED SECARA DEFAULT
+        { value: 'Spandek', label: 'Spandek' }, 
+        { value: 'Non Spandek', label: 'Non Spandek' } 
+      ] 
   });
 
+  // Setup Choices ITEM (AWAL KOSONG)
   const choiceItem = new Choices(itemSel, { 
       searchEnabled: true, shouldSort: false, itemSelectText:"", 
       position: 'bottom', placeholder: true, placeholderValue: "Pilih Barang" 
+      // JANGAN SET CHOICES DI SINI AGAR TETAP KOSONG
   });
 
   // --- FIX POSISI DROPDOWN (AGAR TIDAK KEPOTONG TABEL) ---
@@ -486,14 +495,11 @@ function addRow() {
   typeSel.addEventListener('showDropdown', fixDropdownPos);
   itemSel.addEventListener('showDropdown', fixDropdownPos);
 
-  // Initial Logic
-  if (listSpandek.length > 0) {
-      meterInp.disabled = false;
-      meterInp.style.background = "transparent";
-      choiceItem.setChoices(listSpandek.map(n => ({ value: n, label: n })), "value", "label", true);
-  }
+  // Meteran default disabled
+  meterInp.disabled = true;
+  meterInp.style.background = "#f9f9f9";
 
-  // Change Logic
+  // Logic Ganti Tipe
   typeSel.addEventListener("change", () => {
     let list = [];
     tr.querySelector(".unit-input").value = ""; 
@@ -506,6 +512,7 @@ function addRow() {
         list = listNonSpandek; meterInp.disabled = true; meterInp.style.background = "#f9f9f9"; meterInp.value = ""; 
     }
     
+    // Load barang sesuai tipe yang dipilih
     choiceItem.clearStore();
     choiceItem.setChoices(list.map(n => ({ value: n, label: n })), "value", "label", true);
     recalcRow(tr);
@@ -666,6 +673,7 @@ function forceSubmitOrder() {
         const item = tr.querySelector(".item-select").value;
         const qty = parseFloat(tr.querySelector(".qty-input").value) || 0;
         
+        // Cek Nama Barang HARUS ada (tidak null) & Qty > 0
         if(item && qty > 0) {
             payload.items.push({
                 type: tr.querySelector(".type-select").value, item: item,
