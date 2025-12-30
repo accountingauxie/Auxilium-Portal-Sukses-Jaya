@@ -30,114 +30,31 @@ body, input, select, textarea, button, .choices, .choices__inner, .brand-title, 
 
 body { background: var(--bg-color); margin: 0; padding: 0; }
 
-/* --- AUXILIUM NAVIGATION BAR --- */
+/* --- NAVIGATION & LAYOUT --- */
 .aux-navbar {
-    background-color: #ffffff;
-    height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 40px;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.05);
-    position: sticky; top: 0; z-index: 99999;
-    font-family: sans-serif;
+    background-color: #ffffff; height: 70px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px; box-shadow: 0 1px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 99999; font-family: sans-serif;
 }
-
 .aux-logo img { height: 40px; width: auto; display: block; }
+.aux-menu { display: flex; gap: 10px; align-items: center; height: 100%; }
+.nav-item { position: relative; height: 100%; display: flex; align-items: center; }
+.aux-link { text-decoration: none; color: #666; font-weight: 600; font-size: 14px; padding: 8px 14px; border-radius: 6px; transition: all 0.2s; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+.aux-link:hover, .nav-item:hover .aux-link { color: #1d2939; background-color: #f9fafb; }
+.aux-link.active { color: var(--xero-blue); background-color: #eff8ff; font-weight: 700; }
 
-/* Wrapper Menu Utama */
-.aux-menu { 
-    display: flex; 
-    gap: 10px; 
-    align-items: center; 
-    height: 100%; 
-}
-
-/* Item Menu Individual */
-.nav-item {
-    position: relative;
-    height: 100%;
-    display: flex;
-    align-items: center;
-}
-
-/* Link Menu Utama */
-.aux-link { 
-    text-decoration: none; 
-    color: #666; 
-    font-weight: 600; 
-    font-size: 14px; 
-    padding: 8px 14px; 
-    border-radius: 6px; 
-    transition: all 0.2s; 
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.aux-link:hover, .nav-item:hover .aux-link { 
-    color: #1d2939; 
-    background-color: #f9fafb; 
-}
-
-.aux-link.active { 
-    color: var(--xero-blue); 
-    background-color: #eff8ff; 
-    font-weight: 700; 
-}
-
-/* --- DROPDOWN STYLES --- */
+/* DROPDOWN MENU */
 .dropdown-menu {
-    visibility: hidden;
-    opacity: 0;
-    position: absolute;
-    top: 90%; 
-    left: 50%;
-    transform: translateX(-50%) translateY(-10px);
-    background: white;
-    min-width: 220px;
-    border: 1px solid #eaecf0;
-    border-radius: 8px;
-    box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08);
-    padding: 6px;
-    z-index: 100000;
-    transition: all 0.2s ease;
+    visibility: hidden; opacity: 0; position: absolute; top: 90%; left: 50%;
+    transform: translateX(-50%) translateY(-10px); background: white; min-width: 220px;
+    border: 1px solid #eaecf0; border-radius: 8px; box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08);
+    padding: 6px; z-index: 100000; transition: all 0.2s ease;
 }
+.dropdown-menu::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
+.nav-item:hover .dropdown-menu { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
+.dropdown-item { display: block; padding: 10px 12px; color: #344054; text-decoration: none; font-size: 14px; border-radius: 6px; transition: background 0.2s; text-align: left; font-weight: 400; }
+.dropdown-item:hover { background-color: #f9fafb; color: #2f54eb; }
 
-/* Jembatan Transparan */
-.dropdown-menu::before {
-    content: "";
-    position: absolute;
-    top: -20px; left: 0; width: 100%; height: 20px; background: transparent;
-}
-
-/* Show Dropdown on Hover */
-.nav-item:hover .dropdown-menu {
-    visibility: visible;
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-}
-
-/* Item Dropdown */
-.dropdown-item {
-    display: block;
-    padding: 10px 12px;
-    color: #344054;
-    text-decoration: none;
-    font-size: 14px;
-    border-radius: 6px;
-    transition: background 0.2s;
-    text-align: left;
-    font-weight: 400;
-}
-
-.dropdown-item:hover {
-    background-color: #f9fafb;
-    color: #2f54eb;
-}
-
-/* --- USER PANEL --- */
+/* USER PANEL */
 .user-panel { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid #eee; }
 .user-details { display: flex; flex-direction: column; text-align: right; line-height: 1.3; }
 .user-name { font-weight: 700; font-size: 13px; color: #333; }
@@ -159,7 +76,6 @@ body { background: var(--bg-color); margin: 0; padding: 0; }
 .badge-draft { background: #eee; color: #666; border: 1px solid #ccc; }
 .badge-sent { background: var(--green-bg); color: var(--green-text); border: 1px solid #bbf7d0; }
 
-/* HEADER GRID */
 .header-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; position: relative; z-index: 200; }
 .field-label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 700; color: #444; }
 input.main-input, textarea.main-input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 3px; font-size: 13px; height: 38px; }
@@ -179,7 +95,11 @@ input[type="date"].main-input::-webkit-calendar-picker-indicator { position: abs
 input.detail-readonly { background: transparent; border: none; border-bottom: 1px dashed #ccc; color: #555; width: 100%; padding: 5px 0; }
 
 /* TABLE */
-.table-container { margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px 4px 0 0; overflow-x: auto; width: 100%; position: relative; z-index: 5; background: #fff; padding-bottom: 0; }
+.table-container { 
+    margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px 4px 0 0; 
+    overflow-x: auto; width: 100%; position: relative; z-index: 5; background: #fff; padding-bottom: 0; 
+    min-height: 250px; /* Space for dropdowns */
+}
 table.xero-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1400px; }
 table.xero-table th { background: #f8f9fa; text-align: left; padding: 12px 10px; font-size: 12px; font-weight: 700; color: #333; border-bottom: 1px solid #ccc; border-right: 1px solid var(--border-light); white-space: nowrap; height: 40px; vertical-align: middle; }
 table.xero-table th.col-price, table.xero-table th.col-disc, table.xero-table th.col-net, table.xero-table th.col-total, table.xero-table th.col-stock { text-align: right; }
@@ -203,8 +123,17 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 /* CHOICES & COLUMN WIDTHS */
 .xero-table .choices { margin: 0 !important; padding: 0 !important; height: 100%; width: 100%; overflow: visible; }
 .xero-table .choices__inner { border: none !important; background-color: transparent !important; border-radius: 0 !important; min-height: 100% !important; height: 100% !important; display: flex !important; align-items: center !important; padding: 0 10px !important; margin: 0 !important; }
-.choices__list--dropdown { border: 1px solid var(--xero-blue) !important; z-index: 100000 !important; }
 .header-grid .choices__inner { background-color: #fff !important; border: 1px solid #ccc !important; border-radius: 3px !important; min-height: 38px !important; height: 38px !important; display: flex; align-items: center; }
+
+/* --- FIX CSS DROPDOWN UTAMA --- */
+.choices__list--dropdown { 
+    border: 1px solid var(--xero-blue) !important; 
+    z-index: 999999 !important; /* Di atas segalanya */
+    word-break: break-word;
+}
+.choices__input { z-index: 1000000 !important; }
+
+/* Columns */
 .col-type { width: 150px; } .col-item { width: 320px; } .col-unit { width: 80px; } .col-meter { width: 70px; } .col-qty { width: 70px; } .col-price { width: 120px; } .col-disc { width: 80px; } .col-net { width: 120px; } .col-total { width: 140px; } .col-stock { width: 90px; } .col-status { width: 90px; }
 
 /* UTILS */
@@ -227,7 +156,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 .status-oos { background: var(--red-bg); color: var(--red-text); }
 .stock-display { text-align: right; line-height: 42px; padding-right: 10px; color: #555; }
 
-/* MODALS */
+/* MODALS & TOAST */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 99999; }
 .modal-box { background: #fff; padding: 30px; width: 600px; border-radius: 6px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); } 
 .modal-actions { margin-top: 25px; text-align: right; }
@@ -255,56 +184,10 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
         <div class="nav-item">
             <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/" class="aux-link">Home</a>
         </div>
-
         <div class="nav-item">
-            <div class="aux-link active">
-                Penjualan 
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            <div class="dropdown-menu">
-                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Order%20Penjualan/" class="dropdown-item">Order Penjualan</a>
-                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Review%20Penjualan/" class="dropdown-item">Review Penjualan</a>
-            </div>
+            <div class="aux-link active">Penjualan</div>
         </div>
-
-        <div class="nav-item">
-            <div class="aux-link">
-                Pembelian
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            <div class="dropdown-menu">
-                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/PurchaseOrder/index.html" class="dropdown-item">Pemesanan Pembelian</a>
-                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/CreateBill/index.html" class="dropdown-item">Daftar Tagihan</a>
-                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/entry/index.html" class="dropdown-item">Penerimaan Pemesanan</a>
-            </div>
-        </div>
-
-        <div class="nav-item">
-            <div class="aux-link">
-                Produksi
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            <div class="dropdown-menu">
-                <a href="#" onclick="alert('Modul belum tersedia')" class="dropdown-item">Persiapan Pemesanan</a>
-                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/" class="dropdown-item">Produksi Barang Jadi</a>
-                <a href="#" onclick="alert('Modul belum tersedia')" class="dropdown-item">Retur Penjualan</a>
-            </div>
-        </div>
-
-        <div class="nav-item">
-            <div class="aux-link">
-                Persediaan
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            <div class="dropdown-menu">
-                <a href="#" onclick="alert('Stok KPC')" class="dropdown-item">KPC</a>
-                <a href="#" onclick="alert('Stok Spandek')" class="dropdown-item">Spandek</a>
-                <a href="#" onclick="alert('Stok Non Spandek')" class="dropdown-item">Non Spandek</a>
-                <a href="#" onclick="alert('List Pre Order')" class="dropdown-item">Pre Order</a>
-                <a href="#" onclick="alert('Gudang BS')" class="dropdown-item">Gudang BS</a>
-            </div>
-        </div>
-    </nav>
+        </nav>
 
     <div class="user-panel">
         <div class="user-details">
@@ -312,12 +195,6 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
             <span class="user-role">CV Sukses Jaya</span>
         </div>
         <div class="user-avatar">AG</div>
-        <button class="logout-btn" onclick="doLogout()" title="Keluar Akun">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M7.5 1v7h1V1h-1z"/>
-              <path d="M3 8.812a4.999 4.999 0 0 1 2.578-4.375l-.485-.874A6 6 0 1 0 11 3.616l-.501.865A5 5 0 1 1 3 8.812z"/>
-            </svg>
-        </button>
     </div>
 </div>
 
@@ -348,7 +225,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
     </p>
     <div class="modal-actions" style="justify-content: center; display: flex; gap: 10px;">
       <button class="btn-cancel" onclick="closeConfirmModal()">Batal</button>
-      <button class="btn-ok" onclick="finalProcessOrder()">Ya, Kirim</button>
+      <button class="btn-ok" onclick="forceSubmitOrder()">Ya, Kirim</button>
     </div>
   </div>
 </div>
@@ -422,7 +299,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
             <div class="summary-row"><span class="label">PPN (11%)</span><span class="value" id="ppnDisplay">0.00</span></div>
             <div class="grand-total-row"><span>Total</span><span id="grandTotalDisplay">0.00</span></div>
         </div>
-        <button class="btn-primary approve-btn" type="button">Kirim Pesanan</button>
+        <button class="btn-primary approve-btn" type="button" onclick="validateAndAsk()">Kirim Pesanan</button>
       </div>
 
     </div>
@@ -431,8 +308,8 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 
 <script>
 // --- KONFIGURASI URL BACKEND ---
-// GANTI DENGAN URL DEPLOYMENT BARU ANDA DARI LANGKAH 1
-const baseURL = "https://script.google.com/macros/s/AKfycbynhcG8gsL3an3gsXwqPLN6KOIRc2wPl5gaqiSOIHtUWOM86FiBi0YmHr0bR5-x-s87IA/exec";
+// GANTI DENGAN URL DEPLOYMENT BARU ANDA (PASTIKAN DEPLOY SEBAGAI "ANYONE")
+const baseURL = "https://script.google.com/macros/s/AKfycbxpozSPfRKCL3h9iczHcXFljKsy5zXqHjCaUF19BL0UuYVxyADnmfuotwHeEFbHQ0d06Q/exec";
 
 // --- URL INVENTORY ---
 const inventoryAPI = "https://script.google.com/macros/s/AKfycby5N2auQ__JVSp-RdO-5xtUwanRZZW7YZMZ163j2NP61N3SIfVnPxr8PBXYbgBC6LJH/exec";
@@ -451,24 +328,34 @@ function showToast(msg, type="info") {
 function formatMoney(n) { return (Number(n)||0).toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2}); }
 function parseMoney(s) { return parseFloat((s||"").replace(/,/g,"")) || 0; }
 
+// --- INIT UTAMA ---
 window.onload = async function () {
+  // 1. Setup Dropdown Statis
   choiceCustomer = new Choices("#customerSelect", { searchEnabled: true, shouldSort: false, placeholder: true, placeholderValue: "Pilih Pelanggan", itemSelectText:"" });
   choiceOrderType = new Choices("#orderType", { searchEnabled: false, shouldSort: false, itemSelectText:"" });
 
   const today = new Date().toISOString().split("T")[0];
   document.getElementById("issueDate").value = today;
   document.getElementById("estDeliveryDate").value = today;
-
   document.getElementById("issueDate").addEventListener("change", calculateDueDate);
   
+  // 2. Fetch ID (Non-Blocking)
   fetchNextOrderID();
 
-  await loadDropdowns();
+  // 3. AMBIL DATA DULU (Blocking) - Mencegah Dropdown Kosong
+  showToast("Sedang memuat data...", "info");
+  await loadDropdowns(); 
+  
+  // 4. Load Inventory
   loadInventoryData(); 
 
+  // 5. Buat Baris Default
   for(let i=0; i<3; i++) addRow();
+  
   new Sortable(document.getElementById("itemsBody"), { handle: ".drag-cell", animation: 150 });
   document.getElementById('customerSelect').addEventListener('change', function(e) { fillCustomerDetails(e.target.value); });
+  
+  showToast("Sistem Siap", "success");
 };
 
 async function fetchNextOrderID() {
@@ -478,9 +365,7 @@ async function fetchNextOrderID() {
         const res = await fetch(baseURL + "?action=getnextid");
         const fullID = await res.text(); 
         titleEl.textContent = "Order #" + fullID; 
-    } catch (e) {
-        titleEl.textContent = "Order #Error";
-    }
+    } catch (e) { titleEl.textContent = "Order #Error"; }
 }
 
 function fillCustomerDetails(name) {
@@ -525,40 +410,30 @@ function calculateDueDate() {
 async function loadDropdowns() {
   try {
     const res = await fetch(baseURL + "?action=getdata");
+    if (!res.ok) throw new Error("Gagal load data");
     const data = await res.json();
+    
     customerData = data.customers || [];
     listSpandek = data.spandek || []; listNonSpandek = data.nonspandek || [];
     priceSpan = data.priceSpan || []; priceNon = data.priceNon || [];
     unitSpan = data.unitSpan || []; unitNon = data.unitNon || [];
     
-    choiceCustomer.clearChoices();
+    choiceCustomer.clearStore();
     const items = customerData.map(c => ({ value: c.name, label: c.name }));
     choiceCustomer.setChoices([{ value: "add_new", label: "+ Tambah Pelanggan Baru" }, ...items], "value", "label", true);
-
-    // Refresh existing rows in case they loaded before data
-    document.querySelectorAll("#itemsBody tr").forEach(row => {
-        const typeSel = row.querySelector(".type-select");
-        if(typeSel) typeSel.dispatchEvent(new Event('change'));
-    });
-  } catch (err) { console.error(err); showToast("Gagal koneksi server", "error"); }
+  } catch (err) { console.error(err); showToast("Gagal koneksi server", "error"); listSpandek=["Error Load"]; }
 }
 
 async function loadInventoryData() {
     try {
-        console.log("Mengambil data stok...");
         const response = await fetch(inventoryAPI + "?action=getInventoryData");
-        if (!response.ok) throw new Error("Failed to fetch inventory");
+        if (!response.ok) throw new Error("Failed");
         inventoryData = await response.json();
-        console.log("Stok diterima:", inventoryData);
-        showToast("Stok Terkini Berhasil Dimuat", "success");
-        
         document.querySelectorAll("#itemsBody tr").forEach(row => recalcRow(row));
-    } catch (err) {
-        console.error("Error loading inventory:", err);
-        showToast("Gagal memuat data stok", "error");
-    }
+    } catch (err) { console.error("Error loading inventory:", err); }
 }
 
+// --- FUNGSI BARIS TABEL (UPDATE FIX DROPDOWN) ---
 function addRow() {
   const tr = document.createElement("tr");
   tr.innerHTML = `
@@ -578,59 +453,91 @@ function addRow() {
   `;
   document.getElementById("itemsBody").appendChild(tr);
 
-  const typeSel = tr.querySelector(".type-select"), itemSel = tr.querySelector(".item-select"), meterInp = tr.querySelector(".meter-input");
+  const typeSel = tr.querySelector(".type-select");
+  const itemSel = tr.querySelector(".item-select");
+  const meterInp = tr.querySelector(".meter-input");
   
-  const choiceType = new Choices(typeSel, { searchEnabled: false, shouldSort: false, itemSelectText:"", placeholder: true, placeholderValue: "Pilih Tipe", choices: [ { value: 'Spandek', label: 'Spandek' }, { value: 'Non Spandek', label: 'Non Spandek' } ] });
-  const choiceItem = new Choices(itemSel, { searchEnabled: true, shouldSort: false, itemSelectText:"", placeholder: true, placeholderValue: "Pilih Barang" });
+  // Setup Choices
+  const choiceType = new Choices(typeSel, { 
+      searchEnabled: false, shouldSort: false, itemSelectText:"", 
+      position: 'bottom',
+      choices: [ { value: 'Spandek', label: 'Spandek' }, { value: 'Non Spandek', label: 'Non Spandek' } ] 
+  });
 
-  // --- FIX DROPDOWN INITIALIZATION ---
-  if (listSpandek.length > 0) {
-      choiceItem.setChoices(listSpandek.map(n => ({ value: n, label: n })), "value", "label", true);
-      meterInp.disabled = false;
-      meterInp.style.background = "transparent";
-  }
+  const choiceItem = new Choices(itemSel, { 
+      searchEnabled: true, shouldSort: false, itemSelectText:"", 
+      position: 'bottom', placeholder: true, placeholderValue: "Pilih Barang" 
+  });
 
+  // --- FIX POSISI DROPDOWN (AGAR TIDAK KEPOTONG TABEL) ---
   const fixDropdownPos = (event) => {
       const container = event.target.closest('.choices');
+      if (!container) return;
       const dropdown = container.querySelector('.choices__list--dropdown');
-      const rect = container.getBoundingClientRect();
-      dropdown.style.position = 'fixed'; dropdown.style.top = rect.bottom + 'px'; dropdown.style.left = rect.left + 'px'; dropdown.style.width = rect.width + 'px'; dropdown.style.zIndex = '999999';
-  };
-  const closeAllDropdowns = () => { document.querySelectorAll('.choices__list--dropdown').forEach(d => { if(d.style.position==='fixed') d.closest('.choices').choices.hideDropdown(); }); };
-  window.addEventListener('scroll', closeAllDropdowns, true); 
-  typeSel.addEventListener('showDropdown', fixDropdownPos); itemSel.addEventListener('showDropdown', fixDropdownPos);
+      if (!dropdown) return;
 
+      const rect = container.getBoundingClientRect();
+      dropdown.style.position = 'fixed';
+      dropdown.style.top = (rect.bottom) + 'px';
+      dropdown.style.left = rect.left + 'px';
+      dropdown.style.width = rect.width + 'px';
+      dropdown.style.maxHeight = '300px'; 
+  };
+  typeSel.addEventListener('showDropdown', fixDropdownPos);
+  itemSel.addEventListener('showDropdown', fixDropdownPos);
+
+  // Initial Logic
+  if (listSpandek.length > 0) {
+      meterInp.disabled = false;
+      meterInp.style.background = "transparent";
+      choiceItem.setChoices(listSpandek.map(n => ({ value: n, label: n })), "value", "label", true);
+  }
+
+  // Change Logic
   typeSel.addEventListener("change", () => {
     let list = [];
-    if (typeSel.value === "Spandek") { list = listSpandek; meterInp.disabled=false; meterInp.style.background="transparent"; } 
-    else { list = listNonSpandek; meterInp.disabled=true; meterInp.style.background="#f9f9f9"; meterInp.value=""; }
-    choiceItem.clearChoices();
+    tr.querySelector(".unit-input").value = ""; 
+    tr.querySelector(".uprice-input").value = "";
+    tr.querySelector(".stock-display").textContent = "-";
+    
+    if (typeSel.value === "Spandek") { 
+        list = listSpandek; meterInp.disabled = false; meterInp.style.background = "transparent"; 
+    } else { 
+        list = listNonSpandek; meterInp.disabled = true; meterInp.style.background = "#f9f9f9"; meterInp.value = ""; 
+    }
+    
+    choiceItem.clearStore();
     choiceItem.setChoices(list.map(n => ({ value: n, label: n })), "value", "label", true);
-    tr.querySelector(".unit-input").value = ""; tr.querySelector(".uprice-input").value = "";
     recalcRow(tr);
   });
 
   itemSel.addEventListener("change", () => {
     const item = itemSel.value, type = typeSel.value;
     let price = 0, unit = "-", index = -1;
-    if (type === "Spandek") { index = listSpandek.indexOf(item); if(index >= 0) { price = priceSpan[index]; unit = unitSpan[index]; } }
-    else { index = listNonSpandek.indexOf(item); if(index >= 0) { price = priceNon[index]; unit = unitNon[index]; } }
+    if (type === "Spandek") { 
+        index = listSpandek.indexOf(item); 
+        if(index >= 0) { price = priceSpan[index]; unit = unitSpan[index]; } 
+    } else { 
+        index = listNonSpandek.indexOf(item); 
+        if(index >= 0) { price = priceNon[index]; unit = unitNon[index]; } 
+    }
     tr.querySelector(".uprice-input").value = formatMoney(price);
     tr.querySelector(".unit-input").value = unit;
     recalcRow(tr);
   });
 
+  // Kalkulasi
   tr.querySelectorAll(".meter-input, .qty-input").forEach(inp => {
-      inp.addEventListener("keydown", function(e) { if (e.key === "-" || e.key === "Subtract" || e.keyCode === 189 || e.keyCode === 109) { e.preventDefault(); } });
-      inp.addEventListener("input", function() {
-          if (this.value.includes("-")) { this.value = this.value.replace(/-/g, ""); }
-          if (this.value !== "" && parseFloat(this.value) < 0) { this.value = Math.abs(parseFloat(this.value)); }
-          recalcRow(tr); recalcTotals(); 
-      });
+      inp.addEventListener("keydown", function(e) { if (["-", "+", "e"].includes(e.key)) e.preventDefault(); });
+      inp.addEventListener("input", function() { recalcRow(tr); recalcTotals(); });
   });
 
   tr.querySelector(".disc-input").addEventListener("blur", function() { this.value = formatMoney(parseMoney(this.value)); });
-  tr.querySelectorAll("input").forEach(i => { if(!i.classList.contains("meter-input") && !i.classList.contains("qty-input")) { i.addEventListener("input", () => { recalcRow(tr); recalcTotals(); }); } });
+  tr.querySelectorAll("input").forEach(i => { 
+      if(!i.classList.contains("meter-input") && !i.classList.contains("qty-input")) { 
+          i.addEventListener("input", () => { recalcRow(tr); recalcTotals(); }); 
+      } 
+  });
 }
 
 function deleteRow(btn) { btn.closest("tr").remove(); recalcTotals(); }
@@ -644,6 +551,7 @@ function recalcRow(row) {
   const qty = parseFloat(row.querySelector(".qty-input").value) || 0;
   const unitPrice = parseMoney(row.querySelector(".uprice-input").value);
   let disc = parseMoney(row.querySelector(".disc-input").value);
+  
   if(unitPrice > 0 && disc > unitPrice) { disc = unitPrice; row.querySelector(".disc-input").value = formatMoney(unitPrice); }
 
   const netPrice = (unitPrice - disc);
@@ -653,43 +561,38 @@ function recalcRow(row) {
   row.querySelector(".pqty-input").value = formatMoney(priceQty);
   row.querySelector(".total-input").value = formatMoney(total);
 
-  // --- LOGIC STOK ---
+  // Stock Logic
   let stock = 0;
-  let found = null;
   const cleanNum = (val) => parseFloat(String(val).replace(/,/g, '')) || 0;
-  
   const norm = (str) => String(str || "").trim().toUpperCase();
 
   if (item) {
+      let found = null;
       if (type === "Spandek" && Array.isArray(inventoryData.spandek)) {
           found = inventoryData.spandek.find(r => norm(r[0]) === norm(item));
-          if (found) stock = cleanNum(found[4]); 
       } else if (type === "Non Spandek" && Array.isArray(inventoryData.nonSpandek)) {
           found = inventoryData.nonSpandek.find(r => norm(r[0]) === norm(item));
-          if (found) stock = cleanNum(found[4]);
       }
+      if (found) stock = cleanNum(found[4]);
   }
   
   const stockDisp = row.querySelector(".stock-display");
   const statusCont = row.querySelector(".status-container");
   
+  stockDisp.textContent = item ? (Number(stock)||0).toLocaleString("en-US", {maximumFractionDigits:2}) : "-";
+  statusCont.innerHTML = "";
+
   if(item) {
-      stockDisp.textContent = (Number(stock)||0).toLocaleString("en-US", {maximumFractionDigits:2});
-      
       let req = (type==="Spandek") ? (meter*qty) : qty; 
-      
-      statusCont.innerHTML = "";
-      if(item) {
-          const badge = document.createElement("span");
-          if(req === 0) {
-              // Jika qty 0
-          } else if(stock >= req) { 
-              badge.className = "status-badge status-ok"; badge.textContent = "Tersedia"; 
-          } else { 
-              badge.className = "status-badge status-oos"; badge.textContent = "Tidak Tersedia"; 
-          }
-          if(req > 0) statusCont.appendChild(badge);
+      const badge = document.createElement("span");
+      if(req === 0) { 
+          // Do nothing
+      } else if(stock >= req) { 
+          badge.className = "status-badge status-ok"; badge.textContent = "Tersedia"; 
+      } else { 
+          badge.className = "status-badge status-oos"; badge.textContent = "Kurang"; 
       }
+      if(req > 0) statusCont.appendChild(badge);
   }
 }
 
@@ -701,8 +604,22 @@ function recalcTotals() {
   document.getElementById("grandTotalDisplay").textContent = formatMoney(grand);
 }
 
+// --- MODAL & SUBMIT ---
 function openCustomerModal() { document.getElementById("modalAddCustomer").style.display="flex"; }
 function closeCustomerModal() { document.getElementById("modalAddCustomer").style.display="none"; }
+function openConfirmModal() { document.getElementById("modalConfirmSubmit").style.display = "flex"; }
+function closeConfirmModal() { document.getElementById("modalConfirmSubmit").style.display = "none"; }
+
+function validateAndAsk() {
+    const cust = document.getElementById("customerSelect").value;
+    const type = document.getElementById("orderType").value;
+    const oos = document.querySelectorAll(".status-oos").length > 0;
+    
+    if(!cust || cust==="add_new") return showToast("Pilih Pelanggan Dulu", "error");
+    if (type === "General Order" && oos) { return showToast("General Order barang harus tersedia semua!", "error"); }
+    
+    openConfirmModal();
+}
 
 async function submitNewCustomer() {
     const data = {
@@ -713,54 +630,25 @@ async function submitNewCustomer() {
     if(!data.name) return showToast("Nama Pelanggan Wajib Diisi", "error");
     document.getElementById("modalSpinner").style.display="inline-block";
     
-    // --- USING POST ---
-    const postData = {
-        action: "addcustomer",
-        payload: JSON.stringify(data) 
-    };
-
     try { 
-        const res = await fetch(baseURL, {
-            method: "POST",
-            body: JSON.stringify(postData)
-        });
+        const res = await fetch(baseURL, { method: "POST", body: JSON.stringify({ action: "addcustomer", payload: JSON.stringify(data) }) });
         const txt = await res.text();
 
         if (txt === "OK") {
-            const newEntry = {
-                name: data.name.toUpperCase(), person: data.person.toUpperCase(), npwp: data.npwp.toUpperCase(),
-                address: data.address.toUpperCase(), kecamatan: data.kecamatan.toUpperCase(), kota: data.kota.toUpperCase(), top: data.top
-            };
+            const newEntry = { name: data.name.toUpperCase(), person: data.person.toUpperCase(), npwp: data.npwp.toUpperCase(), address: data.address.toUpperCase(), kecamatan: data.kecamatan.toUpperCase(), kota: data.kota.toUpperCase(), top: data.top };
             customerData.push(newEntry);
             choiceCustomer.setChoices([{value: newEntry.name, label: newEntry.name}], "value", "label", false);
             choiceCustomer.setChoiceByValue(newEntry.name);
             fillCustomerDetails(newEntry.name);
             closeCustomerModal(); showToast("Pelanggan Tersimpan!", "success"); 
-            document.querySelectorAll("#modalAddCustomer input").forEach(i => i.value = "");
-        } else if (txt === "DUPLICATE") {
-             showToast("Nama Pelanggan Sudah Ada!", "error");
-        } else {
-             throw new Error(txt);
-        }
+        } else if (txt === "DUPLICATE") { showToast("Pelanggan Sudah Ada!", "error"); } 
+        else { throw new Error(txt); }
     } catch(e) { showToast("Gagal: " + e.message, "error"); }
     document.getElementById("modalSpinner").style.display="none";
 }
 
-document.querySelector(".approve-btn").addEventListener("click", () => {
-    const cust = document.getElementById("customerSelect").value;
-    const type = document.getElementById("orderType").value;
-    const oos = document.querySelectorAll(".status-oos").length > 0;
-    if(!cust || cust==="add_new") return showToast("Pilih Pelanggan Dulu", "error");
-    // VALIDASI DIPERBARUI: Hanya blokir jika General Order
-    if (type === "General Order" && oos) { return showToast("General Order harus semua Tersedia!", "error"); }
-    openConfirmModal();
-});
-
-function openConfirmModal() { document.getElementById("modalConfirmSubmit").style.display = "flex"; }
-function closeConfirmModal() { document.getElementById("modalConfirmSubmit").style.display = "none"; }
-function finalProcessOrder() { closeConfirmModal(); forceSubmitOrder(); }
-
 function forceSubmitOrder() {
+    closeConfirmModal();
     const btn = document.querySelector(".approve-btn");
     btn.disabled=true; btn.textContent="Memproses...";
     
@@ -773,50 +661,54 @@ function forceSubmitOrder() {
         kota: document.getElementById("detailCity").value, items: []
     };
 
+    // --- FILTER PENTING: HANYA YANG QTY > 0 ---
     document.querySelectorAll("#itemsBody tr").forEach(tr => {
         const item = tr.querySelector(".item-select").value;
-        if(item) {
+        const qty = parseFloat(tr.querySelector(".qty-input").value) || 0;
+        
+        if(item && qty > 0) {
             payload.items.push({
                 type: tr.querySelector(".type-select").value, item: item,
                 satuan: tr.querySelector(".unit-input").value, meter: tr.querySelector(".meter-input").value,
-                qty: tr.querySelector(".qty-input").value, total: parseMoney(tr.querySelector(".total-input").value),
+                qty: qty, total: parseMoney(tr.querySelector(".total-input").value),
                 unitPrice: parseMoney(tr.querySelector(".uprice-input").value), discount: parseMoney(tr.querySelector(".disc-input").value),
                 priceQty: parseMoney(tr.querySelector(".pqty-input").value)
             });
         }
     });
 
-    const postData = {
-        action: "submitorder",
-        payload: payload
-    };
+    if (payload.items.length === 0) {
+        showToast("Isi minimal 1 barang dengan Qty yang benar.", "error");
+        btn.disabled = false; btn.textContent = "Kirim Pesanan";
+        return; 
+    }
 
     fetch(baseURL, {
         method: "POST",
-        body: JSON.stringify(postData)
+        body: JSON.stringify({ action: "submitorder", payload: payload })
     })
     .then(res => res.text())
     .then(txt => {
         if(txt.startsWith("OK")) { 
             const finalID = txt.split(":")[1] || "";
-            
-            const xeroTitle = document.getElementById("xeroOrderTitle");
-            const xeroBadge = document.getElementById("xeroStatusBadge");
-            xeroTitle.textContent = "Order #" + finalID;
-            xeroBadge.textContent = "TERKIRIM";
-            xeroBadge.classList.remove("badge-draft"); xeroBadge.classList.add("badge-sent");
-            showToast("Berhasil! No. Order: " + finalID, "success"); 
+            document.getElementById("xeroOrderTitle").textContent = "Order #" + finalID;
+            document.getElementById("xeroStatusBadge").textContent = "TERKIRIM";
+            document.getElementById("xeroStatusBadge").className = "xero-badge badge-sent";
+            showToast("Berhasil! No: " + finalID, "success"); 
             btn.textContent="Terkirim";
             setTimeout(()=>location.reload(), 3000); 
         } else { throw new Error(txt); }
     }).catch(e => { showToast("Gagal: " + e.message, "error"); btn.disabled=false; btn.textContent="Kirim Pesanan"; });
 }
 
-function doLogout() {
-    if(confirm("Apakah Anda yakin ingin keluar?")) {
-        window.location.href = "https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/";
+// Tutup dropdown jika scroll layar utama
+window.addEventListener('scroll', function(e) {
+    if (e.target === document || e.target === document.body) {
+        document.querySelectorAll('.choices__list--dropdown').forEach(d => {
+            if (d.style.position === 'fixed') { d.closest('.choices').choices.hideDropdown(); }
+        });
     }
-}
+}, true);
 </script>
 
 </body>
