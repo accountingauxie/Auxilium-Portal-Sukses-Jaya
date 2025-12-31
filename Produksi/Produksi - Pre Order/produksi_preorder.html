@@ -2,71 +2,47 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Sistem Produksi Preorder - Auxilium</title>
+<title>Preorder Production System</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
 <style>
-/* --- 1. SYSTEM STYLE --- */
-:root { --primary-color: #116999; --bg-color: #f4f7f6; --text-color: #333; }
-* { box-sizing: border-box; }
-body { margin: 0; font-family: "Segoe UI", "Arial", sans-serif; font-size: 13px; background: var(--bg-color); color: var(--text-color); }
+/* --- STYLE DASAR --- */
+:root { --primary: #0f766e; --bg: #f3f4f6; --text: #1f2937; }
+body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; font-size: 13px; }
 
-/* --- NAVBAR --- */
-.aux-navbar { background-color: #ffffff; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000; }
-.aux-logo img { height: 35px; }
-.user-panel { display: flex; align-items: center; gap: 10px; border-left: 1px solid #eee; padding-left: 20px; }
-.user-avatar { width: 32px; height: 32px; background: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+/* --- HEADER & NAV --- */
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #fff; padding: 15px 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.header h2 { margin: 0; color: var(--primary); font-size: 18px; }
 
-/* --- LAYOUT & TABS --- */
-.page-wrap { padding: 25px 35px; max-width: 100%; margin: 0 auto; }
-.header-action { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.category-tabs { display: flex; gap: 5px; border-bottom: 1px solid #ddd; margin-bottom: 0; }
-.cat-btn { background: none; border: none; padding: 10px 15px; color: #666; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 600; transition: 0.2s; font-size: 13px; }
-.cat-btn:hover { background: #f9f9f9; color: var(--primary-color); }
-.cat-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); background: #fff; }
+.tabs { display: flex; gap: 5px; margin-bottom: 0; border-bottom: 1px solid #ddd; }
+.tab-btn { padding: 10px 15px; border: none; background: #e5e7eb; cursor: pointer; border-radius: 6px 6px 0 0; font-weight: 600; color: #666; transition: 0.2s; }
+.tab-btn.active { background: #fff; color: var(--primary); border-bottom: 3px solid var(--primary); }
+.tab-btn:hover { background: #d1d5db; }
 
 /* --- TABLE --- */
-.table-card { background: #fff; border-radius: 0 0 8px 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; border: 1px solid #ddd; border-top: none; }
-table.xero-table { width: 100%; border-collapse: collapse; }
-table.xero-table th { text-align: left; padding: 12px 15px; background: #f8f9fa; border-bottom: 2px solid #eee; color: #444; font-size: 12px; text-transform: uppercase; font-weight: 700; }
-table.xero-table td { padding: 12px 15px; border-bottom: 1px solid #eee; vertical-align: middle; color: #333; }
-table.xero-table tr:hover { background-color: #f0f9ff; }
+.card { background: #fff; border-radius: 0 0 8px 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; }
+table { width: 100%; border-collapse: collapse; }
+th { background: #f9fafb; padding: 12px; text-align: left; font-size: 12px; border-bottom: 2px solid #eee; color: #555; text-transform: uppercase; }
+td { padding: 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
+tr:hover { background: #f0fdfa; }
 
-/* --- BUTTONS --- */
-.btn-primary { background: var(--primary-color); color: white; padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 5px rgba(17, 105, 153, 0.2); transition: 0.2s; }
-.btn-primary:hover { background: #0c4e75; transform: translateY(-1px); }
-.btn-sm { padding: 5px 10px; font-size: 11px; border-radius: 4px; border: none; cursor: pointer; }
-.btn-action { background: #e0f2fe; color: #0284c7; }
-.btn-action:hover { background: #0284c7; color: white; }
+/* --- BADGES & PROGRESS --- */
+.badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+.bg-open { background: #dbeafe; color: #1e40af; }
+.bg-partial { background: #ffedd5; color: #9a3412; }
+.bg-closed { background: #dcfce7; color: #166534; }
 
-/* --- BADGES --- */
-.badge { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; display: inline-block; }
-.bg-master { background: #ede9fe; color: #5b21b6; border: 1px solid #ddd6fe; } /* Master/Contract */
-.bg-awaiting { background: #fff7ed; color: #9a3412; border: 1px solid #ffedd5; }
-.bg-process { background: #eff6ff; color: #1e40af; border: 1px solid #dbeafe; }
-.bg-completed { background: #f0fdf4; color: #166534; border: 1px solid #dcfce7; }
-.bg-delivered { background: #ecfdf5; color: #047857; border: 1px solid #d1fae5; }
-.bg-cancel { background: #fef2f2; color: #991b1b; border: 1px solid #fee2e2; }
+.progress-bar { background: #e5e7eb; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 5px; width: 100%; }
+.progress-fill { height: 100%; background: #10b981; width: 0%; transition: width 0.5s; }
 
-/* --- PROGRESS BAR --- */
-.prog-track { width: 100%; background: #eee; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 5px; }
-.prog-fill { height: 100%; background: #10b981; width: 0%; transition: 0.5s; }
-.prog-text { font-size: 10px; color: #666; margin-top: 2px; display: flex; justify-content: space-between; }
-
-/* --- MODAL --- */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(2px); }
-.modal-box { background: #fff; width: 900px; max-height: 90vh; border-radius: 8px; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-.modal-header { padding: 15px 25px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; border-radius: 8px 8px 0 0; }
-.modal-body { padding: 20px 25px; overflow-y: auto; background: #f9fafb; flex: 1; }
-.modal-footer { padding: 15px 25px; border-top: 1px solid #eee; background: #fff; text-align: right; border-radius: 0 0 8px 8px; }
-
-/* Create Request Style */
-.customer-select-card { background: white; padding: 20px; border-radius: 8px; border: 1px solid #eee; text-align: center; margin-bottom: 20px; }
-.contract-item { background: white; border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin-bottom: 10px; border-left: 4px solid var(--primary-color); }
-.contract-header { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed #eee; padding-bottom: 10px; }
-.input-row { display: flex; gap: 10px; align-items: center; margin-top: 5px; background: #f8fafc; padding: 5px; border-radius: 4px; }
-.qty-input { padding: 5px; border: 1px solid #ccc; border-radius: 4px; width: 100px; text-align: right; }
+/* --- BUTTONS & MODAL --- */
+.btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-sm { padding: 5px 10px; font-size: 11px; }
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; }
+.modal { background: #fff; width: 900px; max-height: 90vh; border-radius: 8px; display: flex; flex-direction: column; }
+.modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+.input-group { display: flex; gap: 10px; align-items: center; background: #f8fafc; padding: 10px; border-radius: 4px; margin-bottom: 5px; }
 
 /* PDF Hidden */
 #pdf-container { position: absolute; left: -9999px; }
@@ -74,562 +50,293 @@ table.xero-table tr:hover { background-color: #f0f9ff; }
 </head>
 <body>
 
-<div class="aux-navbar">
-    <div class="aux-logo">
-        <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png" alt="Auxilium">
-        <span style="font-weight:bold; color:var(--primary-color); font-size:16px; margin-left:10px;">Production System</span>
+<div class="header">
+    <div>
+        <h2>Preorder Production Dashboard</h2>
+        <span style="color:#666; font-size:12px;">Kelola kontrak preorder dan produksi harian</span>
     </div>
-    <div class="user-panel">
-        <div style="text-align:right; line-height:1.2;">
-            <div style="font-weight:bold;">Admin Produksi</div>
-            <div style="font-size:11px; color:#888;">CV Sukses Jaya</div>
-        </div>
-        <div class="user-avatar">AP</div>
-    </div>
+    <button class="btn btn-primary" onclick="openCreateModal()">
+        <i class="fas fa-plus-circle"></i> Create Request (Saldo)
+    </button>
 </div>
 
-<div class="page-wrap">
-    <div class="header-action">
-        <div>
-            <h2 style="margin:0; color:#1f2937;">Dashboard Preorder</h2>
-            <p style="margin:5px 0 0 0; color:#6b7280; font-size:13px;">Kelola kontrak master dan permintaan produksi harian.</p>
-        </div>
-        <button class="btn-primary" onclick="openCreateRequestModal()">
-            <i class="fas fa-plus-circle"></i> Buat Request Produksi
-        </button>
-    </div>
+<div class="tabs">
+    <button class="tab-btn" id="tab-master" onclick="loadData('Master')">Master List (All)</button>
+    <button class="tab-btn active" id="tab-remaining" onclick="loadData('Remaining')">Remaining (Ongoing)</button>
+    <button class="tab-btn" id="tab-awaiting" onclick="loadData('Awaiting')">Awaiting</button>
+    <button class="tab-btn" id="tab-process" onclick="loadData('In Process')">In Process</button>
+    <button class="tab-btn" id="tab-completed" onclick="loadData('Completed')">Completed</button>
+    <button class="tab-btn" id="tab-delivered" onclick="loadData('Delivered')">Delivered</button>
+    <button class="tab-btn" id="tab-cancel" onclick="loadData('Cancel')">Cancelled</button>
+</div>
 
-    <div class="category-tabs">
-        <button class="cat-btn active" id="tab-master" onclick="switchTab('MasterContract')">
-            <i class="fas fa-folder-open"></i> Master & Remaining (Saldo)
-        </button>
-        <button class="cat-btn" id="tab-awaiting" onclick="switchTab('Awaiting')">
-            <i class="fas fa-clock"></i> Awaiting Production
-        </button>
-        <button class="cat-btn" id="tab-process" onclick="switchTab('In Process')">
-            <i class="fas fa-cogs"></i> In Process (SPK)
-        </button>
-        <button class="cat-btn" id="tab-completed" onclick="switchTab('Completed')">
-            <i class="fas fa-check-circle"></i> Completed
-        </button>
-        <button class="cat-btn" id="tab-delivered" onclick="switchTab('Delivered')">
-            <i class="fas fa-truck"></i> Delivered (SJ)
-        </button>
-        <button class="cat-btn" id="tab-cancelled" onclick="switchTab('Cancelled')">
-            <i class="fas fa-ban"></i> Cancelled
-        </button>
-    </div>
-
-    <div class="table-card">
-        <table class="xero-table">
-            <thead id="tableHead">
-                </thead>
-            <tbody id="tableBody">
-                <tr><td colspan="7" style="text-align:center; padding:50px; color:#999;">Loading Data...</td></tr>
-            </tbody>
-        </table>
-    </div>
+<div class="card">
+    <table id="mainTable">
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody">
+            <tr><td colspan="6" style="text-align:center; padding:50px;">Loading Data...</td></tr>
+        </tbody>
+    </table>
 </div>
 
 <div id="createModal" class="modal-overlay">
-    <div class="modal-box">
-        <div class="modal-header">
-            <h3 style="margin:0;"><i class="fas fa-cart-plus"></i> Production Request Baru</h3>
-            <button onclick="closeModal('createModal')" style="border:none; background:none; font-size:20px; cursor:pointer;">&times;</button>
-        </div>
+    <div class="modal">
         <div class="modal-body">
-            <div id="step1-customer" class="customer-select-card">
-                <h4 style="margin-top:0;">Pilih Customer</h4>
-                <p style="color:#666; font-size:12px;">Pilih customer untuk melihat sisa saldo kontrak (preorder).</p>
-                <select id="selCustomer" style="padding:10px; width:60%; border:1px solid #ccc; border-radius:5px;" onchange="loadCustomerContracts(this.value)">
-                    <option value="">-- Pilih Customer --</option>
-                    </select>
+            <h3>Buat Request Produksi</h3>
+            <p>Pilih Customer untuk melihat sisa saldo kontrak berjalan (Remaining).</p>
+            <select id="selCustomer" onchange="loadCustomerItems(this.value)" style="padding:10px; width:100%; margin-bottom:20px;">
+                <option value="">-- Loading Data... --</option>
+            </select>
+            <div id="createItemsContainer"></div>
+            <div style="margin-top:20px; text-align:right;">
+                <button class="btn btn-sm" onclick="closeModal('createModal')" style="background:#eee;">Batal</button>
+                <button class="btn btn-primary" onclick="submitRequest()">Submit Request</button>
             </div>
-
-            <div id="step2-contracts" style="display:none;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <strong>Daftar Item Kontrak Aktif:</strong>
-                    <button class="btn-sm" onclick="resetCreateModal()" style="background:#eee; color:#333;">Ganti Customer</button>
-                </div>
-                <div id="contractItemsContainer"></div>
-                <div id="createError" style="color:red; font-weight:bold; margin-top:10px; display:none;"></div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-sm" onclick="closeModal('createModal')" style="padding:10px 20px; background:white; border:1px solid #ccc;">Batal</button>
-            <button class="btn-primary" id="btnSubmitRequest" onclick="submitProductionRequest()" style="display:none;">
-                Simpan & Buat Order
-            </button>
         </div>
     </div>
 </div>
 
 <div id="actionModal" class="modal-overlay">
-    <div class="modal-box" style="width:800px;">
-        <div class="modal-header">
-            <div>
-                <h3 style="margin:0;" id="actModalTitle">Order #...</h3>
-                <span id="actModalSubtitle" style="font-size:12px; color:#666;">Customer...</span>
-            </div>
-            <button onclick="closeModal('actionModal')" style="border:none; background:none; font-size:20px; cursor:pointer;">&times;</button>
-        </div>
+    <div class="modal">
         <div class="modal-body">
-            <div id="actAlert" style="background:#fff3cd; color:#856404; padding:10px; border-radius:5px; margin-bottom:15px; display:none;"></div>
-            <table class="xero-table" style="border:1px solid #eee;">
-                <thead>
-                    <tr>
-                        <th>Item Barang</th>
-                        <th style="text-align:center;">Panjang (m)</th>
-                        <th style="text-align:center;">Qty</th>
-                        <th style="text-align:center;">Total M'</th>
-                        <th id="thCheck" style="text-align:center; display:none;">Selesai?</th>
-                    </tr>
-                </thead>
-                <tbody id="actTableBody"></tbody>
+            <h3 id="actTitle">Order Detail</h3>
+            <table style="width:100%; margin-bottom:15px;">
+                <thead><tr><th>Item</th><th>Meter</th><th>Qty</th><th>Ket</th></tr></thead>
+                <tbody id="actBody"></tbody>
             </table>
+            <div id="actFooter" style="text-align:right;"></div>
+            <button class="btn btn-sm" onclick="closeModal('actionModal')" style="margin-top:10px; background:#eee;">Close</button>
         </div>
-        <div class="modal-footer" id="actModalFooter">
-            </div>
     </div>
 </div>
 
 <div id="pdf-container">
     <div id="pdf-content" style="padding:20px; font-family:Arial; width:100%;">
-        <div style="border-bottom:2px solid #000; margin-bottom:20px; display:flex; justify-content:space-between;">
-            <div>
-                <h2 id="pdf-doc-title" style="margin:0;">SURAT PERINTAH KERJA</h2>
-                <p id="pdf-doc-sub" style="margin:5px 0 10px 0;">Internal Production Use Only</p>
-            </div>
-            <div style="text-align:right;">
-                <h3 id="pdf-orderno" style="margin:0;">ORD-001</h3>
-                <p id="pdf-date">Date: ...</p>
-            </div>
-        </div>
-        <div style="margin-bottom:20px;">
-            <strong>Customer:</strong> <span id="pdf-customer">-</span>
-        </div>
-        <table style="width:100%; border-collapse:collapse; margin-bottom:40px;">
-            <thead>
-                <tr style="background:#eee;">
-                    <th style="border:1px solid #000; padding:8px; text-align:left;">Item</th>
-                    <th style="border:1px solid #000; padding:8px; text-align:center;">Panjang (m)</th>
-                    <th style="border:1px solid #000; padding:8px; text-align:center;">Qty</th>
-                    <th style="border:1px solid #000; padding:8px; text-align:center;">Mesin/Ket</th>
-                </tr>
-            </thead>
+        <h2 id="pdf-doc-title">SURAT JALAN / SPK</h2>
+        <div style="margin-bottom:15px;">Order ID: <span id="pdf-orderno"></span> | Date: <span id="pdf-date"></span></div>
+        <div style="margin-bottom:15px;">Customer: <span id="pdf-customer"></span></div>
+        <table style="width:100%; border-collapse:collapse; border:1px solid #000;">
+            <thead><tr style="background:#eee;"><th style="border:1px solid #000; padding:5px;">Item</th><th style="border:1px solid #000; padding:5px;">Meter</th><th style="border:1px solid #000; padding:5px;">Qty</th><th style="border:1px solid #000; padding:5px;">Ket</th></tr></thead>
             <tbody id="pdf-tbody"></tbody>
         </table>
-        <div style="display:flex; justify-content:space-between; margin-top:50px; text-align:center;">
-            <div style="width:30%;">
-                <p>Dibuat Oleh,</p><br><br><br>
-                <div style="border-top:1px solid #000;">Admin Produksi</div>
-            </div>
-            <div style="width:30%;">
-                <p id="pdf-sign-2">Operator / Penerima,</p><br><br><br>
-                <div style="border-top:1px solid #000;">( ................. )</div>
-            </div>
-        </div>
     </div>
 </div>
 
 <script>
-/* =========================================
-   1. DATA DUMMY & CONFIG
-   ========================================= */
-const STATUS_STAGES = {
-    'MasterContract': { label: 'Active Contracts', badge: 'bg-master' },
-    'Awaiting': { label: 'Awaiting Production', badge: 'bg-awaiting' },
-    'In Process': { label: 'In Production', badge: 'bg-process' },
-    'Completed': { label: 'Ready to Deliver', badge: 'bg-completed' },
-    'Delivered': { label: 'Delivered', badge: 'bg-delivered' },
-    'Cancelled': { label: 'Cancelled', badge: 'bg-cancel' }
-};
+// --- KONFIGURASI API (HARDCODED) ---
+const API_URL = "https://script.google.com/macros/s/AKfycby2yE547Tpba5Cym_AyHg3z65qPmsdkQrMr_WV00t0AoBfXNjj7SqWntFk6khNTi42W8A/exec";
 
-// Data Master Kontrak (Induk) - Menggabungkan "All" dan "Remaining"
-let masterContracts = [
-    { id: 'CTR-001', customer: 'PT. Bangun Jaya', date: '2025-01-01', items: [
-        { name: 'Spandek 0.30', quota: 1000, produced: 200 },
-        { name: 'Bondek 0.75', quota: 500, produced: 0 }
-    ]},
-    { id: 'CTR-002', customer: 'TB. Abadi Sentosa', date: '2025-01-05', items: [
-        { name: 'Spandek Pasir', quota: 2000, produced: 1500 }
-    ]}
-];
+let currentView = 'Remaining';
+let globalRemainingData = []; 
+let currentOrders = {};
 
-// Data Order Produksi (Anak) - Request harian
-let productionOrders = [
-    { id: 'ORD-101', refContract: 'CTR-001', customer: 'PT. Bangun Jaya', status: 'Awaiting', date: '2025-01-10', items: [
-        { name: 'Spandek 0.30', meter: 6, qty: 50 }
-    ]},
-    { id: 'ORD-102', refContract: 'CTR-002', customer: 'TB. Abadi Sentosa', status: 'In Process', date: '2025-01-11', items: [
-        { name: 'Spandek Pasir', meter: 4, qty: 100, done: false },
-        { name: 'Spandek Pasir', meter: 5, qty: 50, done: true } // Partial done inside order
-    ]},
-    { id: 'ORD-100', refContract: 'CTR-001', customer: 'PT. Bangun Jaya', status: 'Delivered', date: '2025-01-02', items: [
-        { name: 'Spandek 0.30', meter: 5, qty: 10 }
-    ]}
-];
+window.onload = () => loadData('Remaining');
 
-let currentTab = 'MasterContract';
-
-/* =========================================
-   2. INITIALIZATION & TABS
-   ========================================= */
-window.onload = () => switchTab('MasterContract');
-
-function switchTab(tabName) {
-    currentTab = tabName;
+function loadData(view) {
+    currentView = view;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     
-    // UI Active State
-    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-    let btnId = 'tab-master';
-    if(tabName === 'Awaiting') btnId = 'tab-awaiting';
-    else if(tabName === 'In Process') btnId = 'tab-process';
-    else if(tabName === 'Completed') btnId = 'tab-completed';
-    else if(tabName === 'Delivered') btnId = 'tab-delivered';
-    else if(tabName === 'Cancelled') btnId = 'tab-cancelled';
-    document.getElementById(btnId).classList.add('active');
+    // Mapping button ID
+    let btnId = 'tab-remaining';
+    if(view === 'Master') btnId = 'tab-master';
+    if(view === 'Awaiting') btnId = 'tab-awaiting';
+    if(view === 'In Process') btnId = 'tab-process';
+    if(view === 'Completed') btnId = 'tab-completed';
+    if(view === 'Delivered') btnId = 'tab-delivered';
+    if(view === 'Cancel') btnId = 'tab-cancel';
+    
+    const btn = document.getElementById(btnId);
+    if(btn) btn.classList.add('active');
 
-    // Render Headers
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px;">Fetching Data...</td></tr>';
     const thead = document.getElementById('tableHead');
-    if (tabName === 'MasterContract') {
-        thead.innerHTML = `
-            <tr>
-                <th>No. Kontrak</th>
-                <th>Customer</th>
-                <th>Tgl Kontrak</th>
-                <th style="width:40%;">Progress Saldo (Sisa vs Total)</th>
-                <th>Status</th>
-            </tr>`;
-    } else {
-        thead.innerHTML = `
-            <tr>
-                <th>No. Order</th>
-                <th>Customer</th>
-                <th>Tgl Request</th>
-                <th>Detail Barang</th>
-                <th>Status</th>
-                <th style="text-align:right;">Action</th>
-            </tr>`;
-    }
 
-    renderTable();
+    // TAB: MASTER / REMAINING
+    if(view === 'Master' || view === 'Remaining') {
+        thead.innerHTML = `<tr><th>PO ID</th><th>Customer</th><th>Date</th><th style="width:40%;">Items Progress</th><th>Status</th></tr>`;
+        google.script.run.withSuccessHandler(renderPreOrders).doGet({
+            parameter: { action: 'getPreOrdersMaster', viewType: view }
+        });
+    } 
+    // TAB: PRODUCTION STAGES
+    else {
+        thead.innerHTML = `<tr><th>Prod ID</th><th>Customer</th><th>Date</th><th>Item Detail</th><th>Status</th><th style="text-align:right;">Action</th></tr>`;
+        google.script.run.withSuccessHandler(renderProduction).doGet({
+            parameter: { action: 'getProductionOrders', status: view, category: 'preorder' }
+        });
+    }
 }
 
-/* =========================================
-   3. RENDER TABLE LOGIC
-   ========================================= */
-function renderTable() {
+function renderPreOrders(data) {
     const tbody = document.getElementById('tableBody');
     tbody.innerHTML = '';
+    
+    // Simpan data Remaining untuk dropdown Create Request
+    if(currentView === 'Remaining') globalRemainingData = data;
 
-    if (currentTab === 'MasterContract') {
-        // Render Master Data
-        masterContracts.forEach(c => {
-            let itemProgressHtml = '';
-            c.items.forEach(i => {
-                let pct = (i.produced / i.quota) * 100;
-                let remaining = i.quota - i.produced;
-                let barColor = remaining <= 0 ? '#999' : '#10b981';
-                
-                itemProgressHtml += `
-                    <div style="margin-bottom:8px;">
-                        <div class="prog-text">
-                            <strong>${i.name}</strong>
-                            <span>${i.produced} / ${i.quota} m (Sisa: ${remaining}m)</span>
-                        </div>
-                        <div class="prog-track">
-                            <div class="prog-fill" style="width:${pct}%; background:${barColor};"></div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td style="font-weight:bold; color:var(--primary-color);">${c.id}</td>
-                <td>${c.customer}</td>
-                <td>${c.date}</td>
-                <td>${itemProgressHtml}</td>
-                <td><span class="badge bg-master">Active Contract</span></td>
-            `;
-            tbody.appendChild(tr);
-        });
-
-    } else {
-        // Render Production Orders based on Status
-        const filtered = productionOrders.filter(o => o.status === currentTab);
-        
-        if (filtered.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:#999;">Tidak ada data di tahap ${currentTab}</td></tr>`;
-            return;
-        }
-
-        filtered.forEach(o => {
-            let itemSummary = o.items.map(i => `${i.name} (${i.qty} lbr x ${i.meter}m)`).join('<br>');
-            let badge = STATUS_STAGES[o.status].badge;
-            
-            // Action Buttons Logic
-            let btnAction = '';
-            if (currentTab === 'Awaiting') {
-                btnAction = `<button class="btn-sm btn-action" onclick="openActionModal('${o.id}', 'process')"><i class="fas fa-cog"></i> Proses SPK</button>`;
-            } else if (currentTab === 'In Process') {
-                btnAction = `
-                    <button class="btn-sm btn-action" style="margin-right:5px;" onclick="generatePDF('SPK', '${o.id}')"><i class="fas fa-print"></i> SPK</button>
-                    <button class="btn-sm btn-primary" onclick="openActionModal('${o.id}', 'complete')"><i class="fas fa-check"></i> Selesai</button>
-                `;
-            } else if (currentTab === 'Completed') {
-                btnAction = `<button class="btn-sm btn-primary" onclick="openActionModal('${o.id}', 'deliver')"><i class="fas fa-truck"></i> Kirim (SJ)</button>`;
-            } else if (currentTab === 'Delivered') {
-                btnAction = `<button class="btn-sm btn-action" onclick="generatePDF('SJ', '${o.id}')"><i class="fas fa-file-invoice"></i> Surat Jalan</button>`;
-            }
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td style="font-weight:bold;">${o.id}</td>
-                <td>${o.customer}</td>
-                <td>${o.date}</td>
-                <td style="font-size:12px; line-height:1.4;">${itemSummary}</td>
-                <td><span class="badge ${badge}">${o.status}</span></td>
-                <td style="text-align:right;">${btnAction}</td>
-            `;
-            tbody.appendChild(tr);
-        });
+    if(!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No Data Found.</td></tr>';
+        return;
     }
+
+    data.forEach(po => {
+        let itemsHtml = '';
+        po.items.forEach(item => {
+            let pct = item.totalMeter > 0 ? (item.processedMeter / item.totalMeter) * 100 : 0;
+            if(pct > 100) pct = 100;
+            itemsHtml += `
+                <div style="margin-bottom:5px;">
+                    <div style="display:flex; justify-content:space-between; font-size:11px;">
+                        <strong>${item.name}</strong>
+                        <span>${item.processedMeter.toFixed(2)} / ${item.totalMeter.toFixed(2)}m</span>
+                    </div>
+                    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%; background:${item.isLineClosed?'#999':'#10b981'};"></div></div>
+                </div>`;
+        });
+        tbody.innerHTML += `<tr><td style="font-weight:bold; color:#0f766e;">${po.poId}</td><td>${po.customer}</td><td>${po.date}</td><td>${itemsHtml}</td><td><span class="badge bg-${po.status.toLowerCase()}">${po.status}</span></td></tr>`;
+    });
 }
 
-/* =========================================
-   4. CREATE REQUEST LOGIC (NEW FEATURE)
-   ========================================= */
-function openCreateRequestModal() {
-    // Populate Customer Select
-    const select = document.getElementById('selCustomer');
-    select.innerHTML = '<option value="">-- Pilih Customer --</option>';
+function renderProduction(data) {
+    currentOrders = data;
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
     
-    // Get unique customers from Master Contract
-    const customers = [...new Set(masterContracts.map(m => m.customer))];
-    customers.forEach(c => {
-        let opt = document.createElement('option');
-        opt.value = c;
-        opt.innerText = c;
-        select.appendChild(opt);
-    });
+    if(!data || Object.keys(data).length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No Orders.</td></tr>';
+        return;
+    }
 
-    resetCreateModal();
+    Object.values(data).forEach(o => {
+        let detail = o.items.map(i => `${i.item} (${i.qty}x${i.meter})`).join('<br>');
+        let btns = '';
+        if(o.status === 'Awaiting') btns = `<button class="btn-sm btn-primary" onclick="openAction('${o.orderNo}','process')">Process</button>`;
+        if(o.status === 'In Process') btns = `<button class="btn-sm" onclick="printPDF('SPK','${o.orderNo}')">SPK</button> <button class="btn-sm btn-primary" onclick="openAction('${o.orderNo}','complete')">Finish</button>`;
+        if(o.status === 'Completed Production') btns = `<button class="btn-sm btn-primary" onclick="openAction('${o.orderNo}','deliver')">Deliver</button>`;
+        if(o.status === 'Delivered') btns = `<button class="btn-sm" onclick="printPDF('SJ','${o.orderNo}')">Print SJ</button>`;
+
+        tbody.innerHTML += `<tr><td>${o.orderNo}</td><td>${o.customer}</td><td>${o.date}</td><td>${detail}</td><td><span class="badge" style="background:#eee;">${o.status}</span></td><td style="text-align:right;">${btns}</td></tr>`;
+    });
+}
+
+// CREATE REQUEST
+function openCreateModal() {
     document.getElementById('createModal').style.display = 'flex';
+    document.getElementById('createItemsContainer').innerHTML = '';
+    
+    // Auto populate jika data remaining sudah ada
+    if(globalRemainingData.length === 0) {
+        google.script.run.withSuccessHandler(d => {
+            globalRemainingData = d;
+            populateCust();
+        }).doGet({parameter:{action:'getPreOrdersMaster', viewType:'Remaining'}});
+    } else {
+        populateCust();
+    }
 }
 
-function resetCreateModal() {
-    document.getElementById('step1-customer').style.display = 'block';
-    document.getElementById('step2-contracts').style.display = 'none';
-    document.getElementById('btnSubmitRequest').style.display = 'none';
-    document.getElementById('selCustomer').value = "";
-    document.getElementById('contractItemsContainer').innerHTML = '';
-}
-
-function loadCustomerContracts(custName) {
-    if (!custName) return;
-
-    // Filter contracts for this customer
-    const contracts = masterContracts.filter(c => c.customer === custName);
-    const container = document.getElementById('contractItemsContainer');
-    container.innerHTML = '';
-
-    if (contracts.length === 0) {
-        container.innerHTML = '<p>Tidak ada kontrak aktif.</p>';
+function populateCust() {
+    const sel = document.getElementById('selCustomer');
+    sel.innerHTML = '<option value="">-- Pilih Customer --</option>';
+    if(!globalRemainingData || globalRemainingData.length === 0) {
+        sel.innerHTML = '<option value="">-- Data Kosong --</option>';
         return;
     }
+    [...new Set(globalRemainingData.map(d=>d.customer))].forEach(c => {
+        let opt = document.createElement('option'); opt.value=c; opt.innerText=c; sel.appendChild(opt);
+    });
+}
 
-    contracts.forEach(c => {
-        c.items.forEach((item, idx) => {
-            let remaining = item.quota - item.produced;
-            if (remaining > 0) {
+function loadCustomerItems(cust) {
+    const box = document.getElementById('createItemsContainer'); box.innerHTML = '';
+    if(!cust) return;
+    globalRemainingData.filter(d => d.customer === cust).forEach(po => {
+        po.items.forEach(i => {
+            if(!i.isLineClosed && i.remainingMeter > 0.1) {
                 let div = document.createElement('div');
-                div.className = 'contract-item';
+                div.className = 'input-group';
                 div.innerHTML = `
-                    <div class="contract-header">
-                        <div>
-                            <strong>${item.name}</strong> <small>(${c.id})</small>
-                        </div>
-                        <div style="text-align:right;">
-                            <span style="font-size:11px; color:#666;">Sisa Saldo:</span>
-                            <strong style="color:var(--primary-color);">${remaining} m</strong>
-                        </div>
-                    </div>
-                    <div class="input-area" data-contract="${c.id}" data-item="${item.name}" data-max="${remaining}">
-                        <div class="input-row">
-                            <label>Panjang (m):</label>
-                            <input type="number" step="0.01" class="qty-input inp-meter" placeholder="0.00">
-                            <label>Qty (Lbr):</label>
-                            <input type="number" step="1" class="qty-input inp-qty" placeholder="0">
-                        </div>
-                    </div>
+                <div style="flex:1;"><strong>${i.name}</strong><br><small>Sisa: ${i.remainingMeter.toFixed(2)}m</small></div>
+                <input type="number" class="inp-meter" placeholder="M" style="width:60px;" data-max="${i.remainingMeter}">
+                <input type="number" class="inp-qty" placeholder="Qty" style="width:50px;">
                 `;
-                container.appendChild(div);
+                div.dataset.po = po.poId; div.dataset.row = i.rowIndex; div.dataset.name = i.name;
+                box.appendChild(div);
             }
         });
     });
-
-    document.getElementById('step1-customer').style.display = 'none';
-    document.getElementById('step2-contracts').style.display = 'block';
-    document.getElementById('btnSubmitRequest').style.display = 'inline-block';
 }
 
-function submitProductionRequest() {
+function submitRequest() {
+    let batches = [];
     const cust = document.getElementById('selCustomer').value;
-    const inputs = document.querySelectorAll('.input-area');
-    let newItems = [];
-    let isValid = true;
-    let errorMsg = document.getElementById('createError');
-    errorMsg.style.display = 'none';
-
-    inputs.forEach(div => {
-        const m = parseFloat(div.querySelector('.inp-meter').value) || 0;
-        const q = parseFloat(div.querySelector('.inp-qty').value) || 0;
-        const max = parseFloat(div.dataset.max);
-        const totalReq = m * q;
-
-        if (totalReq > max) {
-            isValid = false;
-            div.style.backgroundColor = '#fee2e2';
-            errorMsg.innerText = `Permintaan (${totalReq}m) melebihi saldo (${max}m) untuk ${div.dataset.item}`;
-            errorMsg.style.display = 'block';
-        } else if (totalReq > 0) {
-            div.style.backgroundColor = '#f8fafc';
-            newItems.push({
-                ref: div.dataset.contract,
-                name: div.dataset.item,
-                meter: m,
-                qty: q,
-                total: totalReq
-            });
-        }
-    });
-
-    if (!isValid) return;
-    if (newItems.length === 0) {
-        alert("Mohon isi jumlah produksi minimal satu item.");
-        return;
-    }
-
-    // SIMULATE SAVE
-    const newId = 'ORD-' + (Math.floor(Math.random() * 1000));
-    productionOrders.push({
-        id: newId,
-        refContract: newItems[0].ref, // Simplification
-        customer: cust,
-        status: 'Awaiting',
-        date: new Date().toISOString().split('T')[0],
-        items: newItems
-    });
-
-    // Update Mock Master Balance
-    newItems.forEach(ni => {
-        let c = masterContracts.find(m => m.id === ni.ref);
-        let i = c.items.find(x => x.name === ni.name);
-        i.produced += ni.total;
-    });
-
-    alert("Request Produksi Berhasil Dibuat!");
-    closeModal('createModal');
-    switchTab('Awaiting');
-}
-
-/* =========================================
-   5. ACTION MODAL (PROCESS / COMPLETE / DELIVER)
-   ========================================= */
-let activeOrder = null;
-
-function openActionModal(orderId, action) {
-    activeOrder = productionOrders.find(o => o.id === orderId);
-    if (!activeOrder) return;
-
-    document.getElementById('actionModal').style.display = 'flex';
-    document.getElementById('actModalTitle').innerText = `${action === 'process' ? 'Proses Produksi' : action === 'complete' ? 'Penyelesaian Produksi' : 'Pengiriman Barang'} - ${activeOrder.id}`;
-    document.getElementById('actModalSubtitle').innerText = activeOrder.customer;
-
-    const tbody = document.getElementById('actTableBody');
-    tbody.innerHTML = '';
+    let valid = true;
     
-    // Checkbox header visible only for 'complete'
-    document.getElementById('thCheck').style.display = action === 'complete' ? 'table-cell' : 'none';
+    document.querySelectorAll('#createItemsContainer .input-group').forEach(div => {
+        let m = parseFloat(div.querySelector('.inp-meter').value)||0;
+        let q = parseFloat(div.querySelector('.inp-qty').value)||0;
+        let max = parseFloat(div.querySelector('.inp-meter').dataset.max);
+        let tot = m*q;
+        
+        if(tot > max) valid = false;
+        if(tot > 0) batches.push({poId:div.dataset.po, rowIndex:div.dataset.row, itemName:div.dataset.name, length:m, qty:q, totalMeter:tot});
+    });
 
-    activeOrder.items.forEach((item, idx) => {
-        let checkHtml = '';
-        if (action === 'complete') {
-            checkHtml = `<td style="text-align:center;"><input type="checkbox" ${item.done ? 'checked' : ''}></td>`;
+    if(!valid) return alert("Error: Input melebihi sisa kuota!");
+    if(batches.length===0) return alert("Isi minimal satu item.");
+    
+    const payload = { action:'submitPartialPO', data: { customer: cust, poId: batches[0].poId, batches: batches } };
+    google.script.run.withSuccessHandler(r => {
+        if(r.result === 'success') {
+            alert("Sukses: " + r.newOrderId);
+            closeModal('createModal');
+            loadData('Awaiting');
+            // Refresh cache
+            google.script.run.withSuccessHandler(d=>globalRemainingData=d).doGet({parameter:{action:'getPreOrdersMaster',viewType:'Remaining'}});
+        } else {
+            alert("Error: " + r.message);
         }
-
-        tbody.innerHTML += `
-            <tr>
-                <td>${item.name}</td>
-                <td style="text-align:center;">${item.meter}</td>
-                <td style="text-align:center;">${item.qty}</td>
-                <td style="text-align:center;">${(item.meter * item.qty).toFixed(2)}</td>
-                ${checkHtml}
-            </tr>
-        `;
-    });
-
-    // Footer Buttons
-    const footer = document.getElementById('actModalFooter');
-    if (action === 'process') {
-        document.getElementById('actAlert').style.display = 'block';
-        document.getElementById('actAlert').innerHTML = 'Pastikan bahan baku tersedia. Order akan masuk ke tahap <strong>In Process</strong> dan SPK dapat dicetak.';
-        footer.innerHTML = `<button class="btn-primary" onclick="updateStatus('${orderId}', 'In Process')">Lanjut ke Produksi (SPK)</button>`;
-    } else if (action === 'complete') {
-        document.getElementById('actAlert').style.display = 'none';
-        footer.innerHTML = `<button class="btn-primary" onclick="updateStatus('${orderId}', 'Completed')">Tandai Selesai</button>`;
-    } else if (action === 'deliver') {
-        document.getElementById('actAlert').style.display = 'block';
-        document.getElementById('actAlert').innerHTML = 'Barang akan dikirim. Stok fisik akan dikurangi. Surat Jalan akan dibuat.';
-        footer.innerHTML = `<button class="btn-primary" onclick="updateStatus('${orderId}', 'Delivered')">Kirim & Buat Surat Jalan</button>`;
-    }
+    }).doPost({postData:{contents:JSON.stringify(payload)}});
 }
 
-function updateStatus(id, newStatus) {
-    let order = productionOrders.find(o => o.id === id);
-    if (order) {
-        order.status = newStatus;
-        alert(`Order ${id} berhasil dipindahkan ke ${newStatus}`);
-        closeModal('actionModal');
-        switchTab(newStatus);
-    }
+// ACTION HANDLER
+function openAction(id, type) {
+    activeOrder = currentOrders[id];
+    document.getElementById('actionModal').style.display = 'flex';
+    document.getElementById('actTitle').innerText = id + " (" + type + ")";
+    const tbody = document.getElementById('actBody'); tbody.innerHTML = '';
+    activeOrder.items.forEach(i => tbody.innerHTML += `<tr><td>${i.item}</td><td>${i.meter}</td><td>${i.qty}</td><td>${i.machine||'-'}</td></tr>`);
+    
+    let btnHtml = '';
+    if(type === 'process') btnHtml = `<button class="btn btn-primary" onclick="doApi('${id}','submitProduction')">Kirim Produksi</button>`;
+    if(type === 'complete') btnHtml = `<button class="btn btn-primary" onclick="doApi('${id}','completeOrder')">Selesai</button>`;
+    if(type === 'deliver') btnHtml = `<button class="btn btn-primary" onclick="doApi('${id}','deliverOrder')">Kirim Barang</button>`;
+    document.getElementById('actFooter').innerHTML = btnHtml;
 }
 
-/* =========================================
-   6. PDF GENERATOR
-   ========================================= */
-function generatePDF(type, orderId) {
-    const o = productionOrders.find(x => x.id === orderId);
-    if(!o) return;
-
-    document.getElementById('pdf-doc-title').innerText = type === 'SPK' ? "SURAT PERINTAH KERJA" : "SURAT JALAN";
-    document.getElementById('pdf-doc-sub').innerText = type === 'SPK' ? "Instruksi Produksi" : "Dokumen Pengiriman Barang";
-    document.getElementById('pdf-orderno').innerText = o.id;
-    document.getElementById('pdf-date').innerText = "Tgl: " + new Date().toLocaleDateString();
-    document.getElementById('pdf-customer').innerText = o.customer;
-    document.getElementById('pdf-sign-2').innerText = type === 'SPK' ? "Operator Mesin" : "Penerima Barang";
-
-    const tbody = document.getElementById('pdf-tbody');
-    tbody.innerHTML = '';
-    o.items.forEach(i => {
-        tbody.innerHTML += `
-            <tr>
-                <td style="border:1px solid #000; padding:5px;">${i.name}</td>
-                <td style="border:1px solid #000; padding:5px; text-align:center;">${i.meter}</td>
-                <td style="border:1px solid #000; padding:5px; text-align:center;">${i.qty}</td>
-                <td style="border:1px solid #000; padding:5px;">-</td>
-            </tr>
-        `;
-    });
-
-    const el = document.getElementById('pdf-content');
-    html2pdf().set({ margin:0.5, filename:`${type}_${orderId}.pdf` }).from(el).save();
+function doApi(id, act) {
+    const payload = { action: act, orderId: id, category: 'preorder', data: activeOrder.items };
+    google.script.run.withSuccessHandler(r => {
+        alert(r.message); closeModal('actionModal');
+        if(act==='submitProduction') loadData('In Process');
+        if(act==='completeOrder') loadData('Completed');
+        if(act==='deliverOrder') loadData('Delivered');
+    }).doPost({postData:{contents:JSON.stringify(payload)}});
 }
 
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
+function printPDF(type, id) {
+    const o = currentOrders[id];
+    document.getElementById('pdf-doc-title').innerText = type === 'SPK' ? "SURAT PERINTAH KERJA" : "SURAT JALAN";
+    document.getElementById('pdf-orderno').innerText = id;
+    document.getElementById('pdf-customer').innerText = o.customer;
+    document.getElementById('pdf-date').innerText = new Date().toLocaleDateString();
+    const tbody = document.getElementById('pdf-tbody'); tbody.innerHTML = '';
+    o.items.forEach(i => tbody.innerHTML += `<tr><td style="border:1px solid #000; padding:5px;">${i.item}</td><td style="border:1px solid #000; padding:5px;">${i.meter}</td><td style="border:1px solid #000; padding:5px;">${i.qty}</td><td style="border:1px solid #000; padding:5px;">${i.machine||'-'}</td></tr>`);
+    html2pdf().from(document.getElementById('pdf-content')).save(`${type}_${id}.pdf`);
+}
 </script>
 </body>
 </html>
