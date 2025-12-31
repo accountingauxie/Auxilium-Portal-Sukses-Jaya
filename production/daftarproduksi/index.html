@@ -566,7 +566,7 @@ async function approveBatch(batchId) { const result = await Swal.fire({ title: '
 async function syncXero(batchId) { const result = await Swal.fire({ title: 'Sync ke Xero?', text: `Data batch ${batchId} akan dikirim ke Xero.`, icon: 'info', showCancelButton: true, confirmButtonColor: '#4f46e5', cancelButtonColor: '#64748b', confirmButtonText: 'Ya, Sync Sekarang', cancelButtonText: 'Nanti Saja' }); if(result.isConfirmed) { await postAction('syncXero', { batchId }); } }
 
 // ==========================================
-// FUNGSI GENERATE SPK (UPDATE: CLEAN FORMAT)
+// FUNGSI GENERATE SPK (UPDATE: CLEAN FORMAT & ENTRY ID ABU-ABU)
 // ==========================================
 function generateSPK(batchId) {
     const { jsPDF } = window.jspdf;
@@ -592,7 +592,7 @@ function generateSPK(batchId) {
     doc.text("CV. SUKSES JAYA MAKMUR LESTARI", 200, 12, { align: "right" });
     
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(80, 80, 80); // Abu-abu gelap
+    doc.setTextColor(100, 100, 100); // Abu-abu gelap
     doc.setFontSize(7);
     doc.text("Jl. D.I Panjaitan, RT/RW. 008/003", 200, 16, { align: "right" });
     doc.text("Kel. Wundudopi, Kec. Baruga, Kendari", 200, 19, { align: "right" });
@@ -602,17 +602,17 @@ function generateSPK(batchId) {
     doc.setTextColor(0, 0, 0); // Hitam
     doc.setFont("helvetica", "bold");
     doc.setFontSize(16);
-    doc.text("SURAT PERINTAH KERJA", 12, 16);
+    doc.text("SURAT PERINTAH KERJA", 10, 16);
 
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(100, 100, 100); // Abu-abu
-    doc.text("Produksi Barang Jadi (FG) - Non Spandek", 12, 21);
+    doc.text("Produksi Barang Jadi (FG) - Non Spandek", 10, 21);
 
     // --- 3. GARIS PEMBATAS TEBAL ---
     doc.setDrawColor(0, 0, 0); 
     doc.setLineWidth(0.5);
-    doc.line(12, 26, 200, 26);
+    doc.line(10, 25, 200, 25); //
 
     // --- 4. INFO BATCH (Entry ID & Date) ---
     doc.setFontSize(9);
@@ -620,20 +620,20 @@ function generateSPK(batchId) {
     
     // Label Entry ID
     doc.setFont("helvetica", "bold");
-    doc.text("Entry ID:", 12, 34);
+    doc.text("Entry ID:", 10, 32);
     
     // Value Entry ID (ABU-ABU sesuai request, bukan biru)
-    doc.setFont("courier", "bold");
+    doc.setFont("helvetica", "bold");
     doc.setTextColor(100, 100, 100); // Abu-abu
-    doc.text(batchId, 32, 34);
+    doc.text(batchId, 30, 32);
     
     // Tanggal
     doc.setFont("helvetica", "bold");
     doc.setTextColor(0, 0, 0); // Label Hitam
-    doc.text("Date:", 12, 39);
+    doc.text("Date:", 10, 37);
     
     doc.setFont("helvetica", "normal");
-    doc.text(batch.date, 32, 39);
+    doc.text(batch.date, 30, 37);
 
     // --- 5. TABEL ITEM (Desain Clean) ---
     const tableBody = batch.items.map((item, index) => [
@@ -645,7 +645,7 @@ function generateSPK(batchId) {
     ]);
 
     doc.autoTable({
-        startY: 45,
+        startY: 42,
         head: [['NO', 'NAMA BARANG', 'MACHINE', 'KPC', 'WE NUMBER']],
         body: tableBody,
         theme: 'plain', // Plain theme untuk clean look seperti gambar
@@ -655,7 +655,7 @@ function generateSPK(batchId) {
             cellPadding: 3, 
             valign: 'middle',
             textColor: [0, 0, 0], // Teks Hitam
-            lineColor: [200, 200, 200], // Garis abu tipis jika ada
+            lineColor: [200, 200, 200], 
             lineWidth: 0
         },
         headStyles: {
@@ -663,7 +663,7 @@ function generateSPK(batchId) {
             textColor: [0, 0, 0], // Teks Header Hitam
             fontStyle: 'bold',
             halign: 'left',
-            lineWidth: { top: 0.5, bottom: 0.5 }, // Garis atas bawah header
+            lineWidth: { top: 0.1, bottom: 0.1 }, // Garis atas bawah header tipis
             lineColor: [0, 0, 0]
         },
         columnStyles: {
@@ -679,13 +679,13 @@ function generateSPK(batchId) {
                 data.cell.styles.fontStyle = 'bold';
             }
         },
-        margin: { left: 12, right: 10 }
+        margin: { left: 10, right: 10 }
     });
 
     // --- 6. FOOTER (Tanda Tangan) ---
     let finalY = doc.lastAutoTable.finalY + 20;
     
-    if (finalY > 120) {
+    if (finalY > 110) {
         doc.addPage();
         finalY = 30;
     }
@@ -696,7 +696,7 @@ function generateSPK(batchId) {
 
     // TTD Kiri
     doc.text("Admin Produksi", 40, finalY, { align: "center" });
-    doc.setLineWidth(0.5);
+    doc.setLineWidth(0.3);
     doc.line(20, finalY + 20, 60, finalY + 20); 
 
     // TTD Kanan
