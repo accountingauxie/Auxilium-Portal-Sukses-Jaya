@@ -66,7 +66,7 @@ table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-ali
 /* FORM ELEMENTS INSIDE TABLE */
 .prod-input, .prod-select { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
 .split-row { background-color: #fffde7; }
-.disabled-row { background-color: #f9fafb; color: #9ca3af; pointer-events: none; }
+.disabled-row { background-color: #f9fafb; color: #9ca3af; }
 .disabled-row input, .disabled-row select { background: #e5e7eb; border-color: #d1d5db; pointer-events: none; }
 .check-production { width: 18px; height: 18px; cursor: pointer; accent-color: var(--green); }
 
@@ -220,7 +220,7 @@ table.pdf-table td { font-size: 10px; border: 1px solid #000; padding: 5px; }
 
 <script>
 // --- KONFIGURASI API ---
-const API_URL = "https://script.google.com/macros/s/AKfycbxvK2lY-Muhxuvl-H9OY_bJryFPS0q2aIJxo-QadfHHDJvBkKd0p17B7e5Md1KTQ3Zd/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwllkaTZzpMZGAyt9mZCt_HQ53H5TPKF-yGyjcl5WYnG_GFPVg4xVF9TgYx4Q497hxbcA/exec";
 const TYPE_CODES = { 'Custom': 'CS', 'Plat': 'PL' };
 
 let currentView = 'Remaining';
@@ -325,7 +325,7 @@ function openSetup(orderId) {
         alertBox.style.display = 'none';
     } else {
         alertBox.style.display = 'block';
-        alertBox.innerHTML = '<strong>Instruksi:</strong> Gunakan Split jika stok kurang.';
+        alertBox.innerHTML = '<strong>Instruksi:</strong> Gunakan tombol (+) untuk split jika stok kurang.';
     }
 
     // Body
@@ -429,51 +429,97 @@ function closeConfirm(isConfirmed) {
 }
 document.getElementById('confirmYesBtn').onclick = () => closeConfirm(true);
 
-// --- SPLIT LOGIC ---
+// --- SPLIT LOGIC (UNLIMITED) ---
 function splitRow(btn, groupId) {
     const originalRow = btn.closest('tr');
+    const tbody = originalRow.parentNode;
+    
+    // 1. Matikan Baris Utama (Parent) jika belum mati
+    // Kita set value 0 dan matikan input, TAPI tombol Split tetap hidup
     if (!originalRow.classList.contains('disabled-row')) {
         originalRow.classList.add('disabled-row');
         originalRow.querySelector('.qty-input').value = 0; 
         originalRow.querySelector('.total-m').innerText = "0.00";
+        
+        // Disable semua input/select KECUALI tombol aksi
         originalRow.querySelectorAll('input, select').forEach(el => el.disabled = true);
         const cb = originalRow.querySelector('.check-production');
         if(cb) cb.disabled = true; 
     }
+
+    // 2. Buat Baris Split Baru (Clone)
     const newRow = originalRow.cloneNode(true);
     newRow.classList.remove('main-row', 'disabled-row');
     newRow.classList.add('split-row');
+    
+    // Reset nilai untuk baris baru
     const qtyInput = newRow.querySelector('.qty-input');
-    qtyInput.value = 0; qtyInput.disabled = false;
-    newRow.querySelectorAll('select').forEach(s => { s.value = ""; s.disabled = false; s.onchange = function(){ generateWE(this); } });
+    qtyInput.value = 0; 
+    qtyInput.disabled = false;
+    
+    newRow.querySelectorAll('select').forEach(s => { 
+        s.value = ""; 
+        s.disabled = false; 
+        s.onchange = function(){ generateWE(this); } 
+    });
+    
     newRow.querySelector('.we-code').value = "";
+    
+    // Setup Checkbox (jika view In Process)
     const newCb = newRow.querySelector('.check-production');
-    if(newCb) { newCb.disabled = false; newCb.checked = false; newCb.onchange = checkAllDone; }
-    newRow.querySelector('.target-qty').parentElement.innerHTML = '<small>(Split)</small>';
+    if(newCb) { 
+        newCb.disabled = false; 
+        newCb.checked = false; 
+        newCb.onchange = checkAllDone; 
+    }
+    
+    // Visual: Tandai ini baris split
+    newRow.querySelector('.target-qty').parentElement.innerHTML = '<small style="color:#666;">↳ (Split)</small>';
+    
+    // Ubah tombol (+) menjadi tombol sampah (Hapus)
     const btnContainer = newRow.querySelector('.btn-split').parentElement;
     btnContainer.innerHTML = `<button class="btn-sm btn-remove" onclick="removeSplit(this, ${groupId})"><i class="fas fa-trash"></i></button>`;
-    const tbody = originalRow.parentNode;
+    
+    // 3. Masukkan Baris Baru di urutan paling bawah dari grup ini
     const groupRows = tbody.querySelectorAll(`tr[data-id="${groupId}"]`);
-    groupRows[groupRows.length-1].after(newRow);
+    const lastRow = groupRows[groupRows.length-1];
+    lastRow.after(newRow);
+    
+    // Re-attach listener kalkulasi
     qtyInput.onchange = function() { updateCalc(this); };
+    
     if(currentView === 'In Process') checkAllDone();
 }
 
 function removeSplit(btn, groupId) {
     const row = btn.closest('tr');
     const tbody = row.parentNode;
+    
+    // Hapus baris split ini
     row.remove();
+    
+    // Cek apakah masih ada baris split lain untuk item ini?
     const remainingSplits = tbody.querySelectorAll(`.split-row[data-id="${groupId}"]`);
+    
+    // Jika TIDAK ada split tersisa, hidupkan kembali Baris Utama
     if(remainingSplits.length === 0) {
         const main = tbody.querySelector(`.main-row[data-id="${groupId}"]`);
         main.classList.remove('disabled-row');
+        
         const target = parseInt(main.querySelector('.target-qty').innerText);
         main.querySelector('.qty-input').value = target;
+        
+        // Hidupkan input kembali
         main.querySelectorAll('select, input').forEach(el => el.disabled = false);
+        
+        // Hidupkan checkbox
         const cb = main.querySelector('.check-production');
         if(cb) cb.disabled = false;
+        
+        // Hitung ulang meter
         updateCalc(main.querySelector('.qty-input'));
     }
+    
     if(currentView === 'In Process') checkAllDone();
 }
 
@@ -567,7 +613,7 @@ function generatePDF(type) {
     html2pdf().set({ margin:0.5, filename:`${type}_${activeOrderId}.pdf` }).from(document.getElementById('pdfContent')).save();
 }
 
-// --- CREATE REQUEST LOGIC (UPDATED FOR BACKEND ALLOCATION) ---
+// --- CREATE REQUEST LOGIC ---
 function openCreateModal() {
     document.getElementById('createModal').style.display = 'flex';
     document.getElementById('createItemsContainer').innerHTML = '';
@@ -653,7 +699,6 @@ async function submitRequestAggregated() {
         // Jika ada input valid, masukkan ke list antrian
         if(reqTotalMeter > 0) {
             // Kita ambil info Type/Unit dari map data yang sudah ada untuk kelengkapan
-            // (Backend bisa validasi ulang nanti)
             const refData = aggregatedItemsMap[itemName] && aggregatedItemsMap[itemName].poList[0];
             
             requestItems.push({
@@ -661,8 +706,8 @@ async function submitRequestAggregated() {
                 length: reqLen,
                 qty: reqQty,
                 totalMeter: reqTotalMeter,
-                type: refData ? refData.type : '', // Opsional, bantu backend
-                unit: refData ? refData.unit : ''  // Opsional, bantu backend
+                type: refData ? refData.type : '',
+                unit: refData ? refData.unit : ''
             });
         }
     });
@@ -680,11 +725,11 @@ async function submitRequestAggregated() {
         btn.innerText = "Processing Backend...";
 
         const payload = {
-            action: 'submitPreorderRequest', // Nama action baru di Backend
+            action: 'submitPreorderRequest',
             data: {
                 customer: cust,
                 estDelivery: dateVal,
-                items: requestItems // Array sederhana: [{itemName, length, qty}, ...]
+                items: requestItems 
             }
         };
 
@@ -696,7 +741,7 @@ async function submitRequestAggregated() {
         const res = await req.json();
 
         if(res.result === 'success') {
-            alert("Request Berhasil Dibuat! \nBackend telah memproses alokasi stok & harga.");
+            alert("Request Berhasil Dibuat! \nID: " + res.orderId);
             closeModal('createModal'); 
             
             // Refresh Data
