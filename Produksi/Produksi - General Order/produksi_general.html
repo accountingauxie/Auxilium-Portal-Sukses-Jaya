@@ -475,7 +475,15 @@ function generateWE(el) {
     const mach = row.querySelector('.machine-select').value;
     const kpc = row.querySelector('.kpc-select').value;
     const type = TYPE_CODES[row.querySelector('.type-select').value] || 'XX';
-    if(mach && kpc) row.querySelector('.we-code').value = `${mach}_${kpc}_${type}_${activeOrderId}`;
+
+    // --- LOGIKA BARU UNTUK 5 DIGIT ---
+    let shortInv = activeOrderId ? String(activeOrderId) : "";
+    if (shortInv.length > 5) {
+        shortInv = shortInv.slice(-5);
+    }
+    // ---------------------------------
+
+    if(mach && kpc) row.querySelector('.we-code').value = `${mach}_${kpc}_${type}_${shortInv}`;
 }
 
 function validateQty(groupId) {
