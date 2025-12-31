@@ -132,7 +132,7 @@ let currentOrders = {};
 
 window.onload = () => loadData('Remaining');
 
-function loadData(view) {
+async function loadData(view) {
     currentView = view;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     
@@ -149,22 +149,35 @@ function loadData(view) {
     if(btn) btn.classList.add('active');
 
     const tbody = document.getElementById('tableBody');
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px;">Fetching Data...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px;"><i class="fas fa-spinner fa-spin"></i> Fetching Data...</td></tr>';
     const thead = document.getElementById('tableHead');
 
-    // TAB: MASTER / REMAINING
-    if(view === 'Master' || view === 'Remaining') {
-        thead.innerHTML = `<tr><th>PO ID</th><th>Customer</th><th>Date</th><th style="width:40%;">Items Progress</th><th>Status</th></tr>`;
-        google.script.run.withSuccessHandler(renderPreOrders).doGet({
-            parameter: { action: 'getPreOrdersMaster', viewType: view }
-        });
-    } 
-    // TAB: PRODUCTION STAGES
-    else {
-        thead.innerHTML = `<tr><th>Prod ID</th><th>Customer</th><th>Date</th><th>Item Detail</th><th>Status</th><th style="text-align:right;">Action</th></tr>`;
-        google.script.run.withSuccessHandler(renderProduction).doGet({
-            parameter: { action: 'getProductionOrders', status: view, category: 'preorder' }
-        });
+    // MENGGUNAKAN FETCH (AGAR URL HARDCODED BERFUNGSI)
+    try {
+        let url = API_URL + "?dummy=" + new Date().getTime(); // Anti-cache
+
+        // TENTUKAN ACTION BERDASARKAN TAB
+        if(view === 'Master' || view === 'Remaining') {
+            thead.innerHTML = `<tr><th>PO ID</th><th>Customer</th><th>Date</th><th style="width:40%;">Items Progress</th><th>Status</th></tr>`;
+            url += "&action=getPreOrdersMaster&viewType=" + view;
+            
+            const req = await fetch(url);
+            const data = await req.json();
+            renderPreOrders(data);
+
+        } else {
+            // TAB PRODUCTION STAGES
+            thead.innerHTML = `<tr><th>Prod ID</th><th>Customer</th><th>Date</th><th>Item Detail</th><th>Status</th><th style="text-align:right;">Action</th></tr>`;
+            url += "&action=getProductionOrders&status=" + encodeURIComponent(view) + "&category=preorder";
+            
+            const req = await fetch(url);
+            const data = await req.json();
+            renderProduction(data);
+        }
+
+    } catch (error) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Error: ${error.message}<br>Coba refresh halaman.</td></tr>`;
+        console.error(error);
     }
 }
 
