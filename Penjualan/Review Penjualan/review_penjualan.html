@@ -51,9 +51,12 @@ table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 .badge-approve { background: #fff7e6; color: #b75900; border: 1px solid #ffe8cc; }
 .badge-success { background: #ecfdf5; color: #047857; border: 1px solid #d1fae5; }
 .badge-danger { background: #fef2f2; color: #b91c1c; border: 1px solid #fee2e2; }
+/* --- BADGE TYPE UPDATES --- */
 .type-badge { font-size: 10px; padding: 4px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; display: inline-block; white-space: nowrap; }
 .type-gen { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; } 
 .type-pre { background: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe; } 
+.type-back { background: #fff1f0; color: #cf1322; border: 1px solid #ffa39e; } /* NEW COLOR for Back Order */
+
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 9000; backdrop-filter: blur(2px); }
 .modal-box { background: #fff; width: 1100px; max-width: 95%; height: 90vh; display: flex; flex-direction: column; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
 .modal-header { padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
@@ -74,40 +77,49 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 .btn-reject { background: #dc2626; }
 .btn-approve { background: #10b981; }
 .btn-pdf { background: #2563eb; }
+
+/* --- PDF STYLE UPDATES FOR A5 LANDSCAPE --- */
 #pdf-hidden-container { position: absolute; left: -9999px; top: 0; }
-#pdfContent { background: #fff; width: 100%; padding: 0; font-family: "Arial", sans-serif; color: #000; }
-.pdf-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
-.pdf-title { font-size: 32px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-top: 5px; color:#000; }
-.company-details { text-align: right; font-size: 10px; color: #333; line-height: 1.4; }
-.company-name { font-weight: 700; font-size: 12px; color: #F59E0B; text-transform: uppercase; margin-bottom: 2px; }
-.pdf-info { display: flex; justify-content: space-between; margin-bottom: 25px; }
-.bill-to { width: 60%; }
-.pdf-bill-label { font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; color:#000; }
-.pdf-cust-name { font-size: 14px; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; color:#000; }
-.pdf-cust-addr { font-size: 10px; line-height: 1.5; color: #444; }
-.meta-data { width: 35%; }
-.pdf-meta-row { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 4px; width: 100%; }
+#pdfContent { 
+    background: #fff; 
+    width: 200mm; /* Fixed width slightly smaller than A5 width to ensure flow */
+    padding: 0; 
+    font-family: "Arial", sans-serif; 
+    color: #000; 
+}
+.pdf-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 8px; }
+.pdf-title { font-size: 24px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-top: 0; color:#000; }
+.company-details { text-align: right; font-size: 8px; color: #333; line-height: 1.3; }
+.company-name { font-weight: 700; font-size: 11px; color: #F59E0B; text-transform: uppercase; margin-bottom: 2px; }
+.pdf-info { display: flex; justify-content: space-between; margin-bottom: 15px; }
+.bill-to { width: 55%; }
+.pdf-bill-label { font-size: 8px; font-weight: 700; text-transform: uppercase; margin-bottom: 3px; color:#000; }
+.pdf-cust-name { font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 3px; color:#000; }
+.pdf-cust-addr { font-size: 9px; line-height: 1.4; color: #444; }
+.meta-data { width: 40%; }
+.pdf-meta-row { display: flex; justify-content: space-between; font-size: 9px; margin-bottom: 3px; width: 100%; }
 .pdf-meta-key { font-weight: 700; color:#000; }
-table.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-table.pdf-table th { font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 8px 4px; color: #000; border-top: 1px solid #000; border-bottom: 1px solid #000; letter-spacing: 0.5px; }
-table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
-.item-name-main { font-weight: 700; color: #000; display:block; font-size: 11px; }
-.item-sub { font-size: 9px; color: #666; font-weight: normal; margin-top: 2px; display: block; }
-.pdf-middle-section { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 10px; page-break-inside: avoid; border-top: 1px solid #555; padding-top: 10px; }
-.pdf-notes-box { width: 60%; padding-right: 20px; }
-.pdf-notes-label { font-size: 10px; font-weight: 700; margin-bottom: 2px; display:block; }
-.pdf-notes-content { font-size: 10px; color: #555; line-height: 1.4; border: 1px dashed #ccc; padding: 5px; border-radius: 4px; min-height: 30px; }
-.pdf-total-box { width: 35%; }
-.pdf-total-row.grand { font-size: 15px; font-weight: 700; color: #116999; display: flex; justify-content: space-between; margin-top: 0; padding-top: 0; }
-.pdf-ppn-note { font-style: italic; font-size: 9px; color: #555; text-align: right; margin-top: 2px; }
-.pdf-signature-wrapper { margin-top: 25px; display: flex; justify-content: space-between; page-break-inside: avoid; padding-bottom: 10px; }
-.sig-box { width: 200px; text-align: center; }
-.sig-title { font-size: 11px; font-weight: 700; color: #000; margin-bottom: 45px; }
-.sig-name { font-size: 11px; font-weight: 700; color: #000; border-top: 1px solid #333; display: inline-block; padding-top: 4px; min-width: 140px; }
-.pdf-payment-wrapper { margin-top: 15px; border-top: 1px solid #ccc; padding-top: 8px; page-break-inside: avoid; }
-.pdf-payment-title { font-size: 11px; font-weight: 700; margin-bottom: 5px; color: #333; display: block; }
-.pdf-payment-container { display: flex; gap: 40px; }
-.pdf-bank-detail { font-size: 10px; line-height: 1.4; color: #444; }
+table.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+table.pdf-table th { font-size: 8px; font-weight: 700; text-transform: uppercase; padding: 6px 4px; color: #000; border-top: 1px solid #000; border-bottom: 1px solid #000; letter-spacing: 0.5px; }
+table.pdf-table td { padding: 6px 4px; font-size: 9px; vertical-align: top; }
+.item-name-main { font-weight: 700; color: #000; display:block; font-size: 10px; }
+.item-sub { font-size: 8px; color: #666; font-weight: normal; margin-top: 1px; display: block; }
+.pdf-middle-section { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 5px; page-break-inside: avoid; border-top: 1px solid #555; padding-top: 8px; }
+.pdf-notes-box { width: 55%; padding-right: 15px; }
+.pdf-notes-label { font-size: 9px; font-weight: 700; margin-bottom: 2px; display:block; }
+.pdf-notes-content { font-size: 9px; color: #555; line-height: 1.3; border: 1px dashed #ccc; padding: 5px; border-radius: 4px; min-height: 35px; }
+.pdf-total-box { width: 40%; }
+.pdf-total-row.grand { font-size: 14px; font-weight: 700; color: #116999; display: flex; justify-content: space-between; margin-top: 0; padding-top: 0; }
+.pdf-ppn-note { font-style: italic; font-size: 8px; color: #555; text-align: right; margin-top: 2px; }
+.pdf-dp-note { font-size: 9px; color: #991b1b; font-weight: 700; text-align: right; margin-top: 4px; display: none; } /* NEW FOR DP */
+.pdf-signature-wrapper { margin-top: 20px; display: flex; justify-content: space-between; page-break-inside: avoid; padding-bottom: 5px; }
+.sig-box { width: 180px; text-align: center; }
+.sig-title { font-size: 10px; font-weight: 700; color: #000; margin-bottom: 40px; }
+.sig-name { font-size: 10px; font-weight: 700; color: #000; border-top: 1px solid #333; display: inline-block; padding-top: 4px; min-width: 120px; }
+.pdf-payment-wrapper { margin-top: 10px; border-top: 1px solid #ccc; padding-top: 6px; page-break-inside: avoid; }
+.pdf-payment-title { font-size: 9px; font-weight: 700; margin-bottom: 3px; color: #333; display: block; }
+.pdf-payment-container { display: flex; gap: 30px; }
+.pdf-bank-detail { font-size: 8px; line-height: 1.3; color: #444; }
 .bank-name { font-weight: 700; color: #000; }
 .skeleton { height: 20px; background: #eee; width: 100%; border-radius: 4px; animation: pulse 1s infinite; }
 @keyframes pulse { 0% {opacity: 0.6;} 50% {opacity: 1;} 100% {opacity: 0.6;} }
@@ -165,7 +177,7 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
                 <option value="All">All Types</option>
                 <option value="General Order">General Order</option>
                 <option value="Pre Order">Pre Order</option>
-            </select>
+                <option value="Back Order">Back Order</option> </select>
         </div>
 
         <div class="filter-group">
@@ -270,7 +282,7 @@ table.pdf-table td { padding: 8px 4px; font-size: 10px; vertical-align: top; }
             <div class="pdf-total-box">
                 <div class="pdf-total-row grand"><span>Total</span><span id="pdfTotal">0</span></div>
                 <div class="pdf-ppn-note">Harga sudah termasuk PPN</div>
-            </div>
+                <div id="pdfDPNote" class="pdf-dp-note"></div> </div>
         </div>
 
         <div class="pdf-signature-wrapper">
@@ -360,7 +372,8 @@ function renderTable() {
             const oType = (o.type || "").toLowerCase();
             const filterType = typeVal.toLowerCase();
             if (filterType === 'pre order' && !oType.includes('pre')) return false;
-            if (filterType === 'general order' && oType.includes('pre')) return false; 
+            if (filterType === 'back order' && !oType.includes('back')) return false; // Filter Back Order
+            if (filterType === 'general order' && (oType.includes('pre') || oType.includes('back'))) return false; 
         }
 
         // 4. Date Range
@@ -389,7 +402,10 @@ function renderTable() {
         if(o.status.includes('Completed') || o.status.includes('Production') || o.status.includes('Process')) badge = 'badge-success';
         
         let typeBadgeClass = 'type-gen'; 
-        if (o.type && o.type.toLowerCase().includes('pre')) typeBadgeClass = 'type-pre';
+        let t = (o.type || "").toLowerCase();
+        if (t.includes('pre')) typeBadgeClass = 'type-pre';
+        else if (t.includes('back')) typeBadgeClass = 'type-back'; // Badge class for Back Order
+
         let typeHtml = `<span class="type-badge ${typeBadgeClass}">${o.type || 'General'}</span>`;
 
         let tr = document.createElement('tr');
@@ -447,6 +463,18 @@ function openModal(id) {
             setTxt(prefix+'Total', fmtMoneySimple(o.grandTotal));
         });
 
+        // --- BACK ORDER DP LOGIC ---
+        const dpContainer = document.getElementById('pdfDPNote');
+        const orderType = (o.type || "").toLowerCase();
+        if(orderType.includes('back')) {
+            // Calculate 30%
+            const dpVal = (o.grandTotal || 0) * 0.3;
+            dpContainer.innerHTML = `*Minimal DP 30% sebesar ${fmtMoneySimple(dpVal)}`;
+            dpContainer.style.display = 'block';
+        } else {
+            dpContainer.style.display = 'none';
+        }
+
         let btns = `<button class="btn-action btn-close" onclick="closeModal()">Close</button>`;
         if(o.status === 'Awaiting Approval') {
             btns += `<button class="btn-action btn-reject" onclick="updateStatus('${o.id}', 'Cancel Order')">Reject</button>
@@ -493,12 +521,14 @@ async function updateStatus(id, stat) {
 
 function dlPDF(filenameId) {
     const el = document.getElementById('pdfContent');
+    // Config for A5 Landscape
+    // 1cm top/bottom, 0.7cm left/right
     const opt = { 
-        margin: [1, 0.75, 1, 0.75], 
+        margin: [1, 0.70, 1, 0.70], 
         filename: `Faktur_${filenameId}.pdf`, 
         image: { type: 'jpeg', quality: 0.98 }, 
-        html2canvas: { scale: 2 }, 
-        jsPDF: { unit: 'cm', format: [21.59, 13.97], orientation: 'landscape' } 
+        html2canvas: { scale: 2, useCORS: true }, 
+        jsPDF: { unit: 'cm', format: 'a5', orientation: 'landscape' } 
     };
     const btn = document.querySelector('.btn-pdf'); btn.textContent = "Generating...";
     html2pdf().set(opt).from(el).save().then(() => btn.textContent = "Download PDF");
