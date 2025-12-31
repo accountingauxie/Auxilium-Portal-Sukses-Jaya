@@ -28,7 +28,7 @@
     
     <style>
         /* =========================================
-           STYLES (Sama seperti sebelumnya)
+           STYLES
            ========================================= */
         :root { 
             --primary-color: #116999; 
@@ -710,15 +710,21 @@
             const fileLinkDiv = document.getElementById('existing-file-link');
             if(po.fileUrl) { fileLinkDiv.classList.remove('hidden'); fileLinkDiv.querySelector('a').href = po.fileUrl; currentFileUrl = po.fileUrl; } 
             else { fileLinkDiv.classList.add('hidden'); currentFileUrl = ""; }
-            currentItems = po.items.map(i => ({...i, checked: true}));
+            
+            // LOGIC UTAMA: Saat load existing data (biasanya dari PO), set isCustom = false (Read-only)
+            currentItems = po.items.map(i => ({...i, checked: true, isCustom: false}));
+            
             const statusLower = (po.status || "").toLowerCase();
             const isStatusLocked = statusLower.includes('rejected') || statusLower.includes('siap impor') || statusLower.includes('proses impor') || statusLower.includes('gagal impor') || statusLower.includes('sukses impor');
             const isFormLocked = viewOnly || isStatusLocked;
+            
             renderBillItems(isFormLocked); 
+            
             const rejectContainer = document.getElementById('rejection-info-container');
             const rejectText = document.getElementById('rejection-reason-text');
             if(statusLower.includes('rejected')) { rejectContainer.classList.remove('hidden'); rejectText.innerText = po.notes || "Tidak ada catatan."; } 
             else { rejectContainer.classList.add('hidden'); rejectText.innerText = ""; }
+            
             if (isFormLocked) {
                 if(!viewOnly && isStatusLocked) { document.getElementById('locked-banner').classList.remove('hidden'); document.getElementById('locked-status-text').innerText = po.status; } 
                 else { document.getElementById('locked-banner').classList.add('hidden'); }
@@ -752,12 +758,33 @@
             const tbody = document.getElementById('bill-items-body');
             tbody.innerHTML = '';
             const isGlobalLocked = document.getElementById('btn-save').classList.contains('hidden') || isFormLocked;
+            
             currentItems.forEach((item, index) => {
                 const lineTotal = (item.price - item.disc) * item.qty;
                 const rowClass = item.checked ? "bg-white" : "bg-gray-50 opacity-60";
                 const typeBadge = item.typeProduk ? `<span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-[10px] font-bold border border-gray-200">${item.typeProduk}</span>` : `<span class="text-gray-300 text-xs">-</span>`;
                 const disabledAttr = isGlobalLocked ? "disabled" : "";
-                tbody.innerHTML += `<tr class="${rowClass} border-b border-slate-50 last:border-0 transition"><td class="p-4 align-top text-center"><input type="checkbox" ${item.checked ? 'checked' : ''} ${disabledAttr} onchange="toggleItem(${index}, this.checked)" class="bill-input w-4 h-4 text-primary rounded cursor-pointer accent-primary"></td><td class="p-4 align-top text-center">${typeBadge}</td><td class="p-4 align-top"><input type="text" value="${item.namaItem}" ${disabledAttr} oninput="updateItem(${index}, 'namaItem', this.value)" class="input-bare font-bold text-slate-700 text-sm w-full mb-1 focus:bg-white focus:border-slate-300 transition" placeholder="Deskripsi Item..."><div class="flex items-center"><input type="text" value="${item.satuan}" ${disabledAttr} oninput="updateItem(${index}, 'satuan', this.value)" class="input-bare text-[10px] bg-slate-100 text-slate-600 font-bold w-16 text-center rounded px-1 py-0.5 focus:bg-white focus:ring-1 focus:ring-slate-300 transition" placeholder="Unit"></div></td><td class="p-4 align-top bg-yellow-50/30"><input type="text" value="${item.spec || ''}" ${disabledAttr} oninput="updateItem(${index}, 'spec', this.value)" class="input-bare text-xs text-slate-600 font-medium h-full" placeholder="-"></td><td class="p-4 align-top"><input type="number" value="${item.qty}" min="0" ${disabledAttr} oninput="updateItem(${index}, 'qty', this.value)" class="input-bare text-center text-sm font-bold text-slate-700"></td><td class="p-4 align-top"><input type="number" value="${item.price}" ${disabledAttr} oninput="updateItem(${index}, 'price', this.value)" class="input-bare text-right text-sm font-mono text-slate-600"></td><td class="p-4 align-top"><input type="number" value="${item.disc}" ${disabledAttr} oninput="updateItem(${index}, 'disc', this.value)" class="input-bare text-right text-sm font-mono text-red-500"></td><td class="p-4 align-top text-right font-bold text-slate-800 font-mono text-sm"><span id="amount-${index}">${formatRupiah(lineTotal)}</span></td><td class="p-4 align-top text-center"><button onclick="deleteItem(${index})" ${disabledAttr} class="bill-input text-slate-300 hover:text-red-500 transition px-2"><i class="fas fa-trash"></i></button></td></tr>`;
+                
+                // LOGIC NAMA: Jika Custom & Form Tidak Locked = Input, Selain itu = Text Biasa
+                const nameHtml = (item.isCustom && !isGlobalLocked)
+                    ? `<input type="text" value="${item.namaItem}" ${disabledAttr} oninput="updateItem(${index}, 'namaItem', this.value)" class="input-bare font-bold text-slate-700 text-sm w-full mb-1 focus:bg-white focus:border-slate-300 transition" placeholder="Deskripsi Item...">`
+                    : `<div class="font-bold text-slate-700 text-sm w-full mb-1 py-1">${item.namaItem}</div>`;
+
+                tbody.innerHTML += `
+                <tr class="${rowClass} border-b border-slate-50 last:border-0 transition">
+                    <td class="p-4 align-top text-center"><input type="checkbox" ${item.checked ? 'checked' : ''} ${disabledAttr} onchange="toggleItem(${index}, this.checked)" class="bill-input w-4 h-4 text-primary rounded cursor-pointer accent-primary"></td>
+                    <td class="p-4 align-top text-center">${typeBadge}</td>
+                    <td class="p-4 align-top">
+                        ${nameHtml}
+                        <div class="flex items-center"><input type="text" value="${item.satuan}" ${disabledAttr} oninput="updateItem(${index}, 'satuan', this.value)" class="input-bare text-[10px] bg-slate-100 text-slate-600 font-bold w-16 text-center rounded px-1 py-0.5 focus:bg-white focus:ring-1 focus:ring-slate-300 transition" placeholder="Unit"></div>
+                    </td>
+                    <td class="p-4 align-top bg-yellow-50/30"><input type="text" value="${item.spec || ''}" ${disabledAttr} oninput="updateItem(${index}, 'spec', this.value)" class="input-bare text-xs text-slate-600 font-medium h-full" placeholder="-"></td>
+                    <td class="p-4 align-top"><input type="number" value="${item.qty}" min="0" ${disabledAttr} oninput="updateItem(${index}, 'qty', this.value)" class="input-bare text-center text-sm font-bold text-slate-700"></td>
+                    <td class="p-4 align-top"><input type="number" value="${item.price}" ${disabledAttr} oninput="updateItem(${index}, 'price', this.value)" class="input-bare text-right text-sm font-mono text-slate-600"></td>
+                    <td class="p-4 align-top"><input type="number" value="${item.disc}" ${disabledAttr} oninput="updateItem(${index}, 'disc', this.value)" class="input-bare text-right text-sm font-mono text-red-500"></td>
+                    <td class="p-4 align-top text-right font-bold text-slate-800 font-mono text-sm"><span id="amount-${index}">${formatRupiah(lineTotal)}</span></td>
+                    <td class="p-4 align-top text-center"><button onclick="deleteItem(${index})" ${disabledAttr} class="bill-input text-slate-300 hover:text-red-500 transition px-2"><i class="fas fa-trash"></i></button></td>
+                </tr>`;
             });
             calculateTotal();
         }
@@ -765,11 +792,41 @@
         function toggleItem(index, isChecked) { currentItems[index].checked = isChecked; renderBillItems(); }
         function updateItem(index, field, value) { if(['qty', 'price', 'disc'].includes(field)) { currentItems[index][field] = Number(value); const item = currentItems[index]; const newLineTotal = (item.price - item.disc) * item.qty; const amountEl = document.getElementById(`amount-${index}`); if(amountEl) amountEl.innerText = formatRupiah(newLineTotal); calculateTotal(); } else { currentItems[index][field] = value; } }
         async function deleteItem(index) { const result = await Swal.fire({ title: 'Hapus Item?', text: "Item ini akan dihapus dari daftar.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#cbd5e1', confirmButtonText: 'Ya, Hapus', cancelButtonText: 'Batal', customClass: { popup: 'text-xs' } }); if(result.isConfirmed) { currentItems.splice(index, 1); renderBillItems(); } }
-        function addCustomItem() { currentItems.push({ namaItem: "Manual Item", satuan: "Unit", typeProduk: "M", spec: "", qty: 1, price: 0, disc: 0, checked: true }); renderBillItems(); }
+        
+        function addCustomItem() { 
+            currentItems.push({ 
+                namaItem: "Manual Item", 
+                satuan: "Unit", 
+                typeProduk: "M", 
+                spec: "", 
+                qty: 1, 
+                price: 0, 
+                disc: 0, 
+                checked: true, 
+                isCustom: true // Nama bisa diedit
+            }); 
+            renderBillItems(); 
+        }
+        
         function calculateTotal() { let totalLine = 0; currentItems.forEach(item => { if(item.checked) { totalLine += (item.price - item.disc) * item.qty; } }); const taxMode = document.getElementById('tax-mode').value; const adj = Number(document.getElementById('bill-adjustment').value) || 0; let dpp = 0, ppn = 0; if (taxMode === 'exclusive') { dpp = totalLine; ppn = dpp * TAX_RATE; } else if (taxMode === 'inclusive') { dpp = totalLine / (1 + TAX_RATE); ppn = totalLine - dpp; } else { dpp = totalLine; } const grand = dpp + ppn + adj; document.getElementById('display-subtotal').innerText = formatRupiah(dpp); document.getElementById('display-ppn').innerText = formatRupiah(ppn); document.getElementById('display-grand-total').innerText = formatRupiah(grand); }
         async function openProductModal() { const vendorName = document.getElementById('bill-vendor').value; if(!vendorName) { showNotification("Vendor belum terisi.", 'warning'); return; } document.getElementById('productModal').classList.remove('hidden'); document.getElementById('product-vendor-filter').innerText = vendorName; document.getElementById('productListContainer').innerHTML = '<div class="text-center p-10"><i class="fas fa-spinner fa-spin text-primary text-2xl"></i><p class="mt-2 text-slate-500">Mengambil data produk...</p></div>'; try { const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getProducts', vendor: vendorName }) }); const json = await res.json(); if(json.status === 'success') { dbProducts = json.products; filterProducts(); } else { document.getElementById('productListContainer').innerHTML = `<div class="p-4 text-center text-red-500">${json.message}</div>`; } } catch(e) { document.getElementById('productListContainer').innerHTML = '<div class="p-4 text-center text-red-500">Error fetching products.</div>'; } }
         function filterProducts() { const search = document.getElementById('searchProduct').value.toLowerCase(); const container = document.getElementById('productListContainer'); container.innerHTML = ''; const filtered = dbProducts.filter(p => p.namaItem.toLowerCase().includes(search)); if (filtered.length === 0) { container.innerHTML = '<div class="text-center text-slate-400 p-8">Produk tidak ditemukan.</div>'; return; } filtered.forEach(p => { const div = document.createElement('div'); div.className = "flex justify-between items-center p-4 border-b border-slate-100 hover:bg-teal-50 cursor-pointer group transition"; div.innerHTML = `<div><div class="font-bold text-slate-700 text-sm group-hover:text-primary">${p.namaItem}</div><div class="text-xs text-slate-400 mt-0.5 flex gap-2"><span class="bg-slate-100 px-1.5 rounded">${p.satuan}</span><span class="bg-gray-100 text-gray-600 px-1.5 rounded font-bold">${p.typeProduk}</span></div></div><button class="text-xs bg-white border border-slate-200 text-primary px-3 py-1.5 rounded-lg font-bold shadow-sm hover:bg-primary hover:text-white transition"><i class="fas fa-plus"></i> Add</button>`; div.onclick = () => { addDbItemToBill(p); closeProductModal(); }; container.appendChild(div); }); }
-        function addDbItemToBill(product) { currentItems.push({ namaItem: product.namaItem, satuan: product.satuan, typeProduk: product.typeProduk, spec: "", qty: 1, price: product.price || 0, disc: 0, checked: true }); renderBillItems(); }
+        
+        function addDbItemToBill(product) { 
+            currentItems.push({ 
+                namaItem: product.namaItem, 
+                satuan: product.satuan, 
+                typeProduk: product.typeProduk, 
+                spec: "", 
+                qty: 1, 
+                price: product.price || 0, 
+                disc: 0, 
+                checked: true, 
+                isCustom: false // Nama Read-Only
+            }); 
+            renderBillItems(); 
+        }
+        
         function closeProductModal() { document.getElementById('productModal').classList.add('hidden'); }
         function openRejectModal() { document.getElementById('rejectModal').classList.remove('hidden'); document.getElementById('reject-reason').value = ''; document.getElementById('reject-error').classList.add('hidden'); document.getElementById('reject-reason').focus(); }
         function closeRejectModal() { document.getElementById('rejectModal').classList.add('hidden'); }
