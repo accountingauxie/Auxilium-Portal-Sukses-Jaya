@@ -16,58 +16,55 @@
 
 <style>
   /* =========================================
-     A. STANDARD NAVBAR STYLES (Auxilium)
+     A. STANDARD NAVBAR STYLES
      ========================================= */
-  :root { --primary-color: #116999; --primary-hover: #0e5a85; --red-bg: #fee2e2; --red-text: #991b1b; }
-   
+  :root { --primary-color: #116999; --primary-hover: #0e5a85; }
   .aux-navbar { font-family: 'Inter', sans-serif; background-color: #ffffff; height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; box-shadow: 0 1px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 9000; }
   .aux-logo img { height: 40px; width: auto; display: block; }
   .aux-menu { display: flex; gap: 10px; align-items: center; height: 100%; }
   .nav-item { position: relative; height: 100%; display: flex; align-items: center; }
-   
   .aux-link { text-decoration: none; color: #666; font-weight: 600; font-size: 14px; padding: 8px 14px; border-radius: 6px; transition: all 0.2s; cursor: pointer; display: flex; align-items: center; gap: 4px; }
   .aux-link:hover, .nav-item:hover .aux-link { color: #1d2939; background-color: #f9fafb; }
   .aux-link.active { color: var(--primary-color); background-color: #eff8ff; font-weight: 700; }
-
-  /* Dropdown & Components Styles omitted for brevity but assumed present same as before */
+  
+  /* Dropdown & User Panel */
   .dropdown-menu { visibility: hidden; opacity: 0; position: absolute; top: 90%; left: 50%; transform: translateX(-50%) translateY(-10px); background: white; min-width: 220px; border: 1px solid #eaecf0; border-radius: 8px; box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08); padding: 6px; z-index: 10000; transition: all 0.2s ease; }
   .nav-item:hover .dropdown-menu { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
   .dropdown-item { display: block; padding: 10px 12px; color: #344054; text-decoration: none; font-size: 14px; border-radius: 6px; text-align: left; font-weight: 400; }
   .dropdown-item:hover { background-color: #f9fafb; color: var(--primary-color); }
-
   .user-panel { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid #eee; }
   .user-details { display: flex; flex-direction: column; text-align: right; line-height: 1.3; }
   .user-name { font-weight: 700; font-size: 13px; color: #333; }
   .user-role { font-size: 11px; color: #888; }
   .user-avatar { width: 36px; height: 36px; background-color: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; user-select: none; }
   .logout-btn { background: none; border: 1px solid #ddd; color: #666; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 14px; }
-  .logout-btn:hover { background-color: var(--red-bg); color: var(--red-text); border-color: var(--red-bg); }
+  .logout-btn:hover { background-color: #fee2e2; color: #991b1b; border-color: #fee2e2; }
 
+  /* Modal Logout */
   .modal-logout { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); }
   .modal-logout-content { background-color: #fff; margin: 15% auto; padding: 32px; border-radius: 16px; width: 360px; text-align: center; font-family: 'Inter', sans-serif; }
   .btn-modal { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; }
   .btn-yes { background-color: #d92d20; color: #fff; }
   .btn-cancel { background-color: #f2f4f7; color: #344054; }
 
+  /* Dashboard Styles */
   body { font-family: 'Inter', sans-serif; background-color: #f8fafc; margin: 0; }
   .active-tab { border-bottom: 2px solid #2563eb; color: #2563eb; font-weight: 600; }
   .inactive-tab { color: #64748b; border-bottom: 2px solid transparent; }
   .inactive-tab:hover { color: #334155; border-bottom: 2px solid #e2e8f0; }
-   
   .sub-pill { padding: 4px 12px; border-radius: 9999px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
   .sub-pill-active { background-color: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
   .sub-pill-inactive { background-color: white; color: #64748b; border-color: #e2e8f0; }
   .sub-pill-inactive:hover { background-color: #f1f5f9; color: #334155; }
-
+  
   #loading { position: fixed; inset: 0; background: rgba(255,255,255,0.85); z-index: 50000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
   .spinner { border: 4px solid #e2e8f0; border-top: 4px solid #3b82f6; border-radius: 50%; width: 45px; height: 45px; animation: spin 0.8s linear infinite; }
   @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-   
+
   .input-xs { padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; width: 100%; transition: border 0.2s; }
   .input-xs:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
   .input-readonly { background-color: #f8fafc; color: #64748b; cursor: not-allowed; border-color: #e2e8f0; }
   select.input-xs { background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em; padding-right: 2.5rem; appearance: none; }
-
   .swal2-container { z-index: 100000 !important; }
 </style>
 </head>
@@ -78,11 +75,8 @@
     <div class="aux-logo">
         <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png" alt="Auxilium Logo">
     </div>
-    
     <nav class="aux-menu">
-        <div class="nav-item">
-            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/" class="aux-link">Home</a>
-        </div>
+        <div class="nav-item"><a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/" class="aux-link">Home</a></div>
         <div class="nav-item">
             <div class="aux-link">Penjualan <i data-feather="chevron-down" style="width:14px; height:14px;"></i></div>
             <div class="dropdown-menu">
@@ -115,16 +109,10 @@
             </div>
         </div>
     </nav>
-
     <div class="user-panel">
-        <div class="user-details">
-            <span class="user-name">Admin Gudang</span>
-            <span class="user-role">CV Sukses Jaya</span>
-        </div>
+        <div class="user-details"><span class="user-name">Admin Gudang</span><span class="user-role">CV Sukses Jaya</span></div>
         <div class="user-avatar">AG</div>
-        <button class="logout-btn" onclick="showLogoutModal()" title="Keluar Akun">
-            <i data-feather="log-out" style="width:16px; height:16px;"></i>
-        </button>
+        <button class="logout-btn" onclick="showLogoutModal()" title="Keluar Akun"><i data-feather="log-out" style="width:16px; height:16px;"></i></button>
     </div>
 </div>
 
@@ -199,7 +187,6 @@
   </div>
 
   <div id="list-container" class="space-y-4 pb-20"></div>
-
 </div>
 
 <div id="modalResult" class="relative z-[9999] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
@@ -579,7 +566,7 @@ async function approveBatch(batchId) { const result = await Swal.fire({ title: '
 async function syncXero(batchId) { const result = await Swal.fire({ title: 'Sync ke Xero?', text: `Data batch ${batchId} akan dikirim ke Xero.`, icon: 'info', showCancelButton: true, confirmButtonColor: '#4f46e5', cancelButtonColor: '#64748b', confirmButtonText: 'Ya, Sync Sekarang', cancelButtonText: 'Nanti Saja' }); if(result.isConfirmed) { await postAction('syncXero', { batchId }); } }
 
 // ==========================================
-// FUNGSI GENERATE SPK (A5 LANDSCAPE - RAPI)
+// FUNGSI GENERATE SPK (UPDATE: CLEAN FORMAT)
 // ==========================================
 function generateSPK(batchId) {
     const { jsPDF } = window.jspdf;
@@ -598,11 +585,7 @@ function generateSPK(batchId) {
         return;
     }
 
-    // --- DEKORASI VISUAL (Side Bar Biru) ---
-    doc.setFillColor(37, 99, 235); // Blue-600
-    doc.rect(0, 0, 4, 148, 'F'); // Garis vertikal biru di kiri (4mm lebar)
-
-    // --- 1. HEADER KANAN (Informasi Perusahaan) ---
+    // --- 1. HEADER KANAN (Informasi Perusahaan - Warna Oranye & Abu) ---
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(245, 158, 11); // Warna Oranye sesuai gambar
@@ -610,49 +593,49 @@ function generateSPK(batchId) {
     
     doc.setFont("helvetica", "normal");
     doc.setTextColor(80, 80, 80); // Abu-abu gelap
-    doc.setFontSize(7); // Ukuran font diperkecil sedikit agar muat di A5
+    doc.setFontSize(7);
     doc.text("Jl. D.I Panjaitan, RT/RW. 008/003", 200, 16, { align: "right" });
     doc.text("Kel. Wundudopi, Kec. Baruga, Kendari", 200, 19, { align: "right" });
     doc.text("Sulawesi Tenggara | Telp. 0822 4708 4908", 200, 22, { align: "right" });
 
     // --- 2. HEADER KIRI (Judul SPK) ---
-    doc.setTextColor(30, 41, 59); // Slate-800
+    doc.setTextColor(0, 0, 0); // Hitam
     doc.setFont("helvetica", "bold");
     doc.setFontSize(16);
     doc.text("SURAT PERINTAH KERJA", 12, 16);
 
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(100, 116, 139); // Slate-500
+    doc.setTextColor(100, 100, 100); // Abu-abu
     doc.text("Produksi Barang Jadi (FG) - Non Spandek", 12, 21);
 
     // --- 3. GARIS PEMBATAS TEBAL ---
-    doc.setDrawColor(30, 41, 59); // Garis Hitam/Slate Tua
+    doc.setDrawColor(0, 0, 0); 
     doc.setLineWidth(0.5);
     doc.line(12, 26, 200, 26);
 
     // --- 4. INFO BATCH (Entry ID & Date) ---
     doc.setFontSize(9);
-    doc.setTextColor(50, 50, 50);
+    doc.setTextColor(0, 0, 0);
     
     // Label Entry ID
     doc.setFont("helvetica", "bold");
     doc.text("Entry ID:", 12, 34);
     
-    // Value Entry ID (Biru & Monospace)
+    // Value Entry ID (ABU-ABU sesuai request, bukan biru)
     doc.setFont("courier", "bold");
-    doc.setTextColor(37, 99, 235); // Blue-600
+    doc.setTextColor(100, 100, 100); // Abu-abu
     doc.text(batchId, 32, 34);
     
     // Tanggal
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(50, 50, 50);
+    doc.setTextColor(0, 0, 0); // Label Hitam
     doc.text("Date:", 12, 39);
     
     doc.setFont("helvetica", "normal");
     doc.text(batch.date, 32, 39);
 
-    // --- 5. TABEL ITEM (Desain Rapi) ---
+    // --- 5. TABEL ITEM (Desain Clean) ---
     const tableBody = batch.items.map((item, index) => [
         index + 1,
         item.item + "\n" + (item.notes || "Non Spandek"), 
@@ -665,31 +648,30 @@ function generateSPK(batchId) {
         startY: 45,
         head: [['NO', 'NAMA BARANG', 'MACHINE', 'KPC', 'WE NUMBER']],
         body: tableBody,
-        theme: 'striped', // Striped agar baris mudah dibaca
+        theme: 'plain', // Plain theme untuk clean look seperti gambar
         styles: { 
             font: 'helvetica',
             fontSize: 8, 
             cellPadding: 3, 
             valign: 'middle',
-            textColor: [51, 65, 85], // Slate-700
-            lineColor: [203, 213, 225], // Slate-300
-            lineWidth: 0.1
+            textColor: [0, 0, 0], // Teks Hitam
+            lineColor: [200, 200, 200], // Garis abu tipis jika ada
+            lineWidth: 0
         },
         headStyles: {
-            fillColor: [30, 41, 59], // Slate-800 (Biru Tua/Hitam) - Profesional
-            textColor: [255, 255, 255],
+            fillColor: [240, 240, 240], // Abu-abu sangat muda untuk header
+            textColor: [0, 0, 0], // Teks Header Hitam
             fontStyle: 'bold',
-            halign: 'center'
-        },
-        alternateRowStyles: {
-            fillColor: [248, 250, 252] // Slate-50 (Sangat muda)
+            halign: 'left',
+            lineWidth: { top: 0.5, bottom: 0.5 }, // Garis atas bawah header
+            lineColor: [0, 0, 0]
         },
         columnStyles: {
             0: { halign: 'center', width: 10 }, 
-            1: { width: 70 }, // Nama Barang lebih lebar
-            2: { width: 30, halign: 'center' }, 
-            3: { width: 30, halign: 'center' }, 
-            4: { width: 50, halign: 'center' }  
+            1: { width: 70 }, 
+            2: { width: 30, halign: 'left' }, 
+            3: { width: 30, halign: 'left' }, 
+            4: { width: 50, halign: 'left' }  
         },
         didParseCell: function (data) {
             // Bold untuk nama barang
@@ -697,25 +679,20 @@ function generateSPK(batchId) {
                 data.cell.styles.fontStyle = 'bold';
             }
         },
-        margin: { left: 12, right: 10 } // Margin kiri disesuaikan dengan side bar
+        margin: { left: 12, right: 10 }
     });
 
     // --- 6. FOOTER (Tanda Tangan) ---
-    // Pastikan footer tidak terlalu jauh ke bawah (maks A5 height 148mm)
-    let finalY = doc.lastAutoTable.finalY + 15;
+    let finalY = doc.lastAutoTable.finalY + 20;
     
-    // Cek halaman baru jika tabel terlalu panjang
     if (finalY > 120) {
         doc.addPage();
-        // Gambar ulang side bar di halaman baru
-        doc.setFillColor(37, 99, 235);
-        doc.rect(0, 0, 4, 148, 'F');
         finalY = 30;
     }
 
     doc.setFontSize(8);
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(30, 41, 59);
+    doc.setTextColor(0, 0, 0);
 
     // TTD Kiri
     doc.text("Admin Produksi", 40, finalY, { align: "center" });
