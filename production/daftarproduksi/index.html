@@ -11,23 +11,26 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://unpkg.com/feather-icons"></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
 <style>
   /* =========================================
      A. STANDARD NAVBAR STYLES (Auxilium)
      ========================================= */
   :root { --primary-color: #116999; --primary-hover: #0e5a85; --red-bg: #fee2e2; --red-text: #991b1b; }
-  
-  /* Reset dasar untuk Navbar agar tidak tertimpa Tailwind sepenuhnya */
+   
+  /* Reset dasar untuk Navbar */
   .aux-navbar { font-family: 'Inter', sans-serif; background-color: #ffffff; height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; box-shadow: 0 1px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 9000; }
   .aux-logo img { height: 40px; width: auto; display: block; }
   .aux-menu { display: flex; gap: 10px; align-items: center; height: 100%; }
   .nav-item { position: relative; height: 100%; display: flex; align-items: center; }
-  
+   
   /* Link Style */
   .aux-link { text-decoration: none; color: #666; font-weight: 600; font-size: 14px; padding: 8px 14px; border-radius: 6px; transition: all 0.2s; cursor: pointer; display: flex; align-items: center; gap: 4px; }
   .aux-link:hover, .nav-item:hover .aux-link { color: #1d2939; background-color: #f9fafb; }
-  
-  /* ACTIVE STATE (Highlight) */
+   
+  /* ACTIVE STATE */
   .aux-link.active { color: var(--primary-color); background-color: #eff8ff; font-weight: 700; }
 
   /* Dropdown */
@@ -60,7 +63,7 @@
   .active-tab { border-bottom: 2px solid #2563eb; color: #2563eb; font-weight: 600; }
   .inactive-tab { color: #64748b; border-bottom: 2px solid transparent; }
   .inactive-tab:hover { color: #334155; border-bottom: 2px solid #e2e8f0; }
-  
+   
   /* Sub-Menu Pills */
   .sub-pill { padding: 4px 12px; border-radius: 9999px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
   .sub-pill-active { background-color: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
@@ -70,7 +73,7 @@
   #loading { position: fixed; inset: 0; background: rgba(255,255,255,0.85); z-index: 50000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
   .spinner { border: 4px solid #e2e8f0; border-top: 4px solid #3b82f6; border-radius: 50%; width: 45px; height: 45px; animation: spin 0.8s linear infinite; }
   @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-  
+   
   .input-xs { padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; width: 100%; transition: border 0.2s; }
   .input-xs:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
   .input-readonly { background-color: #f8fafc; color: #64748b; cursor: not-allowed; border-color: #e2e8f0; }
@@ -162,7 +165,7 @@
 <div id="loading"><div class="spinner"></div></div>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-  
+   
   <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
     <div>
       <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Production Management</h1>
@@ -235,7 +238,7 @@
   <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity backdrop-blur-sm"></div>
   <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
     <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-      
+       
       <div class="relative transform overflow-visible rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-7xl">
         
         <div class="bg-white px-6 py-5 border-b border-slate-100 flex justify-between items-start rounded-t-lg">
@@ -361,7 +364,7 @@ function updateCounts() {
 
 function switchTab(tabName) {
   CURRENT_TAB = tabName;
-  
+   
   ['queue', 'completed', 'import', 'monitoring'].forEach(t => {
     const el = document.getElementById('tab-' + t);
     t === tabName ? (el.classList.remove('inactive-tab'), el.classList.add('active-tab')) : (el.classList.remove('active-tab'), el.classList.add('inactive-tab'));
@@ -380,7 +383,7 @@ function switchTab(tabName) {
 
 function switchSubTab(subName) {
   CURRENT_SUB_TAB = subName;
-  
+   
   const pills = ['all', 'proses', 'sukses', 'gagal'];
   pills.forEach(p => {
     let id = 'sub-' + p; 
@@ -408,7 +411,7 @@ function renderData() {
   const container = document.getElementById('list-container');
   container.innerHTML = '';
   const search = document.getElementById('searchInput').value.toLowerCase();
-  
+   
   const batches = Object.values(GROUPED_DATA).filter(batch => {
     const st = batch.items[0].status;
     let matchTab = false;
@@ -442,6 +445,10 @@ function renderData() {
     if (CURRENT_TAB === 'queue') {
       actionBtn = `
         <div class="flex gap-2">
+          <button onclick="generateSPK('${batch.id}')" title="Cetak SPK" class="bg-slate-800 hover:bg-slate-900 text-white w-9 h-9 rounded-lg flex items-center justify-center shadow-sm transition">
+            <i class="fas fa-print"></i>
+          </button>
+          
           <button onclick="openInputModal('${batch.id}', 'plan_edit')" class="bg-amber-100 hover:bg-amber-200 text-amber-700 border border-amber-200 px-3 py-2 rounded-lg text-sm font-semibold shadow-sm transition flex items-center"><i class="fas fa-edit mr-2"></i> Edit Plan</button>
           <button onclick="openInputModal('${batch.id}', 'result_input')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm font-semibold shadow-sm transition flex items-center"><i class="fas fa-clipboard-check mr-2"></i> Input Result</button>
         </div>`;
@@ -814,6 +821,127 @@ async function syncXero(batchId) {
   if(result.isConfirmed) {
     await postAction('syncXero', { batchId }); 
   }
+}
+
+// ==========================================
+// FUNGSI GENERATE SPK (PDF)
+// ==========================================
+function generateSPK(batchId) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const batch = GROUPED_DATA[batchId];
+
+    if (!batch) {
+        Swal.fire('Error', 'Data batch tidak ditemukan', 'error');
+        return;
+    }
+
+    // --- 1. HEADER KANAN (Informasi Perusahaan) ---
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(245, 158, 11); // Warna Oranye sesuai gambar
+    doc.text("CV. SUKSES JAYA MAKMUR LESTARI", 200, 15, { align: "right" });
+    
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(80, 80, 80); // Abu-abu gelap
+    doc.setFontSize(8);
+    doc.text("Jl. D.I Panjaitan, RT/RW. 008/003", 200, 20, { align: "right" });
+    doc.text("Kel. Wundudopi, Kec. Baruga, Kendari", 200, 24, { align: "right" });
+    doc.text("Sulawesi Tenggara | Telp. 0822 4708 4908", 200, 28, { align: "right" });
+
+    // --- 2. HEADER KIRI (Judul SPK) ---
+    doc.setTextColor(0, 0, 0);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("SURAT PERINTAH KERJA", 14, 20);
+
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(100, 100, 100);
+    doc.text("Produksi Barang Jadi (FG) - Non Spandek", 14, 27);
+
+    // --- 3. GARIS PEMBATAS TEBAL ---
+    doc.setLineWidth(0.8);
+    doc.line(14, 32, 200, 32);
+
+    // --- 4. INFO BATCH (Entry ID & Date) ---
+    doc.setFontSize(9);
+    doc.setTextColor(0, 0, 0);
+    
+    doc.text("Entry ID:", 14, 40);
+    doc.setFont("courier", "bold");
+    doc.setTextColor(37, 99, 235); // Biru untuk ID
+    doc.text(batchId, 32, 40);
+    
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(0, 0, 0);
+    doc.text("Date:", 14, 46);
+    doc.text(batch.date, 32, 46);
+
+    // --- 5. TABEL ITEM ---
+    const tableBody = batch.items.map((item, index) => [
+        index + 1,
+        item.item + "\n" + (item.notes || "Non Spandek"), // Nama Barang + Notes
+        item.machine,
+        item.kpc,
+        item.weNumber || "-"
+    ]);
+
+    doc.autoTable({
+        startY: 55,
+        head: [['NO', 'NAMA BARANG', 'MACHINE', 'KPC', 'WE NUMBER']],
+        body: tableBody,
+        theme: 'plain', 
+        styles: { 
+            fontSize: 9, 
+            cellPadding: 3, 
+            valign: 'middle',
+            textColor: [40, 40, 40]
+        },
+        headStyles: {
+            fillColor: [240, 242, 245], 
+            textColor: [80, 80, 80],
+            fontStyle: 'bold',
+            lineWidth: { top: 0.5, bottom: 0.5 }, 
+            lineColor: [0, 0, 0]
+        },
+        columnStyles: {
+            0: { halign: 'center', width: 10 }, 
+            1: { width: 80 }, 
+            2: { width: 30, halign: 'center' }, 
+            3: { width: 30, halign: 'center' }, 
+            4: { width: 35, halign: 'center' }  
+        },
+        didParseCell: function (data) {
+            if (data.section === 'body' && data.column.index === 1) {
+                data.cell.styles.fontStyle = 'bold';
+            }
+        }
+    });
+
+    // --- 6. FOOTER (Tanda Tangan) ---
+    let finalY = doc.lastAutoTable.finalY + 30;
+    
+    // Cek jika halaman tidak cukup, tambah halaman baru
+    if (finalY > 250) {
+        doc.addPage();
+        finalY = 40;
+    }
+
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(0, 0, 0);
+
+    // TTD Kiri
+    doc.text("Admin Produksi", 40, finalY, { align: "center" });
+    doc.line(20, finalY + 25, 60, finalY + 25); 
+
+    // TTD Kanan
+    doc.text("Kepala Gudang", 160, finalY, { align: "center" });
+    doc.line(140, finalY + 25, 180, finalY + 25); 
+
+    // Simpan PDF
+    doc.save(`SPK_${batchId}.pdf`);
 }
 </script>
 </body>
