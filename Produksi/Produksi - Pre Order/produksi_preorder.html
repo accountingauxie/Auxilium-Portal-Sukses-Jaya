@@ -6,53 +6,37 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
-/* --- STYLE DASAR --- */
-:root { --primary: #0f766e; --bg: #f3f4f6; --text: #1f2937; --danger: #ef4444; }
+/* --- STYLE SAMA SEPERTI SEBELUMNYA --- */
+:root { --primary: #0f766e; --bg: #f3f4f6; --text: #1f2937; }
 body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; font-size: 13px; }
-
-/* --- HEADER & NAV --- */
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #fff; padding: 15px 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 .header h2 { margin: 0; color: var(--primary); font-size: 18px; }
-
 .tabs { display: flex; gap: 5px; margin-bottom: 0; border-bottom: 1px solid #ddd; }
 .tab-btn { padding: 10px 15px; border: none; background: #e5e7eb; cursor: pointer; border-radius: 6px 6px 0 0; font-weight: 600; color: #666; transition: 0.2s; }
 .tab-btn.active { background: #fff; color: var(--primary); border-bottom: 3px solid var(--primary); }
-.tab-btn:hover { background: #d1d5db; }
-
-/* --- TABLE --- */
 .card { background: #fff; border-radius: 0 0 8px 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; }
 table { width: 100%; border-collapse: collapse; }
-th { background: #f9fafb; padding: 12px; text-align: left; font-size: 12px; border-bottom: 2px solid #eee; color: #555; text-transform: uppercase; }
-td { padding: 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
+th { background: #f9fafb; padding: 12px; text-align: left; font-size: 11px; border-bottom: 2px solid #eee; color: #555; text-transform: uppercase; }
+td { padding: 10px 12px; border-bottom: 1px solid #eee; vertical-align: middle; font-size: 12px; }
 tr:hover { background: #f0fdfa; }
-
-/* --- BADGES & PROGRESS --- */
 .badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
 .bg-open { background: #dbeafe; color: #1e40af; }
-.bg-partial { background: #ffedd5; color: #9a3412; }
 .bg-closed { background: #dcfce7; color: #166534; }
-
 .progress-bar { background: #e5e7eb; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 5px; width: 100%; }
 .progress-fill { height: 100%; background: #10b981; width: 0%; transition: width 0.5s; }
-
-/* --- BUTTONS & MODAL --- */
 .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
 .btn-primary { background: var(--primary); color: #fff; }
 .btn-sm { padding: 5px 10px; font-size: 11px; }
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; }
 .modal { background: #fff; width: 900px; max-height: 90vh; border-radius: 8px; display: flex; flex-direction: column; }
 .modal-body { padding: 20px; overflow-y: auto; flex: 1; }
-
-/* Input Group Style for Request */
+/* Create Request Style */
 .request-item { background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 15px; margin-bottom: 10px; border-left: 4px solid var(--primary); }
 .request-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
-.po-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
-.po-tag { font-size: 10px; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; border: 1px solid #cbd5e1; color: #475569; }
 .input-row { display: flex; gap: 10px; align-items: center; background: #f8fafc; padding: 10px; border-radius: 4px; }
 .inp-meter, .inp-qty { padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; text-align: right; }
-
-/* PDF Hidden */
-#pdf-container { position: absolute; left: -9999px; }
+/* Hidden PDF */
+#pdf-container { position: absolute; left: -9999px; top: 0; }
 </style>
 </head>
 <body>
@@ -68,8 +52,8 @@ tr:hover { background: #f0fdfa; }
 </div>
 
 <div class="tabs">
-    <button class="tab-btn" id="tab-master" onclick="loadData('Master')">Master List (All)</button>
-    <button class="tab-btn active" id="tab-remaining" onclick="loadData('Remaining')">Remaining (Ongoing)</button>
+    <button class="tab-btn" id="tab-master" onclick="loadData('Master')">Master List</button>
+    <button class="tab-btn active" id="tab-remaining" onclick="loadData('Remaining')">Remaining</button>
     <button class="tab-btn" id="tab-awaiting" onclick="loadData('Awaiting')">Awaiting</button>
     <button class="tab-btn" id="tab-process" onclick="loadData('In Process')">In Process</button>
     <button class="tab-btn" id="tab-completed" onclick="loadData('Completed')">Completed</button>
@@ -80,31 +64,32 @@ tr:hover { background: #f0fdfa; }
 <div class="card">
     <table id="mainTable">
         <thead id="tableHead"></thead>
-        <tbody id="tableBody">
-            <tr><td colspan="6" style="text-align:center; padding:50px;">Loading Data...</td></tr>
-        </tbody>
+        <tbody id="tableBody"><tr><td colspan="7" style="text-align:center; padding:30px;">Loading...</td></tr></tbody>
     </table>
 </div>
 
 <div id="createModal" class="modal-overlay">
     <div class="modal">
         <div class="modal-body">
-            <h3>Buat Request Produksi (Akumulasi Saldo)</h3>
-            <p style="color:#666; font-size:12px; margin-bottom:15px;">
-                Sistem akan otomatis mengambil saldo dari PO terlama (FIFO) jika permintaan melebihi sisa satu PO.
-            </p>
+            <h3>Buat Request Produksi (FIFO Allocation)</h3>
             
-            <label style="font-weight:bold;">Pilih Customer:</label>
-            <select id="selCustomer" onchange="loadCustomerItemsAggregated(this.value)" style="padding:10px; width:100%; margin-bottom:20px; border:1px solid #ccc; border-radius:4px;">
-                <option value="">-- Pilih Customer --</option>
-            </select>
-            
-            <div id="createItemsContainer">
+            <div style="display:flex; gap:20px; margin-bottom:20px;">
+                <div style="flex:1;">
+                    <label style="font-weight:bold; display:block; margin-bottom:5px;">Customer:</label>
+                    <select id="selCustomer" onchange="loadCustomerItemsAggregated(this.value)" style="padding:10px; width:100%; border:1px solid #ccc; border-radius:4px;">
+                        <option value="">-- Pilih Customer --</option>
+                    </select>
                 </div>
-            
+                <div style="flex:1;">
+                    <label style="font-weight:bold; display:block; margin-bottom:5px;">Est. Delivery Date:</label>
+                    <input type="date" id="inpDate" style="padding:9px; width:100%; border:1px solid #ccc; border-radius:4px;">
+                </div>
+            </div>
+
+            <div id="createItemsContainer"></div>
+
             <div style="margin-top:20px; text-align:right; border-top:1px solid #eee; padding-top:15px;">
-                <span id="submitStatus" style="font-weight:bold; color:red; margin-right:10px;"></span>
-                <button class="btn btn-sm" onclick="closeModal('createModal')" style="background:#eee; margin-right:5px;">Batal</button>
+                <button class="btn btn-sm" onclick="closeModal('createModal')" style="background:#eee;">Batal</button>
                 <button class="btn btn-primary" onclick="submitRequestAggregated()">Submit Request</button>
             </div>
         </div>
@@ -116,7 +101,7 @@ tr:hover { background: #f0fdfa; }
         <div class="modal-body">
             <h3 id="actTitle">Order Detail</h3>
             <table style="width:100%; margin-bottom:15px;">
-                <thead><tr><th>Item</th><th>Meter</th><th>Qty</th><th>Ket</th></tr></thead>
+                <thead><tr><th>Item</th><th>Meter</th><th>Qty</th><th>Mesin/KPC</th></tr></thead>
                 <tbody id="actBody"></tbody>
             </table>
             <div id="actFooter" style="text-align:right;"></div>
@@ -126,35 +111,64 @@ tr:hover { background: #f0fdfa; }
 </div>
 
 <div id="pdf-container">
-    <div id="pdf-content" style="padding:20px; font-family:Arial; width:100%;">
-        <h2 id="pdf-doc-title">SURAT JALAN / SPK</h2>
-        <div style="margin-bottom:15px;">Order ID: <span id="pdf-orderno"></span> | Date: <span id="pdf-date"></span></div>
-        <div style="margin-bottom:15px;">Customer: <span id="pdf-customer"></span></div>
-        <table style="width:100%; border-collapse:collapse; border:1px solid #000;">
-            <thead><tr style="background:#eee;"><th style="border:1px solid #000; padding:5px;">Item</th><th style="border:1px solid #000; padding:5px;">Meter</th><th style="border:1px solid #000; padding:5px;">Qty</th><th style="border:1px solid #000; padding:5px;">Ket</th></tr></thead>
+    <div id="pdf-content" style="padding:20px; font-family:Arial; width:100%; background:white; color:black;">
+        <div style="border-bottom:2px solid black; padding-bottom:10px; margin-bottom:20px; display:flex; justify-content:space-between;">
+            <div>
+                <h2 style="margin:0;" id="pdf-doc-title">SURAT PERINTAH KERJA</h2>
+                <div style="font-size:12px;">PT. AUXILIUM SYSTEM</div>
+            </div>
+            <div style="text-align:right;">
+                <h3 style="margin:0;" id="pdf-orderno">ORD-XXX</h3>
+                <div style="font-size:12px;">Date: <span id="pdf-date"></span></div>
+            </div>
+        </div>
+        
+        <div style="margin-bottom:20px;">
+            <strong>Customer:</strong> <span id="pdf-customer">-</span><br>
+            <strong>Est. Delivery:</strong> <span id="pdf-est">-</span>
+        </div>
+
+        <table style="width:100%; border-collapse:collapse; border:1px solid black; font-size:12px;">
+            <thead>
+                <tr style="background:#eee;">
+                    <th style="border:1px solid black; padding:5px; text-align:center; width:30px;">No</th>
+                    <th style="border:1px solid black; padding:5px;">Item Name</th>
+                    <th style="border:1px solid black; padding:5px; text-align:center;">Meter</th>
+                    <th style="border:1px solid black; padding:5px; text-align:center;">Qty</th>
+                    <th style="border:1px solid black; padding:5px;">Type</th>
+                    <th style="border:1px solid black; padding:5px;">Mesin / KPC</th>
+                    <th style="border:1px solid black; padding:5px;">WE Code</th>
+                </tr>
+            </thead>
             <tbody id="pdf-tbody"></tbody>
         </table>
+
+        <div style="display:flex; justify-content:space-between; margin-top:50px; text-align:center;">
+            <div style="width:30%;">
+                <div>Dibuat Oleh,</div><br><br><br>
+                <div style="border-top:1px solid black;">( Admin )</div>
+            </div>
+            <div style="width:30%;">
+                <div id="pdf-sign-title">Diterima Oleh,</div><br><br><br>
+                <div style="border-top:1px solid black;">( .................... )</div>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
-// --- KONFIGURASI API ---
-// Ganti dengan URL Web App Anda
-const API_URL = "https://script.google.com/macros/s/AKfycbxaPkp5WP1MhV4ClC92_1eKgx5xz9xteTFsOhB98WGHNYxjWZYbAuBcZgm9rU9QakrJ-w/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwFXQQDuvKX691bzP-zQ3kGYGL3mB13iFZAGbbp9j1IM941xKKmmWXg2jyf4azeCLsnXw/exec";
 
 let currentView = 'Remaining';
 let globalRemainingData = []; 
 let currentOrders = {};
-
-// Variabel untuk menyimpan data yang sudah digroup per item untuk modal create
-let aggregatedItemsMap = {}; 
+let aggregatedItemsMap = {};
 
 window.onload = () => loadData('Remaining');
 
 async function loadData(view) {
     currentView = view;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    
     let btnId = 'tab-remaining';
     if(view === 'Master') btnId = 'tab-master';
     if(view === 'Awaiting') btnId = 'tab-awaiting';
@@ -167,7 +181,7 @@ async function loadData(view) {
     if(btn) btn.classList.add('active');
 
     const tbody = document.getElementById('tableBody');
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px;"><i class="fas fa-spinner fa-spin"></i> Fetching Data...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px;"><i class="fas fa-spinner fa-spin"></i> Fetching Data...</td></tr>';
     const thead = document.getElementById('tableHead');
 
     try {
@@ -179,41 +193,30 @@ async function loadData(view) {
             const data = await req.json();
             renderPreOrders(data);
         } else {
-            thead.innerHTML = `<tr><th>Prod ID</th><th>Customer</th><th>Date</th><th>Item Detail</th><th>Status</th><th style="text-align:right;">Action</th></tr>`;
+            // KOLOM TABLE DISAMAKAN DENGAN GENERAL ORDER
+            thead.innerHTML = `<tr><th>Prod ID</th><th>Customer</th><th>Date</th><th>Est. Del</th><th>Item Detail</th><th>Status</th><th style="text-align:right;">Action</th></tr>`;
             url += "&action=getProductionOrders&status=" + encodeURIComponent(view) + "&category=preorder";
             const req = await fetch(url);
             const data = await req.json();
             renderProduction(data);
         }
     } catch (error) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Error: ${error.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:red;">Error: ${error.message}</td></tr>`;
     }
 }
 
 function renderPreOrders(data) {
     const tbody = document.getElementById('tableBody');
     tbody.innerHTML = '';
-    
     if(currentView === 'Remaining') globalRemainingData = data;
-
-    if(!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No Data Found.</td></tr>';
-        return;
-    }
+    if(!data || data.length === 0) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No Data Found.</td></tr>'; return; }
 
     data.forEach(po => {
         let itemsHtml = '';
         po.items.forEach(item => {
             let pct = item.totalMeter > 0 ? (item.processedMeter / item.totalMeter) * 100 : 0;
             if(pct > 100) pct = 100;
-            itemsHtml += `
-                <div style="margin-bottom:5px;">
-                    <div style="display:flex; justify-content:space-between; font-size:11px;">
-                        <strong>${item.name}</strong>
-                        <span>${item.processedMeter.toFixed(2)} / ${item.totalMeter.toFixed(2)}m</span>
-                    </div>
-                    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%; background:${item.isLineClosed?'#999':'#10b981'};"></div></div>
-                </div>`;
+            itemsHtml += `<div style="margin-bottom:5px;"><div style="display:flex; justify-content:space-between; font-size:11px;"><strong>${item.name}</strong><span>${item.processedMeter.toFixed(2)} / ${item.totalMeter.toFixed(2)}m</span></div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%; background:${item.isLineClosed?'#999':'#10b981'};"></div></div></div>`;
         });
         tbody.innerHTML += `<tr><td style="font-weight:bold; color:#0f766e;">${po.poId}</td><td>${po.customer}</td><td>${po.date}</td><td>${itemsHtml}</td><td><span class="badge bg-${po.status.toLowerCase()}">${po.status}</span></td></tr>`;
     });
@@ -223,266 +226,128 @@ function renderProduction(data) {
     currentOrders = data;
     const tbody = document.getElementById('tableBody');
     tbody.innerHTML = '';
-    
-    if(!data || Object.keys(data).length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No Orders.</td></tr>';
-        return;
-    }
+    if(!data || Object.keys(data).length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No Orders.</td></tr>'; return; }
 
     Object.values(data).forEach(o => {
-        let detail = o.items.map(i => {
-            // Tampilkan info Split jika ada
-            let splitInfo = (i.fullRowData && i.fullRowData.includes('Split Result')) ? '<span style="color:orange; font-size:10px;">(Split)</span>' : '';
-            return `${i.item} (${i.qty}x${i.meter}) ${splitInfo}`;
-        }).join('<br>');
-
+        let detail = o.items.map(i => `${i.item} <small>(${i.qty}x${i.meter}) ${i.type}</small>`).join('<br>');
         let btns = '';
         if(o.status === 'Awaiting') btns = `<button class="btn-sm btn-primary" onclick="openAction('${o.orderNo}','process')">Process</button>`;
         if(o.status === 'In Process') btns = `<button class="btn-sm" onclick="printPDF('SPK','${o.orderNo}')">SPK</button> <button class="btn-sm btn-primary" onclick="openAction('${o.orderNo}','complete')">Finish</button>`;
         if(o.status === 'Completed Production') btns = `<button class="btn-sm btn-primary" onclick="openAction('${o.orderNo}','deliver')">Deliver</button>`;
         if(o.status === 'Delivered') btns = `<button class="btn-sm" onclick="printPDF('SJ','${o.orderNo}')">Print SJ</button>`;
 
-        tbody.innerHTML += `<tr><td>${o.orderNo}</td><td>${o.customer}</td><td>${o.date}</td><td>${detail}</td><td><span class="badge" style="background:#eee;">${o.status}</span></td><td style="text-align:right;">${btns}</td></tr>`;
+        tbody.innerHTML += `<tr><td>${o.orderNo}</td><td>${o.customer}</td><td>${o.date}</td><td>${o.delivery}</td><td>${detail}</td><td><span class="badge" style="background:#eee;">${o.status}</span></td><td style="text-align:right;">${btns}</td></tr>`;
     });
 }
 
-// --- LOGIKA UTAMA: AGGREGATE & DISTRIBUTE ---
-
+// --- CREATE REQUEST LOGIC ---
 function openCreateModal() {
     document.getElementById('createModal').style.display = 'flex';
     document.getElementById('createItemsContainer').innerHTML = '';
-    
-    if(globalRemainingData.length === 0) {
-        // Fetch ulang jika kosong
-        loadData('Remaining').then(() => populateCust());
-    } else {
-        populateCust();
-    }
+    document.getElementById('inpDate').value = new Date().toISOString().split('T')[0];
+    if(globalRemainingData.length === 0) loadData('Remaining').then(() => populateCust());
+    else populateCust();
 }
-
 function populateCust() {
     const sel = document.getElementById('selCustomer');
     sel.innerHTML = '<option value="">-- Pilih Customer --</option>';
-    // Ambil customer unik
     [...new Set(globalRemainingData.map(d=>d.customer))].sort().forEach(c => {
         let opt = document.createElement('option'); opt.value=c; opt.innerText=c; sel.appendChild(opt);
     });
 }
-
-// 1. Grouping Data (Aggregation)
 function loadCustomerItemsAggregated(cust) {
-    const box = document.getElementById('createItemsContainer'); 
-    box.innerHTML = '';
-    aggregatedItemsMap = {}; // Reset map
-    
+    const box = document.getElementById('createItemsContainer'); box.innerHTML = '';
+    aggregatedItemsMap = {}; 
     if(!cust) return;
 
-    // Filter PO milik customer
-    const customerPOs = globalRemainingData.filter(d => d.customer === cust);
-    
-    // Grouping logic: Kumpulkan semua PO Item berdasarkan Nama Barang
-    customerPOs.forEach(po => {
+    globalRemainingData.filter(d => d.customer === cust).forEach(po => {
         po.items.forEach(item => {
-            // Hanya ambil item yang masih punya sisa dan belum closed
             if(!item.isLineClosed && item.remainingMeter > 0.1) {
-                if(!aggregatedItemsMap[item.name]) {
-                    aggregatedItemsMap[item.name] = {
-                        name: item.name,
-                        totalRemaining: 0,
-                        poList: [] // Menyimpan daftar PO sumber (Stack)
-                    };
-                }
-                
-                // Tambahkan ke map
+                if(!aggregatedItemsMap[item.name]) aggregatedItemsMap[item.name] = { name: item.name, totalRemaining: 0, poList: [] };
                 aggregatedItemsMap[item.name].totalRemaining += item.remainingMeter;
+                // SIMPAN INFO HARGA & UNIT DI SINI
                 aggregatedItemsMap[item.name].poList.push({
-                    poId: po.poId,
-                    poDate: po.date,
-                    rowIndex: item.rowIndex,
-                    remaining: item.remainingMeter
+                    poId: po.poId, rowIndex: item.rowIndex, remaining: item.remainingMeter,
+                    price: item.price, disc: item.disc, unit: item.unit, type: item.type
                 });
             }
         });
     });
 
-    // Render ke UI (Satu Item Name = Satu Input Group)
     Object.keys(aggregatedItemsMap).forEach(itemName => {
         const data = aggregatedItemsMap[itemName];
-        
-        // Buat daftar PO ID kecil untuk info user
-        const poTags = data.poList.map(p => 
-            `<span class="po-tag">${p.poId} (${p.remaining.toFixed(1)}m)</span>`
-        ).join('');
-
         const div = document.createElement('div');
         div.className = 'request-item';
-        div.dataset.name = itemName; // Key untuk submit nanti
-        
+        div.dataset.name = itemName;
         div.innerHTML = `
-            <div class="request-header">
-                <strong>${itemName}</strong>
-                <span style="font-weight:bold; color:var(--primary);">
-                    Total Sisa: ${data.totalRemaining.toFixed(2)}m
-                </span>
-            </div>
-            <div class="po-tags">Sumber: ${poTags}</div>
-            
+            <div class="request-header"><strong>${itemName}</strong><span style="font-weight:bold; color:var(--primary);">Total Sisa: ${data.totalRemaining.toFixed(2)}m</span></div>
             <div class="input-row" data-max="${data.totalRemaining}">
-                <label>Panjang (m):</label>
-                <input type="number" class="inp-meter" step="0.01" placeholder="0.00" onkeyup="calcTotal(this)">
-                
-                <label>Qty:</label>
-                <input type="number" class="inp-qty" step="1" placeholder="0" onkeyup="calcTotal(this)">
-                
-                <div style="flex:1; text-align:right;">
-                    Request: <span class="calc-res" style="font-weight:bold;">0.00</span> m
-                </div>
-            </div>
-        `;
+                <label>P:</label><input type="number" class="inp-meter" step="0.01" placeholder="M" onkeyup="calcTotal(this)">
+                <label>Q:</label><input type="number" class="inp-qty" step="1" placeholder="Qty" onkeyup="calcTotal(this)">
+                <div style="flex:1; text-align:right;">Req: <span class="calc-res">0.00</span> m</div>
+            </div>`;
         box.appendChild(div);
     });
-    
-    if(Object.keys(aggregatedItemsMap).length === 0) {
-        box.innerHTML = '<p style="text-align:center; padding:20px;">Customer ini tidak memiliki sisa saldo kontrak.</p>';
-    }
 }
-
-// Helper kalkulasi tampilan realtime
 function calcTotal(el) {
     const row = el.closest('.input-row');
-    const m = parseFloat(row.querySelector('.inp-meter').value) || 0;
-    const q = parseFloat(row.querySelector('.inp-qty').value) || 0;
-    const total = m * q;
+    const tot = (parseFloat(row.querySelector('.inp-meter').value)||0) * (parseFloat(row.querySelector('.inp-qty').value)||0);
     const max = parseFloat(row.dataset.max);
-    
-    const resEl = row.querySelector('.calc-res');
-    resEl.innerText = total.toFixed(2);
-    
-    if(total > max) {
-        resEl.style.color = 'red';
-        resEl.innerText += " (OVER!)";
-        row.style.border = "1px solid red";
-    } else {
-        resEl.style.color = 'var(--text)';
-        row.style.border = "none";
-    }
+    row.querySelector('.calc-res').innerText = tot.toFixed(2);
+    row.style.border = tot > max ? "1px solid red" : "none";
 }
-
-// 2. Submission Logic (Distribution / Waterfill)
 async function submitRequestAggregated() {
     const cust = document.getElementById('selCustomer').value;
-    const inputs = document.querySelectorAll('.request-item');
+    const dateVal = document.getElementById('inpDate').value;
+    if(!cust || !dateVal) return alert("Pilih Customer & Tanggal Delivery!");
+    
     let batches = [];
     let isValid = true;
-
-    // Loop setiap barang yang di-input user
-    inputs.forEach(div => {
+    
+    document.querySelectorAll('.request-item').forEach(div => {
         const itemName = div.dataset.name;
         const row = div.querySelector('.input-row');
-        const reqLength = parseFloat(row.querySelector('.inp-meter').value) || 0;
-        const reqQty = parseFloat(row.querySelector('.inp-qty').value) || 0;
+        const reqLen = parseFloat(row.querySelector('.inp-meter').value)||0;
+        const reqQty = parseFloat(row.querySelector('.inp-qty').value)||0;
+        let reqTotal = reqLen * reqQty;
         
-        let reqTotalMeter = reqLength * reqQty;
-        const maxLimit = parseFloat(row.dataset.max);
+        if(reqTotal > parseFloat(row.dataset.max) + 0.05) isValid = false;
         
-        if(reqTotalMeter > maxLimit + 0.05) { // Toleransi dikit
-            isValid = false;
-            row.style.background = "#fee2e2";
-        }
-        
-        // Jika user minta barang ini (jumlah > 0)
-        if(reqTotalMeter > 0 && isValid) {
+        if(reqTotal > 0 && isValid) {
             const itemData = aggregatedItemsMap[itemName];
-            
-            // --- ALGORITMA DISTRIBUSI FIFO ---
-            // Kita punya total permintaan (misal 50m).
-            // Kita punya list PO (PO A: 29m, PO B: 400m).
-            // Kita ambil dari PO A sampai habis, lalu sisanya dari PO B.
-            
-            let meterToAllocate = reqTotalMeter;
-            
-            for (let po of itemData.poList) {
-                if (meterToAllocate <= 0) break; // Sudah terpenuhi
-                
-                // Ambil mana yang lebih kecil: Sisa permintaan ATAU Sisa PO
-                let takeAmount = Math.min(meterToAllocate, po.remaining);
-                
-                // Hitung Qty proporsional untuk batch ini
-                // Qty = Total Meter yang diambil / Panjang per lembar
-                let batchQty = takeAmount / reqLength; 
-                
-                // Push ke daftar batch yang akan dikirim ke backend
+            let allocate = reqTotal;
+            for(let po of itemData.poList) {
+                if(allocate <= 0) break;
+                let take = Math.min(allocate, po.remaining);
+                let batchQty = take / reqLen;
                 batches.push({
-                    poId: po.poId,
-                    rowIndex: po.rowIndex,
-                    itemName: itemName,
-                    length: reqLength,    // Panjang tetap sesuai request user
-                    qty: batchQty,        // Qty dipecah (bisa desimal)
-                    totalMeter: takeAmount
+                    poId: po.poId, rowIndex: po.rowIndex, itemName: itemName,
+                    length: reqLen, qty: batchQty, totalMeter: take,
+                    price: po.price, disc: po.disc, unit: po.unit, type: po.type // CARRY PRICE
                 });
-                
-                meterToAllocate -= takeAmount;
+                allocate -= take;
             }
         }
     });
 
-    if(!isValid) return alert("Ada item melebihi total saldo tersedia! Periksa input merah.");
-    if(batches.length === 0) return alert("Belum ada input produksi.");
+    if(!isValid) return alert("Input melebihi sisa!");
+    if(batches.length===0) return alert("Kosong!");
 
-    // Kirim ke Backend
-    const btnSubmit = document.querySelector('#createModal .btn-primary');
-    const statusSpan = document.getElementById('submitStatus');
-    
-    btnSubmit.disabled = true;
-    btnSubmit.innerText = "Processing...";
-    
     try {
-        const payload = { 
-            action: 'submitPartialPO', 
-            data: { 
-                customer: cust, 
-                poId: batches[0].poId, // ID referensi utama (bisa dari batch pertama)
-                batches: batches 
-            } 
-        };
-        
-        const req = await fetch(API_URL, {
-            method: 'POST',
-            body: JSON.stringify(payload)
-        });
+        const req = await fetch(API_URL, { method:'POST', body:JSON.stringify({action:'submitPartialPO', data:{customer:cust, estDelivery:dateVal, poId:batches[0].poId, batches:batches}}) });
         const res = await req.json();
-        
-        if(res.result === 'success') {
-            alert("Order Created Successfully!\nOrder ID: " + res.newOrderId);
-            closeModal('createModal');
-            loadData('Awaiting');
-            // Refresh cache remaining
-            loadData('Remaining').then(d => globalRemainingData = d); 
-        } else {
-            alert("Error Backend: " + res.message);
-        }
-    } catch(e) {
-        alert("Network Error: " + e.message);
-    } finally {
-        btnSubmit.disabled = false;
-        btnSubmit.innerText = "Submit Request";
-    }
+        if(res.result==='success') { alert("Success! "+res.newOrderId); closeModal('createModal'); loadData('Awaiting'); loadData('Remaining').then(d=>globalRemainingData=d); } 
+        else alert(res.message);
+    } catch(e) { alert(e); }
 }
 
-// Action & Utils (Sama seperti sebelumnya)
+// --- PDF & ACTION ---
 function openAction(id, type) {
     activeOrder = currentOrders[id];
     document.getElementById('actionModal').style.display = 'flex';
     document.getElementById('actTitle').innerText = id + " (" + type + ")";
     const tbody = document.getElementById('actBody'); tbody.innerHTML = '';
-    
-    activeOrder.items.forEach(i => {
-        // Format angka desimal agar rapi
-        let q = parseFloat(i.qty);
-        let qtyDisplay = Number.isInteger(q) ? q : q.toFixed(2);
-        
-        tbody.innerHTML += `<tr><td>${i.item}</td><td>${i.meter}</td><td>${qtyDisplay}</td><td>${i.machine||'-'}</td></tr>`;
-    });
+    activeOrder.items.forEach(i => tbody.innerHTML += `<tr><td>${i.item}</td><td>${i.meter}</td><td>${parseFloat(i.qty).toFixed(2)}</td><td>${i.machine||'-'} / ${i.kpc||'-'}</td></tr>`);
     
     let btnHtml = '';
     if(type === 'process') btnHtml = `<button class="btn btn-primary" onclick="doApi('${id}','submitProduction')">Kirim Produksi</button>`;
@@ -490,20 +355,16 @@ function openAction(id, type) {
     if(type === 'deliver') btnHtml = `<button class="btn btn-primary" onclick="doApi('${id}','deliverOrder')">Kirim Barang</button>`;
     document.getElementById('actFooter').innerHTML = btnHtml;
 }
-
 async function doApi(id, act) {
-    const payload = { action: act, orderId: id, category: 'preorder', data: activeOrder.items };
     try {
-        const req = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+        const req = await fetch(API_URL, { method:'POST', body:JSON.stringify({action:act, orderId:id, category:'preorder', data:activeOrder.items}) });
         const res = await req.json();
-        alert(res.message); 
-        closeModal('actionModal');
+        alert(res.message); closeModal('actionModal');
         if(act==='submitProduction') loadData('In Process');
         if(act==='completeOrder') loadData('Completed');
         if(act==='deliverOrder') loadData('Delivered');
-    } catch(e) { alert("Error: " + e); }
+    } catch(e) { alert(e); }
 }
-
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
 function printPDF(type, id) {
@@ -512,20 +373,30 @@ function printPDF(type, id) {
     document.getElementById('pdf-orderno').innerText = id;
     document.getElementById('pdf-customer').innerText = o.customer;
     document.getElementById('pdf-date').innerText = new Date().toLocaleDateString();
+    document.getElementById('pdf-est').innerText = o.delivery || "-";
+    document.getElementById('pdf-sign-title').innerText = type === 'SPK' ? "Diketahui Oleh," : "Penerima Barang,";
+
     const tbody = document.getElementById('pdf-tbody'); tbody.innerHTML = '';
-    
-    o.items.forEach(i => {
+    o.items.forEach((i, idx) => {
         let q = parseFloat(i.qty);
         let qtyDisplay = Number.isInteger(q) ? q : q.toFixed(2);
+        let machineInfo = (type==='SPK') ? `${i.machine||'-'} / ${i.kpc||'-'}` : `${i.type||'-'}`;
+        let weCode = (type==='SPK') ? (i.we||'-') : '-';
         
-        tbody.innerHTML += `<tr>
-            <td style="border:1px solid #000; padding:5px;">${i.item}</td>
-            <td style="border:1px solid #000; padding:5px;">${i.meter}</td>
-            <td style="border:1px solid #000; padding:5px;">${qtyDisplay}</td>
-            <td style="border:1px solid #000; padding:5px;">${i.machine||'-'}</td>
+        // Format SPK General Order
+        tbody.innerHTML += `
+        <tr>
+            <td style="border:1px solid black; padding:5px; text-align:center;">${idx+1}</td>
+            <td style="border:1px solid black; padding:5px;">${i.item}</td>
+            <td style="border:1px solid black; padding:5px; text-align:center;">${i.meter}</td>
+            <td style="border:1px solid black; padding:5px; text-align:center;">${qtyDisplay}</td>
+            <td style="border:1px solid black; padding:5px;">${i.type||'-'}</td>
+            <td style="border:1px solid black; padding:5px;">${machineInfo}</td>
+            <td style="border:1px solid black; padding:5px;">${weCode}</td>
         </tr>`;
     });
-    html2pdf().from(document.getElementById('pdf-content')).save(`${type}_${id}.pdf`);
+    
+    html2pdf().set({ margin:0.5, filename:`${type}_${id}.pdf` }).from(document.getElementById('pdf-content')).save();
 }
 </script>
 </body>
