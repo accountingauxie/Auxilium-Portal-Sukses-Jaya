@@ -518,19 +518,35 @@
             applyFilters();
         }
 
-        function applyFilters() {
-            const searchVal = document.getElementById('searchInput').value.toLowerCase();
-            const sortOrder = document.getElementById('sortOrder').value;
-            const startDateVal = document.getElementById('filterStartDate').value;
-            const endDateVal = document.getElementById('filterEndDate').value;
+   function applyFilters() {
+            // Ambil value dan pastikan aman (trim spasi)
+            const searchInput = document.getElementById('searchInput');
+            const searchVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
             
-            let filtered = allData.filter(p => {
-                // 1. Filter Search Text
-                const matchSearch = p.id.toLowerCase().includes(searchVal) || 
-                                    p.vendor.toLowerCase().includes(searchVal) || 
-                                    (p.invNumber && p.invNumber.toLowerCase().includes(searchVal));
+            const sortOrderEl = document.getElementById('sortOrder');
+            const sortOrder = sortOrderEl ? sortOrderEl.value : 'asc';
 
-                // 2. Filter Status Pill
+            const startDateInput = document.getElementById('filterStartDate');
+            const endDateInput = document.getElementById('filterEndDate');
+            const startDateVal = startDateInput ? startDateInput.value : '';
+            const endDateVal = endDateInput ? endDateInput.value : '';
+
+            // Pastikan allData sudah terisi sebelum filter jalan
+            if (!allData || allData.length === 0) return;
+
+            let filtered = allData.filter(p => {
+                // --- 1. Filter Search Text (SAFE MODE) ---
+                // Menggunakan (p.field || '') untuk mencegah error jika data null/undefined
+                // Menggunakan .toString() untuk mencegah error jika data berupa angka
+                const idSafe = (p.id || '').toString().toLowerCase();
+                const vendorSafe = (p.vendor || '').toString().toLowerCase();
+                const invSafe = (p.invNumber || '').toString().toLowerCase();
+
+                const matchSearch = idSafe.includes(searchVal) || 
+                                    vendorSafe.includes(searchVal) || 
+                                    invSafe.includes(searchVal);
+
+                // --- 2. Filter Status Pill ---
                 let matchStatus = true;
                 if (currentFilterStatus === 'all') matchStatus = true;
                 else if (currentFilterStatus === 'pending') matchStatus = p.status === 'Pending';
@@ -538,28 +554,39 @@
                 else if (currentFilterStatus === 'rejected') matchStatus = p.status === 'Rejected';
                 else if (currentFilterStatus === 'billed') matchStatus = !['Pending', 'Partial', 'Rejected'].includes(p.status);
 
-                // 3. Filter Date Range
+                // --- 3. Filter Date Range (SAFE MODE) ---
                 let matchDate = true;
-                if (startDateVal && endDateVal) {
-                    const poDate = new Date(p.tanggalInput).setHours(0,0,0,0);
-                    const start = new Date(startDateVal).setHours(0,0,0,0);
-                    const end = new Date(endDateVal).setHours(0,0,0,0);
-                    matchDate = poDate >= start && poDate <= end;
+                if (startDateVal && endDateVal && p.tanggalInput) {
+                    // Reset jam ke 00:00:00 agar perbandingan akurat
+                    const poDate = new Date(p.tanggalInput);
+                    poDate.setHours(0,0,0,0);
+
+                    const start = new Date(startDateVal);
+                    start.setHours(0,0,0,0);
+
+                    const end = new Date(endDateVal);
+                    end.setHours(23,59,59,999); // Set ke akhir hari
+
+                    // Cek apakah tanggal valid sebelum dibandingkan
+                    if (!isNaN(poDate.getTime())) {
+                        matchDate = poDate >= start && poDate <= end;
+                    }
                 }
 
                 return matchSearch && matchStatus && matchDate;
             });
 
-            // 4. Sort Logic (By ID / PO Number)
+            // --- 4. Sort Logic ---
             filtered.sort((a, b) => {
-                // Assuming ID is string, straightforward comparison
-                // If ID is numeric but string (e.g. "10", "2"), consider localeCompare with numeric: true
+                const idA = (a.id || '').toString();
+                const idB = (b.id || '').toString();
+
                 if (sortOrder === 'asc') {
-                    // Oldest First
-                    return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+                    // Oldest First (A ke Z)
+                    return idA.localeCompare(idB, undefined, { numeric: true, sensitivity: 'base' });
                 } else {
-                    // Newest First
-                    return b.id.localeCompare(a.id, undefined, { numeric: true, sensitivity: 'base' });
+                    // Newest First (Z ke A)
+                    return idB.localeCompare(idA, undefined, { numeric: true, sensitivity: 'base' });
                 }
             });
 
