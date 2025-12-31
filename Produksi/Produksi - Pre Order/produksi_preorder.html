@@ -20,6 +20,8 @@ body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background:
 /* CONTENT LAYOUT */
 .page-wrap { padding: 30px 40px; max-width: 98%; margin: 0 auto; }
 .header-action { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.action-buttons { display: flex; gap: 10px; } /* New Wrapper for buttons */
+
 .category-tabs { margin-bottom: 20px; border-bottom: 2px solid #ddd; display: flex; }
 .cat-btn { background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; }
 .cat-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
@@ -51,6 +53,7 @@ table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-ali
 .btn-split { background: #d8b4fe; color: #6b21a8; }
 .btn-remove { background: #fee2e2; color: #991b1b; }
 .btn-secondary { background: #fff; border: 1px solid #ccc; color: #333; }
+.btn-report { background: #7c3aed; color: white; } /* Purple for Report */
 
 /* PROGRESS BAR */
 .progress-bar { background: #e5e7eb; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 5px; width: 100%; }
@@ -73,6 +76,13 @@ table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-ali
 /* CREATE REQUEST SPECIFIC */
 .request-item { background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 15px; margin-bottom: 10px; border-left: 4px solid var(--primary); }
 .input-row { display: flex; gap: 10px; align-items: center; background: #f8fafc; padding: 10px; border-radius: 4px; }
+
+/* REPORT TABLE STYLES */
+table.report-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+table.report-table th { background: #f3f4f6; padding: 10px; border: 1px solid #ddd; text-align: left; font-size: 12px; }
+table.report-table td { padding: 8px 10px; border: 1px solid #ddd; font-size: 12px; }
+.group-header { background-color: #e0f2fe; font-weight: bold; color: #0c4a6e; }
+.sub-row td { background-color: #fff; color: #555; font-style: italic; padding-left: 30px; }
 
 /* PDF STYLES */
 #pdf-hidden-container { position: absolute; left: -9999px; top: 0; }
@@ -98,7 +108,10 @@ table.pdf-table td { font-size: 10px; border: 1px solid #000; padding: 5px; }
 <div class="page-wrap">
     <div class="header-action">
         <h2>Preorder Production Dashboard</h2>
-        <button class="btn btn-process" onclick="openCreateModal()"><i class="fas fa-plus-circle"></i> Create Request (Saldo)</button>
+        <div class="action-buttons">
+            <button class="btn btn-report" onclick="openReportModal()"><i class="fas fa-file-alt"></i> Saldo Report</button>
+            <button class="btn btn-process" onclick="openCreateModal()"><i class="fas fa-plus-circle"></i> Create Request (Saldo)</button>
+        </div>
     </div>
 
     <div class="category-tabs">
@@ -143,6 +156,30 @@ table.pdf-table td { font-size: 10px; border: 1px solid #000; padding: 5px; }
         <div class="modal-footer">
             <button class="btn btn-secondary" onclick="closeModal('createModal')">Batal</button>
             <button class="btn btn-primary" id="btnSubmitRequest" onclick="submitRequestAggregated()">Submit Request</button>
+        </div>
+    </div>
+</div>
+
+<div id="reportModal" class="modal-overlay">
+    <div class="modal-box" style="width: 900px;">
+        <div class="modal-header">
+            <h3>Laporan Saldo Customer</h3>
+            <button onclick="closeModal('reportModal')" style="border:none; background:none; font-size:20px; cursor:pointer;">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div style="margin-bottom:20px; border-bottom:1px solid #eee; padding-bottom:15px;">
+                <label style="font-weight:bold; margin-right:10px;">Pilih Customer:</label>
+                <select id="selReportCustomer" onchange="generateCustomerReport(this.value)" class="prod-select" style="width:300px;">
+                    <option value="">-- Pilih Customer --</option>
+                </select>
+                <button class="btn btn-secondary" onclick="printReportDiv()" style="margin-left:10px;"><i class="fas fa-print"></i> Print View</button>
+            </div>
+            <div id="reportContentArea">
+                <div style="text-align:center; color:#888; margin-top:50px;">Silakan pilih customer untuk melihat laporan.</div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('reportModal')">Close</button>
         </div>
     </div>
 </div>
@@ -220,7 +257,7 @@ table.pdf-table td { font-size: 10px; border: 1px solid #000; padding: 5px; }
 
 <script>
 // --- KONFIGURASI API ---
-const API_URL = "https://script.google.com/macros/s/AKfycbxQ6UkhnWleo0xzpo8acQYqQW3AmN9zpGH5Q5GHZgI8iUROM14g3cmnt2EB3WorODlfMA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzIkv_dT9qNE7L35Nuau3rDEgIm8scLnwsoYkhFl0qxAAeo_KeCtL4pLhKstbXY8CJhZA/exec";
 const TYPE_CODES = { 'Custom': 'CS', 'Plat': 'PL' };
 
 let currentView = 'Remaining';
@@ -302,6 +339,93 @@ function renderProduction(data) {
 
         tbody.innerHTML += `<tr><td><a class="order-link" onclick="openSetup('${o.orderNo}')">${o.orderNo}</a></td><td>${o.type}</td><td>${o.customer}</td><td>${o.date}</td><td>${o.delivery}</td><td><span class="badge ${badgeClass}">${o.status}</span></td><td>${o.items.length} Items</td></tr>`;
     });
+}
+
+// --- REPORT LOGIC (NEW) ---
+function openReportModal() {
+    if(globalRemainingData.length === 0) {
+        alert("Data belum siap, mohon tunggu loading selesai.");
+        return;
+    }
+    document.getElementById('reportModal').style.display = 'flex';
+    document.getElementById('reportContentArea').innerHTML = '<div style="text-align:center; color:#888; margin-top:50px;">Silakan pilih customer untuk melihat laporan.</div>';
+    
+    // Populate Dropdown Customer
+    const sel = document.getElementById('selReportCustomer');
+    sel.innerHTML = '<option value="">-- Pilih Customer --</option>';
+    [...new Set(globalRemainingData.map(d=>d.customer))].sort().forEach(c => {
+        let opt = document.createElement('option'); opt.value=c; opt.innerText=c; sel.appendChild(opt);
+    });
+}
+
+function generateCustomerReport(cust) {
+    const box = document.getElementById('reportContentArea');
+    if(!cust) {
+        box.innerHTML = ''; return;
+    }
+
+    // Grouping Data
+    let reportMap = {};
+    globalRemainingData.filter(d => d.customer === cust).forEach(po => {
+        po.items.forEach(item => {
+            if(!item.isLineClosed && item.remainingMeter > 0.1) {
+                if(!reportMap[item.name]) {
+                    reportMap[item.name] = { 
+                        name: item.name, 
+                        totalBalance: 0, 
+                        details: [] 
+                    };
+                }
+                reportMap[item.name].totalBalance += item.remainingMeter;
+                reportMap[item.name].details.push({
+                    inv: po.poId,
+                    date: po.date,
+                    balance: item.remainingMeter,
+                    type: item.type
+                });
+            }
+        });
+    });
+
+    if(Object.keys(reportMap).length === 0) {
+        box.innerHTML = '<div style="text-align:center; padding:20px; color:red;">Tidak ada saldo tersisa untuk customer ini.</div>';
+        return;
+    }
+
+    // Build Table
+    let html = `<h4 style="border-bottom:2px solid #ddd; padding-bottom:5px;">Laporan Saldo: ${cust}</h4>`;
+    html += `<table class="report-table">`;
+    html += `<thead><tr><th>Nama Barang</th><th>Invoice / PO</th><th>Tanggal PO</th><th style="text-align:right;">Sisa (m)</th></tr></thead><tbody>`;
+
+    Object.values(reportMap).forEach(group => {
+        // Group Header
+        html += `<tr class="group-header"><td colspan="3">${group.name} <small>(${group.details[0].type})</small></td><td style="text-align:right; font-size:13px;">Total: ${group.totalBalance.toFixed(2)}</td></tr>`;
+        
+        // Detail Rows
+        group.details.forEach(det => {
+            html += `<tr class="sub-row">
+                <td></td>
+                <td>${det.inv}</td>
+                <td>${det.date}</td>
+                <td style="text-align:right;">${det.balance.toFixed(2)}</td>
+            </tr>`;
+        });
+    });
+
+    html += `</tbody></table>`;
+    box.innerHTML = html;
+}
+
+function printReportDiv() {
+    const content = document.getElementById('reportContentArea').innerHTML;
+    const win = window.open('', '', 'height=700,width=900');
+    win.document.write('<html><head><title>Print Report</title>');
+    win.document.write('<style>body{font-family:Arial, sans-serif;} table{width:100%; border-collapse:collapse;} th,td{border:1px solid #ccc; padding:8px; font-size:12px;} .group-header{background:#eee; font-weight:bold;}</style>');
+    win.document.write('</head><body>');
+    win.document.write(content);
+    win.document.write('</body></html>');
+    win.document.close();
+    win.print();
 }
 
 // --- SETUP MODAL (FULL FEATURES) ---
