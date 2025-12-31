@@ -26,7 +26,7 @@
   .aux-link { text-decoration: none; color: #666; font-weight: 600; font-size: 14px; padding: 8px 14px; border-radius: 6px; transition: all 0.2s; cursor: pointer; display: flex; align-items: center; gap: 4px; }
   .aux-link:hover, .nav-item:hover .aux-link { color: #1d2939; background-color: #f9fafb; }
   .aux-link.active { color: var(--primary-color); background-color: #eff8ff; font-weight: 700; }
-  
+   
   /* Dropdown & User Panel */
   .dropdown-menu { visibility: hidden; opacity: 0; position: absolute; top: 90%; left: 50%; transform: translateX(-50%) translateY(-10px); background: white; min-width: 220px; border: 1px solid #eaecf0; border-radius: 8px; box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08); padding: 6px; z-index: 10000; transition: all 0.2s ease; }
   .nav-item:hover .dropdown-menu { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -56,7 +56,7 @@
   .sub-pill-active { background-color: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
   .sub-pill-inactive { background-color: white; color: #64748b; border-color: #e2e8f0; }
   .sub-pill-inactive:hover { background-color: #f1f5f9; color: #334155; }
-  
+   
   #loading { position: fixed; inset: 0; background: rgba(255,255,255,0.85); z-index: 50000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
   .spinner { border: 4px solid #e2e8f0; border-top: 4px solid #3b82f6; border-radius: 50%; width: 45px; height: 45px; animation: spin 0.8s linear infinite; }
   @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -449,8 +449,8 @@ function openInputModal(batchId, mode) {
   } else if (CURRENT_MODE === 'result_input' || CURRENT_MODE === 'result_revise') {
       title = (CURRENT_MODE === 'result_revise') ? "Revisi Production Result" : "Input Production Result";
       warning = "<strong>Mode Input Hasil:</strong> Masukkan Qty, Qty BS, dan Berat Coil (Kg).";
-      // FITUR 3: Tambah kolom Qty BS
-      thead.innerHTML = `<th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-24">Machine</th><th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-40">Item</th><th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-28">KPC</th><th class="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase w-28 bg-slate-100">Sisa Coil</th><th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase w-20">Qty</th><th class="px-4 py-3 text-center text-xs font-bold text-red-500 uppercase w-20">Qty BS</th><th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase w-24">Berat (Kg)</th><th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">WE Number</th>`;
+      // FITUR 3: Tambah kolom Qty BS & UPDATE: Lebarkan kolom Qty (w-32) dan Berat (w-28)
+      thead.innerHTML = `<th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-24">Machine</th><th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-40">Item</th><th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-28">KPC</th><th class="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase w-28 bg-slate-100">Sisa Coil</th><th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase w-32">Qty</th><th class="px-4 py-3 text-center text-xs font-bold text-red-500 uppercase w-20">Qty BS</th><th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase w-28">Berat (Kg)</th><th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">WE Number</th>`;
   }
   document.getElementById('modal-title').innerText = title;
   document.getElementById('modal-warning-text').innerHTML = warning;
