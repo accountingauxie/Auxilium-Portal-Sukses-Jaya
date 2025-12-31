@@ -220,7 +220,7 @@ table.pdf-table td { font-size: 10px; border: 1px solid #000; padding: 5px; }
 
 <script>
 // --- KONFIGURASI API ---
-const API_URL = "https://script.google.com/macros/s/AKfycbwllkaTZzpMZGAyt9mZCt_HQ53H5TPKF-yGyjcl5WYnG_GFPVg4xVF9TgYx4Q497hxbcA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxQ6UkhnWleo0xzpo8acQYqQW3AmN9zpGH5Q5GHZgI8iUROM14g3cmnt2EB3WorODlfMA/exec";
 const TYPE_CODES = { 'Custom': 'CS', 'Plat': 'PL' };
 
 let currentView = 'Remaining';
@@ -325,7 +325,7 @@ function openSetup(orderId) {
         alertBox.style.display = 'none';
     } else {
         alertBox.style.display = 'block';
-        alertBox.innerHTML = '<strong>Instruksi:</strong> Gunakan tombol (+) untuk split jika stok kurang.';
+        alertBox.innerHTML = '<strong>Instruksi:</strong> Gunakan tombol (+) untuk split jika stok kurang. Total Qty harus sama dengan target.';
     }
 
     // Body
@@ -351,8 +351,9 @@ function openSetup(orderId) {
         let valType = "Custom";
         if(item.we && item.we.includes('_PL_')) valType = "Plat";
 
+        // Tambahkan atribut min="0" dan oninput validasi agar tidak minus
         let inputs = `
-            <td><input type="number" class="${spandekClass} qty-input" value="${item.qty}" min="1" ${readonlyAttr} onchange="updateCalc(this)"></td>
+            <td><input type="number" class="${spandekClass} qty-input" value="${item.qty}" min="0" oninput="validity.valid||(value='');" ${readonlyAttr} onchange="updateCalc(this)"></td>
             <td style="text-align:center;"><span class="total-m">${initialTotalM}</span></td>
             <td><select class="${spandekClass} machine-select" ${readonlyAttr} onchange="generateWE(this)"><option value="">-</option><option value="PM08" ${valMesin==='PM08'?'selected':''}>PM08</option><option value="PM14" ${valMesin==='PM14'?'selected':''}>PM14</option></select></td>
             <td><select class="${spandekClass} kpc-select" ${readonlyAttr} onchange="generateWE(this)"><option value="">-</option><option value="KPC-001" ${valKPC==='KPC-001'?'selected':''}>KPC-001</option><option value="KPC-002" ${valKPC==='KPC-002'?'selected':''}>KPC-002</option></select></td>
@@ -435,13 +436,10 @@ function splitRow(btn, groupId) {
     const tbody = originalRow.parentNode;
     
     // 1. Matikan Baris Utama (Parent) jika belum mati
-    // Kita set value 0 dan matikan input, TAPI tombol Split tetap hidup
     if (!originalRow.classList.contains('disabled-row')) {
         originalRow.classList.add('disabled-row');
         originalRow.querySelector('.qty-input').value = 0; 
         originalRow.querySelector('.total-m').innerText = "0.00";
-        
-        // Disable semua input/select KECUALI tombol aksi
         originalRow.querySelectorAll('input, select').forEach(el => el.disabled = true);
         const cb = originalRow.querySelector('.check-production');
         if(cb) cb.disabled = true; 
@@ -457,6 +455,10 @@ function splitRow(btn, groupId) {
     qtyInput.value = 0; 
     qtyInput.disabled = false;
     
+    // Pastikan tidak minus
+    qtyInput.setAttribute("min", "0");
+    qtyInput.setAttribute("oninput", "validity.valid||(value='');");
+
     newRow.querySelectorAll('select').forEach(s => { 
         s.value = ""; 
         s.disabled = false; 
@@ -465,7 +467,6 @@ function splitRow(btn, groupId) {
     
     newRow.querySelector('.we-code').value = "";
     
-    // Setup Checkbox (jika view In Process)
     const newCb = newRow.querySelector('.check-production');
     if(newCb) { 
         newCb.disabled = false; 
@@ -473,19 +474,15 @@ function splitRow(btn, groupId) {
         newCb.onchange = checkAllDone; 
     }
     
-    // Visual: Tandai ini baris split
     newRow.querySelector('.target-qty').parentElement.innerHTML = '<small style="color:#666;">↳ (Split)</small>';
     
-    // Ubah tombol (+) menjadi tombol sampah (Hapus)
     const btnContainer = newRow.querySelector('.btn-split').parentElement;
     btnContainer.innerHTML = `<button class="btn-sm btn-remove" onclick="removeSplit(this, ${groupId})"><i class="fas fa-trash"></i></button>`;
     
-    // 3. Masukkan Baris Baru di urutan paling bawah dari grup ini
     const groupRows = tbody.querySelectorAll(`tr[data-id="${groupId}"]`);
     const lastRow = groupRows[groupRows.length-1];
     lastRow.after(newRow);
     
-    // Re-attach listener kalkulasi
     qtyInput.onchange = function() { updateCalc(this); };
     
     if(currentView === 'In Process') checkAllDone();
@@ -494,32 +491,21 @@ function splitRow(btn, groupId) {
 function removeSplit(btn, groupId) {
     const row = btn.closest('tr');
     const tbody = row.parentNode;
-    
-    // Hapus baris split ini
     row.remove();
     
-    // Cek apakah masih ada baris split lain untuk item ini?
     const remainingSplits = tbody.querySelectorAll(`.split-row[data-id="${groupId}"]`);
-    
-    // Jika TIDAK ada split tersisa, hidupkan kembali Baris Utama
     if(remainingSplits.length === 0) {
         const main = tbody.querySelector(`.main-row[data-id="${groupId}"]`);
         main.classList.remove('disabled-row');
         
         const target = parseInt(main.querySelector('.target-qty').innerText);
         main.querySelector('.qty-input').value = target;
-        
-        // Hidupkan input kembali
         main.querySelectorAll('select, input').forEach(el => el.disabled = false);
-        
-        // Hidupkan checkbox
         const cb = main.querySelector('.check-production');
         if(cb) cb.disabled = false;
         
-        // Hitung ulang meter
         updateCalc(main.querySelector('.qty-input'));
     }
-    
     if(currentView === 'In Process') checkAllDone();
 }
 
@@ -537,28 +523,33 @@ function generateWE(el) {
     const kpc = row.querySelector('.kpc-select').value;
     const type = TYPE_CODES[row.querySelector('.type-select').value] || 'XX';
     let shortInv = activeOrderId ? String(activeOrderId) : "";
-    // Ambil 5 karakter terakhir untuk WE Code
     if (shortInv.length > 5) shortInv = shortInv.slice(-5);
     if(mach && kpc) row.querySelector('.we-code').value = `${mach}_${kpc}_${type}_${shortInv}`;
 }
 
 async function submitProduction(mode) {
     const rows = document.querySelectorAll('#setupBody tr:not(.disabled-row)');
-    let data = [], valid = true;
+    let data = [], valid = true, errorMsg = "";
     
-    // Validate Total Qty
+    // Validate Total Qty MUST Match Target
     const groupIds = new Set([...document.querySelectorAll('.main-row')].map(r => r.dataset.id));
     groupIds.forEach(gid => {
         const main = document.querySelector(`.main-row[data-id="${gid}"]`);
         const target = parseInt(main.querySelector('.target-qty').innerText);
         let current = 0;
         document.querySelectorAll(`tr[data-id="${gid}"]:not(.disabled-row)`).forEach(r => {
-            current += parseInt(r.querySelector('.qty-input').value || 0);
+            let val = parseInt(r.querySelector('.qty-input').value || 0);
+            if (val < 0) { valid = false; errorMsg = "Qty tidak boleh minus!"; }
+            current += val;
         });
-        if(current !== target) valid = false;
+        
+        if (valid && current !== target) {
+            valid = false;
+            errorMsg = `Total Qty untuk item ${gid+1} harus ${target}, saat ini ${current}.`;
+        }
     });
     
-    if(!valid) return alert("Total Qty per item tidak sesuai target!");
+    if(!valid) return alert("Validasi Gagal:\n" + errorMsg);
 
     rows.forEach(r => {
         const type = r.dataset.type;
@@ -569,12 +560,13 @@ async function submitProduction(mode) {
             const m = r.querySelector('.machine-select').value;
             const k = r.querySelector('.kpc-select').value;
             const w = r.querySelector('.we-code').value;
-            if(!m || !k) { r.style.backgroundColor = '#fee2e2'; valid = false; }
+            if(!m || !k) { r.style.backgroundColor = '#fee2e2'; valid = false; errorMsg = "Data Mesin/KPC belum lengkap"; }
             else { item.machine = m; item.kpc = k; item.we = w; }
         }
         data.push(item);
     });
-    if(!valid) return alert("Lengkapi Data Mesin/KPC!");
+    
+    if(!valid) return alert(errorMsg || "Lengkapi Data Mesin/KPC!");
     
     await sendAPI(mode === 'new' ? 'submitProduction' : 'updateProductionData', { orderId: activeOrderId, category: 'preorder', data: data });
 }
@@ -602,7 +594,7 @@ function generatePDF(type) {
     if (type === 'SJ') { headDetail.innerText = "KETERANGAN"; headWE.style.display = 'none'; } 
     else { headDetail.innerText = "DETAIL MESIN/KPC"; headWE.style.display = 'table-cell'; }
 
-    let itemsToPrint = o.items; // Simplified for Preorder (No grouping needed usually)
+    let itemsToPrint = o.items; 
     const tbody = document.getElementById('pdfItemsBody');
     tbody.innerHTML = '';
     itemsToPrint.forEach((i, idx) => {
@@ -646,7 +638,7 @@ function loadCustomerItemsAggregated(cust) {
         const div = document.createElement('div');
         div.className = 'request-item';
         div.dataset.name = itemName;
-        div.innerHTML = `<div class="request-header"><strong>${itemName}</strong><span style="font-weight:bold; color:var(--primary);">Total Sisa: ${data.totalRemaining.toFixed(2)}m</span></div><div class="input-row" data-max="${data.totalRemaining}"><label>P (m):</label><input type="number" class="prod-input inp-meter" step="0.01" placeholder="Panjang" onkeyup="calcTotal(this)"><label>Qty:</label><input type="number" class="prod-input inp-qty" step="1" placeholder="Integer Only" onkeyup="calcTotal(this)"><div style="flex:1; text-align:right;">Req: <span class="calc-res">0.00</span> m</div></div>`;
+        div.innerHTML = `<div class="request-header"><strong>${itemName}</strong><span style="font-weight:bold; color:var(--primary);">Total Sisa: ${data.totalRemaining.toFixed(2)}m</span></div><div class="input-row" data-max="${data.totalRemaining}"><label>P (m):</label><input type="number" class="prod-input inp-meter" step="0.01" min="0" placeholder="Panjang" onkeyup="calcTotal(this)"><label>Qty:</label><input type="number" class="prod-input inp-qty" step="1" min="0" placeholder="Integer Only" onkeyup="calcTotal(this)"><div style="flex:1; text-align:right;">Req: <span class="calc-res">0.00</span> m</div></div>`;
         box.appendChild(div);
     });
 }
@@ -668,24 +660,19 @@ function calcTotal(el) {
 async function submitRequestAggregated() {
     const cust = document.getElementById('selCustomer').value;
     const dateVal = document.getElementById('inpDate').value;
-    
-    // 1. Validasi Dasar Header
     if(!cust || !dateVal) return alert("Mohon Pilih Customer & Tanggal Delivery!");
 
     let requestItems = []; 
     let isValid = true;
-
-    // 2. Loop UI Input untuk mengumpulkan data mentah
     document.querySelectorAll('.request-item').forEach(div => {
         const itemName = div.dataset.name;
         const row = div.querySelector('.input-row');
-        
-        // Ambil value input
         const reqLen = parseFloat(row.querySelector('.inp-meter').value) || 0;
         const reqQty = parseFloat(row.querySelector('.inp-qty').value) || 0;
         let reqTotalMeter = reqLen * reqQty;
         
-        // Validasi Saldo (UX only): Jangan biarkan request melebihi total yang dimiliki
+        if (reqLen < 0 || reqQty < 0) { isValid = false; return alert("Input tidak boleh minus!"); }
+
         const maxBalance = parseFloat(row.dataset.max);
         if(reqTotalMeter > maxBalance + 0.05) {
             isValid = false;
@@ -696,11 +683,8 @@ async function submitRequestAggregated() {
             row.style.background = "#f8fafc";
         }
 
-        // Jika ada input valid, masukkan ke list antrian
         if(reqTotalMeter > 0) {
-            // Kita ambil info Type/Unit dari map data yang sudah ada untuk kelengkapan
             const refData = aggregatedItemsMap[itemName] && aggregatedItemsMap[itemName].poList[0];
-            
             requestItems.push({
                 itemName: itemName,
                 length: reqLen,
@@ -712,45 +696,30 @@ async function submitRequestAggregated() {
         }
     });
 
-    // 3. Cek Error sebelum kirim
-    if(!isValid) return alert("Gagal: Ada input yang melebihi sisa saldo customer!");
+    if(!isValid) return alert("Gagal: Ada input yang melebihi sisa saldo customer atau minus!");
     if(requestItems.length === 0) return alert("Gagal: Belum ada item yang diisi (Qty/Meter kosong).");
 
-    // 4. Kirim Data ke Backend
     const btn = document.getElementById('btnSubmitRequest');
     const originalText = btn.innerText;
     
     try {
         btn.disabled = true; 
         btn.innerText = "Processing Backend...";
-
         const payload = {
             action: 'submitPreorderRequest',
-            data: {
-                customer: cust,
-                estDelivery: dateVal,
-                items: requestItems 
-            }
+            data: { customer: cust, estDelivery: dateVal, items: requestItems }
         };
-
-        const req = await fetch(API_URL, { 
-            method: 'POST', 
-            body: JSON.stringify(payload) 
-        });
-        
+        const req = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
         const res = await req.json();
 
         if(res.result === 'success') {
             alert("Request Berhasil Dibuat! \nID: " + res.orderId);
             closeModal('createModal'); 
-            
-            // Refresh Data
             loadData('Awaiting'); 
             loadData('Remaining').then(d => globalRemainingData = d);
         } else {
             throw new Error(res.message || "Unknown Error from Backend");
         }
-
     } catch(e) {
         console.error(e);
         alert("Terjadi Kesalahan: " + e.message);
