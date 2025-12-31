@@ -478,6 +478,7 @@
         let currentFilterStatus = 'all'; 
 
         // ================= INITIALIZATION & VALIDATION =================
+        // --- UPDATE 1: PENGGUNAAN LOGIK VALIDASI SAAT LOAD ---
         window.onload = function() {
             fetchData();
             setupInvoiceValidation();
@@ -946,9 +947,7 @@
                         <span class="bg-blue-50 text-blue-600 px-1.5 rounded">Done: ${item.alreadyBilled}</span>
                        </div>`;
 
-                // LOGIKA BARU: Tombol delete muncul jika item Custom atau User Added
-                const canDelete = (item.isCustom || item.isUserAdded) && isEditMode;
-                const deleteBtn = canDelete 
+                const deleteBtn = (item.isCustom && isEditMode) 
                     ? `<button onclick="removeCustomItem(${index})" class="text-slate-300 hover:text-red-500 transition px-2"><i class="fas fa-trash"></i></button>` 
                     : ``;
 
@@ -1101,11 +1100,9 @@
                 namaItem: product.namaItem,
                 satuan: product.satuan,
                 optionalSpec: "",
-                typeProduk: product.typeProduk || "Database",
+                typeProduk: product.typeProduk || "Manual",
                 qty: 1, maxQty: 999999, price: parseFloat(product.price) || 0, disc: 0,
-                poQty: 0, alreadyBilled: 0, checked: true,
-                isCustom: false, // Perbaikan: Nama Read-only (sesuai database)
-                isUserAdded: true // Perbaikan: Bisa dihapus
+                poQty: 0, alreadyBilled: 0, checked: true, isCustom: true
             });
             renderBillItems();
         }
@@ -1117,9 +1114,7 @@
                 optionalSpec: "",
                 typeProduk: "Manual",
                 qty: 1, maxQty: 999999, price: 0, disc: 0,
-                poQty: 0, alreadyBilled: 0, checked: true,
-                isCustom: true, // Perbaikan: Nama Bisa Diedit
-                isUserAdded: true // Perbaikan: Bisa dihapus
+                poQty: 0, alreadyBilled: 0, checked: true, isCustom: true
             });
             renderBillItems();
         }
@@ -1138,6 +1133,7 @@
             const invNum = document.getElementById('bill-inv-number').value;
             if(!invNum) { showNotification("Nomor Invoice Wajib diisi."); return; }
             
+            // --- UPDATE 2: CEK FINAL UNDERSCORE SEBELUM SUBMIT ---
             if(invNum.includes('_')) { 
                 showNotification("Nomor Invoice mengandung karakter terlarang (_). Mohon dihapus."); 
                 return; 
