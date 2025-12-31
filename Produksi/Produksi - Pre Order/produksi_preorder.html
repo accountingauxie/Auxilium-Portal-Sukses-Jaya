@@ -220,7 +220,7 @@ table.pdf-table td { font-size: 10px; border: 1px solid #000; padding: 5px; }
 
 <script>
 // --- KONFIGURASI API ---
-const API_URL = "https://script.google.com/macros/s/AKfycby2yE547Tpba5Cym_AyHg3z65qPmsdkQrMr_WV00t0AoBfXNjj7SqWntFk6khNTi42W8A/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxvK2lY-Muhxuvl-H9OY_bJryFPS0q2aIJxo-QadfHHDJvBkKd0p17B7e5Md1KTQ3Zd/exec";
 const TYPE_CODES = { 'Custom': 'CS', 'Plat': 'PL' };
 
 let currentView = 'Remaining';
@@ -567,7 +567,7 @@ function generatePDF(type) {
     html2pdf().set({ margin:0.5, filename:`${type}_${activeOrderId}.pdf` }).from(document.getElementById('pdfContent')).save();
 }
 
-// --- CREATE REQUEST LOGIC (UNCHANGED BUT INTEGRATED) ---
+// --- CREATE REQUEST LOGIC (UPDATED FOR BACKEND ALLOCATION) ---
 function openCreateModal() {
     document.getElementById('createModal').style.display = 'flex';
     document.getElementById('createItemsContainer').innerHTML = '';
@@ -618,52 +618,101 @@ function calcTotal(el) {
     if(tot > max + 0.05) { resEl.style.color = "red"; resEl.innerText += " (OVER!)"; row.style.border = "1px solid red"; row.style.background = "#fee2e2"; btn.disabled = true; } 
     else { resEl.style.color = "black"; row.style.border = "none"; row.style.background = "#f8fafc"; btn.disabled = false; }
 }
+
 async function submitRequestAggregated() {
     const cust = document.getElementById('selCustomer').value;
     const dateVal = document.getElementById('inpDate').value;
-    if(!cust || !dateVal) return alert("Pilih Customer & Tanggal Delivery!");
-    let batches = []; let isValid = true;
+    
+    // 1. Validasi Dasar Header
+    if(!cust || !dateVal) return alert("Mohon Pilih Customer & Tanggal Delivery!");
+
+    let requestItems = []; 
+    let isValid = true;
+
+    // 2. Loop UI Input untuk mengumpulkan data mentah
     document.querySelectorAll('.request-item').forEach(div => {
         const itemName = div.dataset.name;
         const row = div.querySelector('.input-row');
-        const reqLen = parseFloat(row.querySelector('.inp-meter').value)||0;
-        const reqQty = parseFloat(row.querySelector('.inp-qty').value)||0;
-        let reqTotal = reqLen * reqQty;
-        if(reqTotal > parseFloat(row.dataset.max) + 0.05) isValid = false;
-        if(reqTotal > 0 && isValid) {
-            const itemData = aggregatedItemsMap[itemName];
-            let allocate = reqTotal;
-            let deductions = [];
-            let totalValAccumulated = 0;
-            for(let po of itemData.poList) {
-                if(allocate <= 0) break;
-                let take = Math.min(allocate, po.remaining);
-                totalValAccumulated += (take * po.price); 
-                deductions.push({ poId: po.poId, rowIndex: po.rowIndex, meterUsed: take });
-                allocate -= take;
-            }
-            let avgPrice = totalValAccumulated / reqQty; 
-            batches.push({
-                poId: itemData.poList[0].poId, 
-                deductions: deductions,
-                newItem: { itemName: itemName, type: itemData.poList[0].type, unit: itemData.poList[0].unit, length: reqLen, qty: reqQty, avgPrice: avgPrice, totalVal: totalValAccumulated }
+        
+        // Ambil value input
+        const reqLen = parseFloat(row.querySelector('.inp-meter').value) || 0;
+        const reqQty = parseFloat(row.querySelector('.inp-qty').value) || 0;
+        let reqTotalMeter = reqLen * reqQty;
+        
+        // Validasi Saldo (UX only): Jangan biarkan request melebihi total yang dimiliki
+        const maxBalance = parseFloat(row.dataset.max);
+        if(reqTotalMeter > maxBalance + 0.05) {
+            isValid = false;
+            row.style.border = "1px solid red"; 
+            row.style.background = "#fee2e2";
+        } else {
+            row.style.border = "none"; 
+            row.style.background = "#f8fafc";
+        }
+
+        // Jika ada input valid, masukkan ke list antrian
+        if(reqTotalMeter > 0) {
+            // Kita ambil info Type/Unit dari map data yang sudah ada untuk kelengkapan
+            // (Backend bisa validasi ulang nanti)
+            const refData = aggregatedItemsMap[itemName] && aggregatedItemsMap[itemName].poList[0];
+            
+            requestItems.push({
+                itemName: itemName,
+                length: reqLen,
+                qty: reqQty,
+                totalMeter: reqTotalMeter,
+                type: refData ? refData.type : '', // Opsional, bantu backend
+                unit: refData ? refData.unit : ''  // Opsional, bantu backend
             });
         }
     });
-    if(!isValid) return alert("Input melebihi sisa!");
-    if(batches.length===0) return alert("Kosong!");
+
+    // 3. Cek Error sebelum kirim
+    if(!isValid) return alert("Gagal: Ada input yang melebihi sisa saldo customer!");
+    if(requestItems.length === 0) return alert("Gagal: Belum ada item yang diisi (Qty/Meter kosong).");
+
+    // 4. Kirim Data ke Backend
     const btn = document.getElementById('btnSubmitRequest');
-    btn.disabled = true; btn.innerText = "Processing...";
-    for (let b of batches) {
-        try {
-            const req = await fetch(API_URL, { method:'POST', body:JSON.stringify({action:'submitPartialPO', data:{customer:cust, estDelivery:dateVal, poId: b.poId, deductions: b.deductions, newItem: b.newItem}}) });
-            const res = await req.json();
-            if(res.result !== 'success') alert("Error on item " + b.newItem.itemName + ": " + res.message);
-        } catch(e) { console.error(e); }
+    const originalText = btn.innerText;
+    
+    try {
+        btn.disabled = true; 
+        btn.innerText = "Processing Backend...";
+
+        const payload = {
+            action: 'submitPreorderRequest', // Nama action baru di Backend
+            data: {
+                customer: cust,
+                estDelivery: dateVal,
+                items: requestItems // Array sederhana: [{itemName, length, qty}, ...]
+            }
+        };
+
+        const req = await fetch(API_URL, { 
+            method: 'POST', 
+            body: JSON.stringify(payload) 
+        });
+        
+        const res = await req.json();
+
+        if(res.result === 'success') {
+            alert("Request Berhasil Dibuat! \nBackend telah memproses alokasi stok & harga.");
+            closeModal('createModal'); 
+            
+            // Refresh Data
+            loadData('Awaiting'); 
+            loadData('Remaining').then(d => globalRemainingData = d);
+        } else {
+            throw new Error(res.message || "Unknown Error from Backend");
+        }
+
+    } catch(e) {
+        console.error(e);
+        alert("Terjadi Kesalahan: " + e.message);
+    } finally {
+        btn.disabled = false; 
+        btn.innerText = originalText;
     }
-    alert("Proses Selesai.");
-    closeModal('createModal'); loadData('Awaiting'); loadData('Remaining').then(d=>globalRemainingData=d);
-    btn.disabled = false; btn.innerText = "Submit Request";
 }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 </script>
