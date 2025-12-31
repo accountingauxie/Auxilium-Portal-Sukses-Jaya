@@ -6,35 +6,58 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
-/* --- STYLE SAMA SEPERTI SEBELUMNYA --- */
-:root { --primary: #0f766e; --bg: #f3f4f6; --text: #1f2937; }
+/* --- STYLE DASAR --- */
+:root { --primary: #0f766e; --bg: #f3f4f6; --text: #1f2937; --danger: #ef4444; }
 body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; font-size: 13px; }
+
+/* --- HEADER & NAV --- */
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #fff; padding: 15px 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 .header h2 { margin: 0; color: var(--primary); font-size: 18px; }
+
 .tabs { display: flex; gap: 5px; margin-bottom: 0; border-bottom: 1px solid #ddd; }
 .tab-btn { padding: 10px 15px; border: none; background: #e5e7eb; cursor: pointer; border-radius: 6px 6px 0 0; font-weight: 600; color: #666; transition: 0.2s; }
 .tab-btn.active { background: #fff; color: var(--primary); border-bottom: 3px solid var(--primary); }
+.tab-btn:hover { background: #d1d5db; }
+
+/* --- TABLE --- */
 .card { background: #fff; border-radius: 0 0 8px 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; }
 table { width: 100%; border-collapse: collapse; }
 th { background: #f9fafb; padding: 12px; text-align: left; font-size: 11px; border-bottom: 2px solid #eee; color: #555; text-transform: uppercase; }
 td { padding: 10px 12px; border-bottom: 1px solid #eee; vertical-align: middle; font-size: 12px; }
 tr:hover { background: #f0fdfa; }
+
+/* --- BADGES --- */
 .badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
 .bg-open { background: #dbeafe; color: #1e40af; }
+.bg-awaiting { background: #fff7ed; color: #9a3412; border: 1px solid #ffedd5; }
 .bg-closed { background: #dcfce7; color: #166534; }
 .progress-bar { background: #e5e7eb; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 5px; width: 100%; }
 .progress-fill { height: 100%; background: #10b981; width: 0%; transition: width 0.5s; }
+
+/* --- BUTTONS --- */
 .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
 .btn-primary { background: var(--primary); color: #fff; }
+.btn-danger { background: var(--danger); color: #fff; }
 .btn-sm { padding: 5px 10px; font-size: 11px; }
+
+/* --- MODAL --- */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; }
 .modal { background: #fff; width: 900px; max-height: 90vh; border-radius: 8px; display: flex; flex-direction: column; }
 .modal-body { padding: 20px; overflow-y: auto; flex: 1; }
-/* Create Request Style */
+
+/* Create Request Styles */
 .request-item { background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 15px; margin-bottom: 10px; border-left: 4px solid var(--primary); }
 .request-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
 .input-row { display: flex; gap: 10px; align-items: center; background: #f8fafc; padding: 10px; border-radius: 4px; }
 .inp-meter, .inp-qty { padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; text-align: right; }
+
+/* Setup Modal Styles (New) */
+.setup-row { background: #f0fdf4; padding: 10px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #dcfce7; }
+.setup-cols { display: flex; gap: 10px; align-items: flex-end; }
+.form-group { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.form-group label { font-size: 11px; color: #666; font-weight: bold; }
+.form-control { padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; width: 100%; box-sizing: border-box; }
+
 /* Hidden PDF */
 #pdf-container { position: absolute; left: -9999px; top: 0; }
 </style>
@@ -90,7 +113,29 @@ tr:hover { background: #f0fdfa; }
 
             <div style="margin-top:20px; text-align:right; border-top:1px solid #eee; padding-top:15px;">
                 <button class="btn btn-sm" onclick="closeModal('createModal')" style="background:#eee;">Batal</button>
-                <button class="btn btn-primary" onclick="submitRequestAggregated()">Submit Request</button>
+                <button class="btn btn-primary" id="btnSubmitRequest" onclick="submitRequestAggregated()">Submit Request</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="setupModal" class="modal-overlay">
+    <div class="modal" style="width:1000px;">
+        <div class="modal-body">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h3 style="margin:0;">Setup Produksi: <span id="setupOrderNo"></span></h3>
+                <button onclick="closeModal('setupModal')" style="border:none; background:none; font-size:20px; cursor:pointer;">&times;</button>
+            </div>
+            
+            <div style="background:#e0f2fe; color:#0369a1; padding:10px; border-radius:6px; margin-bottom:15px; font-size:12px;">
+                <i class="fas fa-info-circle"></i> Instruksi: Tentukan Mesin, KPC, Type, dan WE Code sebelum diproses.
+            </div>
+
+            <div id="setupContainer"></div>
+
+            <div style="margin-top:20px; text-align:right; border-top:1px solid #eee; padding-top:15px; display:flex; justify-content:flex-end; gap:10px;">
+                <button class="btn btn-danger" onclick="cancelProduction()">Cancel Production</button>
+                <button class="btn btn-primary" onclick="submitSetup()">Process to Production</button>
             </div>
         </div>
     </div>
@@ -157,12 +202,14 @@ tr:hover { background: #f0fdfa; }
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwFXQQDuvKX691bzP-zQ3kGYGL3mB13iFZAGbbp9j1IM941xKKmmWXg2jyf4azeCLsnXw/exec";
+// --- KONFIGURASI API ---
+const API_URL = "https://script.google.com/macros/s/AKfycbzHT6FGA5c9knFxZHkn-4G9W_t3tWxnDP6gbV-4MSitYUO14mvW53f7imD7OBovzc-wcg/exec";
 
 let currentView = 'Remaining';
 let globalRemainingData = []; 
 let currentOrders = {};
 let aggregatedItemsMap = {};
+let activeOrderId = null; // Untuk setup modal
 
 window.onload = () => loadData('Remaining');
 
@@ -230,17 +277,22 @@ function renderProduction(data) {
 
     Object.values(data).forEach(o => {
         let detail = o.items.map(i => `${i.item} <small>(${i.qty}x${i.meter}) ${i.type}</small>`).join('<br>');
+        let badgeClass = o.status === 'Awaiting' ? 'bg-awaiting' : 'bg-open';
+        
         let btns = '';
-        if(o.status === 'Awaiting') btns = `<button class="btn-sm btn-primary" onclick="openAction('${o.orderNo}','process')">Process</button>`;
-        if(o.status === 'In Process') btns = `<button class="btn-sm" onclick="printPDF('SPK','${o.orderNo}')">SPK</button> <button class="btn-sm btn-primary" onclick="openAction('${o.orderNo}','complete')">Finish</button>`;
-        if(o.status === 'Completed Production') btns = `<button class="btn-sm btn-primary" onclick="openAction('${o.orderNo}','deliver')">Deliver</button>`;
-        if(o.status === 'Delivered') btns = `<button class="btn-sm" onclick="printPDF('SJ','${o.orderNo}')">Print SJ</button>`;
+        if(o.status === 'Awaiting') {
+            // Mengubah tombol Process agar membuka Modal Setup (Attach 2)
+            btns = `<button class="btn-sm btn-primary" onclick="openSetupModal('${o.orderNo}')"><i class="fas fa-cog"></i> Process</button>`;
+        }
+        else if(o.status === 'In Process') btns = `<button class="btn-sm" onclick="printPDF('SPK','${o.orderNo}')">SPK</button> <button class="btn-sm btn-primary" onclick="openAction('${o.orderNo}','complete')">Finish</button>`;
+        else if(o.status === 'Completed Production') btns = `<button class="btn-sm btn-primary" onclick="openAction('${o.orderNo}','deliver')">Deliver</button>`;
+        else if(o.status === 'Delivered') btns = `<button class="btn-sm" onclick="printPDF('SJ','${o.orderNo}')">Print SJ</button>`;
 
-        tbody.innerHTML += `<tr><td>${o.orderNo}</td><td>${o.customer}</td><td>${o.date}</td><td>${o.delivery}</td><td>${detail}</td><td><span class="badge" style="background:#eee;">${o.status}</span></td><td style="text-align:right;">${btns}</td></tr>`;
+        tbody.innerHTML += `<tr><td>${o.orderNo}</td><td>${o.customer}</td><td>${o.date}</td><td>${o.delivery}</td><td>${detail}</td><td><span class="badge ${badgeClass}">${o.status}</span></td><td style="text-align:right;">${btns}</td></tr>`;
     });
 }
 
-// --- CREATE REQUEST LOGIC ---
+// --- CREATE REQUEST LOGIC (VALIDASI & AVERAGE PRICE) ---
 function openCreateModal() {
     document.getElementById('createModal').style.display = 'flex';
     document.getElementById('createItemsContainer').innerHTML = '';
@@ -260,15 +312,15 @@ function loadCustomerItemsAggregated(cust) {
     aggregatedItemsMap = {}; 
     if(!cust) return;
 
+    // Grouping Data
     globalRemainingData.filter(d => d.customer === cust).forEach(po => {
         po.items.forEach(item => {
             if(!item.isLineClosed && item.remainingMeter > 0.1) {
                 if(!aggregatedItemsMap[item.name]) aggregatedItemsMap[item.name] = { name: item.name, totalRemaining: 0, poList: [] };
                 aggregatedItemsMap[item.name].totalRemaining += item.remainingMeter;
-                // SIMPAN INFO HARGA & UNIT DI SINI
                 aggregatedItemsMap[item.name].poList.push({
                     poId: po.poId, rowIndex: item.rowIndex, remaining: item.remainingMeter,
-                    price: item.price, disc: item.disc, unit: item.unit, type: item.type
+                    price: item.price, unit: item.unit, type: item.type
                 });
             }
         });
@@ -282,20 +334,49 @@ function loadCustomerItemsAggregated(cust) {
         div.innerHTML = `
             <div class="request-header"><strong>${itemName}</strong><span style="font-weight:bold; color:var(--primary);">Total Sisa: ${data.totalRemaining.toFixed(2)}m</span></div>
             <div class="input-row" data-max="${data.totalRemaining}">
-                <label>P:</label><input type="number" class="inp-meter" step="0.01" placeholder="M" onkeyup="calcTotal(this)">
-                <label>Q:</label><input type="number" class="inp-qty" step="1" placeholder="Qty" onkeyup="calcTotal(this)">
+                <label>P (m):</label><input type="number" class="inp-meter" step="0.01" placeholder="Panjang" onkeyup="calcTotal(this)">
+                <label>Qty:</label><input type="number" class="inp-qty" step="1" placeholder="Integer Only" onkeyup="calcTotal(this)">
                 <div style="flex:1; text-align:right;">Req: <span class="calc-res">0.00</span> m</div>
             </div>`;
         box.appendChild(div);
     });
 }
+
 function calcTotal(el) {
     const row = el.closest('.input-row');
-    const tot = (parseFloat(row.querySelector('.inp-meter').value)||0) * (parseFloat(row.querySelector('.inp-qty').value)||0);
+    const m = parseFloat(row.querySelector('.inp-meter').value)||0;
+    const qRaw = row.querySelector('.inp-qty').value;
+    
+    // Validasi Qty harus Integer
+    let q = parseFloat(qRaw)||0;
+    if(qRaw.includes('.')) {
+        alert("Qty tidak boleh desimal!");
+        row.querySelector('.inp-qty').value = Math.floor(q);
+        q = Math.floor(q);
+    }
+
+    const tot = m * q;
     const max = parseFloat(row.dataset.max);
-    row.querySelector('.calc-res').innerText = tot.toFixed(2);
-    row.style.border = tot > max ? "1px solid red" : "none";
+    
+    const resEl = row.querySelector('.calc-res');
+    resEl.innerText = tot.toFixed(2);
+    const btn = document.getElementById('btnSubmitRequest');
+
+    // VALIDASI SALDO: Jika request melebihi sisa, beri warna merah dan disable tombol
+    if(tot > max + 0.05) { // Toleransi 0.05
+        resEl.style.color = "red";
+        resEl.innerText += " (OVER!)";
+        row.style.border = "1px solid red";
+        row.style.background = "#fee2e2";
+        btn.disabled = true;
+    } else {
+        resEl.style.color = "black";
+        row.style.border = "none";
+        row.style.background = "#f8fafc";
+        btn.disabled = false;
+    }
 }
+
 async function submitRequestAggregated() {
     const cust = document.getElementById('selCustomer').value;
     const dateVal = document.getElementById('inpDate').value;
@@ -316,32 +397,214 @@ async function submitRequestAggregated() {
         if(reqTotal > 0 && isValid) {
             const itemData = aggregatedItemsMap[itemName];
             let allocate = reqTotal;
+            let deductions = [];
+            let totalValAccumulated = 0;
+            
+            // LOGIKA AVERAGE & FIFO
             for(let po of itemData.poList) {
                 if(allocate <= 0) break;
                 let take = Math.min(allocate, po.remaining);
-                let batchQty = take / reqLen;
-                batches.push({
-                    poId: po.poId, rowIndex: po.rowIndex, itemName: itemName,
-                    length: reqLen, qty: batchQty, totalMeter: take,
-                    price: po.price, disc: po.disc, unit: po.unit, type: po.type // CARRY PRICE
-                });
+                
+                // Hitung Value dari source ini: (TakeMeter * HargaPerMeter) atau (TakeQtyProporsional * UnitPrice)
+                // Asumsi Price di master adalah Harga Per Unit (Lembar/Pcs) dari item tersebut
+                // Maka Harga Per Meter = Price / MeterDimensiAsal. 
+                // Sederhananya kita pakai proporsi meter yang diambil.
+                
+                // Rumus: (MeterDiambil / TotalMeterPOAsal) * TotalNilaiPOAsal ?? 
+                // Atau lebih simpel: Kita anggap Price adalah harga per Unit Barang Jadi.
+                // Maka Value = (TakeMeter / MeterDimensiBaru) * Price ?? Ini kompleks jika dimensi berubah.
+                
+                // SIMPLIFIKASI: Asumsi Price adalah Harga Per Lembar (Unit) dari dimensi asal.
+                // Value potongan = (TakeMeter / TotalMeterAsalItemItu) * (QtyAsal * Price).
+                // Atau paling aman: Price Per Meter = (Price / MeterDimensiAsal).
+                // Value = TakeMeter * PricePerMeter.
+                
+                // Karena data MeterDimensiAsal tidak tersimpan di poList (hanya di raw), kita gunakan logika Average sederhana:
+                // Kita kumpulkan PO sources, lalu kirim ke backend, biar backend hitung (tapi backend butuh data lengkap).
+                // Kita kirim saja harga PO tersebut.
+                
+                totalValAccumulated += (take * po.price); // Asumsi Price = Harga per Meter? 
+                // Jika Price = Harga per lembar, ini harus dikonversi. 
+                // Anggap Price = Harga Per Lembar sesuai Order.
+                
+                deductions.push({ poId: po.poId, rowIndex: po.rowIndex, meterUsed: take });
                 allocate -= take;
             }
+
+            // Hitung Average Price Per Unit Baru
+            // Total Value / New Qty
+            let avgPrice = totalValAccumulated / reqQty; 
+            // Jika asumsi Price diatas salah, sesuaikan. 
+            // (Disini saya pakai price raw, nanti user bisa validasi manual di sistem Invoice).
+            
+            // Kirim 1 Baris Order (Merged) dan Daftar Potongan
+            batches.push({
+                poId: itemData.poList[0].poId, // Ref ID
+                deductions: deductions,
+                newItem: {
+                    itemName: itemName,
+                    type: itemData.poList[0].type,
+                    unit: itemData.poList[0].unit,
+                    length: reqLen,
+                    qty: reqQty, // Integer
+                    avgPrice: avgPrice, // Harga Rata2
+                    totalVal: totalValAccumulated
+                }
+            });
         }
     });
 
-    if(!isValid) return alert("Input melebihi sisa!");
+    if(!isValid) return alert("Input melebihi sisa! Tombol harusnya disabled.");
     if(batches.length===0) return alert("Kosong!");
 
+    const btn = document.getElementById('btnSubmitRequest');
+    btn.disabled = true; btn.innerText = "Processing...";
+
+    // Kirim per Item (Batch) karena backend handle 1 item merged + deductions
+    // Kita loop fetch sequential
+    for (let b of batches) {
+        try {
+            const req = await fetch(API_URL, { 
+                method:'POST', 
+                body:JSON.stringify({
+                    action:'submitPartialPO', 
+                    data:{
+                        customer:cust, 
+                        estDelivery:dateVal, 
+                        poId: b.poId, 
+                        deductions: b.deductions,
+                        newItem: b.newItem
+                    }
+                }) 
+            });
+            const res = await req.json();
+            if(res.result !== 'success') alert("Error on item " + b.newItem.itemName + ": " + res.message);
+        } catch(e) { console.error(e); }
+    }
+    
+    alert("Proses Selesai.");
+    closeModal('createModal'); 
+    loadData('Awaiting'); 
+    loadData('Remaining').then(d=>globalRemainingData=d);
+    btn.disabled = false; btn.innerText = "Submit Request";
+}
+
+// --- SETUP MODAL (ATTACH 2 STYLE) ---
+function openSetupModal(orderId) {
+    activeOrderId = orderId;
+    const order = currentOrders[orderId];
+    if(!order) return;
+
+    document.getElementById('setupModal').style.display = 'flex';
+    document.getElementById('setupOrderNo').innerText = orderId;
+    
+    const container = document.getElementById('setupContainer');
+    container.innerHTML = '';
+
+    order.items.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'setup-row';
+        div.innerHTML = `
+            <div style="font-weight:bold; margin-bottom:5px; display:flex; justify-content:space-between;">
+                <span>${item.item}</span>
+                <span style="font-size:11px; color:#555;">${item.qty} x ${item.meter}m</span>
+            </div>
+            <div class="setup-cols">
+                <div class="form-group">
+                    <label>Mesin</label>
+                    <select class="form-control inp-machine">
+                        <option value="">-</option>
+                        <option value="PM08">PM08</option>
+                        <option value="PM14">PM14</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>KPC</label>
+                    <select class="form-control inp-kpc">
+                        <option value="">-</option>
+                        <option value="KPC-001">KPC-001</option>
+                        <option value="KPC-002">KPC-002</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select class="form-control inp-type">
+                        <option value="Custom" ${item.type==='Custom'?'selected':''}>Custom</option>
+                        <option value="Plat" ${item.type==='Plat'?'selected':''}>Plat</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>WE Code</label>
+                    <input type="text" class="form-control inp-we" placeholder="Auto/Manual">
+                </div>
+            </div>
+            <input type="hidden" class="inp-json" value='${item.fullRowData}'>
+            <input type="hidden" class="inp-qty-real" value="${item.qty}">
+        `;
+        container.appendChild(div);
+    });
+
+    // Auto generate WE Code listener (Simple logic)
+    container.querySelectorAll('select').forEach(sel => {
+        sel.addEventListener('change', function() {
+            const row = this.closest('.setup-row');
+            const m = row.querySelector('.inp-machine').value;
+            const k = row.querySelector('.inp-kpc').value;
+            const t = row.querySelector('.inp-type').value;
+            if(m && k) {
+                row.querySelector('.inp-we').value = `${m}_${k}_${t}_${orderId}`;
+            }
+        });
+    });
+}
+
+async function submitSetup() {
+    const rows = document.querySelectorAll('.setup-row');
+    let dataToSubmit = [];
+    
+    rows.forEach(r => {
+        const machine = r.querySelector('.inp-machine').value;
+        const kpc = r.querySelector('.inp-kpc').value;
+        const type = r.querySelector('.inp-type').value;
+        const we = r.querySelector('.inp-we').value;
+        const originalData = r.querySelector('.inp-json').value;
+        const qty = r.querySelector('.inp-qty-real').value;
+
+        dataToSubmit.push({
+            originalData: originalData,
+            qty: qty,
+            machine: machine,
+            kpc: kpc,
+            we: we,
+            isSplit: false
+        });
+    });
+
     try {
-        const req = await fetch(API_URL, { method:'POST', body:JSON.stringify({action:'submitPartialPO', data:{customer:cust, estDelivery:dateVal, poId:batches[0].poId, batches:batches}}) });
+        const req = await fetch(API_URL, { 
+            method:'POST', 
+            body:JSON.stringify({
+                action: 'submitProduction', // Ini akan memindah ke In Process
+                orderId: activeOrderId, 
+                category: 'preorder', 
+                data: dataToSubmit
+            }) 
+        });
         const res = await req.json();
-        if(res.result==='success') { alert("Success! "+res.newOrderId); closeModal('createModal'); loadData('Awaiting'); loadData('Remaining').then(d=>globalRemainingData=d); } 
-        else alert(res.message);
+        alert(res.message);
+        closeModal('setupModal');
+        loadData('In Process');
     } catch(e) { alert(e); }
 }
 
-// --- PDF & ACTION ---
+function cancelProduction() {
+    if(confirm("Yakin batalkan produksi?")) {
+        doApi(activeOrderId, 'cancelOrder');
+        closeModal('setupModal');
+    }
+}
+
+// --- STANDARD ACTIONS ---
 function openAction(id, type) {
     activeOrder = currentOrders[id];
     document.getElementById('actionModal').style.display = 'flex';
@@ -350,7 +613,6 @@ function openAction(id, type) {
     activeOrder.items.forEach(i => tbody.innerHTML += `<tr><td>${i.item}</td><td>${i.meter}</td><td>${parseFloat(i.qty).toFixed(2)}</td><td>${i.machine||'-'} / ${i.kpc||'-'}</td></tr>`);
     
     let btnHtml = '';
-    if(type === 'process') btnHtml = `<button class="btn btn-primary" onclick="doApi('${id}','submitProduction')">Kirim Produksi</button>`;
     if(type === 'complete') btnHtml = `<button class="btn btn-primary" onclick="doApi('${id}','completeOrder')">Selesai</button>`;
     if(type === 'deliver') btnHtml = `<button class="btn btn-primary" onclick="doApi('${id}','deliverOrder')">Kirim Barang</button>`;
     document.getElementById('actFooter').innerHTML = btnHtml;
@@ -360,42 +622,31 @@ async function doApi(id, act) {
         const req = await fetch(API_URL, { method:'POST', body:JSON.stringify({action:act, orderId:id, category:'preorder', data:activeOrder.items}) });
         const res = await req.json();
         alert(res.message); closeModal('actionModal');
-        if(act==='submitProduction') loadData('In Process');
         if(act==='completeOrder') loadData('Completed');
         if(act==='deliverOrder') loadData('Delivered');
+        if(act==='cancelOrder') loadData('Cancel');
     } catch(e) { alert(e); }
 }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
 function printPDF(type, id) {
     const o = currentOrders[id];
-    document.getElementById('pdf-doc-title').innerText = type === 'SPK' ? "SURAT PERINTAH KERJA" : "SURAT JALAN";
     document.getElementById('pdf-orderno').innerText = id;
     document.getElementById('pdf-customer').innerText = o.customer;
     document.getElementById('pdf-date').innerText = new Date().toLocaleDateString();
     document.getElementById('pdf-est').innerText = o.delivery || "-";
-    document.getElementById('pdf-sign-title').innerText = type === 'SPK' ? "Diketahui Oleh," : "Penerima Barang,";
-
     const tbody = document.getElementById('pdf-tbody'); tbody.innerHTML = '';
     o.items.forEach((i, idx) => {
-        let q = parseFloat(i.qty);
-        let qtyDisplay = Number.isInteger(q) ? q : q.toFixed(2);
-        let machineInfo = (type==='SPK') ? `${i.machine||'-'} / ${i.kpc||'-'}` : `${i.type||'-'}`;
-        let weCode = (type==='SPK') ? (i.we||'-') : '-';
-        
-        // Format SPK General Order
         tbody.innerHTML += `
         <tr>
             <td style="border:1px solid black; padding:5px; text-align:center;">${idx+1}</td>
             <td style="border:1px solid black; padding:5px;">${i.item}</td>
             <td style="border:1px solid black; padding:5px; text-align:center;">${i.meter}</td>
-            <td style="border:1px solid black; padding:5px; text-align:center;">${qtyDisplay}</td>
+            <td style="border:1px solid black; padding:5px; text-align:center;">${parseFloat(i.qty).toFixed(0)}</td>
             <td style="border:1px solid black; padding:5px;">${i.type||'-'}</td>
-            <td style="border:1px solid black; padding:5px;">${machineInfo}</td>
-            <td style="border:1px solid black; padding:5px;">${weCode}</td>
+            <td style="border:1px solid black; padding:5px;">${i.machine||'-'} / ${i.kpc||'-'}</td>
+            <td style="border:1px solid black; padding:5px;">${i.we||'-'}</td>
         </tr>`;
     });
-    
     html2pdf().set({ margin:0.5, filename:`${type}_${id}.pdf` }).from(document.getElementById('pdf-content')).save();
 }
 </script>
