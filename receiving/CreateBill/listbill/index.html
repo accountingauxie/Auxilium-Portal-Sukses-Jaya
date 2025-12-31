@@ -9,12 +9,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://unpkg.com/feather-icons"></script> <script>
+    <script src="https://unpkg.com/feather-icons"></script> 
+    <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: { 
-                        primary: '#116999', /* Updated to Auxilium Blue */
+                        primary: '#116999', 
                         'primary-hover': '#0e5a85', 
                         bglight: '#f8fafc', 
                         darktext: '#1e293b' 
@@ -27,7 +28,7 @@
     
     <style>
         /* =========================================
-           1. STANDARD NAVBAR STYLES (Auxilium)
+           STYLES (Sama seperti sebelumnya)
            ========================================= */
         :root { 
             --primary-color: #116999; 
@@ -35,56 +36,25 @@
             --red-bg: #fee2e2; 
             --red-text: #991b1b;
         }
-
-        /* Reset & Base */
         body { background-color: #f8fafc; font-family: 'Inter', sans-serif; margin: 0; }
-
-        /* Navbar Container */
-        .aux-navbar {
-            background-color: #ffffff;
-            height: 70px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 40px;
-            box-shadow: 0 1px 5px rgba(0,0,0,0.05);
-            position: sticky; top: 0; z-index: 50;
-        }
-
+        
+        /* Navbar */
+        .aux-navbar { background-color: #ffffff; height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; box-shadow: 0 1px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; }
         .aux-logo img { height: 40px; width: auto; display: block; }
-
-        /* Menu Wrapper */
         .aux-menu { display: flex; gap: 10px; align-items: center; height: 100%; }
         .nav-item { position: relative; height: 100%; display: flex; align-items: center; }
-
-        /* Links */
-        .aux-link { 
-            text-decoration: none; color: #666; font-weight: 600; font-size: 14px; 
-            padding: 8px 14px; border-radius: 6px; transition: all 0.2s; cursor: pointer;
-            display: flex; align-items: center; gap: 4px;
-        }
+        .aux-link { text-decoration: none; color: #666; font-weight: 600; font-size: 14px; padding: 8px 14px; border-radius: 6px; transition: all 0.2s; cursor: pointer; display: flex; align-items: center; gap: 4px; }
         .aux-link:hover, .nav-item:hover .aux-link { color: #1d2939; background-color: #f9fafb; }
-        
-        /* Active State */
         .aux-link.active { color: var(--primary-color); background-color: #eff8ff; font-weight: 700; }
-
+        
         /* Dropdown */
-        .dropdown-menu-aux {
-            visibility: hidden; opacity: 0; position: absolute; top: 90%; left: 50%;
-            transform: translateX(-50%) translateY(-10px); background: white; min-width: 220px;
-            border: 1px solid #eaecf0; border-radius: 8px; box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08);
-            padding: 6px; z-index: 10000; transition: all 0.2s ease;
-        }
+        .dropdown-menu-aux { visibility: hidden; opacity: 0; position: absolute; top: 90%; left: 50%; transform: translateX(-50%) translateY(-10px); background: white; min-width: 220px; border: 1px solid #eaecf0; border-radius: 8px; box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08); padding: 6px; z-index: 10000; transition: all 0.2s ease; }
         .dropdown-menu-aux::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
         .nav-item:hover .dropdown-menu-aux { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
-        
-        .dropdown-item-aux {
-            display: block; padding: 10px 12px; color: #344054; text-decoration: none;
-            font-size: 14px; border-radius: 6px; text-align: left; font-weight: 400;
-        }
+        .dropdown-item-aux { display: block; padding: 10px 12px; color: #344054; text-decoration: none; font-size: 14px; border-radius: 6px; text-align: left; font-weight: 400; }
         .dropdown-item-aux:hover { background-color: #f9fafb; color: var(--primary-color); }
 
-        /* User Panel */
+        /* User & Logout */
         .user-panel { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid #eee; }
         .user-details { display: flex; flex-direction: column; text-align: right; line-height: 1.3; }
         .user-name { font-weight: 700; font-size: 13px; color: #333; }
@@ -92,17 +62,13 @@
         .user-avatar { width: 36px; height: 36px; background-color: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; user-select: none; }
         .logout-btn { background: none; border: 1px solid #ddd; color: #666; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 14px; }
         .logout-btn:hover { background-color: var(--red-bg); color: var(--red-text); border-color: var(--red-bg); }
-
-        /* Logout Modal (CSS Plain) */
         .modal-logout { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); }
         .modal-logout-content { background-color: #fff; margin: 15% auto; padding: 32px; border-radius: 16px; width: 360px; text-align: center; font-family: 'Inter', sans-serif; }
         .btn-modal { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; }
         .btn-yes { background-color: #d92d20; color: #fff; }
         .btn-cancel { background-color: #f2f4f7; color: #344054; }
 
-        /* =========================================
-           2. APP SPECIFIC STYLES
-           ========================================= */
+        /* App Specific */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
@@ -115,7 +81,7 @@
         .filter-pill.active { background-color: #e0f2fe; color: #0284c7; border-color: #bae6fd; font-weight: 700; }
         .filter-pill.inactive { background-color: white; color: #64748b; border-color: #e2e8f0; }
         
-        /* Dynamic Badges */
+        /* Badges */
         .badge-billed { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; } 
         .badge-rejected { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; } 
         .badge-pending { background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; } 
@@ -124,11 +90,10 @@
         .badge-sukses { background-color: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
         .badge-gagal { background-color: #ffe4e6; color: #be123c; border: 1px solid #fda4af; }
 
-        /* SweetAlert Customization */
+        /* SweetAlert */
         div:where(.swal2-container) { z-index: 9999 !important; font-family: 'Inter', sans-serif !important; }
         .swal2-popup { border-radius: 1rem !important; padding: 2rem !important; }
         .swal2-title { font-size: 1.25rem !important; color: #1e293b !important; }
-        
         .xero-checkbox:checked { background-color: #116999; border-color: #116999; }
     </style>
 </head>
@@ -167,24 +132,17 @@
                     <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/ImportXeroPO/index.html" class="dropdown-item-aux">Import Xero PO</a>
                 </div>
             </div>
-    
+            
             <div class="nav-item">
-                <div class="aux-link">
-                    Produksi
-                    <i data-feather="chevron-down" style="width:14px; height:14px;"></i>
-                </div>
+                <div class="aux-link">Produksi <i data-feather="chevron-down" style="width:14px; height:14px;"></i></div>
                 <div class="dropdown-menu-aux">
                     <a href="#" class="dropdown-item-aux">Persiapan Pemesanan</a>
                     <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/" class="dropdown-item-aux">Produksi Barang Jadi</a>
                     <a href="#" class="dropdown-item-aux">Retur Penjualan</a>
                 </div>
             </div>
-    
             <div class="nav-item">
-                <div class="aux-link">
-                    Persediaan
-                    <i data-feather="chevron-down" style="width:14px; height:14px;"></i>
-                </div>
+                <div class="aux-link">Persediaan <i data-feather="chevron-down" style="width:14px; height:14px;"></i></div>
                 <div class="dropdown-menu-aux">
                     <a href="#" class="dropdown-item-aux">Stok KPC</a>
                     <a href="#" class="dropdown-item-aux">Stok Spandek</a>
@@ -223,14 +181,28 @@
                 <p class="text-sm text-slate-500 mt-1">Dashboard • Daftar Tagihan</p>
             </div>
             
-            <div class="flex gap-2 w-full md:w-auto items-center">
-                <div class="relative w-full md:w-80">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fa-solid fa-magnifying-glass"></i></span>
-                    <input type="text" id="searchInput" onkeyup="applyFilters()" placeholder="Search PO, Vendor, or Invoice..." class="w-full pl-10 pr-4 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none shadow-sm">
+            <div class="flex flex-col md:flex-row gap-2 w-full md:w-auto items-end">
+                
+                <div class="flex gap-2 bg-white p-1 rounded-lg border border-slate-300 shadow-sm h-[40px] items-center">
+                    <input type="date" id="filterStartDate" onchange="applyFilters()" class="text-xs border-0 focus:ring-0 text-slate-600 bg-transparent outline-none cursor-pointer" title="Start Date">
+                    <span class="text-slate-300 flex items-center">-</span>
+                    <input type="date" id="filterEndDate" onchange="applyFilters()" class="text-xs border-0 focus:ring-0 text-slate-600 bg-transparent outline-none cursor-pointer" title="End Date">
+                    <div class="w-[1px] h-4 bg-slate-200 mx-1"></div>
+                    <select id="sortOrder" onchange="applyFilters()" class="text-xs border-0 focus:ring-0 text-slate-700 font-medium bg-transparent outline-none cursor-pointer pr-1">
+                        <option value="asc">Oldest First</option>
+                        <option value="desc">Newest First</option>
+                    </select>
                 </div>
-                <button onclick="fetchData()" class="h-[38px] w-[38px] bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-600 hover:text-primary hover:bg-slate-50 hover:border-primary/30 transition shadow-sm" title="Refresh Data">
-                    <i class="fa-solid fa-arrow-rotate-right text-sm"></i>
-                </button>
+
+                <div class="flex gap-2 w-full md:w-auto items-center">
+                    <div class="relative w-full md:w-80">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input type="text" id="searchInput" onkeyup="applyFilters()" placeholder="Search PO, Vendor, or Invoice..." class="w-full pl-10 pr-4 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none shadow-sm h-[40px]">
+                    </div>
+                    <button onclick="fetchData()" class="h-[40px] w-[40px] bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-600 hover:text-primary hover:bg-slate-50 hover:border-primary/30 transition shadow-sm" title="Refresh Data">
+                        <i class="fa-solid fa-arrow-rotate-right text-sm"></i>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -273,17 +245,14 @@
                         <input type="checkbox" value="siap impor" onchange="updateXeroFilter()" checked class="xero-checkbox w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
                         <span class="text-xs font-medium text-slate-700">Siap Impor</span>
                     </label>
-                    
                     <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-indigo-50 rounded-lg cursor-pointer">
                         <input type="checkbox" value="proses impor" onchange="updateXeroFilter()" checked class="xero-checkbox w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
                         <span class="text-xs font-medium text-slate-700">Proses Impor</span>
                     </label>
-                    
                     <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-indigo-50 rounded-lg cursor-pointer">
                         <input type="checkbox" value="sukses impor" onchange="updateXeroFilter()" checked class="xero-checkbox w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
                         <span class="text-xs font-medium text-slate-700">Sukses Impor</span>
                     </label>
-                    
                     <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-indigo-50 rounded-lg cursor-pointer">
                         <input type="checkbox" value="gagal impor" onchange="updateXeroFilter()" checked class="xero-checkbox w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
                         <span class="text-xs font-medium text-slate-700">Gagal Impor</span>
@@ -467,23 +436,17 @@
     <div id="rejectModal" class="fixed inset-0 z-[110] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100 transform transition-all scale-100">
             <div class="bg-red-50 p-4 border-b border-red-100 flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </div>
+                <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600"><i class="fas fa-exclamation-triangle"></i></div>
                 <h3 class="text-lg font-bold text-red-700">Konfirmasi Penolakan</h3>
             </div>
-            
             <div class="p-6">
                 <p class="text-sm text-slate-600 mb-3">Silakan masukkan alasan penolakan tagihan ini. Catatan ini akan disimpan.</p>
                 <textarea id="reject-reason" rows="4" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none resize-none" placeholder="Tulis alasan penolakan..."></textarea>
                 <p id="reject-error" class="text-xs text-red-500 mt-2 hidden font-bold"><i class="fas fa-info-circle"></i> Alasan wajib diisi!</p>
             </div>
-
             <div class="p-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
                 <button onclick="closeRejectModal()" class="px-4 py-2 border border-slate-300 rounded-lg text-slate-600 font-bold hover:bg-white transition">Batal</button>
-                <button onclick="confirmReject()" class="px-4 py-2 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700 shadow-lg flex items-center gap-2 transition">
-                    <i class="fas fa-ban"></i> Tolak Tagihan
-                </button>
+                <button onclick="confirmReject()" class="px-4 py-2 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700 shadow-lg flex items-center gap-2 transition"><i class="fas fa-ban"></i> Tolak Tagihan</button>
             </div>
         </div>
     </div>
@@ -491,10 +454,7 @@
     <div id="productModal" class="fixed inset-0 z-[120] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity">
         <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col h-[80vh]">
             <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
-                <div>
-                    <h3 class="font-bold text-slate-800">Pilih Produk Database</h3>
-                    <p class="text-xs text-slate-500">Filter: <span id="product-vendor-filter" class="font-bold text-primary"></span></p>
-                </div>
+                <div><h3 class="font-bold text-slate-800">Pilih Produk Database</h3><p class="text-xs text-slate-500">Filter: <span id="product-vendor-filter" class="font-bold text-primary"></span></p></div>
                 <button onclick="closeProductModal()" class="text-slate-400 hover:text-red-500 transition"><i class="fas fa-times"></i></button>
             </div>
             <div class="p-3 bg-white border-b border-slate-100">
@@ -505,19 +465,12 @@
     </div>
 
     <script>
-        // --- NAVBAR & LOGOUT ---
         feather.replace();
         function showLogoutModal() { document.getElementById("logoutModal").style.display = "block"; }
         function closeLogoutModal() { document.getElementById("logoutModal").style.display = "none"; }
-        function logout() {
-            setTimeout(() => {
-                localStorage.removeItem("uxilium_current_user");
-                window.location.href = "login.html"; 
-            }, 800);
-        }
+        function logout() { setTimeout(() => { localStorage.removeItem("uxilium_current_user"); window.location.href = "login.html"; }, 800); }
 
         const API_URL = "https://script.google.com/macros/s/AKfycbxeoVZiywpVzH5cdgIn4a4pDY8ZlvUlkCvZ1iwRFfi_KNkZZ_99a_EvdQIE4qpX_ZzFyg/exec";
-        
         const TAX_RATE = 0.11;
         let allData = [];
         let currentItems = [];
@@ -527,18 +480,7 @@
         let currentFilterStatus = 'all';
         let originalInvNumber = ""; 
 
-        // -- MODERN NOTIFICATION CONFIG --
-        const Toast = Swal.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-            didOpen: (toast) => {
-                toast.addEventListener('mouseenter', Swal.stopTimer)
-                toast.addEventListener('mouseleave', Swal.resumeTimer)
-            }
-        });
+        const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true, didOpen: (toast) => { toast.addEventListener('mouseenter', Swal.stopTimer); toast.addEventListener('mouseleave', Swal.resumeTimer); } });
 
         window.onload = fetchData;
 
@@ -557,7 +499,7 @@
             }
         }
 
-        // --- NEW FILTERING LOGIC ---
+        // --- FILTERING & SORTING LOGIC UPDATE ---
         
         function toggleXeroDropdown(event) {
             event.stopPropagation();
@@ -580,16 +522,33 @@
         }
 
         function applyFilters() {
-            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+            const searchInput = document.getElementById('searchInput');
+            const searchVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            
+            // New Date & Sort Controls
+            const sortOrderEl = document.getElementById('sortOrder');
+            const sortOrder = sortOrderEl ? sortOrderEl.value : 'asc';
+            const startDateInput = document.getElementById('filterStartDate');
+            const endDateInput = document.getElementById('filterEndDate');
+            const startDateVal = startDateInput ? startDateInput.value : '';
+            const endDateVal = endDateInput ? endDateInput.value : '';
+
+            // Xero Checkboxes
             const checkedBoxes = document.querySelectorAll('.xero-checkbox:checked');
             const selectedXeroStatuses = Array.from(checkedBoxes).map(cb => cb.value);
 
-            const filtered = allData.filter(p => {
-                const matchSearch = p.id.toLowerCase().includes(searchVal) || p.vendor.toLowerCase().includes(searchVal) || (p.invNumber && p.invNumber.toLowerCase().includes(searchVal));
+            if (!allData || allData.length === 0) return;
+
+            let filtered = allData.filter(p => {
+                // 1. Text Search
+                const idSafe = (p.id || '').toString().toLowerCase();
+                const vendorSafe = (p.vendor || '').toString().toLowerCase();
+                const invSafe = (p.invNumber || '').toString().toLowerCase();
+                const matchSearch = idSafe.includes(searchVal) || vendorSafe.includes(searchVal) || invSafe.includes(searchVal);
                 
+                // 2. Status Filter
                 let matchStatus = true;
                 const statusLower = (p.status || "").toLowerCase();
-
                 if (currentFilterStatus === 'billed') {
                     matchStatus = statusLower.includes('billed');
                 } else if (currentFilterStatus === 'rejected') {
@@ -597,9 +556,39 @@
                 } else if (currentFilterStatus === 'xero_group') {
                     matchStatus = selectedXeroStatuses.some(status => statusLower.includes(status));
                 }
+
+                // 3. Date Range Filter
+                let matchDate = true;
+                if (startDateVal && endDateVal && p.invDate) {
+                    const itemDate = new Date(p.invDate);
+                    itemDate.setHours(0,0,0,0);
+                    
+                    const start = new Date(startDateVal);
+                    start.setHours(0,0,0,0);
+                    
+                    const end = new Date(endDateVal);
+                    end.setHours(23,59,59,999);
+
+                    if (!isNaN(itemDate.getTime())) {
+                        matchDate = itemDate >= start && itemDate <= end;
+                    }
+                }
                 
-                return matchSearch && matchStatus;
+                return matchSearch && matchStatus && matchDate;
             });
+
+            // 4. Sorting
+            filtered.sort((a, b) => {
+                const dateA = a.invDate ? new Date(a.invDate) : new Date(0);
+                const dateB = b.invDate ? new Date(b.invDate) : new Date(0);
+
+                if (sortOrder === 'asc') {
+                    return dateA - dateB; // Oldest first
+                } else {
+                    return dateB - dateA; // Newest first
+                }
+            });
+
             renderTable(filtered);
         }
 
@@ -609,23 +598,14 @@
                 el.classList.remove('active'); el.classList.add('inactive');
             });
             
-            const statusMap = {
-                'all': 'filter-all',
-                'billed': 'filter-billed',
-                'rejected': 'filter-rejected',
-                'xero_group': 'filter-xero'
-            };
-            
+            const statusMap = { 'all': 'filter-all', 'billed': 'filter-billed', 'rejected': 'filter-rejected', 'xero_group': 'filter-xero' };
             if(statusMap[status]) {
                 const btn = document.getElementById(statusMap[status]);
-                btn.classList.add('active');
-                btn.classList.remove('inactive');
+                btn.classList.add('active'); btn.classList.remove('inactive');
             }
-            
             if(status !== 'xero_group' && closeDropdown) {
                  document.getElementById('xero-dropdown-menu').classList.add('hidden');
             }
-
             applyFilters();
         }
 
@@ -655,271 +635,95 @@
                 else if (statusLower.includes('sukses impor')) badgeClass = "badge-sukses";
 
                 const statusBadge = `<span class="${badgeClass} px-2 py-1 rounded text-xs font-bold capitalize">${rawStatus}</span>`;
-                
                 let fileBtn = po.fileUrl ? `<a href="${po.fileUrl}" target="_blank" class="text-red-500 hover:text-red-700 block text-center"><i class="fas fa-file-pdf text-xl"></i></a>` : `<span class="text-slate-300 block text-center">-</span>`;
-                
                 let displayTotal = formatRupiah(po.totalEst || 0);
 
                 let actionButtons = '';
-                
-                const viewBtn = `
-                    <button onclick="openBillModal('${po.uniqueKey}', true)" class="w-8 h-8 rounded border border-slate-200 text-slate-400 hover:text-primary hover:bg-teal-50 transition shadow-sm flex items-center justify-center" title="Lihat Detail">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                `;
+                const viewBtn = `<button onclick="openBillModal('${po.uniqueKey}', true)" class="w-8 h-8 rounded border border-slate-200 text-slate-400 hover:text-primary hover:bg-teal-50 transition shadow-sm flex items-center justify-center" title="Lihat Detail"><i class="fas fa-eye"></i></button>`;
 
                 if (statusLower.includes('rejected')) {
-                    actionButtons = `
-                        ${viewBtn}
-                        <button onclick="openBillModal('${po.uniqueKey}')" class="w-8 h-8 rounded bg-yellow-50 border border-yellow-200 text-yellow-600 hover:bg-yellow-100 transition shadow-sm flex items-center justify-center" title="Revisi / Reverse">
-                            <i class="fas fa-rotate-left"></i>
-                        </button>
-                    `;
+                    actionButtons = `${viewBtn}<button onclick="openBillModal('${po.uniqueKey}')" class="w-8 h-8 rounded bg-yellow-50 border border-yellow-200 text-yellow-600 hover:bg-yellow-100 transition shadow-sm flex items-center justify-center" title="Revisi / Reverse"><i class="fas fa-rotate-left"></i></button>`;
                 } else if (statusLower.includes('siap impor') || statusLower.includes('gagal impor')) {
-                    actionButtons = `
-                        ${viewBtn}
-                        <button onclick="syncToXero('${po.id}', '${po.invNumber}')" class="w-8 h-8 rounded bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-100 transition shadow-sm flex items-center justify-center" title="Sinkronisasi ke Xero">
-                            <i class="fas fa-arrows-rotate"></i>
-                        </button>
-                    `;
+                    actionButtons = `${viewBtn}<button onclick="syncToXero('${po.id}', '${po.invNumber}')" class="w-8 h-8 rounded bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-100 transition shadow-sm flex items-center justify-center" title="Sinkronisasi ke Xero"><i class="fas fa-arrows-rotate"></i></button>`;
                 } else if (statusLower.includes('proses impor') || statusLower.includes('sukses impor')) {
-                    actionButtons = `
-                        ${viewBtn}
-                        <button disabled class="w-8 h-8 rounded bg-slate-100 border border-slate-200 text-slate-400 cursor-not-allowed flex items-center justify-center" title="Terkunci">
-                            <i class="fas fa-lock"></i>
-                        </button>
-                    `;
+                    actionButtons = `${viewBtn}<button disabled class="w-8 h-8 rounded bg-slate-100 border border-slate-200 text-slate-400 cursor-not-allowed flex items-center justify-center" title="Terkunci"><i class="fas fa-lock"></i></button>`;
                 } else {
-                    let editIcon = po.invNumber ? "fa-pencil" : "fa-plus"; 
-                    
-                    let approveBtn = '';
-                    if (po.invNumber) {
-                        approveBtn = `
-                            <button onclick="approveBill('${po.uniqueKey}', '${po.id}', '${po.invNumber}')" class="w-8 h-8 rounded bg-green-50 border border-green-200 text-green-600 hover:bg-green-100 transition shadow-sm flex items-center justify-center" title="Approve">
-                                <i class="fas fa-check"></i>
-                            </button>
-                        `;
-                    }
-
-                    actionButtons = `
-                        ${viewBtn}
-                        <button onclick="openBillModal('${po.uniqueKey}')" class="w-8 h-8 rounded bg-white border border-slate-200 text-primary hover:bg-teal-50 transition shadow-sm flex items-center justify-center" title="Edit/Entry">
-                            <i class="fas ${editIcon}"></i>
-                        </button>
-                        ${approveBtn}
-                    `;
+                    let editIcon = po.invNumber ? "fa-pencil" : "fa-plus";
+                    let approveBtn = po.invNumber ? `<button onclick="approveBill('${po.uniqueKey}', '${po.id}', '${po.invNumber}')" class="w-8 h-8 rounded bg-green-50 border border-green-200 text-green-600 hover:bg-green-100 transition shadow-sm flex items-center justify-center" title="Approve"><i class="fas fa-check"></i></button>` : '';
+                    actionButtons = `${viewBtn}<button onclick="openBillModal('${po.uniqueKey}')" class="w-8 h-8 rounded bg-white border border-slate-200 text-primary hover:bg-teal-50 transition shadow-sm flex items-center justify-center" title="Edit/Entry"><i class="fas ${editIcon}"></i></button>${approveBtn}`;
                 }
 
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
-                
-                tr.innerHTML = `
-                    <td class="px-6 py-4 font-bold text-slate-800">${po.vendor}</td>
-                    <td class="px-6 py-4 text-primary font-medium">${po.id}</td>
-                    <td class="px-6 py-4">${po.invNumber || '-'}</td>
-                    <td class="px-6 py-4">${formatDate(po.invDate)}</td>
-                    <td class="px-6 py-4">${formatDate(po.dueDate)}</td>
-                    <td class="px-6 py-4 text-right font-mono font-bold text-slate-700">${displayTotal}</td>
-                    <td class="px-6 py-4 text-center">${statusBadge}</td>
-                    <td class="px-4 py-4 text-center">${fileBtn}</td>
-                    <td class="px-6 py-4 text-center">
-                        <div class="flex items-center justify-center gap-2">
-                            ${actionButtons}
-                        </div>
-                    </td>
-                `;
+                tr.innerHTML = `<td class="px-6 py-4 font-bold text-slate-800">${po.vendor}</td><td class="px-6 py-4 text-primary font-medium">${po.id}</td><td class="px-6 py-4">${po.invNumber || '-'}</td><td class="px-6 py-4">${formatDate(po.invDate)}</td><td class="px-6 py-4">${formatDate(po.dueDate)}</td><td class="px-6 py-4 text-right font-mono font-bold text-slate-700">${displayTotal}</td><td class="px-6 py-4 text-center">${statusBadge}</td><td class="px-4 py-4 text-center">${fileBtn}</td><td class="px-6 py-4 text-center"><div class="flex items-center justify-center gap-2">${actionButtons}</div></td>`;
                 tbody.appendChild(tr);
             });
         }
 
+        // --- Other Utility Functions ---
         async function approveBill(uniqueKey, idPO, invNumber) {
             if(!invNumber || invNumber === '-' || invNumber === 'null') {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Data Belum Lengkap',
-                    text: 'Tagihan belum di-entry (Invoice No kosong). Silakan entry dulu.',
-                    confirmButtonColor: '#116999'
-                });
+                Swal.fire({ icon: 'warning', title: 'Data Belum Lengkap', text: 'Tagihan belum di-entry (Invoice No kosong). Silakan entry dulu.', confirmButtonColor: '#116999' });
                 return;
             }
-
-            const result = await Swal.fire({
-                title: 'Setujui Tagihan?',
-                html: `
-                    <div class="text-left text-sm text-slate-600">
-                        Apakah Anda yakin ingin menyetujui tagihan <span class="font-bold text-slate-800">${invNumber}</span>?
-                        <br><br>
-                        <ul class="list-disc pl-4 text-xs space-y-1">
-                            <li>Status berubah menjadi <span class="font-bold text-blue-600">Siap Impor</span></li>
-                            <li>Data akan <span class="font-bold text-red-500">Terkunci</span></li>
-                        </ul>
-                    </div>
-                `,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#116999',
-                cancelButtonColor: '#cbd5e1',
-                confirmButtonText: '<i class="fas fa-check mr-1"></i> Ya, Setujui',
-                cancelButtonText: 'Batal',
-                reverseButtons: true,
-                focusCancel: true
-            });
-
+            const result = await Swal.fire({ title: 'Setujui Tagihan?', html: `<div class="text-left text-sm text-slate-600">Apakah Anda yakin ingin menyetujui tagihan <span class="font-bold text-slate-800">${invNumber}</span>?<br><br><ul class="list-disc pl-4 text-xs space-y-1"><li>Status berubah menjadi <span class="font-bold text-blue-600">Siap Impor</span></li><li>Data akan <span class="font-bold text-red-500">Terkunci</span></li></ul></div>`, icon: 'question', showCancelButton: true, confirmButtonColor: '#116999', cancelButtonColor: '#cbd5e1', confirmButtonText: '<i class="fas fa-check mr-1"></i> Ya, Setujui', cancelButtonText: 'Batal', reverseButtons: true, focusCancel: true });
             if(result.isConfirmed) {
-                Swal.fire({
-                    title: 'Memproses...',
-                    text: 'Mohon tunggu sebentar',
-                    allowOutsideClick: false,
-                    didOpen: () => { Swal.showLoading(); }
-                });
-                
-                const payload = {
-                    action: 'approve_bill',
-                    idPO: idPO,
-                    invNumber: invNumber
-                };
-
+                Swal.fire({ title: 'Memproses...', text: 'Mohon tunggu sebentar', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+                const payload = { action: 'approve_bill', idPO: idPO, invNumber: invNumber };
                 try {
                     const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
                     const json = await res.json();
-                    
-                    if(json.status === 'success') {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Berhasil!',
-                            text: json.message,
-                            confirmButtonColor: '#116999',
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
-                        fetchData(); 
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Gagal',
-                            text: json.message,
-                            confirmButtonColor: '#EF4444'
-                        });
-                    }
-                } catch(e) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error Koneksi',
-                        text: e.message,
-                        confirmButtonColor: '#EF4444'
-                    });
-                }
+                    if(json.status === 'success') { Swal.fire({ icon: 'success', title: 'Berhasil!', text: json.message, confirmButtonColor: '#116999', timer: 2000, showConfirmButton: false }); fetchData(); } 
+                    else { Swal.fire({ icon: 'error', title: 'Gagal', text: json.message, confirmButtonColor: '#EF4444' }); }
+                } catch(e) { Swal.fire({ icon: 'error', title: 'Error Koneksi', text: e.message, confirmButtonColor: '#EF4444' }); }
             }
         }
 
         async function syncToXero(idPO, invNumber) {
-            const result = await Swal.fire({
-                title: 'Sinkronisasi Xero',
-                text: `Apakah Anda yakin ingin mengimpor tagihan ${invNumber} ke Xero?`,
-                icon: 'info',
-                showCancelButton: true,
-                confirmButtonColor: '#4F46E5', // Xero color
-                cancelButtonColor: '#cbd5e1',
-                confirmButtonText: 'Ya, Impor Sekarang',
-                cancelButtonText: 'Batal'
-            });
-
+            const result = await Swal.fire({ title: 'Sinkronisasi Xero', text: `Apakah Anda yakin ingin mengimpor tagihan ${invNumber} ke Xero?`, icon: 'info', showCancelButton: true, confirmButtonColor: '#4F46E5', cancelButtonColor: '#cbd5e1', confirmButtonText: 'Ya, Impor Sekarang', cancelButtonText: 'Batal' });
             if(result.isConfirmed) {
                 Swal.fire({ title: 'Menghubungkan...', didOpen: () => Swal.showLoading() });
-                
-                const payload = {
-                    action: 'sync_xero',
-                    idPO: idPO,
-                    invNumber: invNumber
-                };
-
+                const payload = { action: 'sync_xero', idPO: idPO, invNumber: invNumber };
                 try {
                     const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
                     const json = await res.json();
-                    
-                    if(json.status === 'success') {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Proses Dimulai',
-                            text: "Status berubah menjadi 'Proses Impor'.",
-                            confirmButtonColor: '#116999'
-                        });
-                        fetchData(); 
-                    } else {
-                        Swal.fire({ icon: 'error', title: 'Gagal', text: json.message });
-                    }
-                } catch(e) {
-                    Swal.fire({ icon: 'error', title: 'Error', text: e.message });
-                }
+                    if(json.status === 'success') { Swal.fire({ icon: 'success', title: 'Proses Dimulai', text: "Status berubah menjadi 'Proses Impor'.", confirmButtonColor: '#116999' }); fetchData(); } 
+                    else { Swal.fire({ icon: 'error', title: 'Gagal', text: json.message }); }
+                } catch(e) { Swal.fire({ icon: 'error', title: 'Error', text: e.message }); }
             }
         }
 
         function openBillModal(uniqueKey, viewOnly = false) {
             const po = allData.find(d => d.uniqueKey === uniqueKey);
             if (!po) return;
-            
             currentPOId = po.id;
             originalInvNumber = po.invNumber || ""; 
-            
             document.getElementById('bill-po-id').innerText = po.id;
             document.getElementById('bill-vendor').value = po.vendor;
             document.getElementById('bill-inv-number').value = po.invNumber || '';
-            
             if(po.invDate) document.getElementById('bill-date').value = new Date(po.invDate).toISOString().split('T')[0];
             else document.getElementById('bill-date').valueAsDate = new Date();
-
             if(po.dueDate) document.getElementById('bill-due-date').value = new Date(po.dueDate).toISOString().split('T')[0];
             else document.getElementById('bill-due-date').value = '';
-
             document.getElementById('tax-mode').value = po.taxMode || 'exclusive';
-            
             document.getElementById('bill-file').value = ""; 
             const fileLinkDiv = document.getElementById('existing-file-link');
-            if(po.fileUrl) {
-                fileLinkDiv.classList.remove('hidden');
-                fileLinkDiv.querySelector('a').href = po.fileUrl;
-                currentFileUrl = po.fileUrl;
-            } else {
-                fileLinkDiv.classList.add('hidden');
-                currentFileUrl = "";
-            }
-
+            if(po.fileUrl) { fileLinkDiv.classList.remove('hidden'); fileLinkDiv.querySelector('a').href = po.fileUrl; currentFileUrl = po.fileUrl; } 
+            else { fileLinkDiv.classList.add('hidden'); currentFileUrl = ""; }
             currentItems = po.items.map(i => ({...i, checked: true}));
-            
             const statusLower = (po.status || "").toLowerCase();
-            
-            const isStatusLocked = statusLower.includes('rejected') || 
-                                   statusLower.includes('siap impor') || 
-                                   statusLower.includes('proses impor') || 
-                                   statusLower.includes('gagal impor') || 
-                                   statusLower.includes('sukses impor');
-            
+            const isStatusLocked = statusLower.includes('rejected') || statusLower.includes('siap impor') || statusLower.includes('proses impor') || statusLower.includes('gagal impor') || statusLower.includes('sukses impor');
             const isFormLocked = viewOnly || isStatusLocked;
-            
             renderBillItems(isFormLocked); 
-            
             const rejectContainer = document.getElementById('rejection-info-container');
             const rejectText = document.getElementById('rejection-reason-text');
-            
-            if(statusLower.includes('rejected')) {
-                rejectContainer.classList.remove('hidden');
-                rejectText.innerText = po.notes || "Tidak ada catatan.";
-            } else {
-                rejectContainer.classList.add('hidden');
-                rejectText.innerText = "";
-            }
-
+            if(statusLower.includes('rejected')) { rejectContainer.classList.remove('hidden'); rejectText.innerText = po.notes || "Tidak ada catatan."; } 
+            else { rejectContainer.classList.add('hidden'); rejectText.innerText = ""; }
             if (isFormLocked) {
-                if(!viewOnly && isStatusLocked) {
-                    document.getElementById('locked-banner').classList.remove('hidden');
-                    document.getElementById('locked-status-text').innerText = po.status;
-                } else {
-                    document.getElementById('locked-banner').classList.add('hidden');
-                }
-
+                if(!viewOnly && isStatusLocked) { document.getElementById('locked-banner').classList.remove('hidden'); document.getElementById('locked-status-text').innerText = po.status; } 
+                else { document.getElementById('locked-banner').classList.add('hidden'); }
                 document.querySelectorAll('.bill-input').forEach(el => el.disabled = true);
                 document.querySelectorAll('.action-btn').forEach(el => el.disabled = true);
-                
                 document.getElementById('btn-save').classList.add('hidden');
                 document.getElementById('btn-reject').classList.add('hidden');
             } else {
@@ -929,22 +733,11 @@
                 document.getElementById('btn-save').classList.remove('hidden');
                 document.getElementById('btn-reject').classList.remove('hidden');
             }
-
             document.getElementById('billModal').classList.remove('hidden');
         }
 
         async function enableRevision() {
-            const result = await Swal.fire({
-                title: 'Buka Revisi?',
-                text: "Apakah Anda yakin ingin merevisi data ini? Status akan berubah setelah disimpan.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#116999',
-                cancelButtonColor: '#cbd5e1',
-                confirmButtonText: 'Ya, Revisi',
-                cancelButtonText: 'Batal'
-            });
-
+            const result = await Swal.fire({ title: 'Buka Revisi?', text: "Apakah Anda yakin ingin merevisi data ini? Status akan berubah setelah disimpan.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#116999', cancelButtonColor: '#cbd5e1', confirmButtonText: 'Ya, Revisi', cancelButtonText: 'Batal' });
             if(result.isConfirmed) {
                 document.getElementById('locked-banner').classList.add('hidden');
                 document.querySelectorAll('.bill-input').forEach(el => el.disabled = false);
@@ -958,305 +751,33 @@
         function renderBillItems(isFormLocked = false) {
             const tbody = document.getElementById('bill-items-body');
             tbody.innerHTML = '';
-            
             const isGlobalLocked = document.getElementById('btn-save').classList.contains('hidden') || isFormLocked;
-
             currentItems.forEach((item, index) => {
                 const lineTotal = (item.price - item.disc) * item.qty;
                 const rowClass = item.checked ? "bg-white" : "bg-gray-50 opacity-60";
-                const typeBadge = item.typeProduk 
-                    ? `<span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-[10px] font-bold border border-gray-200">${item.typeProduk}</span>`
-                    : `<span class="text-gray-300 text-xs">-</span>`;
-                
+                const typeBadge = item.typeProduk ? `<span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-[10px] font-bold border border-gray-200">${item.typeProduk}</span>` : `<span class="text-gray-300 text-xs">-</span>`;
                 const disabledAttr = isGlobalLocked ? "disabled" : "";
-
-                tbody.innerHTML += `
-                    <tr class="${rowClass} border-b border-slate-50 last:border-0 transition">
-                        <td class="p-4 align-top text-center">
-                            <input type="checkbox" ${item.checked ? 'checked' : ''} ${disabledAttr} onchange="toggleItem(${index}, this.checked)" class="bill-input w-4 h-4 text-primary rounded cursor-pointer accent-primary">
-                        </td>
-                        <td class="p-4 align-top text-center">${typeBadge}</td>
-                        
-                        <td class="p-4 align-top">
-                            <input type="text" value="${item.namaItem}" ${disabledAttr} oninput="updateItem(${index}, 'namaItem', this.value)" class="input-bare font-bold text-slate-700 text-sm w-full mb-1 focus:bg-white focus:border-slate-300 transition" placeholder="Deskripsi Item...">
-                            <div class="flex items-center">
-                                <input type="text" value="${item.satuan}" ${disabledAttr} oninput="updateItem(${index}, 'satuan', this.value)" class="input-bare text-[10px] bg-slate-100 text-slate-600 font-bold w-16 text-center rounded px-1 py-0.5 focus:bg-white focus:ring-1 focus:ring-slate-300 transition" placeholder="Unit">
-                            </div>
-                        </td>
-
-                        <td class="p-4 align-top bg-yellow-50/30">
-                            <input type="text" value="${item.spec || ''}" ${disabledAttr} oninput="updateItem(${index}, 'spec', this.value)" class="input-bare text-xs text-slate-600 font-medium h-full" placeholder="-">
-                        </td>
-                        <td class="p-4 align-top">
-                            <input type="number" value="${item.qty}" min="0" ${disabledAttr} oninput="updateItem(${index}, 'qty', this.value)" class="input-bare text-center text-sm font-bold text-slate-700">
-                        </td>
-                        <td class="p-4 align-top">
-                            <input type="number" value="${item.price}" ${disabledAttr} oninput="updateItem(${index}, 'price', this.value)" class="input-bare text-right text-sm font-mono text-slate-600">
-                        </td>
-                        <td class="p-4 align-top">
-                            <input type="number" value="${item.disc}" ${disabledAttr} oninput="updateItem(${index}, 'disc', this.value)" class="input-bare text-right text-sm font-mono text-red-500">
-                        </td>
-                        <td class="p-4 align-top text-right font-bold text-slate-800 font-mono text-sm">
-                            <span id="amount-${index}">${formatRupiah(lineTotal)}</span>
-                        </td>
-                        <td class="p-4 align-top text-center">
-                            <button onclick="deleteItem(${index})" ${disabledAttr} class="bill-input text-slate-300 hover:text-red-500 transition px-2"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
+                tbody.innerHTML += `<tr class="${rowClass} border-b border-slate-50 last:border-0 transition"><td class="p-4 align-top text-center"><input type="checkbox" ${item.checked ? 'checked' : ''} ${disabledAttr} onchange="toggleItem(${index}, this.checked)" class="bill-input w-4 h-4 text-primary rounded cursor-pointer accent-primary"></td><td class="p-4 align-top text-center">${typeBadge}</td><td class="p-4 align-top"><input type="text" value="${item.namaItem}" ${disabledAttr} oninput="updateItem(${index}, 'namaItem', this.value)" class="input-bare font-bold text-slate-700 text-sm w-full mb-1 focus:bg-white focus:border-slate-300 transition" placeholder="Deskripsi Item..."><div class="flex items-center"><input type="text" value="${item.satuan}" ${disabledAttr} oninput="updateItem(${index}, 'satuan', this.value)" class="input-bare text-[10px] bg-slate-100 text-slate-600 font-bold w-16 text-center rounded px-1 py-0.5 focus:bg-white focus:ring-1 focus:ring-slate-300 transition" placeholder="Unit"></div></td><td class="p-4 align-top bg-yellow-50/30"><input type="text" value="${item.spec || ''}" ${disabledAttr} oninput="updateItem(${index}, 'spec', this.value)" class="input-bare text-xs text-slate-600 font-medium h-full" placeholder="-"></td><td class="p-4 align-top"><input type="number" value="${item.qty}" min="0" ${disabledAttr} oninput="updateItem(${index}, 'qty', this.value)" class="input-bare text-center text-sm font-bold text-slate-700"></td><td class="p-4 align-top"><input type="number" value="${item.price}" ${disabledAttr} oninput="updateItem(${index}, 'price', this.value)" class="input-bare text-right text-sm font-mono text-slate-600"></td><td class="p-4 align-top"><input type="number" value="${item.disc}" ${disabledAttr} oninput="updateItem(${index}, 'disc', this.value)" class="input-bare text-right text-sm font-mono text-red-500"></td><td class="p-4 align-top text-right font-bold text-slate-800 font-mono text-sm"><span id="amount-${index}">${formatRupiah(lineTotal)}</span></td><td class="p-4 align-top text-center"><button onclick="deleteItem(${index})" ${disabledAttr} class="bill-input text-slate-300 hover:text-red-500 transition px-2"><i class="fas fa-trash"></i></button></td></tr>`;
             });
             calculateTotal();
         }
 
-        function toggleItem(index, isChecked) {
-            currentItems[index].checked = isChecked;
-            renderBillItems();
-        }
-
-        function updateItem(index, field, value) {
-            if(['qty', 'price', 'disc'].includes(field)) {
-                currentItems[index][field] = Number(value);
-                const item = currentItems[index];
-                const newLineTotal = (item.price - item.disc) * item.qty;
-                const amountEl = document.getElementById(`amount-${index}`);
-                if(amountEl) amountEl.innerText = formatRupiah(newLineTotal);
-                calculateTotal();
-            } else {
-                currentItems[index][field] = value;
-            }
-        }
-
-        async function deleteItem(index) {
-            const result = await Swal.fire({
-                title: 'Hapus Item?',
-                text: "Item ini akan dihapus dari daftar.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#cbd5e1',
-                confirmButtonText: 'Ya, Hapus',
-                cancelButtonText: 'Batal',
-                customClass: { popup: 'text-xs' }
-            });
-
-            if(result.isConfirmed) {
-                currentItems.splice(index, 1);
-                renderBillItems();
-            }
-        }
-
-        function addCustomItem() {
-            currentItems.push({
-                namaItem: "Manual Item",
-                satuan: "Unit",
-                typeProduk: "M",
-                spec: "",
-                qty: 1,
-                price: 0,
-                disc: 0,
-                checked: true
-            });
-            renderBillItems();
-        }
-
-        function calculateTotal() {
-            let totalLine = 0;
-            currentItems.forEach(item => {
-                if(item.checked) {
-                    totalLine += (item.price - item.disc) * item.qty;
-                }
-            });
-
-            const taxMode = document.getElementById('tax-mode').value;
-            const adj = Number(document.getElementById('bill-adjustment').value) || 0;
-            let dpp = 0, ppn = 0;
-
-            if (taxMode === 'exclusive') { 
-                dpp = totalLine; 
-                ppn = dpp * TAX_RATE; 
-            } else if (taxMode === 'inclusive') { 
-                dpp = totalLine / (1 + TAX_RATE); 
-                ppn = totalLine - dpp; 
-            } else { 
-                dpp = totalLine; 
-            }
-
-            const grand = dpp + ppn + adj;
-
-            document.getElementById('display-subtotal').innerText = formatRupiah(dpp);
-            document.getElementById('display-ppn').innerText = formatRupiah(ppn);
-            document.getElementById('display-grand-total').innerText = formatRupiah(grand);
-        }
-
-        async function openProductModal() {
-            const vendorName = document.getElementById('bill-vendor').value;
-            if(!vendorName) { showNotification("Vendor belum terisi.", 'warning'); return; }
-
-            document.getElementById('productModal').classList.remove('hidden');
-            document.getElementById('product-vendor-filter').innerText = vendorName;
-            document.getElementById('productListContainer').innerHTML = '<div class="text-center p-10"><i class="fas fa-spinner fa-spin text-primary text-2xl"></i><p class="mt-2 text-slate-500">Mengambil data produk...</p></div>';
-
-            try {
-                const res = await fetch(API_URL, { 
-                    method: 'POST', 
-                    body: JSON.stringify({ action: 'getProducts', vendor: vendorName }) 
-                });
-                const json = await res.json();
-                if(json.status === 'success') {
-                    dbProducts = json.products;
-                    filterProducts();
-                } else {
-                    document.getElementById('productListContainer').innerHTML = `<div class="p-4 text-center text-red-500">${json.message}</div>`;
-                }
-            } catch(e) {
-                document.getElementById('productListContainer').innerHTML = '<div class="p-4 text-center text-red-500">Error fetching products.</div>';
-            }
-        }
-
-        function filterProducts() {
-            const search = document.getElementById('searchProduct').value.toLowerCase();
-            const container = document.getElementById('productListContainer');
-            container.innerHTML = '';
-            const filtered = dbProducts.filter(p => p.namaItem.toLowerCase().includes(search));
-
-            if (filtered.length === 0) {
-                container.innerHTML = '<div class="text-center text-slate-400 p-8">Produk tidak ditemukan.</div>';
-                return;
-            }
-
-            filtered.forEach(p => {
-                const div = document.createElement('div');
-                div.className = "flex justify-between items-center p-4 border-b border-slate-100 hover:bg-teal-50 cursor-pointer group transition";
-                div.innerHTML = `
-                    <div>
-                        <div class="font-bold text-slate-700 text-sm group-hover:text-primary">${p.namaItem}</div>
-                        <div class="text-xs text-slate-400 mt-0.5 flex gap-2">
-                            <span class="bg-slate-100 px-1.5 rounded">${p.satuan}</span>
-                            <span class="bg-gray-100 text-gray-600 px-1.5 rounded font-bold">${p.typeProduk}</span>
-                        </div>
-                    </div>
-                    <button class="text-xs bg-white border border-slate-200 text-primary px-3 py-1.5 rounded-lg font-bold shadow-sm hover:bg-primary hover:text-white transition">
-                        <i class="fas fa-plus"></i> Add
-                    </button>
-                `;
-                div.onclick = () => {
-                    addDbItemToBill(p);
-                    closeProductModal();
-                };
-                container.appendChild(div);
-            });
-        }
-
-        function addDbItemToBill(product) {
-            currentItems.push({
-                namaItem: product.namaItem,
-                satuan: product.satuan,
-                typeProduk: product.typeProduk,
-                spec: "",
-                qty: 1,
-                price: product.price || 0,
-                disc: 0,
-                checked: true
-            });
-            renderBillItems();
-        }
-
+        function toggleItem(index, isChecked) { currentItems[index].checked = isChecked; renderBillItems(); }
+        function updateItem(index, field, value) { if(['qty', 'price', 'disc'].includes(field)) { currentItems[index][field] = Number(value); const item = currentItems[index]; const newLineTotal = (item.price - item.disc) * item.qty; const amountEl = document.getElementById(`amount-${index}`); if(amountEl) amountEl.innerText = formatRupiah(newLineTotal); calculateTotal(); } else { currentItems[index][field] = value; } }
+        async function deleteItem(index) { const result = await Swal.fire({ title: 'Hapus Item?', text: "Item ini akan dihapus dari daftar.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#cbd5e1', confirmButtonText: 'Ya, Hapus', cancelButtonText: 'Batal', customClass: { popup: 'text-xs' } }); if(result.isConfirmed) { currentItems.splice(index, 1); renderBillItems(); } }
+        function addCustomItem() { currentItems.push({ namaItem: "Manual Item", satuan: "Unit", typeProduk: "M", spec: "", qty: 1, price: 0, disc: 0, checked: true }); renderBillItems(); }
+        function calculateTotal() { let totalLine = 0; currentItems.forEach(item => { if(item.checked) { totalLine += (item.price - item.disc) * item.qty; } }); const taxMode = document.getElementById('tax-mode').value; const adj = Number(document.getElementById('bill-adjustment').value) || 0; let dpp = 0, ppn = 0; if (taxMode === 'exclusive') { dpp = totalLine; ppn = dpp * TAX_RATE; } else if (taxMode === 'inclusive') { dpp = totalLine / (1 + TAX_RATE); ppn = totalLine - dpp; } else { dpp = totalLine; } const grand = dpp + ppn + adj; document.getElementById('display-subtotal').innerText = formatRupiah(dpp); document.getElementById('display-ppn').innerText = formatRupiah(ppn); document.getElementById('display-grand-total').innerText = formatRupiah(grand); }
+        async function openProductModal() { const vendorName = document.getElementById('bill-vendor').value; if(!vendorName) { showNotification("Vendor belum terisi.", 'warning'); return; } document.getElementById('productModal').classList.remove('hidden'); document.getElementById('product-vendor-filter').innerText = vendorName; document.getElementById('productListContainer').innerHTML = '<div class="text-center p-10"><i class="fas fa-spinner fa-spin text-primary text-2xl"></i><p class="mt-2 text-slate-500">Mengambil data produk...</p></div>'; try { const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getProducts', vendor: vendorName }) }); const json = await res.json(); if(json.status === 'success') { dbProducts = json.products; filterProducts(); } else { document.getElementById('productListContainer').innerHTML = `<div class="p-4 text-center text-red-500">${json.message}</div>`; } } catch(e) { document.getElementById('productListContainer').innerHTML = '<div class="p-4 text-center text-red-500">Error fetching products.</div>'; } }
+        function filterProducts() { const search = document.getElementById('searchProduct').value.toLowerCase(); const container = document.getElementById('productListContainer'); container.innerHTML = ''; const filtered = dbProducts.filter(p => p.namaItem.toLowerCase().includes(search)); if (filtered.length === 0) { container.innerHTML = '<div class="text-center text-slate-400 p-8">Produk tidak ditemukan.</div>'; return; } filtered.forEach(p => { const div = document.createElement('div'); div.className = "flex justify-between items-center p-4 border-b border-slate-100 hover:bg-teal-50 cursor-pointer group transition"; div.innerHTML = `<div><div class="font-bold text-slate-700 text-sm group-hover:text-primary">${p.namaItem}</div><div class="text-xs text-slate-400 mt-0.5 flex gap-2"><span class="bg-slate-100 px-1.5 rounded">${p.satuan}</span><span class="bg-gray-100 text-gray-600 px-1.5 rounded font-bold">${p.typeProduk}</span></div></div><button class="text-xs bg-white border border-slate-200 text-primary px-3 py-1.5 rounded-lg font-bold shadow-sm hover:bg-primary hover:text-white transition"><i class="fas fa-plus"></i> Add</button>`; div.onclick = () => { addDbItemToBill(p); closeProductModal(); }; container.appendChild(div); }); }
+        function addDbItemToBill(product) { currentItems.push({ namaItem: product.namaItem, satuan: product.satuan, typeProduk: product.typeProduk, spec: "", qty: 1, price: product.price || 0, disc: 0, checked: true }); renderBillItems(); }
         function closeProductModal() { document.getElementById('productModal').classList.add('hidden'); }
-
-        function openRejectModal() {
-            document.getElementById('rejectModal').classList.remove('hidden');
-            document.getElementById('reject-reason').value = ''; 
-            document.getElementById('reject-error').classList.add('hidden');
-            document.getElementById('reject-reason').focus();
-        }
-
-        function closeRejectModal() {
-            document.getElementById('rejectModal').classList.add('hidden');
-        }
-
-        function confirmReject() {
-            const reason = document.getElementById('reject-reason').value;
-            if (!reason.trim()) {
-                document.getElementById('reject-error').classList.remove('hidden');
-                document.getElementById('reject-reason').classList.add('border-red-500');
-                return;
-            }
-            submitBill('Rejected', reason);
-            closeRejectModal();
-        }
-
-        async function submitBill(customStatus = null, overrideNotes = null) {
-            const invNum = document.getElementById('bill-inv-number').value;
-            if(!invNum) { showNotification("Invoice Number wajib diisi!", 'warning'); return; }
-
-            let finalNotes = overrideNotes !== null ? overrideNotes : document.getElementById('bill-note').value;
-
-            const activeItems = currentItems.filter(i => i.checked);
-            
-            const payload = {
-                action: 'save_bill',
-                data: {
-                    idPO: currentPOId,
-                    vendor: document.getElementById('bill-vendor').value, 
-                    oldInvNumber: originalInvNumber,
-                    invNumber: invNum,
-                    invDate: document.getElementById('bill-date').value,
-                    dueDate: document.getElementById('bill-due-date').value,
-                    taxMode: document.getElementById('tax-mode').value,
-                    customStatus: customStatus, 
-                    notes: finalNotes, 
-                    items: activeItems,
-                    existingFileUrl: currentFileUrl
-                }
-            };
-
-            const fileInput = document.getElementById('bill-file');
-            
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                const reader = new FileReader();
-                reader.onload = async function() {
-                    payload.data.fileData = reader.result.split(',')[1]; 
-                    payload.data.fileName = file.name;
-                    payload.data.mimeType = file.type;
-                    await sendData(payload);
-                };
-                reader.readAsDataURL(file);
-            } else {
-                await sendData(payload);
-            }
-        }
-
-        async function sendData(payload) {
-            document.getElementById('modalLoading').classList.remove('hidden');
-            try {
-                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-                const json = await res.json();
-                if(json.status === 'success') {
-                    showNotification(json.message, 'success');
-                    closeModal();
-                    fetchData();
-                } else {
-                    showNotification("Gagal: " + json.message, 'error');
-                }
-            } catch(e) {
-                showNotification("Error koneksi: " + e.message, 'error');
-            } finally {
-                document.getElementById('modalLoading').classList.add('hidden');
-            }
-        }
-
+        function openRejectModal() { document.getElementById('rejectModal').classList.remove('hidden'); document.getElementById('reject-reason').value = ''; document.getElementById('reject-error').classList.add('hidden'); document.getElementById('reject-reason').focus(); }
+        function closeRejectModal() { document.getElementById('rejectModal').classList.add('hidden'); }
+        function confirmReject() { const reason = document.getElementById('reject-reason').value; if (!reason.trim()) { document.getElementById('reject-error').classList.remove('hidden'); document.getElementById('reject-reason').classList.add('border-red-500'); return; } submitBill('Rejected', reason); closeRejectModal(); }
+        async function submitBill(customStatus = null, overrideNotes = null) { const invNum = document.getElementById('bill-inv-number').value; if(!invNum) { showNotification("Invoice Number wajib diisi!", 'warning'); return; } let finalNotes = overrideNotes !== null ? overrideNotes : document.getElementById('bill-note').value; const activeItems = currentItems.filter(i => i.checked); const payload = { action: 'save_bill', data: { idPO: currentPOId, vendor: document.getElementById('bill-vendor').value, oldInvNumber: originalInvNumber, invNumber: invNum, invDate: document.getElementById('bill-date').value, dueDate: document.getElementById('bill-due-date').value, taxMode: document.getElementById('tax-mode').value, customStatus: customStatus, notes: finalNotes, items: activeItems, existingFileUrl: currentFileUrl } }; const fileInput = document.getElementById('bill-file'); if (fileInput.files.length > 0) { const file = fileInput.files[0]; const reader = new FileReader(); reader.onload = async function() { payload.data.fileData = reader.result.split(',')[1]; payload.data.fileName = file.name; payload.data.mimeType = file.type; await sendData(payload); }; reader.readAsDataURL(file); } else { await sendData(payload); } }
+        async function sendData(payload) { document.getElementById('modalLoading').classList.remove('hidden'); try { const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) }); const json = await res.json(); if(json.status === 'success') { showNotification(json.message, 'success'); closeModal(); fetchData(); } else { showNotification("Gagal: " + json.message, 'error'); } } catch(e) { showNotification("Error koneksi: " + e.message, 'error'); } finally { document.getElementById('modalLoading').classList.add('hidden'); } }
         function closeModal() { document.getElementById('billModal').classList.add('hidden'); }
-        
-        function showNotification(msg, type = 'info') {
-            if(type === 'info') {
-                if(msg.toLowerCase().includes('gagal') || msg.toLowerCase().includes('error')) type = 'error';
-                else if (msg.toLowerCase().includes('berhasil') || msg.toLowerCase().includes('sukses')) type = 'success';
-                else if (msg.toLowerCase().includes('wajib')) type = 'warning';
-            }
-            Toast.fire({ icon: type, title: msg });
-        }
-        
+        function showNotification(msg, type = 'info') { if(type === 'info') { if(msg.toLowerCase().includes('gagal') || msg.toLowerCase().includes('error')) type = 'error'; else if (msg.toLowerCase().includes('berhasil') || msg.toLowerCase().includes('sukses')) type = 'success'; else if (msg.toLowerCase().includes('wajib')) type = 'warning'; } Toast.fire({ icon: type, title: msg }); }
         function toggleLoading(show) { document.getElementById('loading').style.display = show ? 'flex' : 'none'; }
         function formatRupiah(n) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n); }
         function formatDate(d) { return d ? new Date(d).toLocaleDateString('id-ID') : '-'; }
