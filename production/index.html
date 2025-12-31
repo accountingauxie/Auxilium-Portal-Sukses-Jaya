@@ -478,7 +478,7 @@ function calculateWENumber(row) {
     const machine = row.querySelector(".machine-select").value;
     const item = row.querySelector(".item-select").value;
     const kpc = row.querySelector(".kpc-select").value;
-    const prodId = document.getElementById("entryId").value;
+    const prodId = document.getElementById("entryId").value; // Contoh: FGP25120000010
     const weInput = row.querySelector(".we-number");
 
     if(!machine || !item || !kpc || !prodId) {
@@ -505,9 +505,14 @@ function calculateWENumber(row) {
         itemSuffix = lastGroup.slice(-2);
     }
 
-    weInput.value = `${finalMachineSegment}_${kpc}_${prodId}_${itemSuffix}`;
-}
+    // 3. ID Suffix (UPDATE DISINI)
+    // Mengambil 3 digit TERAKHIR dari ID. 
+    // Contoh: FGP25120000010 -> menjadi "010"
+    const idSuffix = prodId.slice(-3); 
 
+    // Format Baru: Machine_KPC_010_ItemSuffix
+    weInput.value = `${finalMachineSegment}_${kpc}_${idSuffix}_${itemSuffix}`;
+}
 /* --- LOGIC: PREVENT DUPLICATE KPC --- */
 function refreshKPCOptionsForElement(el, rawData, placeholder) {
     const allSelects = document.querySelectorAll(".kpc-select");
