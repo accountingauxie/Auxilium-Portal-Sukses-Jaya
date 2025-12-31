@@ -477,8 +477,27 @@
         let isEditMode = false;
         let currentFilterStatus = 'all'; 
 
-        // ================= INITIALIZATION =================
-        window.onload = fetchData;
+        // ================= INITIALIZATION & VALIDATION =================
+        // --- UPDATE 1: PENGGUNAAN LOGIK VALIDASI SAAT LOAD ---
+        window.onload = function() {
+            fetchData();
+            setupInvoiceValidation();
+        };
+
+        // Fungsi baru untuk mencegah ketik underscore di real-time
+        function setupInvoiceValidation() {
+            const invInput = document.getElementById('bill-inv-number');
+            if(invInput) {
+                invInput.addEventListener('input', function() {
+                    if (this.value.includes('_')) {
+                        // Hapus underscore
+                        this.value = this.value.replace(/_/g, '');
+                        // Munculkan notifikasi
+                        showNotification("Simbol underscore (_) DILARANG digunakan pada Nomor Invoice. Silakan gunakan tanda hubung (-) atau garis miring (/).");
+                    }
+                });
+            }
+        }
 
         async function fetchData() {
             // Inject Loading Row inside Table Body
@@ -518,7 +537,7 @@
             applyFilters();
         }
 
-   function applyFilters() {
+       function applyFilters() {
             // Ambil value dan pastikan aman (trim spasi)
             const searchInput = document.getElementById('searchInput');
             const searchVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
@@ -945,8 +964,8 @@
                         <input type="text" value="${item.optionalSpec || ''}" ${disabledAttr} oninput="updateItem(${index}, 'optionalSpec', this.value)" class="input-bare text-xs text-slate-600 font-medium h-full" placeholder="-">
                     </td>
                     <td class="p-4 align-top">
-                         <input type="number" value="${item.qty}" min="0" ${disabledAttr} oninput="updateItem(${index}, 'qty', this.value)" class="input-bare text-center text-sm font-bold text-slate-700">
-                         ${isEditMode && !item.isCustom ? `<div class="text-[10px] text-center text-slate-400 mt-1">Sisa: ${item.maxQty}</div>` : ''}
+                          <input type="number" value="${item.qty}" min="0" ${disabledAttr} oninput="updateItem(${index}, 'qty', this.value)" class="input-bare text-center text-sm font-bold text-slate-700">
+                          ${isEditMode && !item.isCustom ? `<div class="text-[10px] text-center text-slate-400 mt-1">Sisa: ${item.maxQty}</div>` : ''}
                     </td>
                     <td class="p-4 align-top">
                         <input type="number" placeholder="0" value="${item.price}" ${disabledAttr} oninput="updateItem(${index}, 'price', this.value)" class="input-bare text-right text-sm font-mono text-slate-600">
@@ -1113,6 +1132,12 @@
             
             const invNum = document.getElementById('bill-inv-number').value;
             if(!invNum) { showNotification("Nomor Invoice Wajib diisi."); return; }
+            
+            // --- UPDATE 2: CEK FINAL UNDERSCORE SEBELUM SUBMIT ---
+            if(invNum.includes('_')) { 
+                showNotification("Nomor Invoice mengandung karakter terlarang (_). Mohon dihapus."); 
+                return; 
+            }
             
             const isForceClose = document.getElementById('check-force-close').checked;
             const fileInput = document.getElementById('bill-file');
