@@ -6,134 +6,72 @@
     <title>Auxilium PO System</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
     
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://unpkg.com/feather-icons"></script> <style>
-        /* =========================================
-           1. STANDARD NAVBAR STYLES (Auxilium)
-           ========================================= */
+    <script src="https://unpkg.com/feather-icons"></script> 
+    <style>
+        /* STYLES UTAMA */
         :root { 
             --primary-color: #116999; 
-            --primary-hover: #0e5a85;
-            --bg-color: #f4f7f6; 
-            --text-color: #333; 
-            --red-bg: #fee2e2; 
-            --red-text: #991b1b;
-            /* Variabel Lama (untuk Body) */
+            --bg-light: #eef2f6; 
             --primary-teal: #008080;
             --primary-teal-hover: #006666;
-            --bg-light: #eef2f6; 
         }
+        body { margin: 0; background: var(--bg-light); font-family: 'Inter', sans-serif; }
 
-        body { margin: 0; background: var(--bg-light); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
-
-        /* Navbar Container */
-        .aux-navbar {
-            background-color: #ffffff;
-            height: 70px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 40px;
-            box-shadow: 0 1px 5px rgba(0,0,0,0.05);
-            position: sticky; top: 0; z-index: 1050; /* Z-index tinggi agar di atas elemen lain */
-        }
-
-        .aux-logo img { height: 40px; width: auto; display: block; }
-
-        /* Menu Wrapper */
+        /* NAVBAR */
+        .aux-navbar { background: #fff; height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; box-shadow: 0 1px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1050; }
+        .aux-logo img { height: 40px; width: auto; }
         .aux-menu { display: flex; gap: 10px; align-items: center; height: 100%; }
         .nav-item { position: relative; height: 100%; display: flex; align-items: center; }
-
-        /* Links */
-        .aux-link { 
-            text-decoration: none; color: #666; font-weight: 600; font-size: 14px; 
-            padding: 8px 14px; border-radius: 6px; transition: all 0.2s; cursor: pointer;
-            display: flex; align-items: center; gap: 4px;
-        }
-        .aux-link:hover, .nav-item:hover .aux-link { color: #1d2939; background-color: #f9fafb; }
+        .aux-link { text-decoration: none; color: #666; font-weight: 600; font-size: 14px; padding: 8px 14px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+        .aux-link:hover, .nav-item:hover .aux-link { color: #1d2939; background: #f9fafb; }
+        .aux-link.active { color: var(--primary-color); background: #eff8ff; font-weight: 700; }
         
-        /* Active State */
-        .aux-link.active { color: var(--primary-color); background-color: #eff8ff; font-weight: 700; }
-
-        /* Dropdown */
-        .dropdown-menu-aux {
-            visibility: hidden; opacity: 0; position: absolute; top: 90%; left: 50%;
-            transform: translateX(-50%) translateY(-10px); background: white; min-width: 220px;
-            border: 1px solid #eaecf0; border-radius: 8px; box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08);
-            padding: 6px; z-index: 10000; transition: all 0.2s ease;
-        }
-        .dropdown-menu-aux::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
+        .dropdown-menu-aux { visibility: hidden; opacity: 0; position: absolute; top: 90%; left: 50%; transform: translateX(-50%) translateY(-10px); background: white; min-width: 220px; border: 1px solid #eaecf0; border-radius: 8px; box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08); padding: 6px; z-index: 10000; transition: all 0.2s ease; }
         .nav-item:hover .dropdown-menu-aux { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
-        
-        .dropdown-item-aux {
-            display: block; padding: 10px 12px; color: #344054; text-decoration: none;
-            font-size: 14px; border-radius: 6px; text-align: left; font-weight: 400;
-        }
+        .dropdown-item-aux { display: block; padding: 10px 12px; color: #344054; text-decoration: none; font-size: 14px; border-radius: 6px; }
         .dropdown-item-aux:hover { background-color: #f9fafb; color: var(--primary-color); }
 
-        /* User Panel */
         .user-panel { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid #eee; }
-        .user-details { display: flex; flex-direction: column; text-align: right; line-height: 1.3; }
+        .user-details { display: flex; flex-direction: column; text-align: right; }
         .user-name { font-weight: 700; font-size: 13px; color: #333; }
         .user-role { font-size: 11px; color: #888; }
-        .user-avatar { width: 36px; height: 36px; background-color: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; user-select: none; }
-        .logout-btn { background: none; border: 1px solid #ddd; color: #666; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 14px; }
-        .logout-btn:hover { background-color: var(--red-bg); color: var(--red-text); border-color: var(--red-bg); }
+        .user-avatar { width: 36px; height: 36px; background: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; }
+        .logout-btn { background: none; border: 1px solid #ddd; color: #666; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .logout-btn:hover { background: #fee2e2; color: #991b1b; border-color: #fee2e2; }
 
-        /* Logout Modal */
-        .modal-logout { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); }
-        .modal-logout-content { background-color: #fff; margin: 15% auto; padding: 32px; border-radius: 16px; width: 360px; text-align: center; }
-        .btn-modal { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; }
-        .btn-yes { background-color: #d92d20; color: #fff; }
-        .btn-cancel { background-color: #f2f4f7; color: #344054; }
-
-        /* =========================================
-           2. APP SPECIFIC STYLES (PO System)
-           ========================================= */
-        .status-badge { background-color: rgba(16, 185, 129, 0.1); color: #059669; border: 1px solid rgba(16, 185, 129, 0.2); padding: 4px 12px; border-radius: 50px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
-        
+        /* CONTENT */
         .stat-card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.04); transition: transform 0.2s; }
         .stat-card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
         .stat-value { font-size: 26px; font-weight: 800; margin-bottom: 5px; color: #1e293b; }
         .stat-label { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px; }
-        
-        .table-card { background: white; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); overflow: hidden; border: 1px solid rgba(0,0,0,0.04); }
-        .table-header-custom { background-color: #f8fafc; font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 1px solid #e2e8f0; }
-        .status-pill { padding: 4px 10px; border-radius: 50px; font-size: 11px; font-weight: 600; }
-        .status-pill.waiting { background-color: #eff6ff; color: #3b82f6; border: 1px solid #dbeafe; } 
-        .status-pill.done { background-color: #ecfdf5; color: #10b981; border: 1px solid #d1fae5; }
 
-        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .page-title { font-size: 24px; font-weight: 700; margin: 0; color: #0f172a; }
-        .breadcrumb-text { font-size: 13px; color: #64748b; margin-top: 4px; }
-        .btn-back { background: white; border: 1px solid #cbd5e1; color: #475569; font-weight: 600; padding: 8px 16px; border-radius: 8px; font-size: 13px; transition: all 0.2s; }
-        .btn-back:hover { background: #f1f5f9; color: #0f172a; border-color: #94a3b8; }
+        .table-card { background: white; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); overflow: hidden; border: 1px solid rgba(0,0,0,0.04); }
+        .table-header-custom { background: #f8fafc; font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; }
         
-        .form-container { background: white; border-radius: 12px; border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.02); padding: 30px; }
+        .status-pill { padding: 4px 10px; border-radius: 50px; font-size: 11px; font-weight: 600; }
+        .status-pill.waiting { background: #eff6ff; color: #3b82f6; border: 1px solid #dbeafe; } 
+        .status-pill.done { background: #ecfdf5; color: #10b981; border: 1px solid #d1fae5; }
+
+        .form-container { background: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .form-label-custom { font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 8px; display: block; }
-        .form-control-custom { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 12px; font-size: 14px; width: 100%; transition: border-color 0.2s; }
-        .form-control-custom:focus { border-color: var(--primary-teal); outline: none; box-shadow: 0 0 0 3px rgba(0,128,128,0.1); }
+        .form-control-custom { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 12px; width: 100%; }
+        .form-control-custom:focus { border-color: var(--primary-teal); outline: none; }
         
-        .select2-container--bootstrap-5 .select2-selection { border-color: #cbd5e1 !important; padding: 10px 12px !important; min-height: 42px; font-size: 14px; border-radius: 8px !important; }
-        .btn-confirm { background-color: var(--primary-teal); color: white; font-weight: 600; border: none; padding: 10px 24px; border-radius: 8px; font-size: 14px; height: 100%; display: flex; align-items: center; gap: 8px; justify-content: center; transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,128,128,0.2); }
-        .btn-confirm:hover { background-color: var(--primary-teal-hover); color: white; box-shadow: 0 6px 15px rgba(0,128,128,0.3); transform: translateY(-1px); }
+        .select2-container--bootstrap-5 .select2-selection { border-color: #cbd5e1 !important; padding: 10px 12px !important; min-height: 42px; border-radius: 8px !important; }
+        .btn-confirm { background: var(--primary-teal); color: white; font-weight: 600; border: none; padding: 10px 24px; border-radius: 8px; height: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-confirm:hover { background: var(--primary-teal-hover); color: white; }
         
-        .section-title { font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-top: 30px; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; letter-spacing: 0.5px; }
-        .table-form th { font-size: 12px; color: #475569; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding: 12px; background-color: #f8fafc; text-transform: uppercase; }
-        .table-form td { padding: 10px; vertical-align: top; border-bottom: 1px solid #f1f5f9; }
-        .input-table { border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; font-size: 14px; width: 100%; transition: border-color 0.2s; }
-        .input-table:focus { border-color: var(--primary-teal); outline: none; }
-        .btn-add-product { color: var(--primary-teal); font-weight: 600; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; margin-top: 20px; cursor: pointer; padding: 10px 18px; border-radius: 8px; background: rgba(0,128,128,0.05); transition: 0.2s; border: 1px dashed rgba(0,128,128,0.3); }
-        .btn-add-product:hover { background: rgba(0,128,128,0.1); color: var(--primary-teal-hover); }
+        .table-form th { font-size: 12px; color: #475569; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding: 12px; background: #f8fafc; text-transform: uppercase; }
+        .input-table { border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; font-size: 14px; width: 100%; }
+        .btn-add-product { color: var(--primary-teal); font-weight: 600; cursor: pointer; padding: 10px 18px; border-radius: 8px; background: rgba(0,128,128,0.05); display: inline-flex; align-items: center; gap: 6px; margin-top: 20px; border: 1px dashed rgba(0,128,128,0.3); }
         
         .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 99999; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(4px); }
-        .edit-badge { background-color: #fffbeb; color: #b45309; font-size: 12px; padding: 4px 10px; border-radius: 6px; border: 1px solid #fcd34d; margin-left: 10px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
-        .btn-white { background: white; border: 1px solid #e2e8f0; color: #64748b; }
-        .btn-white:hover { border-color: #cbd5e1; color: #1e293b; background: #f8fafc; }
     </style>
 </head>
 <body>
@@ -142,95 +80,28 @@
         <div class="aux-logo">
             <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png" alt="Auxilium Logo">
         </div>
-        
         <nav class="aux-menu">
+            <div class="nav-item"><a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/" class="aux-link">Home</a></div>
             <div class="nav-item">
-                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/" class="aux-link">Home</a>
-            </div>
-    
-            <div class="nav-item">
-                <div class="aux-link">
-                    Penjualan 
-                    <i data-feather="chevron-down" style="width:14px; height:14px;"></i>
-                </div>
+                <div class="aux-link active">Pembelian <i data-feather="chevron-down" style="width:14px;"></i></div>
                 <div class="dropdown-menu-aux">
-                    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Order%20Penjualan/" class="dropdown-item-aux">Order Penjualan</a>
-                    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Review%20Penjualan/" class="dropdown-item-aux">Review Penjualan</a>
-                </div>
-            </div>
-    
-            <div class="nav-item">
-                <div class="aux-link active">
-                    Pembelian
-                    <i data-feather="chevron-down" style="width:14px; height:14px;"></i>
-                </div>
-                <div class="dropdown-menu-aux">
-                    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/PurchaseOrder/index.html" class="dropdown-item-aux" style="font-weight:600; color:#116999;">Pemesanan Pembelian</a>
-                    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/CreateBill/index.html" class="dropdown-item-aux">Daftar Tagihan</a>
-                    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/entry/index.html" class="dropdown-item-aux">Penerimaan Pemesanan</a>
-                    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/ImportXeroPO/index.html" class="dropdown-item-aux">Import Xero PO</a>
-                </div>
-            </div>
-    
-            <div class="nav-item">
-                <div class="aux-link">
-                    Produksi
-                    <i data-feather="chevron-down" style="width:14px; height:14px;"></i>
-                </div>
-                <div class="dropdown-menu-aux">
-                    <a href="#" class="dropdown-item-aux">Persiapan Pemesanan</a>
-                    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/" class="dropdown-item-aux">Produksi Barang Jadi</a>
-                    <a href="#" class="dropdown-item-aux">Retur Penjualan</a>
-                </div>
-            </div>
-    
-            <div class="nav-item">
-                <div class="aux-link">
-                    Persediaan
-                    <i data-feather="chevron-down" style="width:14px; height:14px;"></i>
-                </div>
-                <div class="dropdown-menu-aux">
-                    <a href="#" class="dropdown-item-aux">Stok KPC</a>
-                    <a href="#" class="dropdown-item-aux">Stok Spandek</a>
-                    <a href="#" class="dropdown-item-aux">Gudang BS</a>
+                    <a href="#" class="dropdown-item-aux" style="font-weight:600; color:#116999;">Pemesanan Pembelian</a>
                 </div>
             </div>
         </nav>
-    
         <div class="user-panel">
-            <div class="user-details">
-                <span class="user-name">Admin Gudang</span>
-                <span class="user-role">CV Sukses Jaya</span>
-            </div>
+            <div class="user-details"><span class="user-name">Admin Gudang</span><span class="user-role">CV Sukses Jaya</span></div>
             <div class="user-avatar">AG</div>
-            <button class="logout-btn" onclick="showLogoutModal()" title="Keluar Akun">
-                <i data-feather="log-out" style="width:16px; height:16px;"></i>
-            </button>
-        </div>
-    </div>
-    
-    <div id="logoutModal" class="modal-logout">
-        <div class="modal-logout-content">
-          <p style="font-size:18px; font-weight:600; color:#101828; margin-bottom:10px;">Log out</p>
-          <p style="color:#667085; font-size:14px; margin-bottom:24px;">Are you sure you want to log out?</p>
-          <div style="display: flex; gap:12px;">
-            <button class="btn-modal btn-yes" onclick="logout()">Log out</button>
-            <button class="btn-modal btn-cancel" onclick="closeLogoutModal()">Cancel</button>
-          </div>
+            <button class="logout-btn" onclick="alert('Fitur logout')" title="Keluar"><i data-feather="log-out" style="width:16px;"></i></button>
         </div>
     </div>
 
     <div class="container-fluid" style="margin-top: 40px; max-width: 1400px; padding-bottom: 50px;">
-
+        
         <div id="view-list">
             <div class="d-flex justify-content-between align-items-end mb-4">
-                <div>
-                    <h3 class="page-title">List Overview</h3>
-                    <div class="breadcrumb-text">Dashboard &bullet; Purchase Orders</div>
-                </div>
-                <button class="btn btn-confirm shadow-sm" style="width: auto;" onclick="createNewPO()">
-                    <i class="bi bi-plus-lg"></i> NEW PO
-                </button>
+                <div><h3 class="page-title" style="font-size:24px; font-weight:700;">List Overview</h3><div class="breadcrumb-text">Dashboard &bullet; Purchase Orders</div></div>
+                <button class="btn btn-confirm shadow-sm" style="width: auto;" onclick="createNewPO()"><i class="bi bi-plus-lg"></i> NEW PO</button>
             </div>
 
             <div class="row g-3 mb-4">
@@ -245,9 +116,7 @@
                     <span class="input-group-text bg-white border-end-0 border-light-subtle"><i class="bi bi-search text-muted"></i></span>
                     <input type="text" id="searchInput" class="form-control border-start-0 border-light-subtle ps-0" placeholder="Search Reference, Vendor..." onkeyup="filterTable()">
                 </div>
-                <button class="btn btn-white shadow-sm fw-bold" onclick="fetchListPO()">
-                    <i class="bi bi-arrow-clockwise"></i> Refresh
-                </button>
+                <button class="btn btn-white shadow-sm fw-bold" onclick="fetchListPO()"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
             </div>
 
             <div class="table-card shadow-sm">
@@ -263,28 +132,18 @@
                             <th class="py-3 text-center">Action</th> 
                         </tr>
                     </thead>
-                    <tbody id="listTableBody">
-                        <tr><td colspan="7" class="text-center py-5 text-muted">Loading data...</td></tr>
-                    </tbody>
+                    <tbody id="listTableBody"><tr><td colspan="7" class="text-center py-5 text-muted">Loading data...</td></tr></tbody>
                 </table>
             </div>
         </div>
 
         <div id="view-form" class="d-none">
-            
-            <div class="page-header">
+            <div class="d-flex justify-content-between align-items-center mb-4">
                 <div class="d-flex align-items-center">
-                    <div>
-                        <h3 class="page-title" id="formTitle">New Quote</h3>
-                        <div class="breadcrumb-text">Dashboard &bullet; Data Entry</div>
-                    </div>
-                    <div id="editBadge" class="d-none edit-badge shadow-sm">
-                        <i class="bi bi-pencil-square"></i> Editing Mode
-                    </div>
+                    <div><h3 class="page-title" id="formTitle" style="font-size:24px; font-weight:700;">New Quote</h3><div class="breadcrumb-text">Dashboard &bullet; Data Entry</div></div>
+                    <div id="editBadge" class="d-none edit-badge shadow-sm ms-3" style="background:#fffbeb; color:#b45309; padding:4px 10px; border-radius:6px; font-size:12px; font-weight:600;"><i class="bi bi-pencil-square"></i> Editing Mode</div>
                 </div>
-                <button class="btn btn-back shadow-sm" onclick="switchView('list')">
-                    <i class="bi bi-arrow-left me-1"></i> Back to List
-                </button>
+                <button class="btn btn-white shadow-sm fw-bold" onclick="switchView('list')"><i class="bi bi-arrow-left me-1"></i> Back to List</button>
             </div>
 
             <div class="form-container shadow-sm">
@@ -307,7 +166,6 @@
                 </div>
 
                 <div class="section-title">Order Items</div>
-
                 <div class="table-responsive">
                     <table class="table table-form w-100">
                         <thead>
@@ -323,57 +181,33 @@
                         <tbody id="entryTableBody"></tbody>
                     </table>
                 </div>
-
-                <div onclick="addNewRow()" class="btn-add-product">
-                    <i class="bi bi-plus-circle-fill"></i> Add a product line
-                </div>
+                <div onclick="addNewRow()" class="btn-add-product"><i class="bi bi-plus-circle-fill"></i> Add a product line</div>
             </div>
         </div>
-
     </div>
 
     <div class="modal fade" id="modalViewPO" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
                 <div class="modal-header bg-light">
-                    <div>
-                        <h5 class="modal-title fw-bold text-dark" id="viewPoTitle">PO Detail</h5>
-                        <div class="text-muted small" id="viewPoDate"></div>
-                    </div>
+                    <div><h5 class="modal-title fw-bold text-dark" id="viewPoTitle">PO Detail</h5><div class="text-muted small" id="viewPoDate"></div></div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
                     <div class="d-flex justify-content-between align-items-center mb-4 p-3 rounded" style="background: #f8fafc; border: 1px solid #e2e8f0;">
-                        <div>
-                            <div class="text-uppercase text-muted small fw-bold mb-1">Vendor</div>
-                            <div class="fs-5 fw-bold text-primary" id="viewVendorName">-</div>
-                        </div>
-                        <div class="text-end">
-                            <div class="text-uppercase text-muted small fw-bold mb-1">Status</div>
-                            <span id="viewPoStatus" class="status-pill">-</span>
-                        </div>
+                        <div><div class="text-uppercase text-muted small fw-bold mb-1">Vendor</div><div class="fs-5 fw-bold text-primary" id="viewVendorName">-</div></div>
+                        <div class="text-end"><div class="text-uppercase text-muted small fw-bold mb-1">Status</div><span id="viewPoStatus" class="status-pill">-</span></div>
                     </div>
-
                     <div class="table-responsive border rounded">
                         <table class="table table-striped mb-0">
-                            <thead class="bg-light">
-                                <tr class="text-uppercase small text-muted">
-                                    <th class="ps-3">Item Name</th>
-                                    <th class="text-center" style="width: 100px;">Qty</th>
-                                    <th class="text-center" style="width: 80px;">Unit</th>
-                                    <th>Note</th>
-                                </tr>
-                            </thead>
-                            <tbody id="viewItemsBody">
-                                </tbody>
+                            <thead class="bg-light"><tr class="text-uppercase small text-muted"><th class="ps-3">Item Name</th><th class="text-center">Qty</th><th class="text-center">Unit</th><th>Note</th></tr></thead>
+                            <tbody id="viewItemsBody"></tbody>
                         </table>
                     </div>
                 </div>
                 <div class="modal-footer bg-light border-top-0">
                     <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary btn-sm" id="btnPrintFromModal">
-                        <i class="bi bi-printer"></i> Print PO
-                    </button>
+                    <button type="button" class="btn btn-primary btn-sm" id="btnPrintFromModal"><i class="bi bi-printer"></i> Print PO</button>
                 </div>
             </div>
         </div>
@@ -389,21 +223,12 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
-        // --- INITIALIZE ICONS & LOGOUT ---
         feather.replace();
-        
-        function showLogoutModal() { document.getElementById("logoutModal").style.display = "block"; }
-        function closeLogoutModal() { document.getElementById("logoutModal").style.display = "none"; }
-        function logout() {
-            document.getElementById("loadingOverlay").style.display = "flex";
-            setTimeout(() => {
-                localStorage.removeItem("uxilium_current_user");
-                window.location.href = "login.html"; // Sesuaikan jika ada file login
-            }, 800);
-        }
 
-        // --- APP LOGIC (EXISTING) ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbztj8FKA46y0nFOTUXu6VjYZCK5qSFr08-ab2n_y7vOwzwXgYGZmi5Q_V-raRRO_J5gsQ/exec"; 
+        // -----------------------------------------------------------
+        // PENTING: GANTI URL DI BAWAH INI DENGAN URL DEPLOYMENT ANDA
+        // -----------------------------------------------------------
+        const API_URL = "https://script.google.com/macros/s/AKfycbwKQA8KJGRWeGbDoor6-JFuhf3eVUfZOKqx6wKWSnpmzcxkTW_Lpacgzxj9MCicUKWW/exec"; 
         
         let vendorData = {};
         let savedOrders = [];
@@ -411,15 +236,14 @@
         let currentEditId = null;
 
         window.onload = function() {
-            feather.replace(); // Ensure icons render
             fetchListPO();
             setDefaultDate();
         };
 
+        // --- NAVIGATION & VIEWS ---
         function switchView(viewName) {
             const listDiv = document.getElementById("view-list");
             const formDiv = document.getElementById("view-form");
-
             if (viewName === 'form') {
                 listDiv.classList.add("d-none");
                 formDiv.classList.remove("d-none");
@@ -431,17 +255,13 @@
             }
         }
 
-        function createNewPO() {
-            resetFormState();
-            switchView('form');
-        }
+        function createNewPO() { resetFormState(); switchView('form'); }
 
         function resetFormState() {
             currentEditId = null;
             document.getElementById("formTitle").innerText = "New Quote";
             document.getElementById("btnSubmitText").innerText = "CONFIRM PO";
             document.getElementById("editBadge").classList.add("d-none");
-            
             $('#vendorSelect').val(null).trigger('change');
             document.getElementById("entryTableBody").innerHTML = "";
             setDefaultDate();
@@ -452,7 +272,7 @@
             document.getElementById("loadingOverlay").style.display = show ? "flex" : "none";
         }
 
-        // --- LIST & FETCHING ---
+        // --- FETCHING DATA ---
         function fetchListPO() {
             const tbody = document.getElementById("listTableBody");
             tbody.innerHTML = `<tr><td colspan="7" class="text-center py-5"><div class="spinner-border text-secondary spinner-border-sm me-2"></div>Updating...</td></tr>`;
@@ -468,7 +288,7 @@
                     tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-4">${res.message}</td></tr>`;
                 }
             })
-            .catch(err => tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-4">Error Connection</td></tr>`);
+            .catch(err => tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-4">Error Connection (Cek API URL)</td></tr>`);
         }
 
         function renderListTable(data) {
@@ -482,31 +302,18 @@
             data.forEach(po => {
                 let date = new Date(po.date).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'});
                 let created = new Date(po.createdAt).toLocaleTimeString('id-ID', {hour: '2-digit', minute: '2-digit'});
+                let statusClass = (po.status.includes("Menunggu")) ? "waiting" : "done";
                 
-                let statusClass = (po.status.includes("Menunggu") || po.status.includes("Waiting")) ? "waiting" : "done";
-                let isEditable = (po.status === "Menunggu Persetujuan" || po.status.includes("Waiting"));
-
-                let actionBtns = `<div class="d-flex justify-content-center gap-2">`;
-                actionBtns += `
-                    <button class="btn btn-sm btn-outline-info border-0" onclick="viewPO('${po.id}', '${po.status}')" title="View Detail">
-                        <i class="bi bi-eye-fill fs-6"></i>
-                    </button>`;
-                actionBtns += `
-                    <button class="btn btn-sm btn-outline-secondary border-0" onclick="printPO('${po.id}')" title="Print / PDF">
-                        <i class="bi bi-printer-fill fs-6"></i>
-                    </button>`;
-                if (isEditable) {
-                    actionBtns += `
-                        <button class="btn btn-sm btn-outline-primary border-0" onclick="editPO('${po.id}')" title="Edit PO">
-                            <i class="bi bi-pencil-square fs-6"></i>
-                        </button>`;
+                // Tombol Action
+                let btns = `<div class="d-flex justify-content-center gap-2">`;
+                btns += `<button class="btn btn-sm btn-outline-info border-0" onclick="viewPO('${po.id}', '${po.status}')" title="View"><i class="bi bi-eye-fill"></i></button>`;
+                btns += `<button class="btn btn-sm btn-outline-secondary border-0" onclick="printPO('${po.id}')" title="Print"><i class="bi bi-printer-fill"></i></button>`;
+                if (statusClass === "waiting") {
+                    btns += `<button class="btn btn-sm btn-outline-primary border-0" onclick="editPO('${po.id}')" title="Edit"><i class="bi bi-pencil-square"></i></button>`;
                 } else {
-                    actionBtns += `
-                        <button class="btn btn-sm btn-outline-secondary border-0 text-muted" style="cursor:not-allowed; opacity:0.6;" title="Locked: ${po.status}">
-                            <i class="bi bi-lock-fill fs-6"></i>
-                        </button>`;
+                    btns += `<button class="btn btn-sm btn-outline-secondary border-0 text-muted" style="cursor:not-allowed;" title="Locked"><i class="bi bi-lock-fill"></i></button>`;
                 }
-                actionBtns += `</div>`;
+                btns += `</div>`;
 
                 let tr = document.createElement("tr");
                 tr.innerHTML = `
@@ -516,15 +323,14 @@
                     <td class="text-muted small">${created}</td>
                     <td class="text-center"><span class="badge bg-light text-dark border">${po.itemsCount}</span></td>
                     <td><span class="status-pill ${statusClass}">${po.status}</span></td>
-                    <td class="text-center">${actionBtns}</td>
+                    <td class="text-center">${btns}</td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
         function printPO(poId) {
-            const printUrl = API_URL + "?action=printPO&id=" + poId;
-            window.open(printUrl, '_blank');
+            window.open(API_URL + "?action=printPO&id=" + poId, '_blank');
         }
 
         function viewPO(poId, currentStatus) {
@@ -538,41 +344,20 @@
                     document.getElementById("viewPoTitle").innerText = poId;
                     document.getElementById("viewPoDate").innerText = "Order Date: " + data.info.date;
                     document.getElementById("viewVendorName").innerText = data.info.vendor;
+                    document.getElementById("viewPoStatus").innerText = currentStatus || "-";
                     
-                    const statusBadge = document.getElementById("viewPoStatus");
-                    statusBadge.innerText = currentStatus || "Unknown";
-                    
-                    if(currentStatus.includes("Menunggu") || currentStatus.includes("Waiting")) {
-                        statusBadge.className = "status-pill waiting";
-                    } else {
-                        statusBadge.className = "status-pill done";
-                    }
-
                     const tbody = document.getElementById("viewItemsBody");
                     tbody.innerHTML = "";
                     data.items.forEach(item => {
-                        let row = `
-                            <tr>
-                                <td class="ps-3 fw-500">${item.itemName}</td>
-                                <td class="text-center fw-bold">${item.qty}</td>
-                                <td class="text-center text-muted small">${item.unit}</td>
-                                <td class="text-muted fst-italic small">${item.note}</td>
-                            </tr>
-                        `;
-                        tbody.innerHTML += row;
+                        tbody.innerHTML += `<tr><td class="ps-3">${item.itemName}</td><td class="text-center fw-bold">${item.qty}</td><td class="text-center small">${item.unit}</td><td class="text-muted fst-italic small">${item.note}</td></tr>`;
                     });
 
                     document.getElementById("btnPrintFromModal").onclick = function() { printPO(poId); };
                     const myModal = new bootstrap.Modal(document.getElementById('modalViewPO'));
                     myModal.show();
-                } else {
-                    Swal.fire("Error", "Gagal mengambil data.", "error");
-                }
+                } else { Swal.fire("Error", "Gagal load data.", "error"); }
             })
-            .catch(err => {
-                showLoading(false);
-                Swal.fire("Error", "Connection Error", "error");
-            });
+            .catch(err => { showLoading(false); Swal.fire("Error", "Connection Error", "error"); });
         }
 
         function editPO(poId) {
@@ -589,14 +374,9 @@
                     } else {
                         populateEditForm(data, poId);
                     }
-                } else {
-                    Swal.fire("Error", "Gagal mengambil detail PO", "error");
-                }
+                } else { Swal.fire("Error", "Gagal mengambil detail PO", "error"); }
             })
-            .catch(err => {
-                showLoading(false);
-                Swal.fire("Error", "Koneksi Error", "error");
-            });
+            .catch(err => { showLoading(false); Swal.fire("Error", "Koneksi Error", "error"); });
         }
 
         function populateEditForm(data, poId) {
@@ -604,7 +384,6 @@
             document.getElementById("formTitle").innerText = "Edit Quote: " + poId;
             document.getElementById("btnSubmitText").innerText = "UPDATE PO";
             document.getElementById("editBadge").classList.remove("d-none");
-
             $('#vendorSelect').val(data.info.vendor).trigger('change');
             document.getElementById("poDate").value = data.info.date;
             document.getElementById("entryTableBody").innerHTML = "";
@@ -612,12 +391,8 @@
             data.items.forEach(item => {
                 let vendorName = data.info.vendor;
                 let itemIndex = -1;
-                if(vendorData[vendorName]) {
-                    itemIndex = vendorData[vendorName].findIndex(x => x.item === item.itemName);
-                }
-                if(itemIndex !== -1) {
-                    addNewRow(itemIndex, item.qty, item.note);
-                }
+                if(vendorData[vendorName]) itemIndex = vendorData[vendorName].findIndex(x => x.item === item.itemName);
+                if(itemIndex !== -1) addNewRow(itemIndex, item.qty, item.note);
             });
         }
 
@@ -641,12 +416,8 @@
             select.empty();
             select.append('<option value="" disabled selected>-- Select Vendor --</option>');
             Object.keys(vendorData).sort().forEach(v => { select.append(new Option(v, v)); });
-            
             select.select2({ theme: 'bootstrap-5', placeholder: "-- Select Vendor --", width: '100%' });
-            select.on('select2:select', function (e) {
-                document.getElementById("entryTableBody").innerHTML = ""; 
-                addNewRow(); 
-            });
+            select.on('select2:select', function (e) { document.getElementById("entryTableBody").innerHTML = ""; addNewRow(); });
         }
 
         function addNewRow(preselectIndex = null, preQty = null, preNote = null) {
@@ -670,7 +441,7 @@
                 <td><input type="number" class="input-table qty-input text-center" value="${preQty || ''}" placeholder="0.00" min="0"></td>
                 <td><input type="text" class="input-table unit-input bg-light text-muted" readonly tabindex="-1"></td>
                 <td><input type="text" class="input-table note-input" value="${preNote || ''}" placeholder="Note"></td>
-                <td class="text-center align-middle"><i class="bi bi-trash3-fill text-danger" style="cursor:pointer;" onclick="removeRow(this)"></i></td>
+                <td class="text-center align-middle"><i class="bi bi-trash3-fill text-danger" style="cursor:pointer;" onclick="this.closest('tr').remove();"></i></td>
             `;
             tbody.appendChild(tr);
 
@@ -679,37 +450,17 @@
                 let unitInput = tr.querySelector(".unit-input");
                 if(vendorData[vendor][preselectIndex]) unitInput.value = vendorData[vendor][preselectIndex].unit;
             }
-            $(`#${newSelectId}`).on('select2:select', function (e) { updateUnit(this); });
-        }
-
-        function updateUnit(selectElement) {
-            var selectedValue = selectElement.value;
-            var allSelects = document.querySelectorAll(".item-select");
-            var duplicateCount = 0;
-            allSelects.forEach(el => { if(el.value === selectedValue && selectedValue !== "") duplicateCount++; });
-
-            if(duplicateCount > 1) {
-                Swal.fire("Duplicate Item", "Item already in list.", "warning");
-                $(selectElement).val(null).trigger('change');
-                selectElement.closest("tr").querySelector(".unit-input").value = "";
-                return;
-            }
-
-            var vendor = $('#vendorSelect').val();
-            if(vendorData[vendor] && vendorData[vendor][selectedValue]){
-                selectElement.closest("tr").querySelector(".unit-input").value = vendorData[vendor][selectedValue].unit;
-            }
-        }
-
-        function removeRow(icon) {
-            icon.closest("tr").remove();
-            document.querySelectorAll("#entryTableBody tr .row-number").forEach((td, index) => td.innerText = index + 1);
+            $(`#${newSelectId}`).on('select2:select', function (e) { 
+                var vendor = $('#vendorSelect').val();
+                if(vendorData[vendor] && vendorData[vendor][this.value]) {
+                     this.closest("tr").querySelector(".unit-input").value = vendorData[vendor][this.value].unit;
+                }
+            });
         }
 
         function submitPO() {
             var vendor = $('#vendorSelect').val();
             var poDate = document.getElementById("poDate").value;
-
             if(!vendor) return Swal.fire("Missing Data", "Select vendor.", "error");
             if(!poDate) return Swal.fire("Missing Data", "Select date.", "error");
 
@@ -722,12 +473,8 @@
                 var qty = row.querySelector(".qty-input").value;
                 var unit = row.querySelector(".unit-input").value;
                 var note = row.querySelector(".note-input").value;
-
-                if(!itemIdx || !qty || qty <= 0) {
-                    isValid = false;
-                    row.querySelector(".qty-input").style.borderColor = "red";
-                } else {
-                    row.querySelector(".qty-input").style.borderColor = "#d1d5db";
+                if(!itemIdx || !qty || qty <= 0) { isValid = false; } 
+                else {
                     var realItemName = vendorData[vendor][itemIdx].item;
                     itemsToSave.push({ itemName: realItemName, qty: qty, unit: unit, note: note });
                 }
@@ -737,44 +484,26 @@
             if(!isValid) return Swal.fire("Invalid", "Check Qty fields.", "error");
 
             showLoading(true, "Saving PO...");
+            let payload = { vendor: vendor, poDate: poDate, items: itemsToSave, poId: currentEditId };
 
-            let payload = { 
-                vendor: vendor, 
-                poDate: poDate, 
-                items: itemsToSave,
-                poId: currentEditId 
-            };
-
-            fetch(API_URL + "?action=saveOrder", {
-                method: "POST",
-                body: JSON.stringify(payload)
-            })
+            fetch(API_URL + "?action=saveOrder", { method: "POST", body: JSON.stringify(payload) })
             .then(res => res.json())
             .then(res => {
                 showLoading(false);
                 if(res.status === 'success') {
-                    let msg = currentEditId ? "PO Updated Successfully!" : "PO Created Successfully!";
+                    let msg = currentEditId ? "PO Updated Successfully!" : "PO Created: " + res.id;
                     Swal.fire({ title: 'Success!', text: msg, icon: 'success', confirmButtonColor: '#008080' })
-                    .then(() => {
-                        resetFormState();
-                        switchView('list');
-                        fetchListPO();
-                    });
-                } else {
-                    throw new Error(res.message);
-                }
+                    .then(() => { resetFormState(); switchView('list'); fetchListPO(); });
+                } else { throw new Error(res.message); }
             })
-            .catch(err => {
-                showLoading(false);
-                Swal.fire('Failed', err.message, 'error');
-            });
+            .catch(err => { showLoading(false); Swal.fire('Failed', err.message, 'error'); });
         }
 
         function calculateStats(data) {
             document.getElementById("statTotal").innerText = data.length;
             const today = new Date().toDateString();
             document.getElementById("statToday").innerText = data.filter(po => new Date(po.createdAt).toDateString() === today).length;
-            document.getElementById("statWaiting").innerText = data.filter(po => po.status.includes("Menunggu") || po.status.includes("Waiting")).length;
+            document.getElementById("statWaiting").innerText = data.filter(po => po.status.includes("Menunggu")).length;
             document.getElementById("statItems").innerText = data.reduce((sum, po) => sum + po.itemsCount, 0);
         }
 
