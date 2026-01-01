@@ -78,11 +78,16 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 .btn-approve { background: #10b981; }
 .btn-pdf { background: #2563eb; }
 
-/* --- PDF STYLE UPDATES FOR A5 LANDSCAPE --- */
+/* --- PDF STYLE UPDATES --- */
 #pdf-hidden-container { position: absolute; left: -9999px; top: 0; }
 #pdfContent { 
     background: #fff; 
-    width: 190mm; /* UPDATED: Adjusted width to fit A5 landscape minus margins */
+    /* WIDTH ADJUSTMENT:
+       A5 Landscape = 210mm wide.
+       Margins = 0.5cm Left + 0.5cm Right = 10mm.
+       Safe content width = 190mm (leaving 10mm buffer).
+    */
+    width: 190mm; 
     padding: 0; 
     font-family: "Arial", sans-serif; 
     color: #000; 
@@ -521,9 +526,9 @@ async function updateStatus(id, stat) {
 
 function dlPDF(filenameId) {
     const el = document.getElementById('pdfContent');
-    // Config for A5 Landscape (Updated for Sleek Margins)
+    // Config for A5 Landscape (Updated for Requested Margins)
     const opt = { 
-        margin: [0.5, 1.0, 0.5, 1.0], // Top 0.5cm, Left/Right 1cm
+        margin: [1, 0.5, 1, 0.5], // Top 1cm, Left 0.5cm, Bottom 1cm, Right 0.5cm
         filename: `Faktur_${filenameId}.pdf`, 
         image: { type: 'jpeg', quality: 0.98 }, 
         html2canvas: { scale: 2, useCORS: true, scrollY: 0 }, 
