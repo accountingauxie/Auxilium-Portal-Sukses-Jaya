@@ -327,7 +327,7 @@ function renderProduction(data) {
     });
 }
 
-// --- REPORT LOGIC ---
+// --- REPORT LOGIC (FIXED NON-SPANDEK UNIT) ---
 function openReportModal() {
     if(globalRemainingData.length === 0) {
         alert("Data belum siap, mohon tunggu loading selesai.");
@@ -351,8 +351,8 @@ function generateCustomerReport(cust) {
     let reportMap = {};
     globalRemainingData.filter(d => d.customer === cust).forEach(po => {
         po.items.forEach(item => {
-            // FIX LOGIC REPORT: Menangani Qty Based
-            let hasBalance = item.isQtyBased ? (item.remainingMeter > 0) : (item.remainingMeter > 0.1);
+            let isQtyBased = item.isQtyBased; 
+            let hasBalance = isQtyBased ? (item.remainingMeter > 0) : (item.remainingMeter > 0.1);
 
             if(!item.isLineClosed && hasBalance) {
                 if(!reportMap[item.name]) {
@@ -361,7 +361,7 @@ function generateCustomerReport(cust) {
                 reportMap[item.name].totalBalance += item.remainingMeter;
                 reportMap[item.name].details.push({ 
                     inv: po.poId, date: po.date, balance: item.remainingMeter, 
-                    type: item.type, unit: item.unit 
+                    type: item.type, unit: item.unit, isQtyBased: item.isQtyBased // Tambahkan isQtyBased untuk cek nanti
                 });
             }
         });
@@ -375,14 +375,20 @@ function generateCustomerReport(cust) {
     let html = `<h4 style="border-bottom:2px solid #ddd; padding-bottom:5px;">Laporan Saldo: ${cust}</h4>`;
     html += `<table class="report-table"><thead><tr><th>Nama Barang</th><th>Invoice / PO</th><th>Tanggal PO</th><th>Satuan</th><th style="text-align:right;">Sisa</th></tr></thead><tbody>`;
     Object.values(reportMap).forEach(group => {
-        let unitLabel = group.details[0].unit || "Pcs";
-        // Jika Spandek, paksa label 'Meter' di header group supaya jelas, tapi data detail ikut unit row
-        let displayUnit = (group.details[0].type && group.details[0].type.toLowerCase().includes("spandek")) ? "Meter" : unitLabel;
+        let det0 = group.details[0];
+        // Logic Header: Jika QtyBased (Non Spandek), pakai satuan asli. Jika Spandek, paksa "Meter".
+        let unitLabel = (det0.isQtyBased) ? (det0.unit || "Pcs") : "Meter";
 
-        html += `<tr class="group-header"><td colspan="4">${group.name} <small>(${group.details[0].type})</small></td><td style="text-align:right; font-size:13px;">Total: ${group.totalBalance.toFixed(2)}</td></tr>`;
+        html += `<tr class="group-header"><td colspan="4">${group.name} <small>(${det0.type})</small></td><td style="text-align:right; font-size:13px;">Total: ${group.totalBalance.toFixed(2)}</td></tr>`;
         group.details.forEach(det => {
             let rowUnit = det.unit || "-";
-            if(det.type && det.type.toLowerCase().includes("spandek")) rowUnit = "Meter"; // Spandek selalu meter
+            
+            // FIX LOGIC:
+            // Override jadi "Meter" HANYA jika tipe Spandek DAN BUKAN Non-Spandek/QtyBased
+            // "Non Spandek" mengandung kata "spandek", jadi kita perlu pengecekan !isQtyBased agar tidak salah ubah.
+            if (!det.isQtyBased && det.type && det.type.toLowerCase().includes("spandek")) {
+                 rowUnit = "Meter";
+            }
             
             html += `<tr class="sub-row"><td></td><td>${det.inv}</td><td>${det.date}</td><td>${rowUnit}</td><td style="text-align:right;">${det.balance.toFixed(2)}</td></tr>`;
         });
@@ -401,7 +407,7 @@ function printReportDiv() {
     win.print();
 }
 
-// --- SETUP & PRODUCTION LOGIC (No Changes) ---
+// --- SETUP & PRODUCTION LOGIC ---
 function openSetup(orderId) {
     activeOrderId = orderId;
     const order = currentOrders[orderId];
@@ -669,7 +675,7 @@ function generatePDF(type) {
     html2pdf().set({ margin:0.5, filename:`${type}_${activeOrderId}.pdf` }).from(document.getElementById('pdfContent')).save();
 }
 
-// --- CREATE REQUEST LOGIC (MULTI-LINE & QTY BASED SUPPORT) ---
+// --- CREATE REQUEST LOGIC ---
 function openCreateModal() {
     document.getElementById('createModal').style.display = 'flex';
     document.getElementById('createItemsContainer').innerHTML = '';
@@ -691,10 +697,9 @@ function loadCustomerItemsAggregated(cust) {
     aggregatedItemsMap = {}; 
     if(!cust) return;
 
-    // 1. Group Data by Item Name & Detect Type (Meter/Qty)
     globalRemainingData.filter(d => d.customer === cust).forEach(po => {
         po.items.forEach(item => {
-            let isQtyBased = item.isQtyBased; // Flag dari backend
+            let isQtyBased = item.isQtyBased; 
             let hasBalance = isQtyBased ? (item.remainingMeter > 0) : (item.remainingMeter > 0.1);
 
             if(!item.isLineClosed && hasBalance) {
@@ -716,7 +721,6 @@ function loadCustomerItemsAggregated(cust) {
         });
     });
 
-    // 2. Render UI
     Object.keys(aggregatedItemsMap).forEach((itemName, index) => {
         const data = aggregatedItemsMap[itemName];
         const safeName = index;
@@ -727,9 +731,7 @@ function loadCustomerItemsAggregated(cust) {
         div.dataset.max = data.totalRemaining;
         div.dataset.isQty = data.isQtyBased; 
 
-        // Label Satuan
         let unitLabel = data.isQtyBased ? (data.poList[0].unit || 'Pcs') : 'm';
-        // Style untuk menyembunyikan input meter jika QtyBased
         let hideMeterStyle = data.isQtyBased ? 'display:none;' : '';
 
         div.innerHTML = `
@@ -798,7 +800,6 @@ function calcMultiTotal(safeId) {
         let q = parseFloat(qRaw) || 0;
         if(qRaw.includes('.')) { row.querySelector('.inp-qty').value = Math.floor(q); q = Math.floor(q); }
         
-        // FIX: Jika Qty Based, total adalah SUM Qty. Jika Spandek, SUM (Meter * Qty)
         if (isQtyBased) {
              totalUsed += q;
         } else {
@@ -845,8 +846,6 @@ async function submitRequestAggregated() {
         rows.forEach(row => {
             const reqLen = parseFloat(row.querySelector('.inp-meter')?.value) || 0;
             const reqQty = parseFloat(row.querySelector('.inp-qty').value) || 0;
-            
-            // Hitung deduction value berdasarkan tipe
             const deductionValue = isQtyBased ? reqQty : (reqLen * reqQty);
 
             if (reqQty < 0) { isValid = false; }
@@ -861,7 +860,7 @@ async function submitRequestAggregated() {
                     itemName: itemName,
                     length: isQtyBased ? 0 : reqLen,
                     qty: reqQty,
-                    totalDeduction: deductionValue, // Backend akan membaca ini
+                    totalDeduction: deductionValue, 
                     isQtyBased: isQtyBased,
                     type: refData ? refData.type : '',
                     unit: refData ? refData.unit : ''
