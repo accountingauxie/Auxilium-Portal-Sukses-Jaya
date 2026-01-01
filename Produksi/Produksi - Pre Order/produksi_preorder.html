@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
-/* --- SYSTEM STYLE --- */
+/* --- SYSTEM STYLE (Modern UI) --- */
 :root { --primary: #116999; --bg: #f4f7f6; --text: #333; --red: #b91c1c; --green: #047857; --orange: #b75900; }
 * { box-sizing: border-box; }
 body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background: var(--bg); color: var(--text); }
@@ -72,28 +72,32 @@ table.report-table td { padding: 8px 10px; border: 1px solid #ddd; font-size: 12
 .group-header { background-color: #e0f2fe; font-weight: bold; color: #0c4a6e; }
 .sub-row td { background-color: #fff; color: #555; font-style: italic; padding-left: 30px; }
 
-/* --- PDF GENERATION STYLE (A5 LANDSCAPE FIXED) --- */
-#pdf-hidden-container { position: fixed; left: -9999px; top: 0; z-index: -1; }
-.pdf-page {
-    width: 210mm; height: 148mm; /* A5 Landscape */
-    background: #fff; padding: 10mm 15mm; box-sizing: border-box;
-    font-family: "Arial", sans-serif; font-size: 10pt; color: #000;
-    position: relative; display: flex; flex-direction: column;
-}
-.pdf-header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-.pdf-title { font-size: 16pt; font-weight: 800; text-transform: uppercase; text-decoration: underline; margin-bottom: 5px; }
-.pdf-recipient { font-size: 10pt; line-height: 1.3; }
-.pdf-meta-table { border-collapse: collapse; font-size: 9pt; margin-left: auto; }
-.pdf-meta-table td { border: 1px solid #000; padding: 2px 5px; }
-.pdf-main-table { width: 100%; border-collapse: collapse; margin-top: 5px; flex: 1; }
-.pdf-main-table th { border: 1px solid #000; padding: 4px; font-size: 9pt; font-weight: bold; text-align: center; background-color: #f0f0f0; }
-.pdf-main-table td { border: 1px solid #000; padding: 4px; font-size: 9pt; vertical-align: middle; }
-.pdf-footer-section { margin-top: auto; padding-top: 10px; }
-.company-info { font-size: 8pt; font-weight: bold; margin-bottom: 10px; line-height: 1.2; }
-.signature-row { display: flex; justify-content: space-between; text-align: center; width: 100%; margin-top: 5px; }
-.sig-box { flex: 1; display: flex; flex-direction: column; justify-content: space-between; height: 80px; }
-.sig-title { font-size: 9pt; font-weight: bold; margin-bottom: 40px; }
-.sig-name { font-size: 9pt; border-top: 1px solid #000; width: 80%; margin: 0 auto; padding-top: 2px; }
+/* --- PDF GENERATION STYLES (COPIED FROM REFERENCE - A5 LANDSCAPE) --- */
+#pdf-hidden-container { position: absolute; left: -9999px; top: 0; }
+#pdfContent { background: #fff; width: 100%; padding: 0; font-family: "Arial", sans-serif; color: #000; }
+.pdf-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+.pdf-title { font-size: 24px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-top: 5px; color:#000; }
+.company-details { text-align: right; font-size: 9px; color: #333; line-height: 1.4; }
+.company-name { font-weight: 700; font-size: 11px; color: #F59E0B; text-transform: uppercase; margin-bottom: 2px; }
+.pdf-info { display: flex; justify-content: space-between; margin-bottom: 15px; }
+.bill-to { width: 60%; }
+.pdf-bill-label { font-size: 9px; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; color:#000; }
+.pdf-cust-name { font-size: 13px; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; color:#000; }
+.pdf-cust-addr { font-size: 9px; line-height: 1.5; color: #444; }
+.meta-data { width: 35%; }
+.pdf-meta-row { display: flex; justify-content: space-between; font-size: 9px; margin-bottom: 4px; width: 100%; }
+.pdf-meta-key { font-weight: 700; color:#000; }
+/* Table Styles PDF */
+table.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+table.pdf-table th { font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 6px 4px; color: #000; border-top: 1px solid #000; border-bottom: 1px solid #000; letter-spacing: 0.5px; text-align: left; }
+table.pdf-table td { padding: 6px 4px; font-size: 10px; vertical-align: top; border-bottom: 1px solid #eee; }
+/* Signature Styles PDF */
+.pdf-signature-wrapper { margin-top: 25px; display: flex; justify-content: space-between; page-break-inside: avoid; padding-bottom: 10px; }
+.sig-box { text-align: center; flex: 1; }
+.sig-title { font-size: 10px; font-weight: 700; color: #000; margin-bottom: 45px; }
+.sig-name { font-size: 10px; font-weight: 700; color: #000; border-top: 1px solid #333; display: inline-block; padding-top: 4px; min-width: 120px; }
+/* Helper */
+.t-center { text-align: center !important; } .t-right { text-align: right !important; }
 </style>
 </head>
 <body>
@@ -219,43 +223,44 @@ table.report-table td { padding: 8px 10px; border: 1px solid #ddd; font-size: 12
 </div>
 
 <div id="pdf-hidden-container">
-    <div id="pdfContent" class="pdf-page">
-        <div class="pdf-header-section">
-            <div style="width: 50%;">
-                <div class="pdf-title" id="pdfDocTitle">SURAT JALAN</div>
-                <div class="pdf-recipient">
-                    <strong>KEPADA YTH.</strong><br>
-                    <span id="pdfCustName" style="font-size: 11pt;">-</span>
-                </div>
-            </div>
-            <div style="width: 40%; display:flex; justify-content:flex-end;">
-                <table class="pdf-meta-table">
-                    <tr><td style="background:#eee; font-weight:bold;">No Order</td><td id="pdfOrderNo">-</td></tr>
-                    <tr><td style="background:#eee; font-weight:bold;">Tanggal</td><td id="pdfDate">-</td></tr>
-                    <tr><td style="background:#eee; font-weight:bold;">Tipe Order</td><td>General Order</td></tr>
-                </table>
+    <div id="pdfContent">
+        <div class="pdf-header">
+            <div class="pdf-title" id="pdfDocTitle">SURAT</div>
+            <div class="company-details">
+                <div class="company-name">CV. SUKSES JAYA MAKMUR LESTARI</div>
+                <div>JL. D.I Panjaitan, RT/RW. 008/003<br>Kel. Wundudopi, Kec. Baruga, Kendari<br>Sulawesi Tenggara | Telp. 0822 4708 4908</div>
             </div>
         </div>
-        <div style="flex-grow: 1;">
-            <table class="pdf-main-table">
-                <thead id="pdfTableHead"></thead>
-                <tbody id="pdfItemsBody"></tbody>
-            </table>
-        </div>
-        <div class="pdf-footer-section">
-            <div class="company-info">
-                CV. SUKSES JAYA MAKMUR LESTARI<br>
-                <span style="font-weight:normal;">JL. D.I Panjaitan, RT/RW. 008/003, Kel. Wundudopi, Kec. Baruga, Kendari</span><br>
-                <span style="font-weight:normal;">Sulawesi Tenggara | Telp. 0822 4708 4908</span>
+        <div class="pdf-info">
+            <div class="bill-to">
+                <div class="pdf-bill-label">KEPADA YTH.</div>
+                <div class="pdf-cust-name" id="pdfCustName">-</div>
+                <div class="pdf-cust-addr">Kendari</div>
             </div>
-            <div id="pdfSignatures" class="signature-row"></div>
+            <div class="meta-data">
+                <div class="pdf-meta-row"><span class="pdf-meta-key">No Order</span><span id="pdfOrderNo">-</span></div>
+                <div class="pdf-meta-row"><span class="pdf-meta-key">Tanggal</span><span id="pdfDate">-</span></div>
+                <div class="pdf-meta-row"><span class="pdf-meta-key">Tipe Order</span><span id="pdfType">General Order</span></div>
+            </div>
         </div>
+        
+        <table class="pdf-table">
+            <thead>
+                <tr id="pdfTableHead">
+                    </tr>
+            </thead>
+            <tbody id="pdfItemsBody">
+                </tbody>
+        </table>
+        
+        <div id="pdfSignatureRow" class="pdf-signature-wrapper">
+            </div>
     </div>
 </div>
 
 <script>
 // --- KONFIGURASI API ---
-const API_URL = "https://script.google.com/macros/s/AKfycbyr2IHPU_J9VdO16MKBUi-MTEo-FVtKH3rCwHwFTMZSDv8BfD_gAvU-0FXX7yR1EOAwFA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyXS4HZALNgggpEwOucoNhtAeE21boEi6tFM_sy16z-qnkWISK2gg9ysy06jx4pvio_5Q/exec";
 const TYPE_CODES = { 'Custom': 'CS', 'Plat': 'PL' };
 
 let currentView = 'Remaining';
@@ -653,47 +658,113 @@ function generatePDF(type) {
     const docTitle = document.getElementById('pdfDocTitle');
     const tableHead = document.getElementById('pdfTableHead');
     const tableBody = document.getElementById('pdfItemsBody');
-    const sigContainer = document.getElementById('pdfSignatures');
+    const sigContainer = document.getElementById('pdfSignatureRow');
 
-    // 1. Header Info
+    // 1. Fill Header Info
     document.getElementById('pdfOrderNo').innerText = activeOrderId;
     document.getElementById('pdfCustName').innerText = o.customer;
+    document.getElementById('pdfType').innerText = o.type || 'General';
     const today = new Date();
     const dateStr = today.getDate().toString().padStart(2, '0') + '/' + (today.getMonth()+1).toString().padStart(2, '0') + '/' + today.getFullYear();
     document.getElementById('pdfDate').innerText = dateStr;
 
-    // 2. Type Configuration
+    // 2. Configure Type (SPK vs SJ)
     tableBody.innerHTML = '';
     sigContainer.innerHTML = '';
 
     if (type === 'SJ') {
         docTitle.innerText = "SURAT JALAN";
-        tableHead.innerHTML = `<tr><th style="width:5%;">NO</th><th style="width:45%;">NAMA BARANG</th><th style="width:10%;">METER</th><th style="width:10%;">QTY</th><th style="width:30%;">KETERANGAN</th></tr>`;
-        o.items.forEach((i, idx) => {
-            tableBody.innerHTML += `<tr><td style="text-align:center;">${idx + 1}</td><td>${i.item}<br><small style="font-style:italic;">${i.type || ''}</small></td><td style="text-align:center;">${i.meter}</td><td style="text-align:center;">${i.qty}</td><td></td></tr>`;
+        
+        // Header Surat Jalan
+        tableHead.innerHTML = `
+            <th class="t-center" style="width:5%;">NO</th>
+            <th class="t-left" style="width:40%;">NAMA BARANG</th>
+            <th class="t-center" style="width:10%;">METER</th>
+            <th class="t-center" style="width:10%;">QTY</th>
+            <th class="t-left" style="width:35%;">KETERANGAN</th>
+        `;
+
+        // Logic Grouping untuk Surat Jalan (Aggregate Items)
+        let grouped = {};
+        o.items.forEach(item => {
+            let key = `${item.item}_${item.meter}_${item.type}`;
+            if (!grouped[key]) { 
+                grouped[key] = { ...item, qty: 0 }; 
+            }
+            grouped[key].qty += parseInt(item.qty);
         });
+        
+        Object.values(grouped).forEach((i, idx) => {
+            tableBody.innerHTML += `
+                <tr>
+                    <td class="t-center">${idx + 1}</td>
+                    <td><strong>${i.item}</strong><br><small style="color:#666;">${i.type}</small></td>
+                    <td class="t-center">${i.meter}</td>
+                    <td class="t-center">${i.qty}</td>
+                    <td></td>
+                </tr>
+            `;
+        });
+
+        // Signatures (4 Kolom)
         const signatures = ["Pembuat Nota", "Kepala Gudang", "Sopir", "Penerima Barang"];
         signatures.forEach(role => {
-            sigContainer.innerHTML += `<div class="sig-box"><div class="sig-title">${role}</div><div class="sig-name">( ....................... )</div></div>`;
+            sigContainer.innerHTML += `
+                <div class="sig-box">
+                    <div class="sig-title">${role}</div>
+                    <div class="sig-name">&nbsp;</div>
+                </div>
+            `;
         });
 
     } else {
         docTitle.innerText = "SURAT PERINTAH KERJA";
-        tableHead.innerHTML = `<tr><th style="width:5%;">NO</th><th style="width:35%;">NAMA BARANG</th><th style="width:10%;">METER</th><th style="width:10%;">QTY</th><th style="width:20%;">DETAIL MESIN/KPC</th><th style="width:20%;">WE CODE</th></tr>`;
+
+        // Header SPK
+        tableHead.innerHTML = `
+            <th class="t-center" style="width:5%;">NO</th>
+            <th class="t-left" style="width:35%;">NAMA BARANG</th>
+            <th class="t-center" style="width:10%;">METER</th>
+            <th class="t-center" style="width:10%;">QTY</th>
+            <th class="t-left" style="width:20%;">DETAIL MESIN/KPC</th>
+            <th class="t-left" style="width:20%;">WE CODE</th>
+        `;
+
+        // Logic SPK (List Semua Item)
         o.items.forEach((i, idx) => {
-            const mesinInfo = (i.machine && i.kpc) ? `${i.machine} / ${i.kpc}` : '-/-';
-            tableBody.innerHTML += `<tr><td style="text-align:center;">${idx + 1}</td><td>${i.item}<br><small style="font-style:italic;">${i.type || ''}</small></td><td style="text-align:center;">${i.meter}</td><td style="text-align:center;">${i.qty}</td><td style="text-align:center;">${mesinInfo}</td><td style="text-align:center; font-family:monospace; font-size:8pt;">${i.we || ''}</td></tr>`;
+            const mesinInfo = (i.machine && i.kpc) ? `${i.machine} / ${i.kpc}` : '';
+            tableBody.innerHTML += `
+                <tr>
+                    <td class="t-center">${idx + 1}</td>
+                    <td><strong>${i.item}</strong><br><small style="color:#666;">${i.type}</small></td>
+                    <td class="t-center">${i.meter}</td>
+                    <td class="t-center">${i.qty}</td>
+                    <td>${mesinInfo}</td>
+                    <td style="font-family:monospace;">${i.we || ''}</td>
+                </tr>
+            `;
         });
-        sigContainer.innerHTML = `<div class="sig-box" style="flex: 0 0 30%;"><div class="sig-title">Admin Produksi</div><div class="sig-name">( ....................... )</div></div><div style="flex:1;"></div><div class="sig-box" style="flex: 0 0 30%;"><div class="sig-title">Kepala Gudang</div><div class="sig-name">( ....................... )</div></div>`;
+
+        // Signatures (2 Kolom)
+        const signatures = ["Admin Produksi", "Kepala Gudang"];
+        signatures.forEach(role => {
+            sigContainer.innerHTML += `
+                <div class="sig-box">
+                    <div class="sig-title">${role}</div>
+                    <div class="sig-name">&nbsp;</div>
+                </div>
+            `;
+        });
     }
 
+    // 3. Generate PDF (A5 Landscape Config)
     const element = document.getElementById('pdfContent');
     const opt = {
-        margin: 0,
-        filename: `${type}_${activeOrderId}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a5', orientation: 'landscape' }
+        margin:       [0.39, 0.29, 0.39, 0.29], // In Inches (~1cm top/bot, ~0.75cm left/right)
+        filename:     `${type}_${activeOrderId}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'a5', orientation: 'landscape' }
     };
     html2pdf().set(opt).from(element).save();
 }
