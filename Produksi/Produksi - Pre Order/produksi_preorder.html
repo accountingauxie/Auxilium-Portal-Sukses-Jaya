@@ -6,12 +6,10 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
-/* --- SYSTEM STYLE (MATCHING GENERAL ORDER) --- */
+/* --- SYSTEM STYLE --- */
 :root { --primary: #116999; --bg: #f4f7f6; --text: #333; --red: #b91c1c; --green: #047857; --orange: #b75900; }
 * { box-sizing: border-box; }
 body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background: var(--bg); color: var(--text); }
-
-/* NAVBAR & LAYOUT (Sama seperti sebelumnya) */
 .aux-navbar { background: #fff; height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; box-shadow: 0 1px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
 .aux-menu { display: flex; gap: 10px; height: 100%; align-items: center; }
 .aux-link { text-decoration: none; color: #666; font-weight: 600; padding: 8px 14px; border-radius: 6px; }
@@ -22,8 +20,6 @@ body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background:
 .category-tabs { margin-bottom: 20px; border-bottom: 2px solid #ddd; display: flex; }
 .cat-btn { background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; }
 .cat-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
-
-/* TABLE & BADGES (Sama seperti sebelumnya) */
 .table-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; }
 table.xero-table { width: 100%; border-collapse: collapse; }
 table.xero-table th { text-align: left; padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; color: #555; font-size: 12px; font-weight: bold; text-transform: uppercase; }
@@ -36,8 +32,6 @@ table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-ali
 .badge-completed { background: #ecfdf5; color: var(--green); border: 1px solid #a7f3d0; }
 .badge-delivery { background: #eef2ff; color: #4338ca; border: 1px solid #c7d2fe; }
 .badge-cancel { background: #fef2f2; color: var(--red); border: 1px solid #fecaca; }
-
-/* BUTTONS */
 .btn { padding: 8px 16px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s; color: white; display: inline-flex; align-items: center; gap: 5px; }
 .btn-sm { padding: 4px 8px; font-size: 11px; }
 .btn-primary { background: var(--primary); }
@@ -51,26 +45,18 @@ table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-ali
 .btn-report { background: #7c3aed; color: white; }
 .btn-add-line { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; font-size: 11px; margin-top: 5px; padding: 4px 10px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
 .btn-add-line:hover { background: #bbf7d0; }
-
-/* PROGRESS BAR */
 .progress-bar { background: #e5e7eb; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 5px; width: 100%; }
 .progress-fill { height: 100%; background: #10b981; width: 0%; transition: width 0.5s; }
-
-/* MODAL STYLES */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: flex-start; justify-content: center; z-index: 10000; padding-top: 50px; overflow-y: auto; }
 .modal-box { background: #fff; width: 1350px; max-width: 98%; height: auto; max-height: 90vh; display: flex; flex-direction: column; border-radius: 8px; margin-bottom: 50px; }
 .modal-header, .modal-footer { padding: 20px 30px; background: #fff; border-bottom: 1px solid #eee; }
 .modal-footer { background: #f9fafb; text-align: right; border-top: 1px solid #eee; }
 .modal-body { flex: 1; overflow-y: auto; padding: 20px; }
-
-/* FORM ELEMENTS INSIDE TABLE */
 .prod-input, .prod-select { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
 .split-row { background-color: #fffde7; }
 .disabled-row { background-color: #f9fafb; color: #9ca3af; }
 .disabled-row input, .disabled-row select { background: #e5e7eb; border-color: #d1d5db; pointer-events: none; }
 .check-production { width: 18px; height: 18px; cursor: pointer; accent-color: var(--green); }
-
-/* --- CREATE REQUEST SPECIFIC (UPDATED) --- */
 .request-item { background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 15px; margin-bottom: 10px; border-left: 4px solid var(--primary); }
 .request-header { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; align-items: center; }
 .rows-container { display: flex; flex-direction: column; gap: 8px; }
@@ -80,16 +66,11 @@ table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-ali
 .balance-text { font-size: 13px; font-weight: bold; color: var(--primary); }
 .over-limit { color: var(--red); }
 .row-remove-btn { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; width: 28px; height: 28px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-.row-remove-btn:hover { background: #fecaca; }
-
-/* REPORT TABLE STYLES */
 table.report-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
 table.report-table th { background: #f3f4f6; padding: 10px; border: 1px solid #ddd; text-align: left; font-size: 12px; }
 table.report-table td { padding: 8px 10px; border: 1px solid #ddd; font-size: 12px; }
 .group-header { background-color: #e0f2fe; font-weight: bold; color: #0c4a6e; }
 .sub-row td { background-color: #fff; color: #555; font-style: italic; padding-left: 30px; }
-
-/* PDF STYLES */
 #pdf-hidden-container { position: absolute; left: -9999px; top: 0; }
 #pdfContent { background: #fff; width: 100%; padding: 0; font-family: "Arial", sans-serif; color: #000; }
 .pdf-header { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 2px solid #000; padding-bottom: 10px; }
@@ -263,7 +244,7 @@ table.pdf-table td { font-size: 10px; border: 1px solid #000; padding: 5px; }
 
 <script>
 // --- KONFIGURASI API ---
-const API_URL = "https://script.google.com/macros/s/AKfycbzIkv_dT9qNE7L35Nuau3rDEgIm8scLnwsoYkhFl0qxAAeo_KeCtL4pLhKstbXY8CJhZA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyXS4HZALNgggpEwOucoNhtAeE21boEi6tFM_sy16z-qnkWISK2gg9ysy06jx4pvio_5Q/exec";
 const TYPE_CODES = { 'Custom': 'CS', 'Plat': 'PL' };
 
 let currentView = 'Remaining';
@@ -323,7 +304,7 @@ function renderPreOrders(data) {
         po.items.forEach(item => {
             let pct = item.totalMeter > 0 ? (item.processedMeter / item.totalMeter) * 100 : 0;
             if(pct > 100) pct = 100;
-            itemsHtml += `<div style="margin-bottom:5px;"><div style="display:flex; justify-content:space-between; font-size:11px;"><strong>${item.name}</strong><span>${item.processedMeter.toFixed(2)} / ${item.totalMeter.toFixed(2)}m</span></div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%; background:${item.isLineClosed?'#999':'#10b981'};"></div></div></div>`;
+            itemsHtml += `<div style="margin-bottom:5px;"><div style="display:flex; justify-content:space-between; font-size:11px;"><strong>${item.name}</strong><span>${item.processedMeter.toFixed(2)} / ${item.totalMeter.toFixed(2)}</span></div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%; background:${item.isLineClosed?'#999':'#10b981'};"></div></div></div>`;
         });
         tbody.innerHTML += `<tr><td style="font-weight:bold; color:#116999;">${po.poId}</td><td>${po.customer}</td><td>${po.date}</td><td>${itemsHtml}</td><td><span class="badge bg-open">${po.status}</span></td></tr>`;
     });
@@ -370,12 +351,18 @@ function generateCustomerReport(cust) {
     let reportMap = {};
     globalRemainingData.filter(d => d.customer === cust).forEach(po => {
         po.items.forEach(item => {
-            if(!item.isLineClosed && item.remainingMeter > 0.1) {
+            // FIX LOGIC REPORT: Menangani Qty Based
+            let hasBalance = item.isQtyBased ? (item.remainingMeter > 0) : (item.remainingMeter > 0.1);
+
+            if(!item.isLineClosed && hasBalance) {
                 if(!reportMap[item.name]) {
                     reportMap[item.name] = { name: item.name, totalBalance: 0, details: [] };
                 }
                 reportMap[item.name].totalBalance += item.remainingMeter;
-                reportMap[item.name].details.push({ inv: po.poId, date: po.date, balance: item.remainingMeter, type: item.type });
+                reportMap[item.name].details.push({ 
+                    inv: po.poId, date: po.date, balance: item.remainingMeter, 
+                    type: item.type, unit: item.unit 
+                });
             }
         });
     });
@@ -386,11 +373,18 @@ function generateCustomerReport(cust) {
     }
 
     let html = `<h4 style="border-bottom:2px solid #ddd; padding-bottom:5px;">Laporan Saldo: ${cust}</h4>`;
-    html += `<table class="report-table"><thead><tr><th>Nama Barang</th><th>Invoice / PO</th><th>Tanggal PO</th><th style="text-align:right;">Sisa (m)</th></tr></thead><tbody>`;
+    html += `<table class="report-table"><thead><tr><th>Nama Barang</th><th>Invoice / PO</th><th>Tanggal PO</th><th>Satuan</th><th style="text-align:right;">Sisa</th></tr></thead><tbody>`;
     Object.values(reportMap).forEach(group => {
-        html += `<tr class="group-header"><td colspan="3">${group.name} <small>(${group.details[0].type})</small></td><td style="text-align:right; font-size:13px;">Total: ${group.totalBalance.toFixed(2)}</td></tr>`;
+        let unitLabel = group.details[0].unit || "Pcs";
+        // Jika Spandek, paksa label 'Meter' di header group supaya jelas, tapi data detail ikut unit row
+        let displayUnit = (group.details[0].type && group.details[0].type.toLowerCase().includes("spandek")) ? "Meter" : unitLabel;
+
+        html += `<tr class="group-header"><td colspan="4">${group.name} <small>(${group.details[0].type})</small></td><td style="text-align:right; font-size:13px;">Total: ${group.totalBalance.toFixed(2)}</td></tr>`;
         group.details.forEach(det => {
-            html += `<tr class="sub-row"><td></td><td>${det.inv}</td><td>${det.date}</td><td style="text-align:right;">${det.balance.toFixed(2)}</td></tr>`;
+            let rowUnit = det.unit || "-";
+            if(det.type && det.type.toLowerCase().includes("spandek")) rowUnit = "Meter"; // Spandek selalu meter
+            
+            html += `<tr class="sub-row"><td></td><td>${det.inv}</td><td>${det.date}</td><td>${rowUnit}</td><td style="text-align:right;">${det.balance.toFixed(2)}</td></tr>`;
         });
     });
     html += `</tbody></table>`;
@@ -407,7 +401,7 @@ function printReportDiv() {
     win.print();
 }
 
-// --- SETUP & PRODUCTION LOGIC ---
+// --- SETUP & PRODUCTION LOGIC (No Changes) ---
 function openSetup(orderId) {
     activeOrderId = orderId;
     const order = currentOrders[orderId];
@@ -675,7 +669,7 @@ function generatePDF(type) {
     html2pdf().set({ margin:0.5, filename:`${type}_${activeOrderId}.pdf` }).from(document.getElementById('pdfContent')).save();
 }
 
-// --- CREATE REQUEST LOGIC (MULTI-LINE SUPPORT) ---
+// --- CREATE REQUEST LOGIC (MULTI-LINE & QTY BASED SUPPORT) ---
 function openCreateModal() {
     document.getElementById('createModal').style.display = 'flex';
     document.getElementById('createItemsContainer').innerHTML = '';
@@ -697,47 +691,67 @@ function loadCustomerItemsAggregated(cust) {
     aggregatedItemsMap = {}; 
     if(!cust) return;
 
-    // 1. Group Data by Item Name
+    // 1. Group Data by Item Name & Detect Type (Meter/Qty)
     globalRemainingData.filter(d => d.customer === cust).forEach(po => {
         po.items.forEach(item => {
-            if(!item.isLineClosed && item.remainingMeter > 0.1) {
-                if(!aggregatedItemsMap[item.name]) aggregatedItemsMap[item.name] = { name: item.name, totalRemaining: 0, poList: [] };
+            let isQtyBased = item.isQtyBased; // Flag dari backend
+            let hasBalance = isQtyBased ? (item.remainingMeter > 0) : (item.remainingMeter > 0.1);
+
+            if(!item.isLineClosed && hasBalance) {
+                if(!aggregatedItemsMap[item.name]) {
+                    aggregatedItemsMap[item.name] = { 
+                        name: item.name, 
+                        totalRemaining: 0, 
+                        isQtyBased: isQtyBased,
+                        poList: [] 
+                    };
+                }
                 aggregatedItemsMap[item.name].totalRemaining += item.remainingMeter;
-                aggregatedItemsMap[item.name].poList.push({ poId: po.poId, rowIndex: item.rowIndex, remaining: item.remainingMeter, price: item.price, unit: item.unit, type: item.type });
+                aggregatedItemsMap[item.name].poList.push({ 
+                    poId: po.poId, rowIndex: item.rowIndex, 
+                    remaining: item.remainingMeter, 
+                    price: item.price, unit: item.unit, type: item.type 
+                });
             }
         });
     });
 
-    // 2. Render UI for each Item Type
+    // 2. Render UI
     Object.keys(aggregatedItemsMap).forEach((itemName, index) => {
         const data = aggregatedItemsMap[itemName];
-        const safeName = index; // Use index as ID to avoid issues with spaces/special chars
-        
+        const safeName = index;
         const div = document.createElement('div');
         div.className = 'request-item';
         div.dataset.name = itemName;
         div.dataset.safeId = safeName;
         div.dataset.max = data.totalRemaining;
+        div.dataset.isQty = data.isQtyBased; 
 
-        // Container structure
+        // Label Satuan
+        let unitLabel = data.isQtyBased ? (data.poList[0].unit || 'Pcs') : 'm';
+        // Style untuk menyembunyikan input meter jika QtyBased
+        let hideMeterStyle = data.isQtyBased ? 'display:none;' : '';
+
         div.innerHTML = `
             <div class="request-header">
                 <strong>${itemName}</strong>
-                <span class="balance-text">Saldo Tersedia: ${data.totalRemaining.toFixed(2)}m</span>
+                <span class="balance-text">Saldo Tersedia: ${data.totalRemaining.toFixed(2)} ${unitLabel}</span>
             </div>
             <div class="rows-container" id="rows-${safeName}">
                 <div class="input-row">
-                    <label>P (m):</label>
-                    <input type="number" class="prod-input inp-meter" step="0.01" min="0" placeholder="Panjang" onkeyup="calcMultiTotal('${safeName}')">
+                    <div style="${hideMeterStyle}">
+                        <label>P (m):</label>
+                        <input type="number" class="prod-input inp-meter" step="0.01" min="0" placeholder="Panjang" onkeyup="calcMultiTotal('${safeName}')">
+                    </div>
                     <label>Qty:</label>
-                    <input type="number" class="prod-input inp-qty" step="1" min="0" placeholder="Lembar" onkeyup="calcMultiTotal('${safeName}')">
+                    <input type="number" class="prod-input inp-qty" step="1" min="0" placeholder="Lembar/Btg" onkeyup="calcMultiTotal('${safeName}')">
                     <div style="flex:1;"></div>
                     <button class="row-remove-btn" onclick="removeRequestRow(this, '${safeName}')" title="Hapus Baris"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
             <button class="btn-add-line" onclick="addRequestRow('${safeName}')"><i class="fas fa-plus"></i> Tambah Ukuran</button>
             <div class="item-summary">
-                Total Request: <span class="calc-res" id="total-${safeName}">0.00</span> m
+                Total Request: <span class="calc-res" id="total-${safeName}">0.00</span> ${unitLabel}
             </div>
         `;
         box.appendChild(div);
@@ -746,13 +760,19 @@ function loadCustomerItemsAggregated(cust) {
 
 function addRequestRow(safeId) {
     const container = document.getElementById(`rows-${safeId}`);
+    const parent = container.closest('.request-item');
+    const isQtyBased = parent.dataset.isQty === "true";
+    let hideMeterStyle = isQtyBased ? 'display:none;' : '';
+    
     const div = document.createElement('div');
     div.className = 'input-row';
     div.innerHTML = `
-        <label>P (m):</label>
-        <input type="number" class="prod-input inp-meter" step="0.01" min="0" placeholder="Panjang" onkeyup="calcMultiTotal('${safeId}')">
+        <div style="${hideMeterStyle}">
+            <label>P (m):</label>
+            <input type="number" class="prod-input inp-meter" step="0.01" min="0" placeholder="Panjang" onkeyup="calcMultiTotal('${safeId}')">
+        </div>
         <label>Qty:</label>
-        <input type="number" class="prod-input inp-qty" step="1" min="0" placeholder="Lembar" onkeyup="calcMultiTotal('${safeId}')">
+        <input type="number" class="prod-input inp-qty" step="1" min="0" placeholder="Lembar/Btg" onkeyup="calcMultiTotal('${safeId}')">
         <div style="flex:1;"></div>
         <button class="row-remove-btn" onclick="removeRequestRow(this, '${safeId}')" title="Hapus Baris"><i class="fas fa-trash"></i></button>
     `;
@@ -760,9 +780,6 @@ function addRequestRow(safeId) {
 }
 
 function removeRequestRow(btn, safeId) {
-    const container = document.getElementById(`rows-${safeId}`);
-    // Only allow removing if there is more than 1 row, OR allow removing all but logic needs to handle empty
-    // Let's allow removing specific row. If no rows left, user can add back.
     btn.closest('.input-row').remove();
     calcMultiTotal(safeId);
 }
@@ -771,26 +788,27 @@ function calcMultiTotal(safeId) {
     const container = document.getElementById(`rows-${safeId}`);
     const parent = container.closest('.request-item');
     const maxBalance = parseFloat(parent.dataset.max);
+    const isQtyBased = parent.dataset.isQty === "true"; 
     const totalDisplay = document.getElementById(`total-${safeId}`);
     
     let totalUsed = 0;
-    
-    // Sum all rows
     container.querySelectorAll('.input-row').forEach(row => {
-        const m = parseFloat(row.querySelector('.inp-meter').value) || 0;
+        const m = parseFloat(row.querySelector('.inp-meter')?.value) || 0;
         const qRaw = row.querySelector('.inp-qty').value;
         let q = parseFloat(qRaw) || 0;
-        
-        // Integer check for Qty visual only (calc uses val)
         if(qRaw.includes('.')) { row.querySelector('.inp-qty').value = Math.floor(q); q = Math.floor(q); }
         
-        totalUsed += (m * q);
+        // FIX: Jika Qty Based, total adalah SUM Qty. Jika Spandek, SUM (Meter * Qty)
+        if (isQtyBased) {
+             totalUsed += q;
+        } else {
+             totalUsed += (m * q);
+        }
     });
 
     totalDisplay.innerText = totalUsed.toFixed(2);
     const btn = document.getElementById('btnSubmitRequest');
 
-    // Validation
     if(totalUsed > maxBalance + 0.05) {
         totalDisplay.classList.add('over-limit');
         totalDisplay.innerText += " (OVER LIMIT!)";
@@ -804,7 +822,6 @@ function calcMultiTotal(safeId) {
         btn.disabled = false;
     }
     
-    // Global Validation (Check if any OTHER item is over limit)
     const allOver = document.querySelectorAll('.over-limit');
     if(allOver.length > 0) btn.disabled = true;
 }
@@ -818,49 +835,48 @@ async function submitRequestAggregated() {
     let isValid = true;
     let hasItems = false;
 
-    // Loop through each Item Container
     document.querySelectorAll('.request-item').forEach(div => {
         const itemName = div.dataset.name;
         const maxBalance = parseFloat(div.dataset.max);
+        const isQtyBased = div.dataset.isQty === "true";
         let itemTotalUsed = 0;
 
-        // Loop through rows inside this item
         const rows = div.querySelectorAll('.input-row');
         rows.forEach(row => {
-            const reqLen = parseFloat(row.querySelector('.inp-meter').value) || 0;
+            const reqLen = parseFloat(row.querySelector('.inp-meter')?.value) || 0;
             const reqQty = parseFloat(row.querySelector('.inp-qty').value) || 0;
-            const reqTotalMeter = reqLen * reqQty;
+            
+            // Hitung deduction value berdasarkan tipe
+            const deductionValue = isQtyBased ? reqQty : (reqLen * reqQty);
 
-            if (reqLen < 0 || reqQty < 0) { isValid = false; }
+            if (reqQty < 0) { isValid = false; }
+            if (!isQtyBased && reqLen < 0) { isValid = false; }
 
-            // If valid data exists in this row
-            if (reqTotalMeter > 0) {
+            if (deductionValue > 0) {
                 hasItems = true;
-                itemTotalUsed += reqTotalMeter;
-                
-                // Find reference data (Unit/Type) from map
+                itemTotalUsed += deductionValue;
                 const refData = aggregatedItemsMap[itemName] && aggregatedItemsMap[itemName].poList[0];
                 
                 requestItems.push({
                     itemName: itemName,
-                    length: reqLen,
+                    length: isQtyBased ? 0 : reqLen,
                     qty: reqQty,
-                    totalMeter: reqTotalMeter,
+                    totalDeduction: deductionValue, // Backend akan membaca ini
+                    isQtyBased: isQtyBased,
                     type: refData ? refData.type : '',
                     unit: refData ? refData.unit : ''
                 });
             }
         });
 
-        // Double check balance limit per item
         if (itemTotalUsed > maxBalance + 0.05) {
             isValid = false;
-            div.style.background = "#fee2e2"; // Highlight error
+            div.style.background = "#fee2e2";
         }
     });
 
-    if(!isValid) return alert("Gagal: Ada input minus atau melebihi sisa saldo customer!");
-    if(!hasItems) return alert("Gagal: Belum ada item yang diisi (Qty/Meter kosong).");
+    if(!isValid) return alert("Gagal: Ada input minus atau melebihi sisa saldo!");
+    if(!hasItems) return alert("Gagal: Belum ada item yang diisi.");
 
     const btn = document.getElementById('btnSubmitRequest');
     const originalText = btn.innerText;
