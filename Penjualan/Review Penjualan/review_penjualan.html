@@ -77,24 +77,37 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 .btn-reject { background: #dc2626; }
 .btn-approve { background: #10b981; }
 .btn-pdf { background: #2563eb; }
+.btn-pdf-cash { background: #0369a1; }
+.btn-pdf-kredit { background: #7e22ce; }
 
 /* --- PDF STYLE FIX: SAFETY BUFFER --- */
 #pdf-hidden-container { position: absolute; left: -9999px; top: 0; }
 #pdfContent { 
     background: #fff; 
-    /* WIDTH ADJUSTMENT:
-       A5 Landscape = 210mm.
-       Margins = 0.7cm + 0.7cm = 14mm.
-       Available = 196mm.
-       SET TO 194mm (2mm buffer) to prevent "cut off" due to pixel rounding.
-    */
+    /* A5 Landscape = 210mm. 14mm Margins. 194mm Buffer. */
     width: 194mm; 
     padding: 0; 
     font-family: "Arial", sans-serif; 
     color: #000; 
-    overflow: hidden; /* Ensure nothing spills out */
+    overflow: hidden; 
+    position: relative; /* Important for absolute positioning */
 }
-.pdf-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 8px; }
+/* STAMP STYLE NEW */
+.pdf-stamp {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 12px;
+    font-weight: 800;
+    color: #000;
+    border: 2px solid #000;
+    padding: 2px 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: #fff;
+    z-index: 10;
+}
+.pdf-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 8px; position: relative; }
 .pdf-title { font-size: 24px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-top: 0; color:#000; }
 .company-details { text-align: right; font-size: 8px; color: #333; line-height: 1.3; }
 .company-name { font-weight: 700; font-size: 11px; color: #F59E0B; text-transform: uppercase; margin-bottom: 2px; }
@@ -256,6 +269,7 @@ table.pdf-table td { padding: 6px 4px; font-size: 9px; vertical-align: top; }
 
 <div id="pdf-hidden-container">
     <div id="pdfContent">
+        <div class="pdf-stamp" id="pdfStamp">TUNAI</div>
         <div class="pdf-header">
             <div class="pdf-title">FAKTUR PENJUALAN</div>
             <div class="company-details">
@@ -487,7 +501,9 @@ function openModal(id) {
             btns += `<button class="btn-action btn-reject" onclick="updateStatus('${o.id}', 'Cancel Order')">Reject</button>
                      <button class="btn-action btn-approve" onclick="updateStatus('${o.id}', 'Awaiting Production')">Approve</button>`;
         } else if (o.status !== 'Cancel Order') {
-            btns += `<button class="btn-action btn-pdf" onclick="dlPDF('${fullOrderId}')">Download PDF</button>`;
+            // UPDATED BUTTONS FOR CASH AND CREDIT
+            btns += `<button class="btn-action btn-action btn-pdf-cash" onclick="dlPDF('cash', '${fullOrderId}')">PDF Cash</button>`;
+            btns += `<button class="btn-action btn-action btn-pdf-kredit" onclick="dlPDF('kredit', '${fullOrderId}')">PDF Kredit</button>`;
         }
         document.getElementById('modalActions').innerHTML = btns;
         document.getElementById('orderModal').style.display = 'flex';
@@ -526,19 +542,50 @@ async function updateStatus(id, stat) {
     }
 }
 
-function dlPDF(filenameId) {
+function dlPDF(mode, filenameId) {
     const el = document.getElementById('pdfContent');
-    // Config for A5 Landscape (0.7cm margins requested)
-    // Top 1, Left 0.7, Bottom 1, Right 0.7
+    const stampEl = document.getElementById('pdfStamp');
+    
+    // Options: Margin Top 1, Left 0.7, Bottom 1, Right 0.7
     const opt = { 
         margin: [1, 0.7, 1, 0.7], 
-        filename: `Faktur_${filenameId}.pdf`, 
+        filename: `Faktur_${mode}_${filenameId}.pdf`, 
         image: { type: 'jpeg', quality: 0.98 }, 
         html2canvas: { scale: 2, useCORS: true, scrollY: 0 }, 
         jsPDF: { unit: 'cm', format: 'a5', orientation: 'landscape' } 
     };
-    const btn = document.querySelector('.btn-pdf'); btn.textContent = "Generating...";
-    html2pdf().set(opt).from(el).save().then(() => btn.textContent = "Download PDF");
+
+    if (mode === 'cash') {
+        stampEl.innerText = "TUNAI";
+        const btn = document.querySelector('.btn-pdf-cash'); 
+        if(btn) btn.textContent = "Generating...";
+        html2pdf().set(opt).from(el).save().then(() => { if(btn) btn.textContent = "PDF Cash"; });
+    } else if (mode === 'kredit') {
+        const btn = document.querySelector('.btn-pdf-kredit'); 
+        if(btn) btn.textContent = "Generating...";
+        
+        // 3 Copies Logic
+        const wrapper = document.createElement('div');
+        const labels = ["ASLI", "COPY", "KREDIT"];
+        
+        labels.forEach((lbl, idx) => {
+            const clone = el.cloneNode(true);
+            // Update clone stamp text
+            const cloneStamp = clone.querySelector('.pdf-stamp');
+            if(cloneStamp) cloneStamp.innerText = lbl;
+            
+            wrapper.appendChild(clone);
+            
+            // Add page break if not last
+            if (idx < labels.length - 1) {
+                const breakEl = document.createElement('div');
+                breakEl.className = 'html2pdf__page-break';
+                wrapper.appendChild(breakEl);
+            }
+        });
+        
+        html2pdf().set(opt).from(wrapper).save().then(() => { if(btn) btn.textContent = "PDF Kredit"; });
+    }
 }
 </script>
 </body>
