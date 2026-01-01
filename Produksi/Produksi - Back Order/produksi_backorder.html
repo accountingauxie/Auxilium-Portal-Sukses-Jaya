@@ -2,39 +2,52 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BackOrder Production - Auxilium</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-/* --- SYSTEM STYLES (Sama dengan General) --- */
+/* --- SYSTEM STYLES --- */
 :root { --primary: #7e22ce; --bg: #f4f7f6; --text: #333; --red: #b91c1c; --green: #047857; --orange: #b75900; }
 * { box-sizing: border-box; }
 body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background: var(--bg); color: var(--text); }
+
+/* Navbar */
 .aux-navbar { background: #fff; height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; box-shadow: 0 1px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
 .aux-menu { display: flex; gap: 10px; height: 100%; align-items: center; }
 .aux-link { text-decoration: none; color: #666; font-weight: 600; padding: 8px 14px; border-radius: 6px; }
-.aux-link.active { color: var(--primary); background: #f3e8ff; } /* Ungu untuk Backorder */
+.aux-link.active { color: var(--primary); background: #f3e8ff; } 
+
+/* Layout */
 .page-wrap { padding: 30px 40px; max-width: 98%; margin: 0 auto; }
 .category-tabs { margin-bottom: 20px; border-bottom: 2px solid #ddd; }
 .cat-btn { background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; }
 .cat-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+/* Table */
 .table-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; }
 table.xero-table { width: 100%; border-collapse: collapse; }
 table.xero-table th { text-align: left; padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; color: #555; font-size: 12px; font-weight: bold; text-transform: uppercase; }
 table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-align: middle; }
 .order-link { color: var(--primary); font-weight: bold; text-decoration: none; cursor: pointer; }
+
+/* Badges */
 .badge { padding: 4px 8px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; display: inline-block; }
 .badge-awaiting { background: #fff7e6; color: var(--orange); border: 1px solid #ffe8cc; }
 .badge-process { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
 .badge-completed { background: #ecfdf5; color: var(--green); border: 1px solid #a7f3d0; }
 .badge-delivery { background: #eef2ff; color: #4338ca; border: 1px solid #c7d2fe; }
 .badge-cancel { background: #fef2f2; color: var(--red); border: 1px solid #fecaca; }
+
+/* Modal */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: flex-start; justify-content: center; z-index: 10000; padding-top: 50px; overflow-y: auto; }
 .modal-box { background: #fff; width: 1350px; max-width: 98%; height: auto; max-height: 90vh; display: flex; flex-direction: column; border-radius: 8px; margin-bottom: 50px; }
 .modal-header, .modal-footer { padding: 20px 30px; background: #fff; border-bottom: 1px solid #eee; }
 .modal-footer { background: #f9fafb; text-align: right; border-top: 1px solid #eee; }
 .modal-body { flex: 1; overflow-y: auto; padding: 20px; }
+
+/* Inputs & Buttons */
 .prod-input, .prod-select { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
 .split-row { background-color: #fffde7; }
 .disabled-row { background-color: #f9fafb; color: #9ca3af; pointer-events: none; }
@@ -207,7 +220,8 @@ table.pdf-table td { padding: 6px 4px; font-size: 10px; vertical-align: top; }
 </div>
 
 <script>
-// --- KONFIGURASI API ---
+// --- GANTI URL INI DENGAN DEPLOYMENT TERBARU ANDA ---
+// Pastikan link berakhiran "/exec"
 const API_URL = "https://script.google.com/macros/s/AKfycbzChnwQd89aWf7fgIATTU9TztXANtNjUnuhVXUML3vzZZuwHpDSujOCI7Bv9YybxfSd4g/exec";
 const ORDER_CATEGORY = 'backorder'; 
 
@@ -277,7 +291,7 @@ async function loadOrders(status) {
         const data = await response.json();
         renderDashboard(data, status);
     } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="7" style="color:red; text-align:center;">Failed to fetch. Pastikan Apps Script Update.<br>${err}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="color:red; text-align:center;">Failed to fetch. Pastikan Apps Script sudah "Deploy New".<br>${err}</td></tr>`;
     }
 }
 
@@ -521,8 +535,57 @@ function triggerAction(actionType) {
 }
 
 // ... (Fungsi splitRow, removeSplit, updateCalc sama persis dengan General) ...
-// Saya singkat untuk hemat tempat, logika split tidak berubah banyak kecuali 
-// kita disable split di stage Awaiting (sudah dihandle di render)
+function splitRow(btn, groupId) {
+    const originalRow = btn.closest('tr');
+    if (!originalRow.classList.contains('disabled-row')) {
+        originalRow.classList.add('disabled-row');
+        originalRow.querySelector('.qty-input').value = 0; 
+        // originalRow.querySelector('.total-m').innerText = "0.00"; // Hapus jika tidak ada kolom total-m
+        originalRow.querySelectorAll('input, select').forEach(el => el.disabled = true);
+        const cb = originalRow.querySelector('.check-production');
+        if(cb) cb.disabled = true; 
+    }
+    const newRow = originalRow.cloneNode(true);
+    newRow.classList.remove('main-row', 'disabled-row');
+    newRow.classList.add('split-row');
+    const qtyInput = newRow.querySelector('.qty-input');
+    qtyInput.value = 0; qtyInput.disabled = false;
+    newRow.querySelectorAll('select').forEach(s => { s.value = ""; s.disabled = false; s.onchange = function(){ generateWE(this); } });
+    newRow.querySelector('.we-code').value = "";
+    const newCb = newRow.querySelector('.check-production');
+    if(newCb) { newCb.disabled = false; newCb.checked = false; newCb.onchange = checkAllDone; }
+    
+    // Logic khusus split text
+    const targetQtyEl = newRow.querySelector('.target-qty');
+    if(targetQtyEl) targetQtyEl.parentElement.innerHTML = '<small>(Split)</small>';
+    
+    const btnContainer = newRow.querySelector('.btn-split').parentElement;
+    btnContainer.innerHTML = `<button class="btn-sm btn-remove" onclick="removeSplit(this, ${groupId})"><i class="fas fa-trash"></i></button>`;
+    const tbody = originalRow.parentNode;
+    const groupRows = tbody.querySelectorAll(`tr[data-id="${groupId}"]`);
+    groupRows[groupRows.length-1].after(newRow);
+    qtyInput.onchange = function() { validateQty(groupId); };
+    if(currentTab === 'In Process') checkAllDone();
+}
+
+function removeSplit(btn, groupId) {
+    const row = btn.closest('tr');
+    const tbody = row.parentNode;
+    row.remove();
+    const remainingSplits = tbody.querySelectorAll(`.split-row[data-id="${groupId}"]`);
+    if(remainingSplits.length === 0) {
+        const main = tbody.querySelector(`.main-row[data-id="${groupId}"]`);
+        main.classList.remove('disabled-row');
+        // Reset logic main row
+        const target = main.querySelector('.target-qty') ? parseInt(main.querySelector('.target-qty').innerText) : 0;
+        main.querySelector('.qty-input').value = target;
+        main.querySelectorAll('select, input').forEach(el => el.disabled = false);
+        const cb = main.querySelector('.check-production');
+        if(cb) cb.disabled = false;
+    }
+    validateQty(groupId);
+    if(currentTab === 'In Process') checkAllDone();
+}
 
 function generateWE(el) {
     const row = el.closest('tr');
