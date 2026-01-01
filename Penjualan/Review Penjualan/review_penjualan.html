@@ -93,14 +93,12 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 }
 /* STAMP STYLE UPDATED */
 .pdf-stamp {
-    /* No longer absolute positioning */
-    font-size: 14px;      /* Requested Size */
-    font-weight: bold;    /* Requested Bold */
-    font-style: italic;   /* Requested Italic */
+    font-size: 14px;      
+    font-weight: bold;    
+    font-style: italic;   
     color: #000;
     margin-top: 2px;
     text-transform: uppercase;
-    /* Removed border and absolute positioning */
 }
 
 .pdf-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 8px; position: relative; }
@@ -127,7 +125,17 @@ table.pdf-table td { padding: 6px 4px; font-size: 9px; vertical-align: top; }
 .pdf-total-box { width: 40%; }
 .pdf-total-row.grand { font-size: 14px; font-weight: 700; color: #116999; display: flex; justify-content: space-between; margin-top: 0; padding-top: 0; }
 .pdf-ppn-note { font-style: italic; font-size: 8px; color: #555; text-align: right; margin-top: 2px; }
-.pdf-dp-note { font-size: 9px; color: #991b1b; font-weight: 700; text-align: right; margin-top: 4px; display: none; } 
+
+/* --- STYLE UNTUK NOTE DP (Back Order) --- */
+.pdf-dp-note { 
+    font-size: 9px; 
+    color: #dc2626; /* Merah */
+    font-weight: 700; 
+    text-align: right; 
+    margin-top: 4px; 
+    display: none; /* Default Hidden */
+} 
+
 .pdf-signature-wrapper { margin-top: 20px; display: flex; justify-content: space-between; page-break-inside: avoid; padding-bottom: 5px; }
 .sig-box { width: 180px; text-align: center; }
 .sig-title { font-size: 10px; font-weight: 700; color: #000; margin-bottom: 40px; }
@@ -301,7 +309,8 @@ table.pdf-table td { padding: 6px 4px; font-size: 9px; vertical-align: top; }
             <div class="pdf-total-box">
                 <div class="pdf-total-row grand"><span>Total</span><span id="pdfTotal">0</span></div>
                 <div class="pdf-ppn-note">Harga sudah termasuk PPN</div>
-                <div id="pdfDPNote" class="pdf-dp-note"></div> </div>
+                <div id="pdfDPNote" class="pdf-dp-note"></div> 
+            </div>
         </div>
 
         <div class="pdf-signature-wrapper">
@@ -482,13 +491,18 @@ function openModal(id) {
             setTxt(prefix+'Total', fmtMoneySimple(o.grandTotal));
         });
 
-        // --- BACK ORDER DP LOGIC ---
+        // --- BACK ORDER DP LOGIC (DIPERBARUI) ---
         const dpContainer = document.getElementById('pdfDPNote');
         const orderType = (o.type || "").toLowerCase();
+        
         if(orderType.includes('back')) {
-            // Calculate 30%
-            const dpVal = (o.grandTotal || 0) * 0.3;
-            dpContainer.innerHTML = `*Minimal DP 30% sebesar ${fmtMoneySimple(dpVal)}`;
+            // Hitung 30% dari Total Invoice
+            // Menggunakan Number() untuk memastikan tipe data benar jika API mengirim String
+            const totalAmount = Number(o.grandTotal) || 0; 
+            const dpVal = totalAmount * 0.30; 
+            
+            // Set Text Sesuai Request (Merah sudah diatur di CSS .pdf-dp-note)
+            dpContainer.innerHTML = `*Harus melakukan pembayaran DP 30% sebesar ${fmtMoneySimple(dpVal)}`;
             dpContainer.style.display = 'block';
         } else {
             dpContainer.style.display = 'none';
