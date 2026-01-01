@@ -219,12 +219,14 @@ table.pdf-table td { padding: 6px 4px; font-size: 10px; vertical-align: top; }
 </div>
 
 <script>
-// --- URL API APPSCRIPT (Update dengan URL Deployment terbaru) ---
-const API_URL = "https://script.google.com/macros/s/AKfycbzChnwQd89aWf7fgIATTU9TztXANtNjUnuhVXUML3vzZZuwHpDSujOCI7Bv9YybxfSd4g/exec";
+// --- KONFIGURASI API ---
+const API_URL = "https://script.google.com/macros/s/AKfycbzChnwQd89aWf7fgIATTU9TztXANtNjUnuhVXUML3vzZZuwHpDSujOCI7Bv9YybxfSd4g/exec"; // Main Backend
+const INVENTORY_API = "https://script.google.com/macros/s/AKfycby5N2auQ__JVSp-RdO-5xtUwanRZZW7YZMZ163j2NP61N3SIfVnPxr8PBXYbgBC6LJH/exec"; // Inventory Source
+
 const ORDER_CATEGORY = 'backorder'; 
 
 let currentOrders = {}; 
-let masterStock = {}; // Data Stock
+let masterStock = {}; // Akan diisi data dari Inventory API
 let activeOrderId = null;
 let currentTab = 'Awaiting';
 const TYPE_CODES = { 'Custom': 'CS', 'Plat': 'PL' };
@@ -253,15 +255,49 @@ document.getElementById('confirmYesBtn').onclick = () => closeConfirm(true);
 
 // --- INIT ---
 window.onload = async () => {
-    await fetchStockData();
+    await fetchStockData(); // Load Stock dari Inventory API
     switchTab('Awaiting');
 };
 
+// --- FETCH STOCK DARI INVENTORY API (LOGIC BARU) ---
 async function fetchStockData() {
     try {
-        const response = await fetch(`${API_URL}?action=getBackOrderStock`);
-        masterStock = await response.json();
-    } catch(e) { console.error("Stock Error:", e); }
+        console.log("Fetching Inventory from: " + INVENTORY_API);
+        const response = await fetch(`${INVENTORY_API}?action=getInventoryData`);
+        const json = await response.json();
+        
+        // Reset local stock map
+        masterStock = {};
+        
+        // Helper parse angka (hapus koma)
+        const cleanNum = (val) => parseFloat(String(val).replace(/,/g, '')) || 0;
+
+        // Parse Data Spandek
+        if (json.spandek && Array.isArray(json.spandek)) {
+            json.spandek.forEach(row => {
+                // Asumsi: Index 0 = Nama Barang, Index 4 = Qty Stock
+                const name = row[0];
+                const qty = cleanNum(row[4]);
+                if(name) masterStock[name] = qty;
+            });
+        }
+
+        // Parse Data Non-Spandek (cek case sensitive just in case)
+        const nonList = json.nonspandek || json.nonSpandek || [];
+        if (Array.isArray(nonList)) {
+            nonList.forEach(row => {
+                const name = row[0];
+                const qty = cleanNum(row[4]);
+                if(name) masterStock[name] = qty;
+            });
+        }
+        
+        console.log("Master Stock Loaded:", Object.keys(masterStock).length + " items.");
+
+    } catch(e) { 
+        console.error("Stock Error:", e); 
+        alert("Gagal load data stock dari Gudang. Coba refresh halaman.");
+    }
 }
 
 function switchTab(tabName) {
@@ -348,6 +384,7 @@ function openSetup(orderId) {
         deliverySection.style.display = 'flex'; 
         dateInput.value = ""; 
     } else {
+        // Kolom standar
         headers += `<th style="width:5%; text-align:center;">M</th><th style="width:5%; text-align:center;">Qty</th>`;
         deliverySection.style.display = 'none';
     }
@@ -392,6 +429,8 @@ function openSetup(orderId) {
         if (currentTab === 'Awaiting') {
             const reqQty = parseFloat(item.qty);
             const meterPerPcs = parseFloat(item.meter) || 0;
+            
+            // AMBIL STOCK DARI MAP YANG SUDAH DILOAD
             const availStock = masterStock[item.item] || 0; 
             
             // Hitung Total Requirement
@@ -424,6 +463,7 @@ function openSetup(orderId) {
                 <td style="text-align:center;">${statusIcon}</td>
             `;
         } else {
+            // Tampilan Process / Completed
             middleCols = `
                 <td style="text-align:center;"><span class="meter-val">${item.meter}</span></td>
                 <td style="text-align:center;">
@@ -494,6 +534,7 @@ function renderFooterButtons(isStockProblem) {
     const btnClose = `<button class="btn btn-secondary" onclick="closeModal()">Close</button>`;
     
     if (currentTab === 'Awaiting') {
+        // Disable tombol process jika stock bermasalah
         let processDisabled = isStockProblem ? 'disabled style="background:#ccc; cursor:not-allowed;"' : '';
         let processTitle = isStockProblem ? 'Stock Kurang' : 'Process';
         
@@ -714,6 +755,7 @@ async function deliverOrder(id) { await sendAPI('deliverOrder', { orderId: id })
 async function cancelOrder(id) { await sendAPI('cancelOrder', { orderId: id }); }
 
 async function sendAPI(action, payload) {
+    // Inject category ke payload
     payload.category = ORDER_CATEGORY;
     try {
         payload.action = action;
