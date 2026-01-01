@@ -53,7 +53,7 @@ table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-ali
 .btn-remove { background: #fee2e2; color: #991b1b; }
 .check-production { width: 18px; height: 18px; cursor: pointer; accent-color: var(--green); }
 
-/* --- PDF GENERATION STYLES (MATCHING REFERENCE) --- */
+/* --- PDF GENERATION STYLES --- */
 #pdf-hidden-container { position: absolute; left: -9999px; top: 0; }
 #pdfContent { background: #fff; width: 100%; padding: 0; font-family: "Arial", sans-serif; color: #000; }
 .pdf-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; border-bottom: 2px solid #000; padding-bottom: 10px; }
@@ -188,18 +188,105 @@ table.pdf-table td { padding: 6px 4px; font-size: 10px; vertical-align: top; }
         </table>
         
         <div id="pdfSignatureRow" class="pdf-signature-wrapper">
-            </div>
+        </div>
     </div>
 </div>
 
 <script>
-// --- KONFIGURASI API LANGSUNG ---
-const API_URL = "https://script.google.com/macros/s/AKfycbyV1YY8rNhXUFkb6VpETiVMtTGRsXEXq-UONu0rDI3Ih1uanX9OEDVKH8E8qaFNSfucbw/exec";
+// --- KONFIGURASI API (GANTI URL DI SINI) ---
+const PRODUCTION_API = "https://script.google.com/macros/s/AKfycbyV1YY8rNhXUFkb6VpETiVMtTGRsXEXq-UONu0rDI3Ih1uanX9OEDVKH8E8qaFNSfucbw/exec";
+const INVENTORY_API = "https://script.google.com/macros/s/AKfycby5172vlCkKmMQn1c_HdyNNJWfzz7ByDaLN-mJ1zOVoDJxknGWkI3yTugV2cVMIuRG5/exec";
 
+// --- GLOBAL VARIABLES ---
 let currentOrders = {}; 
 let activeOrderId = null;
 let currentTab = 'Awaiting';
+let inventoryData = []; 
 const TYPE_CODES = { 'Custom': 'CS', 'Plat': 'PL' };
+
+// --- INIT ---
+window.onload = async () => {
+    switchTab('Awaiting');
+    await loadInventory(); 
+};
+
+// --- FUNGSI INVENTORY & LOGIKA KPC ---
+
+// 1. Fetch Data Inventory
+async function loadInventory() {
+    try {
+        console.log("Fetching Inventory from:", INVENTORY_API);
+        // Memanggil endpoint baru action=getAllStock
+        const response = await fetch(INVENTORY_API + "?action=getAllStock"); 
+        const data = await response.json();
+        
+        inventoryData = data; 
+        console.log("Inventory Loaded:", inventoryData.length, "items");
+    } catch (err) {
+        console.error("Gagal load inventory:", err);
+        inventoryData = [];
+    }
+}
+
+// 2. Filter KPC & Cek Stok (SESUAI APP SCRIPT BARU)
+function getKPCOptionsHTML(orderItemName, orderItemType, requiredMeter) {
+    let optionsHtml = '<option value="">- Pilih KPC -</option>';
+    
+    // Key pencarian
+    const searchKey = (orderItemName + " " + orderItemType).toLowerCase();
+    
+    // Filter Inventory
+    const matchedCoils = inventoryData.filter(row => {
+        // Karena App Script sudah mengembalikan JSON Object, kita panggil Key nya
+        const invName = (row["Nama Barang"] || "").toString().toLowerCase();
+        
+        if (invName === "") return false;
+
+        // 1. Cek Match Sederhana
+        if (invName.includes(orderItemName.toLowerCase())) return true;
+        if (orderItemName.toLowerCase().includes(invName)) return true;
+
+        // 2. Logika Tambahan
+        if (searchKey.includes('spandek') && (invName.includes('coil') || invName.includes('spandek'))) return true;
+        if (searchKey.includes('c75') && invName.includes('c75')) return true; 
+        if (searchKey.includes('reng') && invName.includes('reng')) return true;
+
+        return false; 
+    });
+
+    // Urutkan stok terbanyak
+    matchedCoils.sort((a, b) => (parseFloat(b["Stok"])||0) - (parseFloat(a["Stok"])||0));
+
+    if (matchedCoils.length === 0) {
+        optionsHtml += `<option value="" disabled>Tidak ada stok yang cocok dengan nama "${orderItemName}"</option>`;
+    } else {
+        matchedCoils.forEach(row => {
+            const kodeKPC = row["Kode / KPC"];
+            const stok = parseFloat(row["Stok"] || 0); 
+            const namaBarang = row["Nama Barang"];
+
+            const req = parseFloat(requiredMeter || 0);
+
+            let label = `${kodeKPC} | Stok: ${stok.toLocaleString()}m`;
+            let disabledAttr = '';
+            let style = 'color: #047857; font-weight:bold;'; // Hijau
+
+            // Validasi Stok
+            if (req > 0 && stok < req) {
+                disabledAttr = 'disabled';
+                label += ` (Kurang! Butuh: ${req})`;
+                style = 'color: #b91c1c; background: #fee2e2;'; // Merah
+            }
+
+            optionsHtml += `<option value="${kodeKPC}" ${disabledAttr} style="${style}" title="${namaBarang}">${label}</option>`;
+        });
+    }
+    
+    return optionsHtml;
+}
+
+
+// --- FUNGSI UTAMA ---
 
 function closeModal() { document.getElementById('setupModal').style.display = 'none'; }
 
@@ -215,8 +302,6 @@ function closeConfirm(isConfirmed) {
     confirmCallback = null;
 }
 document.getElementById('confirmYesBtn').onclick = () => closeConfirm(true);
-
-window.onload = () => switchTab('Awaiting');
 
 function fmtDate(val) {
     if (!val) return "-";
@@ -234,8 +319,10 @@ function switchTab(tabName) {
     if(tabName === 'Cancel') btnId = 'tab-cancel';
     
     const btn = document.getElementById(btnId);
-    if (btn) {
-        btn.classList.add('active');
+    if (btn) btn.classList.add('active');
+    
+    if (tabName === 'Awaiting' || tabName === 'In Process') {
+        loadInventory(); // Refresh stok saat tab berubah
     }
     loadOrders(tabName);
 }
@@ -244,11 +331,11 @@ async function loadOrders(status) {
     const tbody = document.getElementById('dashboardBody');
     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px;">Loading...</td></tr>';
     try {
-        const response = await fetch(`${API_URL}?action=getProductionOrders&status=${encodeURIComponent(status)}`);
+        const response = await fetch(`${PRODUCTION_API}?action=getProductionOrders&status=${encodeURIComponent(status)}`);
         const data = await response.json();
         renderDashboard(data, status);
     } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="7" style="color:red; text-align:center;">Failed to fetch. Pastikan Apps Script sudah "New Deployment".<br>${err}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="color:red; text-align:center;">Failed to fetch orders.<br>${err}</td></tr>`;
     }
 }
 
@@ -288,9 +375,8 @@ function openSetup(orderId) {
     const order = currentOrders[orderId];
     document.getElementById('modalOrderNo').innerText = orderId;
     
-    // Header Setup
     const headerRow = document.getElementById('tableHeaderRow');
-    let headers = `<th style="width:20%">Item</th><th style="width:5%; text-align:center;">M</th><th style="width:5%; text-align:center;">Qty</th><th style="width:8%; text-align:center;">Set Qty</th><th style="width:8%; text-align:center;">Tot M'</th><th style="width:12%">Mesin</th><th style="width:14%">KPC</th><th style="width:8%">Type</th><th style="width:14%">WE Code</th><th style="width:5%; text-align:center;">Act</th>`;
+    let headers = `<th style="width:20%">Item</th><th style="width:5%; text-align:center;">M</th><th style="width:5%; text-align:center;">Qty</th><th style="width:8%; text-align:center;">Set Qty</th><th style="width:8%; text-align:center;">Tot M'</th><th style="width:12%">Mesin</th><th style="width:14%">KPC (Stock)</th><th style="width:8%">Type</th><th style="width:14%">WE Code</th><th style="width:5%; text-align:center;">Act</th>`;
     if (currentTab === 'In Process') headers += `<th style="width:5%; text-align:center;">Selesai?</th>`;
     headerRow.innerHTML = headers;
 
@@ -327,6 +413,20 @@ function openSetup(orderId) {
         let valType = "Custom"; 
         if(item.we && item.we.includes('_PL_')) valType = "Plat";
 
+        // --- GENERATE DYNAMIC KPC ---
+        let kpcOptions = "";
+        if (isSpandek) {
+            kpcOptions = getKPCOptionsHTML(item.item, item.type, initialTotalM);
+            // Pertahankan nilai lama jika ada
+            if (valKPC && !kpcOptions.includes(`value="${valKPC}"`)) {
+                 kpcOptions = `<option value="${valKPC}" selected>${valKPC} (Current)</option>` + kpcOptions;
+            } else {
+                 kpcOptions = kpcOptions.replace(`value="${valKPC}"`, `value="${valKPC}" selected`);
+            }
+        } else {
+            kpcOptions = `<option value="">-</option>`;
+        }
+
         let inputs = `
             <td><input type="number" class="${spandekClass} qty-input" value="${item.qty}" min="1" ${readonlyAttr} onchange="validateQty(${idx}); updateCalc(this)"></td>
             <td style="text-align:center;"><span class="total-m">${initialTotalM}</span></td>
@@ -339,9 +439,7 @@ function openSetup(orderId) {
             </td>
             <td>
                 <select class="${spandekClass} kpc-select" ${readonlyAttr} onchange="generateWE(this)">
-                    <option value="">-</option>
-                    <option value="KPC-001" ${valKPC==='KPC-001'?'selected':''}>KPC-001</option>
-                    <option value="KPC-002" ${valKPC==='KPC-002'?'selected':''}>KPC-002</option>
+                    ${kpcOptions}
                 </select>
             </td>
             <td>
@@ -416,6 +514,11 @@ function triggerAction(actionType) {
 
 function splitRow(btn, groupId) {
     const originalRow = btn.closest('tr');
+    
+    const nameCell = originalRow.cells[0];
+    const itemName = nameCell.querySelector('strong').innerText;
+    const itemType = nameCell.querySelector('small').innerText;
+
     if (!originalRow.classList.contains('disabled-row')) {
         originalRow.classList.add('disabled-row');
         originalRow.querySelector('.qty-input').value = 0; 
@@ -427,19 +530,31 @@ function splitRow(btn, groupId) {
     const newRow = originalRow.cloneNode(true);
     newRow.classList.remove('main-row', 'disabled-row');
     newRow.classList.add('split-row');
+    
     const qtyInput = newRow.querySelector('.qty-input');
     qtyInput.value = 0; qtyInput.disabled = false;
-    newRow.querySelectorAll('select').forEach(s => { s.value = ""; s.disabled = false; s.onchange = function(){ generateWE(this); } });
+    
+    newRow.querySelectorAll('select').forEach(s => { 
+        s.value = ""; 
+        s.disabled = false; 
+        if (s.classList.contains('kpc-select')) {
+             s.innerHTML = getKPCOptionsHTML(itemName, itemType, 0); // Refresh stok
+        }
+        s.onchange = function(){ generateWE(this); } 
+    });
+    
     newRow.querySelector('.we-code').value = "";
     const newCb = newRow.querySelector('.check-production');
     if(newCb) { newCb.disabled = false; newCb.checked = false; newCb.onchange = checkAllDone; }
     newRow.querySelector('.target-qty').parentElement.innerHTML = '<small>(Split)</small>';
     const btnContainer = newRow.querySelector('.btn-split').parentElement;
     btnContainer.innerHTML = `<button class="btn-sm btn-remove" onclick="removeSplit(this, ${groupId})"><i class="fas fa-trash"></i></button>`;
+    
     const tbody = originalRow.parentNode;
     const groupRows = tbody.querySelectorAll(`tr[data-id="${groupId}"]`);
     groupRows[groupRows.length-1].after(newRow);
-    qtyInput.onchange = function() { validateQty(groupId); updateCalc(this); };
+    
+    qtyInput.onchange = function() { validateQty(groupId); updateCalc(this); }; 
     if(currentTab === 'In Process') checkAllDone();
 }
 
@@ -456,6 +571,18 @@ function removeSplit(btn, groupId) {
         main.querySelectorAll('select, input').forEach(el => el.disabled = false);
         const cb = main.querySelector('.check-production');
         if(cb) cb.disabled = false;
+        
+        const m = parseFloat(main.querySelector('.meter-val').innerText || 0);
+        const req = (m * target).toFixed(2);
+        
+        const nameCell = main.cells[0];
+        const itemName = nameCell.querySelector('strong').innerText;
+        const itemType = nameCell.querySelector('small').innerText;
+        const kpcSelect = main.querySelector('.kpc-select');
+        const currentVal = kpcSelect.value;
+        kpcSelect.innerHTML = getKPCOptionsHTML(itemName, itemType, req);
+        kpcSelect.value = currentVal;
+        
         updateCalc(main.querySelector('.qty-input'));
     }
     validateQty(groupId);
@@ -467,7 +594,8 @@ function updateCalc(input) {
     if(row.classList.contains('disabled-row')) return;
     const m = parseFloat(row.querySelector('.meter-val').innerText || 0);
     const q = parseInt(input.value || 0);
-    row.querySelector('.total-m').innerText = (m * q).toFixed(2);
+    const totalM = (m * q).toFixed(2);
+    row.querySelector('.total-m').innerText = totalM;
 }
 
 function generateWE(el) {
@@ -476,12 +604,10 @@ function generateWE(el) {
     const kpc = row.querySelector('.kpc-select').value;
     const type = TYPE_CODES[row.querySelector('.type-select').value] || 'XX';
 
-    // --- LOGIKA BARU UNTUK 5 DIGIT ---
     let shortInv = activeOrderId ? String(activeOrderId) : "";
     if (shortInv.length > 5) {
         shortInv = shortInv.slice(-5);
     }
-    // ---------------------------------
 
     if(mach && kpc) row.querySelector('.we-code').value = `${mach}_${kpc}_${type}_${shortInv}`;
 }
@@ -515,14 +641,18 @@ async function submitProduction(mode) {
             const m = r.querySelector('.machine-select').value;
             const k = r.querySelector('.kpc-select').value;
             const w = r.querySelector('.we-code').value;
-            if(!m || !k) { r.style.backgroundColor = '#fee2e2'; valid = false; }
-            else { item.machine = m; item.kpc = k; item.we = w; }
+            if(!m || !k) { 
+                r.querySelector('.kpc-select').style.border = '2px solid red';
+                valid = false; 
+            } else {
+                r.querySelector('.kpc-select').style.border = '1px solid #ccc';
+                item.machine = m; item.kpc = k; item.we = w; 
+            }
         }
         data.push(item);
     });
     if(!valid) return alert("Lengkapi Data Mesin/KPC!");
     
-    // NOTE: Removed generatePDF('SPK') for automatic printing here
     await sendAPI(mode === 'new' ? 'submitProduction' : 'updateProductionData', { orderId: activeOrderId, data: data });
 }
 
@@ -533,7 +663,7 @@ async function cancelOrder(id) { await sendAPI('cancelOrder', { orderId: id }); 
 async function sendAPI(action, payload) {
     try {
         payload.action = action;
-        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+        const res = await fetch(PRODUCTION_API, { method: 'POST', body: JSON.stringify(payload) });
         const json = await res.json();
         if(json.result === 'error') throw json.message;
         alert("Sukses!"); closeModal(); loadOrders(currentTab);
@@ -542,15 +672,12 @@ async function sendAPI(action, payload) {
 
 function generatePDF(type) {
     const o = currentOrders[activeOrderId];
-    
-    // Fill Data
     document.getElementById('pdfOrderNo').innerText = activeOrderId;
     document.getElementById('pdfCustName').innerText = o.customer;
     document.getElementById('pdfDate').innerText = fmtDate(new Date()); 
     document.getElementById('pdfTitle').innerText = (type === 'SPK') ? "SURAT PERINTAH KERJA" : "SURAT JALAN";
     document.getElementById('pdfType').innerText = o.type || 'General';
     
-    // Header Logic
     const headDetail = document.getElementById('pdfHeadDetail');
     const headWE = document.getElementById('pdfHeadWE');
     if (type === 'SJ') {
@@ -561,7 +688,6 @@ function generatePDF(type) {
         headWE.style.display = 'table-cell'; 
     }
 
-    // Items Logic
     let itemsToPrint = [];
     if (type === 'SJ') {
         let grouped = {};
@@ -588,19 +714,14 @@ function generatePDF(type) {
         </tr>`;
     });
 
-    // Signature Logic
     const sigContainer = document.getElementById('pdfSignatureRow');
-    sigContainer.innerHTML = ''; // Reset Content
-    
+    sigContainer.innerHTML = ''; 
     let titles = [];
     if (type === 'SJ') {
-        // Surat Jalan: 4 Signatures
         titles = ['Pembuat Nota', 'Kepala Gudang', 'Sopir', 'Penerima Barang'];
     } else {
-        // SPK: 2 Signatures
         titles = ['Admin Produksi', 'Kepala Gudang'];
     }
-
     titles.forEach(t => {
         sigContainer.innerHTML += `
             <div class="sig-box">
@@ -610,9 +731,7 @@ function generatePDF(type) {
         `;
     });
 
-    // Generate PDF
     const el = document.getElementById('pdfContent');
-    // Margin: Top/Bottom ~1cm (0.39in), Left/Right ~0.75cm (0.29in)
     const opt = {
         margin:       [0.39, 0.29, 0.39, 0.29], 
         filename:     `${type}_${activeOrderId}.pdf`,
@@ -620,7 +739,6 @@ function generatePDF(type) {
         html2canvas:  { scale: 2 },
         jsPDF:        { unit: 'in', format: 'a5', orientation: 'landscape' }
     };
-    
     html2pdf().set(opt).from(el).save();
 }
 </script>
