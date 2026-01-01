@@ -78,19 +78,21 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 .btn-approve { background: #10b981; }
 .btn-pdf { background: #2563eb; }
 
-/* --- PDF STYLE FIX: EXACT CENTER FOR 0.7cm MARGINS --- */
+/* --- PDF STYLE FIX: SAFETY BUFFER --- */
 #pdf-hidden-container { position: absolute; left: -9999px; top: 0; }
 #pdfContent { 
     background: #fff; 
-    /* A5 Landscape = 210mm Width.
-       Margin Left = 7mm (0.7cm).
-       Margin Right = 7mm (0.7cm).
-       Available Content = 210 - 7 - 7 = 196mm.
+    /* WIDTH ADJUSTMENT:
+       A5 Landscape = 210mm.
+       Margins = 0.7cm + 0.7cm = 14mm.
+       Available = 196mm.
+       SET TO 194mm (2mm buffer) to prevent "cut off" due to pixel rounding.
     */
-    width: 196mm; 
+    width: 194mm; 
     padding: 0; 
     font-family: "Arial", sans-serif; 
     color: #000; 
+    overflow: hidden; /* Ensure nothing spills out */
 }
 .pdf-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 8px; }
 .pdf-title { font-size: 24px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-top: 0; color:#000; }
@@ -526,7 +528,7 @@ async function updateStatus(id, stat) {
 
 function dlPDF(filenameId) {
     const el = document.getElementById('pdfContent');
-    // Config for A5 Landscape
+    // Config for A5 Landscape (0.7cm margins requested)
     // Top 1, Left 0.7, Bottom 1, Right 0.7
     const opt = { 
         margin: [1, 0.7, 1, 0.7], 
