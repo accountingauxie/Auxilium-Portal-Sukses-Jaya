@@ -11,29 +11,24 @@
 * { box-sizing: border-box; }
 body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background: var(--bg); color: var(--text); }
 
-/* NAVBAR */
+/* NAVBAR & LAYOUT (Sama seperti sebelumnya) */
 .aux-navbar { background: #fff; height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; box-shadow: 0 1px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
 .aux-menu { display: flex; gap: 10px; height: 100%; align-items: center; }
 .aux-link { text-decoration: none; color: #666; font-weight: 600; padding: 8px 14px; border-radius: 6px; }
 .aux-link.active { color: var(--primary); background: #eff8ff; }
-
-/* CONTENT LAYOUT */
 .page-wrap { padding: 30px 40px; max-width: 98%; margin: 0 auto; }
 .header-action { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.action-buttons { display: flex; gap: 10px; } /* New Wrapper for buttons */
-
+.action-buttons { display: flex; gap: 10px; }
 .category-tabs { margin-bottom: 20px; border-bottom: 2px solid #ddd; display: flex; }
 .cat-btn { background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; }
 .cat-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
 
-/* TABLE */
+/* TABLE & BADGES (Sama seperti sebelumnya) */
 .table-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; }
 table.xero-table { width: 100%; border-collapse: collapse; }
 table.xero-table th { text-align: left; padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; color: #555; font-size: 12px; font-weight: bold; text-transform: uppercase; }
 table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-align: middle; }
 .order-link { color: var(--primary); font-weight: bold; text-decoration: none; cursor: pointer; }
-
-/* BADGES */
 .badge { padding: 4px 8px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; display: inline-block; }
 .bg-open { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
 .badge-awaiting { background: #fff7e6; color: var(--orange); border: 1px solid #ffe8cc; }
@@ -53,13 +48,15 @@ table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-ali
 .btn-split { background: #d8b4fe; color: #6b21a8; }
 .btn-remove { background: #fee2e2; color: #991b1b; }
 .btn-secondary { background: #fff; border: 1px solid #ccc; color: #333; }
-.btn-report { background: #7c3aed; color: white; } /* Purple for Report */
+.btn-report { background: #7c3aed; color: white; }
+.btn-add-line { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; font-size: 11px; margin-top: 5px; padding: 4px 10px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+.btn-add-line:hover { background: #bbf7d0; }
 
 /* PROGRESS BAR */
 .progress-bar { background: #e5e7eb; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 5px; width: 100%; }
 .progress-fill { height: 100%; background: #10b981; width: 0%; transition: width 0.5s; }
 
-/* MODAL STYLES (MATCHING REFERENCE) */
+/* MODAL STYLES */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: flex-start; justify-content: center; z-index: 10000; padding-top: 50px; overflow-y: auto; }
 .modal-box { background: #fff; width: 1350px; max-width: 98%; height: auto; max-height: 90vh; display: flex; flex-direction: column; border-radius: 8px; margin-bottom: 50px; }
 .modal-header, .modal-footer { padding: 20px 30px; background: #fff; border-bottom: 1px solid #eee; }
@@ -73,9 +70,17 @@ table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-ali
 .disabled-row input, .disabled-row select { background: #e5e7eb; border-color: #d1d5db; pointer-events: none; }
 .check-production { width: 18px; height: 18px; cursor: pointer; accent-color: var(--green); }
 
-/* CREATE REQUEST SPECIFIC */
+/* --- CREATE REQUEST SPECIFIC (UPDATED) --- */
 .request-item { background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 15px; margin-bottom: 10px; border-left: 4px solid var(--primary); }
-.input-row { display: flex; gap: 10px; align-items: center; background: #f8fafc; padding: 10px; border-radius: 4px; }
+.request-header { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; align-items: center; }
+.rows-container { display: flex; flex-direction: column; gap: 8px; }
+.input-row { display: flex; gap: 10px; align-items: center; background: #f8fafc; padding: 8px; border-radius: 4px; border: 1px solid #e2e8f0; }
+.input-row label { width: 50px; font-weight: bold; color: #555; }
+.item-summary { margin-top: 10px; text-align: right; font-weight: bold; font-size: 12px; color: #555; padding-top: 5px; border-top: 1px dashed #ddd; }
+.balance-text { font-size: 13px; font-weight: bold; color: var(--primary); }
+.over-limit { color: var(--red); }
+.row-remove-btn { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; width: 28px; height: 28px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+.row-remove-btn:hover { background: #fecaca; }
 
 /* REPORT TABLE STYLES */
 table.report-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
@@ -133,7 +138,7 @@ table.pdf-table td { font-size: 10px; border: 1px solid #000; padding: 5px; }
 </div>
 
 <div id="createModal" class="modal-overlay">
-    <div class="modal-box" style="width: 800px;">
+    <div class="modal-box" style="width: 900px;">
         <div class="modal-header">
             <h3>Buat Request Produksi</h3>
             <button onclick="closeModal('createModal')" style="border:none; background:none; font-size:20px; cursor:pointer;">&times;</button>
@@ -151,7 +156,8 @@ table.pdf-table td { font-size: 10px; border: 1px solid #000; padding: 5px; }
                     <input type="date" id="inpDate" class="prod-input">
                 </div>
             </div>
-            <div id="createItemsContainer"></div>
+            <div id="createItemsContainer">
+                </div>
         </div>
         <div class="modal-footer">
             <button class="btn btn-secondary" onclick="closeModal('createModal')">Batal</button>
@@ -269,7 +275,7 @@ let confirmCallback = null;
 
 window.onload = () => loadData('Remaining');
 
-// --- NAVIGATION ---
+// --- NAVIGATION & LOAD DATA ---
 async function loadData(view) {
     currentView = view;
     document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
@@ -295,7 +301,6 @@ async function loadData(view) {
             const data = await req.json();
             renderPreOrders(data);
         } else {
-            // General Order Columns
             thead.innerHTML = `<tr><th>Order #</th><th>Type</th><th>Customer</th><th>Order Date</th><th>Est. Delivery</th><th>Status</th><th>Items</th></tr>`;
             url += "&action=getProductionOrders&status=" + encodeURIComponent(view) + "&category=preorder";
             const req = await fetch(url);
@@ -341,7 +346,7 @@ function renderProduction(data) {
     });
 }
 
-// --- REPORT LOGIC (NEW) ---
+// --- REPORT LOGIC ---
 function openReportModal() {
     if(globalRemainingData.length === 0) {
         alert("Data belum siap, mohon tunggu loading selesai.");
@@ -350,7 +355,6 @@ function openReportModal() {
     document.getElementById('reportModal').style.display = 'flex';
     document.getElementById('reportContentArea').innerHTML = '<div style="text-align:center; color:#888; margin-top:50px;">Silakan pilih customer untuk melihat laporan.</div>';
     
-    // Populate Dropdown Customer
     const sel = document.getElementById('selReportCustomer');
     sel.innerHTML = '<option value="">-- Pilih Customer --</option>';
     [...new Set(globalRemainingData.map(d=>d.customer))].sort().forEach(c => {
@@ -363,26 +367,15 @@ function generateCustomerReport(cust) {
     if(!cust) {
         box.innerHTML = ''; return;
     }
-
-    // Grouping Data
     let reportMap = {};
     globalRemainingData.filter(d => d.customer === cust).forEach(po => {
         po.items.forEach(item => {
             if(!item.isLineClosed && item.remainingMeter > 0.1) {
                 if(!reportMap[item.name]) {
-                    reportMap[item.name] = { 
-                        name: item.name, 
-                        totalBalance: 0, 
-                        details: [] 
-                    };
+                    reportMap[item.name] = { name: item.name, totalBalance: 0, details: [] };
                 }
                 reportMap[item.name].totalBalance += item.remainingMeter;
-                reportMap[item.name].details.push({
-                    inv: po.poId,
-                    date: po.date,
-                    balance: item.remainingMeter,
-                    type: item.type
-                });
+                reportMap[item.name].details.push({ inv: po.poId, date: po.date, balance: item.remainingMeter, type: item.type });
             }
         });
     });
@@ -392,26 +385,14 @@ function generateCustomerReport(cust) {
         return;
     }
 
-    // Build Table
     let html = `<h4 style="border-bottom:2px solid #ddd; padding-bottom:5px;">Laporan Saldo: ${cust}</h4>`;
-    html += `<table class="report-table">`;
-    html += `<thead><tr><th>Nama Barang</th><th>Invoice / PO</th><th>Tanggal PO</th><th style="text-align:right;">Sisa (m)</th></tr></thead><tbody>`;
-
+    html += `<table class="report-table"><thead><tr><th>Nama Barang</th><th>Invoice / PO</th><th>Tanggal PO</th><th style="text-align:right;">Sisa (m)</th></tr></thead><tbody>`;
     Object.values(reportMap).forEach(group => {
-        // Group Header
         html += `<tr class="group-header"><td colspan="3">${group.name} <small>(${group.details[0].type})</small></td><td style="text-align:right; font-size:13px;">Total: ${group.totalBalance.toFixed(2)}</td></tr>`;
-        
-        // Detail Rows
         group.details.forEach(det => {
-            html += `<tr class="sub-row">
-                <td></td>
-                <td>${det.inv}</td>
-                <td>${det.date}</td>
-                <td style="text-align:right;">${det.balance.toFixed(2)}</td>
-            </tr>`;
+            html += `<tr class="sub-row"><td></td><td>${det.inv}</td><td>${det.date}</td><td style="text-align:right;">${det.balance.toFixed(2)}</td></tr>`;
         });
     });
-
     html += `</tbody></table>`;
     box.innerHTML = html;
 }
@@ -419,28 +400,24 @@ function generateCustomerReport(cust) {
 function printReportDiv() {
     const content = document.getElementById('reportContentArea').innerHTML;
     const win = window.open('', '', 'height=700,width=900');
-    win.document.write('<html><head><title>Print Report</title>');
-    win.document.write('<style>body{font-family:Arial, sans-serif;} table{width:100%; border-collapse:collapse;} th,td{border:1px solid #ccc; padding:8px; font-size:12px;} .group-header{background:#eee; font-weight:bold;}</style>');
-    win.document.write('</head><body>');
+    win.document.write('<html><head><title>Print Report</title><style>body{font-family:Arial, sans-serif;} table{width:100%; border-collapse:collapse;} th,td{border:1px solid #ccc; padding:8px; font-size:12px;} .group-header{background:#eee; font-weight:bold;}</style></head><body>');
     win.document.write(content);
     win.document.write('</body></html>');
     win.document.close();
     win.print();
 }
 
-// --- SETUP MODAL (FULL FEATURES) ---
+// --- SETUP & PRODUCTION LOGIC ---
 function openSetup(orderId) {
     activeOrderId = orderId;
     const order = currentOrders[orderId];
     document.getElementById('modalOrderNo').innerText = orderId;
     
-    // Header
     const headerRow = document.getElementById('tableHeaderRow');
     let headers = `<th style="width:20%">Item</th><th style="width:5%; text-align:center;">M</th><th style="width:5%; text-align:center;">Qty</th><th style="width:8%; text-align:center;">Set Qty</th><th style="width:8%; text-align:center;">Tot M'</th><th style="width:12%">Mesin</th><th style="width:14%">KPC</th><th style="width:8%">Type</th><th style="width:14%">WE Code</th><th style="width:5%; text-align:center;">Act</th>`;
     if (currentView === 'In Process') headers += `<th style="width:5%; text-align:center;">Selesai?</th>`;
     headerRow.innerHTML = headers;
 
-    // Alert
     const alertBox = document.getElementById('modalAlert');
     if (currentView === 'In Process') {
         alertBox.innerHTML = '<i class="fas fa-check-circle"></i> <strong>Produksi:</strong> Centang barang yang sudah selesai. Jangan lupa klik <strong>Update</strong> untuk menyimpan progres.';
@@ -452,7 +429,6 @@ function openSetup(orderId) {
         alertBox.innerHTML = '<strong>Instruksi:</strong> Gunakan tombol (+) untuk split jika stok kurang. Total Qty harus sama dengan target.';
     }
 
-    // Body
     const tbody = document.getElementById('setupBody');
     tbody.innerHTML = '';
 
@@ -475,7 +451,6 @@ function openSetup(orderId) {
         let valType = "Custom";
         if(item.we && item.we.includes('_PL_')) valType = "Plat";
 
-        // Tambahkan atribut min="0" dan oninput validasi agar tidak minus
         let inputs = `
             <td><input type="number" class="${spandekClass} qty-input" value="${item.qty}" min="0" oninput="validity.valid||(value='');" ${readonlyAttr} onchange="updateCalc(this)"></td>
             <td style="text-align:center;"><span class="total-m">${initialTotalM}</span></td>
@@ -530,7 +505,6 @@ function checkAllDone() {
     if(btn) btn.disabled = !allChecked;
 }
 
-// --- ACTION LOGIC ---
 function triggerAction(actionType) {
     let msg = "";
     let func = null;
@@ -554,12 +528,10 @@ function closeConfirm(isConfirmed) {
 }
 document.getElementById('confirmYesBtn').onclick = () => closeConfirm(true);
 
-// --- SPLIT LOGIC (UNLIMITED) ---
+// --- SPLIT & CALCULATION LOGIC ---
 function splitRow(btn, groupId) {
     const originalRow = btn.closest('tr');
     const tbody = originalRow.parentNode;
-    
-    // 1. Matikan Baris Utama (Parent) jika belum mati
     if (!originalRow.classList.contains('disabled-row')) {
         originalRow.classList.add('disabled-row');
         originalRow.querySelector('.qty-input').value = 0; 
@@ -568,47 +540,29 @@ function splitRow(btn, groupId) {
         const cb = originalRow.querySelector('.check-production');
         if(cb) cb.disabled = true; 
     }
-
-    // 2. Buat Baris Split Baru (Clone)
     const newRow = originalRow.cloneNode(true);
     newRow.classList.remove('main-row', 'disabled-row');
     newRow.classList.add('split-row');
-    
-    // Reset nilai untuk baris baru
     const qtyInput = newRow.querySelector('.qty-input');
     qtyInput.value = 0; 
     qtyInput.disabled = false;
-    
-    // Pastikan tidak minus
     qtyInput.setAttribute("min", "0");
     qtyInput.setAttribute("oninput", "validity.valid||(value='');");
-
     newRow.querySelectorAll('select').forEach(s => { 
-        s.value = ""; 
-        s.disabled = false; 
-        s.onchange = function(){ generateWE(this); } 
+        s.value = ""; s.disabled = false; s.onchange = function(){ generateWE(this); } 
     });
-    
     newRow.querySelector('.we-code').value = "";
-    
     const newCb = newRow.querySelector('.check-production');
     if(newCb) { 
-        newCb.disabled = false; 
-        newCb.checked = false; 
-        newCb.onchange = checkAllDone; 
+        newCb.disabled = false; newCb.checked = false; newCb.onchange = checkAllDone; 
     }
-    
     newRow.querySelector('.target-qty').parentElement.innerHTML = '<small style="color:#666;">↳ (Split)</small>';
-    
     const btnContainer = newRow.querySelector('.btn-split').parentElement;
     btnContainer.innerHTML = `<button class="btn-sm btn-remove" onclick="removeSplit(this, ${groupId})"><i class="fas fa-trash"></i></button>`;
-    
     const groupRows = tbody.querySelectorAll(`tr[data-id="${groupId}"]`);
     const lastRow = groupRows[groupRows.length-1];
     lastRow.after(newRow);
-    
     qtyInput.onchange = function() { updateCalc(this); };
-    
     if(currentView === 'In Process') checkAllDone();
 }
 
@@ -616,18 +570,15 @@ function removeSplit(btn, groupId) {
     const row = btn.closest('tr');
     const tbody = row.parentNode;
     row.remove();
-    
     const remainingSplits = tbody.querySelectorAll(`.split-row[data-id="${groupId}"]`);
     if(remainingSplits.length === 0) {
         const main = tbody.querySelector(`.main-row[data-id="${groupId}"]`);
         main.classList.remove('disabled-row');
-        
         const target = parseInt(main.querySelector('.target-qty').innerText);
         main.querySelector('.qty-input').value = target;
         main.querySelectorAll('select, input').forEach(el => el.disabled = false);
         const cb = main.querySelector('.check-production');
         if(cb) cb.disabled = false;
-        
         updateCalc(main.querySelector('.qty-input'));
     }
     if(currentView === 'In Process') checkAllDone();
@@ -655,7 +606,6 @@ async function submitProduction(mode) {
     const rows = document.querySelectorAll('#setupBody tr:not(.disabled-row)');
     let data = [], valid = true, errorMsg = "";
     
-    // Validate Total Qty MUST Match Target
     const groupIds = new Set([...document.querySelectorAll('.main-row')].map(r => r.dataset.id));
     groupIds.forEach(gid => {
         const main = document.querySelector(`.main-row[data-id="${gid}"]`);
@@ -666,7 +616,6 @@ async function submitProduction(mode) {
             if (val < 0) { valid = false; errorMsg = "Qty tidak boleh minus!"; }
             current += val;
         });
-        
         if (valid && current !== target) {
             valid = false;
             errorMsg = `Total Qty untuk item ${gid+1} harus ${target}, saat ini ${current}.`;
@@ -691,7 +640,6 @@ async function submitProduction(mode) {
     });
     
     if(!valid) return alert(errorMsg || "Lengkapi Data Mesin/KPC!");
-    
     await sendAPI(mode === 'new' ? 'submitProduction' : 'updateProductionData', { orderId: activeOrderId, category: 'preorder', data: data });
 }
 
@@ -712,12 +660,10 @@ function generatePDF(type) {
     document.getElementById('pdfCustName').innerText = o.customer;
     document.getElementById('pdfDate').innerText = new Date().toLocaleDateString();
     document.getElementById('pdfTitle').innerText = (type === 'SPK') ? "SURAT PERINTAH KERJA" : "SURAT JALAN";
-    
     const headDetail = document.getElementById('pdfHeadDetail');
     const headWE = document.getElementById('pdfHeadWE');
     if (type === 'SJ') { headDetail.innerText = "KETERANGAN"; headWE.style.display = 'none'; } 
     else { headDetail.innerText = "DETAIL MESIN/KPC"; headWE.style.display = 'table-cell'; }
-
     let itemsToPrint = o.items; 
     const tbody = document.getElementById('pdfItemsBody');
     tbody.innerHTML = '';
@@ -729,7 +675,7 @@ function generatePDF(type) {
     html2pdf().set({ margin:0.5, filename:`${type}_${activeOrderId}.pdf` }).from(document.getElementById('pdfContent')).save();
 }
 
-// --- CREATE REQUEST LOGIC ---
+// --- CREATE REQUEST LOGIC (MULTI-LINE SUPPORT) ---
 function openCreateModal() {
     document.getElementById('createModal').style.display = 'flex';
     document.getElementById('createItemsContainer').innerHTML = '';
@@ -744,10 +690,14 @@ function populateCust() {
         let opt = document.createElement('option'); opt.value=c; opt.innerText=c; sel.appendChild(opt);
     });
 }
+
 function loadCustomerItemsAggregated(cust) {
-    const box = document.getElementById('createItemsContainer'); box.innerHTML = '';
+    const box = document.getElementById('createItemsContainer'); 
+    box.innerHTML = '';
     aggregatedItemsMap = {}; 
     if(!cust) return;
+
+    // 1. Group Data by Item Name
     globalRemainingData.filter(d => d.customer === cust).forEach(po => {
         po.items.forEach(item => {
             if(!item.isLineClosed && item.remainingMeter > 0.1) {
@@ -757,28 +707,106 @@ function loadCustomerItemsAggregated(cust) {
             }
         });
     });
-    Object.keys(aggregatedItemsMap).forEach(itemName => {
+
+    // 2. Render UI for each Item Type
+    Object.keys(aggregatedItemsMap).forEach((itemName, index) => {
         const data = aggregatedItemsMap[itemName];
+        const safeName = index; // Use index as ID to avoid issues with spaces/special chars
+        
         const div = document.createElement('div');
         div.className = 'request-item';
         div.dataset.name = itemName;
-        div.innerHTML = `<div class="request-header"><strong>${itemName}</strong><span style="font-weight:bold; color:var(--primary);">Total Sisa: ${data.totalRemaining.toFixed(2)}m</span></div><div class="input-row" data-max="${data.totalRemaining}"><label>P (m):</label><input type="number" class="prod-input inp-meter" step="0.01" min="0" placeholder="Panjang" onkeyup="calcTotal(this)"><label>Qty:</label><input type="number" class="prod-input inp-qty" step="1" min="0" placeholder="Integer Only" onkeyup="calcTotal(this)"><div style="flex:1; text-align:right;">Req: <span class="calc-res">0.00</span> m</div></div>`;
+        div.dataset.safeId = safeName;
+        div.dataset.max = data.totalRemaining;
+
+        // Container structure
+        div.innerHTML = `
+            <div class="request-header">
+                <strong>${itemName}</strong>
+                <span class="balance-text">Saldo Tersedia: ${data.totalRemaining.toFixed(2)}m</span>
+            </div>
+            <div class="rows-container" id="rows-${safeName}">
+                <div class="input-row">
+                    <label>P (m):</label>
+                    <input type="number" class="prod-input inp-meter" step="0.01" min="0" placeholder="Panjang" onkeyup="calcMultiTotal('${safeName}')">
+                    <label>Qty:</label>
+                    <input type="number" class="prod-input inp-qty" step="1" min="0" placeholder="Lembar" onkeyup="calcMultiTotal('${safeName}')">
+                    <div style="flex:1;"></div>
+                    <button class="row-remove-btn" onclick="removeRequestRow(this, '${safeName}')" title="Hapus Baris"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+            <button class="btn-add-line" onclick="addRequestRow('${safeName}')"><i class="fas fa-plus"></i> Tambah Ukuran</button>
+            <div class="item-summary">
+                Total Request: <span class="calc-res" id="total-${safeName}">0.00</span> m
+            </div>
+        `;
         box.appendChild(div);
     });
 }
-function calcTotal(el) {
-    const row = el.closest('.input-row');
-    const m = parseFloat(row.querySelector('.inp-meter').value)||0;
-    const qRaw = row.querySelector('.inp-qty').value;
-    let q = parseFloat(qRaw)||0;
-    if(qRaw.includes('.')) { row.querySelector('.inp-qty').value = Math.floor(q); q = Math.floor(q); }
-    const tot = m * q;
-    const max = parseFloat(row.dataset.max);
-    const resEl = row.querySelector('.calc-res');
-    resEl.innerText = tot.toFixed(2);
+
+function addRequestRow(safeId) {
+    const container = document.getElementById(`rows-${safeId}`);
+    const div = document.createElement('div');
+    div.className = 'input-row';
+    div.innerHTML = `
+        <label>P (m):</label>
+        <input type="number" class="prod-input inp-meter" step="0.01" min="0" placeholder="Panjang" onkeyup="calcMultiTotal('${safeId}')">
+        <label>Qty:</label>
+        <input type="number" class="prod-input inp-qty" step="1" min="0" placeholder="Lembar" onkeyup="calcMultiTotal('${safeId}')">
+        <div style="flex:1;"></div>
+        <button class="row-remove-btn" onclick="removeRequestRow(this, '${safeId}')" title="Hapus Baris"><i class="fas fa-trash"></i></button>
+    `;
+    container.appendChild(div);
+}
+
+function removeRequestRow(btn, safeId) {
+    const container = document.getElementById(`rows-${safeId}`);
+    // Only allow removing if there is more than 1 row, OR allow removing all but logic needs to handle empty
+    // Let's allow removing specific row. If no rows left, user can add back.
+    btn.closest('.input-row').remove();
+    calcMultiTotal(safeId);
+}
+
+function calcMultiTotal(safeId) {
+    const container = document.getElementById(`rows-${safeId}`);
+    const parent = container.closest('.request-item');
+    const maxBalance = parseFloat(parent.dataset.max);
+    const totalDisplay = document.getElementById(`total-${safeId}`);
+    
+    let totalUsed = 0;
+    
+    // Sum all rows
+    container.querySelectorAll('.input-row').forEach(row => {
+        const m = parseFloat(row.querySelector('.inp-meter').value) || 0;
+        const qRaw = row.querySelector('.inp-qty').value;
+        let q = parseFloat(qRaw) || 0;
+        
+        // Integer check for Qty visual only (calc uses val)
+        if(qRaw.includes('.')) { row.querySelector('.inp-qty').value = Math.floor(q); q = Math.floor(q); }
+        
+        totalUsed += (m * q);
+    });
+
+    totalDisplay.innerText = totalUsed.toFixed(2);
     const btn = document.getElementById('btnSubmitRequest');
-    if(tot > max + 0.05) { resEl.style.color = "red"; resEl.innerText += " (OVER!)"; row.style.border = "1px solid red"; row.style.background = "#fee2e2"; btn.disabled = true; } 
-    else { resEl.style.color = "black"; row.style.border = "none"; row.style.background = "#f8fafc"; btn.disabled = false; }
+
+    // Validation
+    if(totalUsed > maxBalance + 0.05) {
+        totalDisplay.classList.add('over-limit');
+        totalDisplay.innerText += " (OVER LIMIT!)";
+        parent.style.border = "1px solid red";
+        parent.style.background = "#fee2e2";
+        btn.disabled = true;
+    } else {
+        totalDisplay.classList.remove('over-limit');
+        parent.style.border = "1px solid #e5e7eb";
+        parent.style.background = "#fff";
+        btn.disabled = false;
+    }
+    
+    // Global Validation (Check if any OTHER item is over limit)
+    const allOver = document.querySelectorAll('.over-limit');
+    if(allOver.length > 0) btn.disabled = true;
 }
 
 async function submitRequestAggregated() {
@@ -788,40 +816,51 @@ async function submitRequestAggregated() {
 
     let requestItems = []; 
     let isValid = true;
+    let hasItems = false;
+
+    // Loop through each Item Container
     document.querySelectorAll('.request-item').forEach(div => {
         const itemName = div.dataset.name;
-        const row = div.querySelector('.input-row');
-        const reqLen = parseFloat(row.querySelector('.inp-meter').value) || 0;
-        const reqQty = parseFloat(row.querySelector('.inp-qty').value) || 0;
-        let reqTotalMeter = reqLen * reqQty;
-        
-        if (reqLen < 0 || reqQty < 0) { isValid = false; return alert("Input tidak boleh minus!"); }
+        const maxBalance = parseFloat(div.dataset.max);
+        let itemTotalUsed = 0;
 
-        const maxBalance = parseFloat(row.dataset.max);
-        if(reqTotalMeter > maxBalance + 0.05) {
+        // Loop through rows inside this item
+        const rows = div.querySelectorAll('.input-row');
+        rows.forEach(row => {
+            const reqLen = parseFloat(row.querySelector('.inp-meter').value) || 0;
+            const reqQty = parseFloat(row.querySelector('.inp-qty').value) || 0;
+            const reqTotalMeter = reqLen * reqQty;
+
+            if (reqLen < 0 || reqQty < 0) { isValid = false; }
+
+            // If valid data exists in this row
+            if (reqTotalMeter > 0) {
+                hasItems = true;
+                itemTotalUsed += reqTotalMeter;
+                
+                // Find reference data (Unit/Type) from map
+                const refData = aggregatedItemsMap[itemName] && aggregatedItemsMap[itemName].poList[0];
+                
+                requestItems.push({
+                    itemName: itemName,
+                    length: reqLen,
+                    qty: reqQty,
+                    totalMeter: reqTotalMeter,
+                    type: refData ? refData.type : '',
+                    unit: refData ? refData.unit : ''
+                });
+            }
+        });
+
+        // Double check balance limit per item
+        if (itemTotalUsed > maxBalance + 0.05) {
             isValid = false;
-            row.style.border = "1px solid red"; 
-            row.style.background = "#fee2e2";
-        } else {
-            row.style.border = "none"; 
-            row.style.background = "#f8fafc";
-        }
-
-        if(reqTotalMeter > 0) {
-            const refData = aggregatedItemsMap[itemName] && aggregatedItemsMap[itemName].poList[0];
-            requestItems.push({
-                itemName: itemName,
-                length: reqLen,
-                qty: reqQty,
-                totalMeter: reqTotalMeter,
-                type: refData ? refData.type : '',
-                unit: refData ? refData.unit : ''
-            });
+            div.style.background = "#fee2e2"; // Highlight error
         }
     });
 
-    if(!isValid) return alert("Gagal: Ada input yang melebihi sisa saldo customer atau minus!");
-    if(requestItems.length === 0) return alert("Gagal: Belum ada item yang diisi (Qty/Meter kosong).");
+    if(!isValid) return alert("Gagal: Ada input minus atau melebihi sisa saldo customer!");
+    if(!hasItems) return alert("Gagal: Belum ada item yang diisi (Qty/Meter kosong).");
 
     const btn = document.getElementById('btnSubmitRequest');
     const originalText = btn.innerText;
@@ -852,6 +891,7 @@ async function submitRequestAggregated() {
         btn.innerText = originalText;
     }
 }
+
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 </script>
 </body>
