@@ -8,7 +8,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-/* --- SYSTEM STYLES (MATCHING GENERAL ORDER) --- */
+/* --- SYSTEM STYLES --- */
 :root { --primary: #7e22ce; --bg: #f4f7f6; --text: #333; --red: #b91c1c; --green: #047857; --orange: #b75900; }
 * { box-sizing: border-box; }
 body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background: var(--bg); color: var(--text); }
@@ -221,12 +221,13 @@ table.pdf-table td { padding: 6px 4px; font-size: 10px; vertical-align: top; }
 <script>
 // --- URL API APPSCRIPT (Update dengan URL Deployment terbaru) ---
 const API_URL = "https://script.google.com/macros/s/AKfycbztkGZvBQnLFpcPkIGY6NeKuRJ7mGpT4eOUN00AfmejbG2reLi4TeG_AcuL_wuHpp5vSw/exec";
-const INVENTORY_API = "https://script.google.com/macros/s/AKfycby5N2auQ__JVSp-RdO-5xtUwanRZZW7YZMZ163j2NP61N3SIfVnPxr8PBXYbgBC6LJH/exec"; 
+const INVENTORY_API = "https://script.google.com/macros/s/AKfycby5172vlCkKmMQn1c_HdyNNJWfzz7ByDaLN-mJ1zOVoDJxknGWkI3yTugV2cVMIuRG5/exec"; 
 
 const ORDER_CATEGORY = 'backorder'; 
 
 let currentOrders = {}; 
-let masterStock = {}; // Data Stock
+let masterStock = {}; // Data Stock untuk validasi Awaiting (BackOrder)
+let inventoryData = []; // Data Full Inventory untuk KPC
 let activeOrderId = null;
 let currentTab = 'Awaiting';
 const TYPE_CODES = { 'Custom': 'CS', 'Plat': 'PL' };
@@ -255,28 +256,78 @@ document.getElementById('confirmYesBtn').onclick = () => closeConfirm(true);
 
 // --- INIT ---
 window.onload = async () => {
-    await fetchStockData();
+    await loadInventory();
     switchTab('Awaiting');
 };
 
-async function fetchStockData() {
+async function loadInventory() {
     try {
-        const response = await fetch(`${INVENTORY_API}?action=getInventoryData`);
-        const json = await response.json();
+        console.log("Fetching Inventory...");
+        const response = await fetch(INVENTORY_API + "?action=getAllStock"); 
+        const data = await response.json();
         
+        inventoryData = data; 
+        
+        // Populate masterStock untuk logika BackOrder Awaiting check
         masterStock = {};
-        const cleanNum = (val) => parseFloat(String(val).replace(/,/g, '')) || 0;
-
-        // Parse Data
-        const allItems = [...(json.spandek || []), ...(json.nonspandek || json.nonSpandek || [])];
-        allItems.forEach(row => {
-            const name = row[0]; // Nama Barang Index 0
-            const qty = cleanNum(row[4]); // Stock Index 4
+        inventoryData.forEach(item => {
+            const name = item["Nama Barang"];
+            const qty = parseFloat(item["Stok"] || 0);
             if(name) masterStock[name] = qty;
         });
-        
-    } catch(e) { console.error("Stock Error:", e); }
+
+        console.log("Inventory Loaded:", inventoryData.length, "items");
+    } catch (err) {
+        console.error("Gagal load inventory:", err);
+        inventoryData = [];
+    }
 }
+
+// FUNGSI UTAMA KPC DROPDOWN
+function getKPCOptionsHTML(orderItemName, orderItemType, requiredMeter) {
+    let optionsHtml = '<option value="">- Pilih KPC -</option>';
+    const searchKey = (orderItemName + " " + orderItemType).toLowerCase();
+    
+    const matchedCoils = inventoryData.filter(row => {
+        const invName = (row["Nama Barang"] || "").toString().toLowerCase();
+        if (invName === "") return false;
+
+        if (invName.includes(orderItemName.toLowerCase())) return true;
+        if (orderItemName.toLowerCase().includes(invName)) return true;
+
+        if (searchKey.includes('spandek') && (invName.includes('coil') || invName.includes('spandek'))) return true;
+        if (searchKey.includes('c75') && invName.includes('c75')) return true; 
+        if (searchKey.includes('reng') && invName.includes('reng')) return true;
+
+        return false; 
+    });
+
+    matchedCoils.sort((a, b) => (parseFloat(b["Stok"])||0) - (parseFloat(a["Stok"])||0));
+
+    if (matchedCoils.length === 0) {
+        optionsHtml += `<option value="" disabled>Tidak ada stok yang cocok dengan nama "${orderItemName}"</option>`;
+    } else {
+        matchedCoils.forEach(row => {
+            const kodeKPC = row["Kode / KPC"];
+            const stok = parseFloat(row["Stok"] || 0); 
+            const namaBarang = row["Nama Barang"];
+            const req = parseFloat(requiredMeter || 0);
+
+            let label = `${kodeKPC} | Stok: ${stok.toLocaleString()}m`;
+            let disabledAttr = '';
+            let style = 'color: #047857; font-weight:bold;'; // Hijau
+
+            if (req > 0 && stok < req) {
+                disabledAttr = 'disabled';
+                label += ` (Kurang! Butuh: ${req})`;
+                style = 'color: #b91c1c; background: #fee2e2;'; // Merah
+            }
+            optionsHtml += `<option value="${kodeKPC}" ${disabledAttr} style="${style}" title="${namaBarang}">${label}</option>`;
+        });
+    }
+    return optionsHtml;
+}
+
 
 function switchTab(tabName) {
     currentTab = tabName;
@@ -290,6 +341,10 @@ function switchTab(tabName) {
     
     const btn = document.getElementById(btnId);
     if (btn) btn.classList.add('active');
+    
+    if (tabName === 'Awaiting' || tabName === 'In Process') {
+        loadInventory(); 
+    }
     loadOrders(tabName);
 }
 
@@ -367,7 +422,7 @@ function openSetup(orderId) {
         deliverySection.style.display = 'none';
     }
 
-    headers += `<th style="width:12%">Mesin</th><th style="width:14%">KPC</th><th style="width:8%">Type</th><th style="width:14%">WE Code</th><th style="width:5%; text-align:center;">Act</th>`;
+    headers += `<th style="width:12%">Mesin</th><th style="width:14%">KPC (Stock)</th><th style="width:8%">Type</th><th style="width:14%">WE Code</th><th style="width:5%; text-align:center;">Act</th>`;
     if (currentTab === 'In Process') headers += `<th style="width:5%; text-align:center;">Selesai?</th>`;
     headerRow.innerHTML = headers;
 
@@ -400,9 +455,14 @@ function openSetup(orderId) {
         let spandekClass = isSpandek ? 'prod-input' : 'prod-input non-spandek-input';
         let readonlyAttr = isSpandek && isEditable ? '' : 'disabled';
         
+        // --- Kalkulasi Total Meter untuk KPC Dropdown check ---
+        const meterVal = parseFloat(item.meter) || 0;
+        const qtyVal = parseInt(item.qty) || 0;
+        const initialTotalM = (meterVal * qtyVal).toFixed(2);
+        
         let middleCols = '';
         
-        // --- LOGIKA COMPARISON STOCK ---
+        // --- LOGIKA COMPARISON STOCK (TAB AWAITING) ---
         if (currentTab === 'Awaiting') {
             const reqQty = parseFloat(item.qty);
             const meterPerPcs = parseFloat(item.meter) || 0;
@@ -450,6 +510,20 @@ function openSetup(orderId) {
         let valType = "Custom"; 
         if(item.we && item.we.includes('_PL_')) valType = "Plat";
 
+        // --- GENERATE DYNAMIC KPC OPTIONS ---
+        let kpcOptions = "";
+        if (isSpandek) {
+            kpcOptions = getKPCOptionsHTML(item.item, item.type, initialTotalM);
+            if (valKPC && !kpcOptions.includes(`value="${valKPC}"`)) {
+                 kpcOptions = `<option value="${valKPC}" selected>${valKPC} (Current)</option>` + kpcOptions;
+            } else {
+                 kpcOptions = kpcOptions.replace(`value="${valKPC}"`, `value="${valKPC}" selected`);
+            }
+        } else {
+            kpcOptions = `<option value="">-</option>`;
+        }
+        // ------------------------------------
+
         let showSplit = isEditable;
 
         let inputs = `
@@ -463,9 +537,7 @@ function openSetup(orderId) {
             </td>
             <td>
                 <select class="${spandekClass} kpc-select" ${readonlyAttr} onchange="generateWE(this)">
-                    <option value="">-</option>
-                    <option value="KPC-001" ${valKPC==='KPC-001'?'selected':''}>KPC-001</option>
-                    <option value="KPC-002" ${valKPC==='KPC-002'?'selected':''}>KPC-002</option>
+                   ${kpcOptions}
                 </select>
             </td>
             <td>
@@ -535,9 +607,14 @@ function checkAllDone() {
     if(btn) btn.disabled = !allChecked;
 }
 
-// --- LOGIKA SPLIT (FIXED POSISI KOLOM QTY) ---
+// --- LOGIKA SPLIT (UPDATED WITH KPC DYNAMIC) ---
 function splitRow(btn, groupId) {
     const originalRow = btn.closest('tr');
+    
+    // Ambil info nama/tipe barang dari kolom pertama baris original untuk pencarian KPC
+    const nameCell = originalRow.cells[0];
+    const itemName = nameCell.querySelector('strong').innerText;
+    const itemType = nameCell.querySelector('small').innerText;
     
     if (!originalRow.classList.contains('disabled-row')) {
         originalRow.classList.add('disabled-row');
@@ -570,7 +647,14 @@ function splitRow(btn, groupId) {
         newRow.cells[5].innerHTML = "";  // Status
     }
 
-    newRow.querySelectorAll('select').forEach(s => { s.value = ""; s.disabled = false; s.onchange = function(){ generateWE(this); } });
+    newRow.querySelectorAll('select').forEach(s => { 
+        s.value = ""; s.disabled = false; 
+        if (s.classList.contains('kpc-select')) {
+             // Load opsi KPC baru
+             s.innerHTML = getKPCOptionsHTML(itemName, itemType, 0); 
+        }
+        s.onchange = function(){ generateWE(this); } 
+    });
     newRow.querySelector('.we-code').value = "";
     
     const btnContainer = newRow.querySelector('.btn-split').parentElement;
@@ -601,6 +685,17 @@ function removeSplit(btn, groupId) {
         main.querySelectorAll('select, input').forEach(el => el.disabled = false);
         const cb = main.querySelector('.check-production');
         if(cb) cb.disabled = false;
+        
+        // Refresh main row KPC (optional, to re-check stock vs full qty)
+        const nameCell = main.cells[0];
+        const itemName = nameCell.querySelector('strong').innerText;
+        const itemType = nameCell.querySelector('small').innerText;
+        // Asumsi meter ada di cell[1] untuk BackOrder Awaiting, atau perlu parse dari meter-val
+        // Karena ini BackOrder, kita simplify: reset value KPC options
+        const kpcSelect = main.querySelector('.kpc-select');
+        const currentVal = kpcSelect.value;
+        // Kita tidak hitung ulang meter disini karena struktur BackOrder agak beda
+        // Cukup biarkan user memilih ulang jika perlu
     }
     validateQty(groupId);
 }
@@ -676,7 +771,6 @@ function triggerAction(actionType) {
     if (msg && func) showConfirm(msg, func);
 }
 
-// --- FIX: SIMPAN DATA MESIN/KPC SAAT DARI AWAITING ---
 async function submitProduction(mode) {
     const rows = document.querySelectorAll('#setupBody tr:not(.disabled-row)');
     let data = [], valid = true;
