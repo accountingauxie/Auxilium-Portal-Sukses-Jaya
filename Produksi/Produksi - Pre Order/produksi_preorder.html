@@ -71,7 +71,6 @@ table.report-table th { background: #f3f4f6; padding: 10px; border: 1px solid #d
 table.report-table td { padding: 8px 10px; border: 1px solid #ddd; font-size: 12px; }
 .group-header { background-color: #e0f2fe; font-weight: bold; color: #0c4a6e; }
 .sub-row td { background-color: #fff; color: #555; font-style: italic; padding-left: 30px; }
-
 /* --- PDF GENERATION STYLES (COPIED FROM REFERENCE - A5 LANDSCAPE) --- */
 #pdf-hidden-container { position: absolute; left: -9999px; top: 0; }
 #pdfContent { background: #fff; width: 100%; padding: 0; font-family: "Arial", sans-serif; color: #000; }
@@ -247,7 +246,7 @@ table.pdf-table td { padding: 6px 4px; font-size: 10px; vertical-align: top; bor
         <table class="pdf-table">
             <thead>
                 <tr id="pdfTableHead">
-                    </tr>
+                </tr>
             </thead>
             <tbody id="pdfItemsBody">
                 </tbody>
@@ -261,16 +260,86 @@ table.pdf-table td { padding: 6px 4px; font-size: 10px; vertical-align: top; bor
 <script>
 // --- KONFIGURASI API ---
 const API_URL = "https://script.google.com/macros/s/AKfycbyXS4HZALNgggpEwOucoNhtAeE21boEi6tFM_sy16z-qnkWISK2gg9ysy06jx4pvio_5Q/exec";
+const INVENTORY_API = "https://script.google.com/macros/s/AKfycby5N2auQ__JVSp-RdO-5xtUwanRZZW7YZMZ163j2NP61N3SIfVnPxr8PBXYbgBC6LJH/exec";
 const TYPE_CODES = { 'Custom': 'CS', 'Plat': 'PL' };
 
 let currentView = 'Remaining';
 let globalRemainingData = []; 
 let currentOrders = {};
 let aggregatedItemsMap = {};
+let inventoryData = []; // Store Inventory Data
 let activeOrderId = null;
 let confirmCallback = null;
 
-window.onload = () => loadData('Remaining');
+window.onload = async () => {
+    // Init sequence
+    await loadInventory();
+    loadData('Remaining');
+};
+
+// --- INVENTORY LOGIC (COPIED & ADAPTED FOR PREORDER) ---
+async function loadInventory() {
+    try {
+        console.log("Fetching Inventory from:", INVENTORY_API);
+        const response = await fetch(INVENTORY_API + "?action=getAllStock"); 
+        const data = await response.json();
+        inventoryData = data; 
+        console.log("Inventory Loaded:", inventoryData.length, "items");
+    } catch (err) {
+        console.error("Gagal load inventory:", err);
+        inventoryData = [];
+    }
+}
+
+function getKPCOptionsHTML(orderItemName, orderItemType, requiredMeter) {
+    let optionsHtml = '<option value="">- Pilih KPC -</option>';
+    const searchKey = (orderItemName + " " + orderItemType).toLowerCase();
+    
+    // Filter Inventory
+    const matchedCoils = inventoryData.filter(row => {
+        const invName = (row["Nama Barang"] || "").toString().toLowerCase();
+        if (invName === "") return false;
+
+        // 1. Cek Match Sederhana
+        if (invName.includes(orderItemName.toLowerCase())) return true;
+        if (orderItemName.toLowerCase().includes(invName)) return true;
+
+        // 2. Logika Tambahan
+        if (searchKey.includes('spandek') && (invName.includes('coil') || invName.includes('spandek'))) return true;
+        if (searchKey.includes('c75') && invName.includes('c75')) return true; 
+        if (searchKey.includes('reng') && invName.includes('reng')) return true;
+
+        return false; 
+    });
+
+    // Urutkan stok terbanyak
+    matchedCoils.sort((a, b) => (parseFloat(b["Stok"])||0) - (parseFloat(a["Stok"])||0));
+
+    if (matchedCoils.length === 0) {
+        optionsHtml += `<option value="" disabled>Tidak ada stok yang cocok dengan nama "${orderItemName}"</option>`;
+    } else {
+        matchedCoils.forEach(row => {
+            const kodeKPC = row["Kode / KPC"];
+            const stok = parseFloat(row["Stok"] || 0); 
+            const namaBarang = row["Nama Barang"];
+            const req = parseFloat(requiredMeter || 0);
+
+            let label = `${kodeKPC} | Stok: ${stok.toLocaleString()}m`;
+            let disabledAttr = '';
+            let style = 'color: #047857; font-weight:bold;'; // Hijau
+
+            // Validasi Stok
+            if (req > 0 && stok < req) {
+                disabledAttr = 'disabled';
+                label += ` (Kurang! Butuh: ${req})`;
+                style = 'color: #b91c1c; background: #fee2e2;'; // Merah
+            }
+            optionsHtml += `<option value="${kodeKPC}" ${disabledAttr} style="${style}" title="${namaBarang}">${label}</option>`;
+        });
+    }
+    return optionsHtml;
+}
+
 
 // --- NAVIGATION & LOAD DATA ---
 async function loadData(view) {
@@ -285,6 +354,12 @@ async function loadData(view) {
     if(view === 'Cancel') btnId = 'tab-cancel';
     
     document.getElementById(btnId).classList.add('active');
+    
+    // Refresh Inventory jika masuk tab Produksi (Awaiting/Process)
+    if(view === 'Awaiting' || view === 'In Process') {
+        loadInventory(); 
+    }
+
     const tbody = document.getElementById('tableBody');
     tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px;">Loading...</td></tr>';
     const thead = document.getElementById('tableHead');
@@ -403,14 +478,14 @@ function printReportDiv() {
     win.print();
 }
 
-// --- SETUP & PRODUCTION LOGIC ---
+// --- SETUP & PRODUCTION LOGIC (UPDATED WITH KPC DYNAMIC DROPDOWN) ---
 function openSetup(orderId) {
     activeOrderId = orderId;
     const order = currentOrders[orderId];
     document.getElementById('modalOrderNo').innerText = orderId;
     
     const headerRow = document.getElementById('tableHeaderRow');
-    let headers = `<th style="width:20%">Item</th><th style="width:5%; text-align:center;">M</th><th style="width:5%; text-align:center;">Qty</th><th style="width:8%; text-align:center;">Set Qty</th><th style="width:8%; text-align:center;">Tot M'</th><th style="width:12%">Mesin</th><th style="width:14%">KPC</th><th style="width:8%">Type</th><th style="width:14%">WE Code</th><th style="width:5%; text-align:center;">Act</th>`;
+    let headers = `<th style="width:20%">Item</th><th style="width:5%; text-align:center;">M</th><th style="width:5%; text-align:center;">Qty</th><th style="width:8%; text-align:center;">Set Qty</th><th style="width:8%; text-align:center;">Tot M'</th><th style="width:12%">Mesin</th><th style="width:14%">KPC (Stock)</th><th style="width:8%">Type</th><th style="width:14%">WE Code</th><th style="width:5%; text-align:center;">Act</th>`;
     if (currentView === 'In Process') headers += `<th style="width:5%; text-align:center;">Selesai?</th>`;
     headerRow.innerHTML = headers;
 
@@ -447,11 +522,29 @@ function openSetup(orderId) {
         let valType = "Custom";
         if(item.we && item.we.includes('_PL_')) valType = "Plat";
 
+        // --- GENERATE DYNAMIC KPC ---
+        let kpcOptions = "";
+        if (isSpandek) {
+            kpcOptions = getKPCOptionsHTML(item.item, item.type, initialTotalM);
+            // Pertahankan nilai lama jika ada
+            if (valKPC && !kpcOptions.includes(`value="${valKPC}"`)) {
+                 kpcOptions = `<option value="${valKPC}" selected>${valKPC} (Current)</option>` + kpcOptions;
+            } else {
+                 kpcOptions = kpcOptions.replace(`value="${valKPC}"`, `value="${valKPC}" selected`);
+            }
+        } else {
+            kpcOptions = `<option value="">-</option>`;
+        }
+
         let inputs = `
             <td><input type="number" class="${spandekClass} qty-input" value="${item.qty}" min="0" oninput="validity.valid||(value='');" ${readonlyAttr} onchange="updateCalc(this)"></td>
             <td style="text-align:center;"><span class="total-m">${initialTotalM}</span></td>
             <td><select class="${spandekClass} machine-select" ${readonlyAttr} onchange="generateWE(this)"><option value="">-</option><option value="PM08" ${valMesin==='PM08'?'selected':''}>PM08</option><option value="PM14" ${valMesin==='PM14'?'selected':''}>PM14</option></select></td>
-            <td><select class="${spandekClass} kpc-select" ${readonlyAttr} onchange="generateWE(this)"><option value="">-</option><option value="KPC-001" ${valKPC==='KPC-001'?'selected':''}>KPC-001</option><option value="KPC-002" ${valKPC==='KPC-002'?'selected':''}>KPC-002</option></select></td>
+            <td>
+                <select class="${spandekClass} kpc-select" ${readonlyAttr} onchange="generateWE(this)">
+                    ${kpcOptions}
+                </select>
+            </td>
             <td><select class="${spandekClass} type-select" ${readonlyAttr} onchange="generateWE(this)"><option value="Custom" ${valType==='Custom'?'selected':''}>Custom</option><option value="Plat" ${valType==='Plat'?'selected':''}>Plat</option></select></td>
             <td><input type="text" class="${spandekClass} we-code" readonly value="${item.we||''}"></td>
             <td style="text-align:center;">${isSpandek && isEditable ? `<button class="btn-sm btn-split" onclick="splitRow(this, ${idx})"><i class="fas fa-plus"></i></button>` : '-'}</td>
@@ -524,9 +617,15 @@ function closeConfirm(isConfirmed) {
 }
 document.getElementById('confirmYesBtn').onclick = () => closeConfirm(true);
 
-// --- SPLIT & CALCULATION LOGIC ---
+// --- SPLIT & CALCULATION LOGIC (UPDATED WITH KPC DYNAMIC) ---
 function splitRow(btn, groupId) {
     const originalRow = btn.closest('tr');
+    
+    // Ambil info item untuk generate KPC options
+    const nameCell = originalRow.cells[0];
+    const itemName = nameCell.querySelector('strong').innerText;
+    const itemType = nameCell.querySelector('small').innerText;
+
     const tbody = originalRow.parentNode;
     if (!originalRow.classList.contains('disabled-row')) {
         originalRow.classList.add('disabled-row');
@@ -544,9 +643,16 @@ function splitRow(btn, groupId) {
     qtyInput.disabled = false;
     qtyInput.setAttribute("min", "0");
     qtyInput.setAttribute("oninput", "validity.valid||(value='');");
+    
     newRow.querySelectorAll('select').forEach(s => { 
-        s.value = ""; s.disabled = false; s.onchange = function(){ generateWE(this); } 
+        s.value = ""; s.disabled = false; 
+        if (s.classList.contains('kpc-select')) {
+             // Load ulang opsi KPC dengan req = 0 (tampilkan semua stock)
+             s.innerHTML = getKPCOptionsHTML(itemName, itemType, 0); 
+        }
+        s.onchange = function(){ generateWE(this); } 
     });
+    
     newRow.querySelector('.we-code').value = "";
     const newCb = newRow.querySelector('.check-production');
     if(newCb) { 
@@ -575,6 +681,20 @@ function removeSplit(btn, groupId) {
         main.querySelectorAll('select, input').forEach(el => el.disabled = false);
         const cb = main.querySelector('.check-production');
         if(cb) cb.disabled = false;
+        
+        // Recalculate requirement for stock check
+        const m = parseFloat(main.querySelector('.meter-val').innerText || 0);
+        const req = (m * target).toFixed(2);
+        
+        // Refresh KPC option on main row
+        const nameCell = main.cells[0];
+        const itemName = nameCell.querySelector('strong').innerText;
+        const itemType = nameCell.querySelector('small').innerText;
+        const kpcSelect = main.querySelector('.kpc-select');
+        const currentVal = kpcSelect.value;
+        kpcSelect.innerHTML = getKPCOptionsHTML(itemName, itemType, req);
+        kpcSelect.value = currentVal;
+
         updateCalc(main.querySelector('.qty-input'));
     }
     if(currentView === 'In Process') checkAllDone();
@@ -585,7 +705,8 @@ function updateCalc(input) {
     if(row.classList.contains('disabled-row')) return;
     const m = parseFloat(row.querySelector('.meter-val').innerText || 0);
     const q = parseInt(input.value || 0);
-    row.querySelector('.total-m').innerText = (m * q).toFixed(2);
+    const totalM = (m * q).toFixed(2);
+    row.querySelector('.total-m').innerText = totalM;
 }
 
 function generateWE(el) {
