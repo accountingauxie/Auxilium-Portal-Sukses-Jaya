@@ -78,17 +78,16 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 .btn-approve { background: #10b981; }
 .btn-pdf { background: #2563eb; }
 
-/* --- PDF STYLE FIX: EXACT CENTER --- */
+/* --- PDF STYLE FIX: EXACT CENTER FOR 0.7cm MARGINS --- */
 #pdf-hidden-container { position: absolute; left: -9999px; top: 0; }
 #pdfContent { 
     background: #fff; 
     /* A5 Landscape = 210mm Width.
-       Margin Left = 5mm.
-       Margin Right = 5mm.
-       Available Content = 210 - 5 - 5 = 200mm.
-       Setting width to exactly 200mm ensures perfect centering.
+       Margin Left = 7mm (0.7cm).
+       Margin Right = 7mm (0.7cm).
+       Available Content = 210 - 7 - 7 = 196mm.
     */
-    width: 200mm; 
+    width: 196mm; 
     padding: 0; 
     font-family: "Arial", sans-serif; 
     color: #000; 
@@ -527,10 +526,10 @@ async function updateStatus(id, stat) {
 
 function dlPDF(filenameId) {
     const el = document.getElementById('pdfContent');
-    // Config for A5 Landscape (Exact Fit)
-    // Top 1, Left 0.5, Bottom 1, Right 0.5
+    // Config for A5 Landscape
+    // Top 1, Left 0.7, Bottom 1, Right 0.7
     const opt = { 
-        margin: [1, 0.5, 1, 0.5], 
+        margin: [1, 0.7, 1, 0.7], 
         filename: `Faktur_${filenameId}.pdf`, 
         image: { type: 'jpeg', quality: 0.98 }, 
         html2canvas: { scale: 2, useCORS: true, scrollY: 0 }, 
