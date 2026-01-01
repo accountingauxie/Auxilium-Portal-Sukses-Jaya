@@ -55,7 +55,7 @@ table.xero-table tr.data-row:hover { background-color: #e0f2fe; }
 .type-badge { font-size: 10px; padding: 4px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; display: inline-block; white-space: nowrap; }
 .type-gen { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; } 
 .type-pre { background: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe; } 
-.type-back { background: #fff1f0; color: #cf1322; border: 1px solid #ffa39e; } /* NEW COLOR for Back Order */
+.type-back { background: #fff1f0; color: #cf1322; border: 1px solid #ffa39e; } 
 
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 9000; backdrop-filter: blur(2px); }
 .modal-box { background: #fff; width: 1100px; max-width: 95%; height: 90vh; display: flex; flex-direction: column; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
@@ -78,16 +78,17 @@ table.web-items td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size:
 .btn-approve { background: #10b981; }
 .btn-pdf { background: #2563eb; }
 
-/* --- PDF STYLE UPDATES --- */
+/* --- PDF STYLE FIX: EXACT CENTER --- */
 #pdf-hidden-container { position: absolute; left: -9999px; top: 0; }
 #pdfContent { 
     background: #fff; 
-    /* WIDTH ADJUSTMENT:
-       A5 Landscape = 210mm wide.
-       Margins = 0.5cm Left + 0.5cm Right = 10mm.
-       Safe content width = 190mm (leaving 10mm buffer).
+    /* A5 Landscape = 210mm Width.
+       Margin Left = 5mm.
+       Margin Right = 5mm.
+       Available Content = 210 - 5 - 5 = 200mm.
+       Setting width to exactly 200mm ensures perfect centering.
     */
-    width: 190mm; 
+    width: 200mm; 
     padding: 0; 
     font-family: "Arial", sans-serif; 
     color: #000; 
@@ -116,7 +117,7 @@ table.pdf-table td { padding: 6px 4px; font-size: 9px; vertical-align: top; }
 .pdf-total-box { width: 40%; }
 .pdf-total-row.grand { font-size: 14px; font-weight: 700; color: #116999; display: flex; justify-content: space-between; margin-top: 0; padding-top: 0; }
 .pdf-ppn-note { font-style: italic; font-size: 8px; color: #555; text-align: right; margin-top: 2px; }
-.pdf-dp-note { font-size: 9px; color: #991b1b; font-weight: 700; text-align: right; margin-top: 4px; display: none; } /* NEW FOR DP */
+.pdf-dp-note { font-size: 9px; color: #991b1b; font-weight: 700; text-align: right; margin-top: 4px; display: none; } 
 .pdf-signature-wrapper { margin-top: 20px; display: flex; justify-content: space-between; page-break-inside: avoid; padding-bottom: 5px; }
 .sig-box { width: 180px; text-align: center; }
 .sig-title { font-size: 10px; font-weight: 700; color: #000; margin-bottom: 40px; }
@@ -526,9 +527,10 @@ async function updateStatus(id, stat) {
 
 function dlPDF(filenameId) {
     const el = document.getElementById('pdfContent');
-    // Config for A5 Landscape (Updated for Requested Margins)
+    // Config for A5 Landscape (Exact Fit)
+    // Top 1, Left 0.5, Bottom 1, Right 0.5
     const opt = { 
-        margin: [1, 0.5, 1, 0.5], // Top 1cm, Left 0.5cm, Bottom 1cm, Right 0.5cm
+        margin: [1, 0.5, 1, 0.5], 
         filename: `Faktur_${filenameId}.pdf`, 
         image: { type: 'jpeg', quality: 0.98 }, 
         html2canvas: { scale: 2, useCORS: true, scrollY: 0 }, 
