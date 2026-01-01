@@ -157,7 +157,7 @@
                     <i data-feather="chevron-down" style="width:14px; height:14px;"></i>
                 </div>
                 <div class="dropdown-menu-aux">
-                    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/PurchaseOrder/index.html" class="dropdown-item-aux" style="font-weight:600; color:#116999;">Pemesanan Pembelian</a>
+                    <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/PurchaseOrder/index.html" class="dropdown-item-aux" style="font-weight:700; color:#116999;">Pemesanan Pembelian</a>
                     <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/CreateBill/index.html" class="dropdown-item-aux">Daftar Tagihan</a>
                     <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/entry/index.html" class="dropdown-item-aux">Penerimaan Pemesanan</a>
                     <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/ImportXeroPO/index.html" class="dropdown-item-aux">Import Xero PO</a>
@@ -388,7 +388,7 @@
 
         // --- APP LOGIC ---
         // !!! GANTI URL INI DENGAN URL DEPLOYMENT ANDA !!!
-        const API_URL = "https://script.google.com/macros/s/AKfycbztj8FKA46y0nFOTUXu6VjYZCK5qSFr08-ab2n_y7vOwzwXgYGZmi5Q_V-raRRO_J5gsQ/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbwKQA8KJGRWeGbDoor6-JFuhf3eVUfZOKqx6wKWSnpmzcxkTW_Lpacgzxj9MCicUKWW/exec"; 
         
         let vendorData = {};
         let savedOrders = [];
@@ -400,6 +400,7 @@
             setDefaultDate();
         };
 
+        // --- NAVIGATION & VIEWS ---
         function switchView(viewName) {
             const listDiv = document.getElementById("view-list");
             const formDiv = document.getElementById("view-form");
@@ -447,7 +448,7 @@
                     tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-4">${res.message}</td></tr>`;
                 }
             })
-            .catch(err => tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-4">Error Connection (Cek URL API)</td></tr>`);
+            .catch(err => tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-4">Error Connection (Cek API URL)</td></tr>`);
         }
 
         function renderListTable(data) {
@@ -651,7 +652,7 @@
                 showLoading(false);
                 if(res.status === 'success') {
                     let msg = currentEditId ? "PO Updated Successfully!" : "PO Created: " + res.id;
-                    Swal.fire({ title: 'Success!', text: msg, icon: 'success', confirmButtonColor: '#116999' })
+                    Swal.fire({ title: 'Success!', text: msg, icon: 'success', confirmButtonColor: '#008080' })
                     .then(() => { resetFormState(); switchView('list'); fetchListPO(); });
                 } else { throw new Error(res.message); }
             })
