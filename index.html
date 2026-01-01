@@ -39,9 +39,10 @@ body {
     position: sticky; top: 0; z-index: 1000;
 }
 
-/* Logo */
+/* Logo Setup */
 .aux-logo { display: flex; align-items: center; gap: 10px; }
-.aux-logo img { height: 32px; width: auto; }
+/* Height disesuaikan agar proporsional di navbar */
+.aux-logo img { height: 45px; width: auto; object-fit: contain; }
 
 /* Menu Wrapper */
 .aux-menu { 
@@ -51,7 +52,7 @@ body {
     height: 100%; 
 }
 
-/* Navigation Item Wrapper (for positioning dropdown) */
+/* Navigation Item Wrapper */
 .nav-item {
     position: relative;
     height: 100%;
@@ -85,7 +86,6 @@ body {
     font-weight: 700; 
 }
 
-/* Chevron Icon styling */
 .chevron-down { width: 14px; height: 14px; transition: transform 0.2s; }
 .nav-item:hover .chevron-down { transform: rotate(180deg); }
 
@@ -94,7 +94,7 @@ body {
     visibility: hidden;
     opacity: 0;
     position: absolute;
-    top: 85%; /* Sedikit di bawah navbar */
+    top: 85%; 
     left: 0;
     background: white;
     min-width: 240px;
@@ -107,21 +107,18 @@ body {
     transition: all 0.2s ease-in-out;
 }
 
-/* Invisible Bridge agar dropdown tidak menutup saat mouse pindah */
 .dropdown-menu::before {
     content: "";
     position: absolute;
     top: -20px; left: 0; width: 100%; height: 20px; background: transparent;
 }
 
-/* Show Dropdown */
 .nav-item:hover .dropdown-menu {
     visibility: visible;
     opacity: 1;
     transform: translateY(0);
 }
 
-/* Dropdown Items */
 .dropdown-item {
     display: flex;
     align-items: center;
@@ -138,11 +135,7 @@ body {
     color: var(--primary-color);
 }
 
-.dropdown-divider {
-    height: 1px;
-    background-color: #eaecf0;
-    margin: 6px 0;
-}
+.dropdown-divider { height: 1px; background-color: #eaecf0; margin: 6px 0; }
 
 .dropdown-header {
     font-size: 11px;
@@ -207,10 +200,8 @@ body {
 
 .auxie-loader { position: fixed; inset: 0; background: #ffffff; display: flex; justify-content: center; align-items: center; z-index: 99999; transition: opacity 0.5s ease; }
 .auxie-loader.hide { opacity: 0; pointer-events: none; }
-/* Simple Spinner */
 .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
 </style>
 </head>
 
@@ -221,7 +212,7 @@ body {
 
   <div class="aux-navbar">
     <div class="aux-logo">
-        <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png" alt="Auxilium Logo" style="filter: invert(1) brightness(0.5);">
+        <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png" alt="Auxilium Logo">
     </div>
     
     <nav class="aux-menu">
@@ -357,7 +348,6 @@ body {
 
   <script src="https://unpkg.com/feather-icons"></script>
   <script>
-    // Initialize Icons
     feather.replace();
 
     // Loader Logic
@@ -369,8 +359,6 @@ body {
     // Modal Logic
     function showLogoutModal() { document.getElementById("logoutModal").style.display = "block"; }
     function closeLogoutModal() { document.getElementById("logoutModal").style.display = "none"; }
-    
-    // Close modal if clicking outside
     window.onclick = function(event) {
         if (event.target == document.getElementById("logoutModal")) {
             closeLogoutModal();
@@ -378,12 +366,10 @@ body {
     }
 
     function logout() {
-      // Simulate logout
       loader.classList.remove("hide");
       setTimeout(() => {
-        // Redirect to login page or close window
         alert("Anda telah keluar.");
-        window.location.href = "about:blank"; // Ganti dengan halaman login Anda
+        window.location.href = "about:blank"; 
       }, 800);
     }
   </script>
