@@ -219,14 +219,14 @@ table.pdf-table td { padding: 6px 4px; font-size: 10px; vertical-align: top; }
 </div>
 
 <script>
-// --- KONFIGURASI API ---
-const API_URL = "https://script.google.com/macros/s/AKfycbzChnwQd89aWf7fgIATTU9TztXANtNjUnuhVXUML3vzZZuwHpDSujOCI7Bv9YybxfSd4g/exec"; // Main Backend
-const INVENTORY_API = "https://script.google.com/macros/s/AKfycby5N2auQ__JVSp-RdO-5xtUwanRZZW7YZMZ163j2NP61N3SIfVnPxr8PBXYbgBC6LJH/exec"; // Inventory Source
+// --- URL API APPSCRIPT (Update dengan URL Deployment terbaru) ---
+const API_URL = "https://script.google.com/macros/s/AKfycbztkGZvBQnLFpcPkIGY6NeKuRJ7mGpT4eOUN00AfmejbG2reLi4TeG_AcuL_wuHpp5vSw/exec";
+const INVENTORY_API = "https://script.google.com/macros/s/AKfycby5N2auQ__JVSp-RdO-5xtUwanRZZW7YZMZ163j2NP61N3SIfVnPxr8PBXYbgBC6LJH/exec"; 
 
 const ORDER_CATEGORY = 'backorder'; 
 
 let currentOrders = {}; 
-let masterStock = {}; // Akan diisi data dari Inventory API
+let masterStock = {}; // Data Stock
 let activeOrderId = null;
 let currentTab = 'Awaiting';
 const TYPE_CODES = { 'Custom': 'CS', 'Plat': 'PL' };
@@ -255,49 +255,27 @@ document.getElementById('confirmYesBtn').onclick = () => closeConfirm(true);
 
 // --- INIT ---
 window.onload = async () => {
-    await fetchStockData(); // Load Stock dari Inventory API
+    await fetchStockData();
     switchTab('Awaiting');
 };
 
-// --- FETCH STOCK DARI INVENTORY API (LOGIC BARU) ---
 async function fetchStockData() {
     try {
-        console.log("Fetching Inventory from: " + INVENTORY_API);
         const response = await fetch(`${INVENTORY_API}?action=getInventoryData`);
         const json = await response.json();
         
-        // Reset local stock map
         masterStock = {};
-        
-        // Helper parse angka (hapus koma)
         const cleanNum = (val) => parseFloat(String(val).replace(/,/g, '')) || 0;
 
-        // Parse Data Spandek
-        if (json.spandek && Array.isArray(json.spandek)) {
-            json.spandek.forEach(row => {
-                // Asumsi: Index 0 = Nama Barang, Index 4 = Qty Stock
-                const name = row[0];
-                const qty = cleanNum(row[4]);
-                if(name) masterStock[name] = qty;
-            });
-        }
-
-        // Parse Data Non-Spandek (cek case sensitive just in case)
-        const nonList = json.nonspandek || json.nonSpandek || [];
-        if (Array.isArray(nonList)) {
-            nonList.forEach(row => {
-                const name = row[0];
-                const qty = cleanNum(row[4]);
-                if(name) masterStock[name] = qty;
-            });
-        }
+        // Parse Data
+        const allItems = [...(json.spandek || []), ...(json.nonspandek || json.nonSpandek || [])];
+        allItems.forEach(row => {
+            const name = row[0]; // Nama Barang Index 0
+            const qty = cleanNum(row[4]); // Stock Index 4
+            if(name) masterStock[name] = qty;
+        });
         
-        console.log("Master Stock Loaded:", Object.keys(masterStock).length + " items.");
-
-    } catch(e) { 
-        console.error("Stock Error:", e); 
-        alert("Gagal load data stock dari Gudang. Coba refresh halaman.");
-    }
+    } catch(e) { console.error("Stock Error:", e); }
 }
 
 function switchTab(tabName) {
@@ -396,7 +374,6 @@ function openSetup(orderId) {
     const alertBox = document.getElementById('modalAlert');
     alertBox.style.display = 'block';
     
-    // Alert Logic
     let isOverallStockInsufficient = false;
 
     if (currentTab === 'Awaiting') {
@@ -429,11 +406,8 @@ function openSetup(orderId) {
         if (currentTab === 'Awaiting') {
             const reqQty = parseFloat(item.qty);
             const meterPerPcs = parseFloat(item.meter) || 0;
-            
-            // AMBIL STOCK DARI MAP YANG SUDAH DILOAD
             const availStock = masterStock[item.item] || 0; 
             
-            // Hitung Total Requirement
             let totalReq = reqQty;
             let unitLabel = "Pcs";
             if (isSpandek && meterPerPcs > 0) {
@@ -442,7 +416,6 @@ function openSetup(orderId) {
             }
 
             const isEnough = availStock >= totalReq;
-            
             if (!isEnough) {
                 isOverallStockInsufficient = true;
                 tr.classList.add('insufficient-row');
@@ -463,7 +436,6 @@ function openSetup(orderId) {
                 <td style="text-align:center;">${statusIcon}</td>
             `;
         } else {
-            // Tampilan Process / Completed
             middleCols = `
                 <td style="text-align:center;"><span class="meter-val">${item.meter}</span></td>
                 <td style="text-align:center;">
@@ -534,7 +506,6 @@ function renderFooterButtons(isStockProblem) {
     const btnClose = `<button class="btn btn-secondary" onclick="closeModal()">Close</button>`;
     
     if (currentTab === 'Awaiting') {
-        // Disable tombol process jika stock bermasalah
         let processDisabled = isStockProblem ? 'disabled style="background:#ccc; cursor:not-allowed;"' : '';
         let processTitle = isStockProblem ? 'Stock Kurang' : 'Process';
         
@@ -564,11 +535,10 @@ function checkAllDone() {
     if(btn) btn.disabled = !allChecked;
 }
 
-// --- LOGIKA SPLIT (DIPERBAIKI) ---
+// --- LOGIKA SPLIT (FIXED POSISI KOLOM QTY) ---
 function splitRow(btn, groupId) {
     const originalRow = btn.closest('tr');
     
-    // 1. Disable Row Asli (Parent)
     if (!originalRow.classList.contains('disabled-row')) {
         originalRow.classList.add('disabled-row');
         originalRow.querySelector('.qty-input').value = 0; 
@@ -577,46 +547,39 @@ function splitRow(btn, groupId) {
         if(cb) cb.disabled = true; 
     }
 
-    // 2. Clone Row
     const newRow = originalRow.cloneNode(true);
     newRow.classList.remove('main-row', 'disabled-row', 'insufficient-row'); 
     newRow.classList.add('split-row');
     
-    // 3. FIX: Pastikan Kolom Qty menjadi INPUT TEXT, bukan Badge/Hidden
-    const qtyCell = newRow.cells[1]; // Kolom index 1 adalah Qty
-    qtyCell.innerHTML = ''; // Hapus isi lama (Badge + Hidden Input)
+    const qtyCell = newRow.cells[2]; // Index 0=Name, 1=Meter, 2=Qty
+    qtyCell.innerHTML = ''; 
     
     const newInput = document.createElement('input');
     newInput.type = 'number';
     newInput.className = 'prod-input qty-input';
     newInput.style.width = '100%';
     newInput.style.textAlign = 'center';
-    newInput.value = ''; // Biarkan kosong agar user isi
+    newInput.value = ''; 
     newInput.placeholder = 'Qty';
     newInput.onchange = function() { validateQty(groupId); };
     qtyCell.appendChild(newInput);
     
-    // 4. Bersihkan kolom Info Stock/Total di row split
     if (currentTab === 'Awaiting') {
-        newRow.cells[2].innerText = "-"; // Total
-        newRow.cells[3].innerText = "-"; // Stock
-        newRow.cells[4].innerHTML = "";  // Status
+        newRow.cells[3].innerText = "-"; // Total Req
+        newRow.cells[4].innerText = "-"; // Stock
+        newRow.cells[5].innerHTML = "";  // Status
     }
 
-    // 5. Reset Dropdown
     newRow.querySelectorAll('select').forEach(s => { s.value = ""; s.disabled = false; s.onchange = function(){ generateWE(this); } });
     newRow.querySelector('.we-code').value = "";
     
-    // 6. Tombol Hapus Split
     const btnContainer = newRow.querySelector('.btn-split').parentElement;
     btnContainer.innerHTML = `<button class="btn-sm btn-remove" onclick="removeSplit(this, ${groupId})"><i class="fas fa-trash"></i></button>`;
     
-    // 7. Insert Row
     const tbody = originalRow.parentNode;
     const groupRows = tbody.querySelectorAll(`tr[data-id="${groupId}"]`);
     groupRows[groupRows.length-1].after(newRow);
     
-    // 8. Focus ke Input baru
     newInput.focus();
 }
 
@@ -625,14 +588,11 @@ function removeSplit(btn, groupId) {
     const tbody = row.parentNode;
     row.remove();
     
-    // Cek sisa split
     const remainingSplits = tbody.querySelectorAll(`.split-row[data-id="${groupId}"]`);
     if(remainingSplits.length === 0) {
-        // Aktifkan kembali Main Row
         const main = tbody.querySelector(`.main-row[data-id="${groupId}"]`);
         main.classList.remove('disabled-row');
         
-        // Reset Value Main Row
         let target = 0;
         const targetBadge = main.querySelector('.target-qty');
         if(targetBadge) target = parseInt(targetBadge.innerText);
@@ -661,7 +621,6 @@ function validateQty(groupId) {
     const target = parseInt(main.querySelector('.target-qty').innerText);
 
     let current = 0;
-    // Hitung semua Qty (Split rows + Main Row jika aktif)
     tbody.querySelectorAll(`tr[data-id="${groupId}"]`).forEach(r => {
         const inp = r.querySelector('.qty-input');
         if(inp && !r.classList.contains('disabled-row')) {
@@ -717,6 +676,7 @@ function triggerAction(actionType) {
     if (msg && func) showConfirm(msg, func);
 }
 
+// --- FIX: SIMPAN DATA MESIN/KPC SAAT DARI AWAITING ---
 async function submitProduction(mode) {
     const rows = document.querySelectorAll('#setupBody tr:not(.disabled-row)');
     let data = [], valid = true;
@@ -730,12 +690,16 @@ async function submitProduction(mode) {
         let item = { originalData: r.dataset.original, qty: q, isSplit: r.classList.contains('split-row') };
         if(currentTab === 'In Process') item.isFinished = r.querySelector('.check-production')?.checked || false;
         
-        if(currentTab !== 'Awaiting' && type === 'spandek') {
+        if(type === 'spandek') {
             const m = r.querySelector('.machine-select').value;
             const k = r.querySelector('.kpc-select').value;
             const w = r.querySelector('.we-code').value;
-            if(!m || !k) { r.style.backgroundColor = '#fee2e2'; valid = false; }
-            else { item.machine = m; item.kpc = k; item.we = w; }
+            
+            if(currentTab !== 'Awaiting' && (!m || !k)) { 
+                r.style.backgroundColor = '#fee2e2'; valid = false; 
+            } else {
+                item.machine = m; item.kpc = k; item.we = w; 
+            }
         }
         data.push(item);
     });
@@ -755,7 +719,6 @@ async function deliverOrder(id) { await sendAPI('deliverOrder', { orderId: id })
 async function cancelOrder(id) { await sendAPI('cancelOrder', { orderId: id }); }
 
 async function sendAPI(action, payload) {
-    // Inject category ke payload
     payload.category = ORDER_CATEGORY;
     try {
         payload.action = action;
