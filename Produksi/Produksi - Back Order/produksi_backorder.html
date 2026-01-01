@@ -152,7 +152,9 @@ table.pdf-table td { padding: 6px 4px; font-size: 10px; vertical-align: top; }
                 <thead><tr id="tableHeaderRow"></tr></thead>
                 <tbody id="setupBody"></tbody>
             </table>
-            <div id="validationMsg" style="color:red; font-weight:bold; margin-top:10px; display:none;"></div>
+            
+            <div id="validationMsg" style="color:red; font-weight:bold; margin-top:10px; display:none; background:#fee2e2; padding:10px; border-radius:4px;"></div>
+            
             <div id="stockValidationMsg" style="color:var(--red); font-weight:bold; margin-top:5px; display:none;">
                 <i class="fas fa-exclamation-triangle"></i> Stok tidak mencukupi untuk memproses BackOrder ini.
             </div>
@@ -221,7 +223,6 @@ table.pdf-table td { padding: 6px 4px; font-size: 10px; vertical-align: top; }
 
 <script>
 // --- GANTI URL INI DENGAN DEPLOYMENT TERBARU ANDA ---
-// Pastikan link berakhiran "/exec"
 const API_URL = "https://script.google.com/macros/s/AKfycbzChnwQd89aWf7fgIATTU9TztXANtNjUnuhVXUML3vzZZuwHpDSujOCI7Bv9YybxfSd4g/exec";
 const ORDER_CATEGORY = 'backorder'; 
 
@@ -247,7 +248,6 @@ function closeConfirm(isConfirmed) {
 document.getElementById('confirmYesBtn').onclick = () => closeConfirm(true);
 
 window.onload = async () => {
-    // Load Stock Data dulu untuk validasi
     await fetchStockData();
     switchTab('Awaiting');
 };
@@ -256,10 +256,7 @@ async function fetchStockData() {
     try {
         const response = await fetch(`${API_URL}?action=getBackOrderStock`);
         masterStock = await response.json();
-        console.log("Stock Loaded:", masterStock);
-    } catch(e) {
-        console.error("Failed to load stock", e);
-    }
+    } catch(e) { console.error(e); }
 }
 
 function fmtDate(val) {
@@ -286,12 +283,11 @@ async function loadOrders(status) {
     const tbody = document.getElementById('dashboardBody');
     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px;">Loading...</td></tr>';
     try {
-        // Tambahkan parameter category=backorder
         const response = await fetch(`${API_URL}?action=getProductionOrders&status=${encodeURIComponent(status)}&category=${ORDER_CATEGORY}`);
         const data = await response.json();
         renderDashboard(data, status);
     } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="7" style="color:red; text-align:center;">Failed to fetch. Pastikan Apps Script sudah "Deploy New".<br>${err}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="color:red; text-align:center;">Failed to fetch. ${err}</td></tr>`;
     }
 }
 
@@ -337,23 +333,24 @@ function openSetup(orderId) {
     const stockMsg = document.getElementById('stockValidationMsg');
     stockMsg.style.display = 'none';
 
-    // Header Setup (Tambah Kolom Stock di Awaiting)
+    // Header Setup
     const headerRow = document.getElementById('tableHeaderRow');
     let headers = `<th style="width:20%">Item</th>`;
     
     if (currentTab === 'Awaiting') {
-        // Tampilkan kolom Stock & Status
-        headers += `<th style="width:10%; text-align:center;">Request</th>
+        // Tampilkan Kolom Meter, Qty, Total Meter, Stock, Status
+        headers += `<th style="width:5%; text-align:center;">Meter</th>
+                    <th style="width:5%; text-align:center;">Qty</th>
+                    <th style="width:10%; text-align:center;">Total (M/Pcs)</th>
                     <th style="width:10%; text-align:center;">Stock Available</th>
-                    <th style="width:10%; text-align:center;">Status</th>`;
-        deliverySection.style.display = 'flex'; // Tampilkan input tanggal
-        dateInput.value = ""; // Reset tanggal harus diisi ulang
+                    <th style="width:8%; text-align:center;">Status</th>`;
+        deliverySection.style.display = 'flex'; 
+        dateInput.value = ""; 
     } else {
         headers += `<th style="width:5%; text-align:center;">M</th><th style="width:5%; text-align:center;">Qty</th>`;
         deliverySection.style.display = 'none';
     }
 
-    // Kolom standar produksi
     headers += `<th style="width:12%">Mesin</th><th style="width:14%">KPC</th><th style="width:8%">Type</th><th style="width:14%">WE Code</th><th style="width:5%; text-align:center;">Act</th>`;
     
     if (currentTab === 'In Process') headers += `<th style="width:5%; text-align:center;">Selesai?</th>`;
@@ -362,7 +359,7 @@ function openSetup(orderId) {
     const alertBox = document.getElementById('modalAlert');
     alertBox.style.display = 'block';
     if (currentTab === 'Awaiting') {
-         alertBox.innerHTML = '<strong>Validasi Stock:</strong> Pastikan stock mencukupi. <strong>Input Tanggal Delivery</strong> sebelum memproses.';
+         alertBox.innerHTML = '<strong>Validasi Stock:</strong> Gunakan tombol <strong>(+)</strong> untuk Split jika stok kurang atau ingin membagi ke mesin lain.';
     } else if (currentTab === 'In Process') {
         alertBox.innerHTML = '<strong>Produksi:</strong> Centang barang yang sudah selesai. Klik Update untuk simpan.';
     } else {
@@ -387,12 +384,20 @@ function openSetup(orderId) {
         let spandekClass = isSpandek ? 'prod-input' : 'prod-input non-spandek-input';
         let readonlyAttr = isSpandek && isEditable ? '' : 'disabled';
         
-        // --- LOGIKA VALIDASI STOCK ---
+        // --- LOGIKA VALIDASI STOCK BARU (TOTAL METER) ---
         let middleCols = '';
         if (currentTab === 'Awaiting') {
             const reqQty = parseFloat(item.qty);
-            const availQty = masterStock[item.item] || 0; // Ambil dari Master Stock
-            const isEnough = availQty >= reqQty;
+            const meterPerPcs = parseFloat(item.meter) || 0;
+            const availStock = masterStock[item.item] || 0; 
+            
+            // Hitung Total Requirement
+            let totalReq = reqQty;
+            if (isSpandek && meterPerPcs > 0) {
+                totalReq = reqQty * meterPerPcs;
+            }
+
+            const isEnough = availStock >= totalReq;
             
             if (!isEnough) {
                 isStockInsufficient = true;
@@ -404,14 +409,16 @@ function openSetup(orderId) {
                 `<span class="stock-warning"><i class="fas fa-times"></i> Kurang</span>`;
             
             middleCols = `
+                <td style="text-align:center;">${meterPerPcs > 0 ? meterPerPcs : '-'}</td>
                 <td style="text-align:center;">
-                    <span class="target-qty badge" style="background:#e0f2fe; color:#0369a1; font-size:12px;">${reqQty}</span>
-                    <input type="hidden" class="qty-input" value="${reqQty}"> </td>
-                <td style="text-align:center; font-weight:bold;">${availQty}</td>
+                    <input type="number" class="prod-input qty-input" value="${reqQty}" style="width:60px; text-align:center;" onchange="validateQty(${idx})">
+                    <span class="target-qty" style="display:none;">${reqQty}</span>
+                </td>
+                <td style="text-align:center; font-weight:bold; color:#555;">${totalReq.toFixed(2)}</td>
+                <td style="text-align:center; font-weight:bold;">${availStock.toFixed(2)}</td>
                 <td style="text-align:center;">${statusIcon}</td>
             `;
         } else {
-            // Tampilan Standar
             middleCols = `
                 <td style="text-align:center;"><span class="meter-val">${item.meter}</span></td>
                 <td style="text-align:center;">
@@ -425,6 +432,10 @@ function openSetup(orderId) {
         let valKPC = item.kpc || "";
         let valType = "Custom"; 
         if(item.we && item.we.includes('_PL_')) valType = "Plat";
+
+        // BUTTON SPLIT MUNCUL DI AWAITING
+        // Di sini kita izinkan split, tombol + selalu muncul
+        let showSplit = isEditable;
 
         let inputs = `
             ${middleCols}
@@ -450,7 +461,7 @@ function openSetup(orderId) {
             </td>
             <td><input type="text" class="${spandekClass} we-code" readonly value="${item.we||''}"></td>
             <td style="text-align:center;">
-                ${isSpandek && isEditable && currentTab !== 'Awaiting' ? `<button class="btn-sm btn-split" onclick="splitRow(this, ${idx})"><i class="fas fa-plus"></i></button>` : '-'}
+                ${showSplit ? `<button class="btn-sm btn-split" onclick="splitRow(this, ${idx})"><i class="fas fa-plus"></i></button>` : '-'}
             </td>
         `;
 
@@ -463,7 +474,6 @@ function openSetup(orderId) {
         tbody.appendChild(tr);
     });
 
-    // Handle Button State based on Stock Validation
     renderFooterButtons(isStockInsufficient);
     if(isStockInsufficient && currentTab === 'Awaiting') {
         stockMsg.style.display = 'block';
@@ -481,9 +491,8 @@ function renderFooterButtons(isStockProblem) {
     const btnClose = `<button class="btn btn-secondary" onclick="closeModal()">Close</button>`;
     
     if (currentTab === 'Awaiting') {
-        // Jika stock kurang, disable tombol process
         let processDisabled = isStockProblem ? 'disabled style="background:#ccc; cursor:not-allowed;"' : '';
-        let processTitle = isStockProblem ? 'Stock Tidak Cukup' : 'Process';
+        let processTitle = isStockProblem ? 'Stock Kurang' : 'Process';
         
         footerRight.innerHTML = `${btnClose} 
             <button class="btn btn-cancel" onclick="triggerAction('cancel')">Cancel Order</button>
@@ -516,14 +525,22 @@ function triggerAction(actionType) {
     let func = null;
     
     if (actionType === 'process') {
-        // Validasi Tanggal Delivery Wajib
         const dateInput = document.getElementById('newDeliveryDate');
+        
+        // 1. Cek Validasi Qty Split
+        if(document.getElementById('validationMsg').style.display === 'block') {
+            alert("Jumlah Qty Split tidak sesuai dengan Qty Asli! Perbaiki dulu.");
+            return;
+        }
+
+        // 2. Cek Tanggal Delivery
         if (!dateInput.value) {
             alert("Harap isi Tanggal Pengiriman Baru!");
             dateInput.focus();
             return;
         }
-        msg = "Stock Cukup. Tanggal Delivery sudah diisi. Lanjutkan Proses?"; 
+
+        msg = "Stock Cukup & Qty Sesuai. Lanjutkan Proses?"; 
         func = () => submitProduction('new'); 
     }
     else if (actionType === 'update') { msg = "Simpan perubahan?"; func = () => submitProduction('update'); }
@@ -534,57 +551,49 @@ function triggerAction(actionType) {
     if (msg && func) showConfirm(msg, func);
 }
 
-// ... (Fungsi splitRow, removeSplit, updateCalc sama persis dengan General) ...
+// --- LOGIKA SPLIT YANG DIPERBARUI UNTUK AWAITING ---
 function splitRow(btn, groupId) {
     const originalRow = btn.closest('tr');
-    if (!originalRow.classList.contains('disabled-row')) {
-        originalRow.classList.add('disabled-row');
-        originalRow.querySelector('.qty-input').value = 0; 
-        // originalRow.querySelector('.total-m').innerText = "0.00"; // Hapus jika tidak ada kolom total-m
-        originalRow.querySelectorAll('input, select').forEach(el => el.disabled = true);
-        const cb = originalRow.querySelector('.check-production');
-        if(cb) cb.disabled = true; 
-    }
+    
+    // Saat split pertama kali, row asli tidak didisable tapi hanya penanda
+    // Tapi karena kita ingin split KPC, row asli juga bisa diedit.
+    // Kita clone row baru
+    
     const newRow = originalRow.cloneNode(true);
-    newRow.classList.remove('main-row', 'disabled-row');
+    newRow.classList.remove('main-row', 'insufficient-row'); 
     newRow.classList.add('split-row');
+    
     const qtyInput = newRow.querySelector('.qty-input');
-    qtyInput.value = 0; qtyInput.disabled = false;
+    qtyInput.value = 0; 
+    
+    // Reset Data
     newRow.querySelectorAll('select').forEach(s => { s.value = ""; s.disabled = false; s.onchange = function(){ generateWE(this); } });
     newRow.querySelector('.we-code').value = "";
-    const newCb = newRow.querySelector('.check-production');
-    if(newCb) { newCb.disabled = false; newCb.checked = false; newCb.onchange = checkAllDone; }
     
-    // Logic khusus split text
-    const targetQtyEl = newRow.querySelector('.target-qty');
-    if(targetQtyEl) targetQtyEl.parentElement.innerHTML = '<small>(Split)</small>';
-    
+    // Hapus total meter / stock di row split (biar bersih)
+    const cols = newRow.getElementsByTagName('td');
+    if (currentTab === 'Awaiting') {
+        cols[2].innerText = "-"; // Total Meter
+        cols[3].innerText = "-"; // Stock
+        cols[4].innerHTML = "";  // Status Icon
+    }
+
     const btnContainer = newRow.querySelector('.btn-split').parentElement;
     btnContainer.innerHTML = `<button class="btn-sm btn-remove" onclick="removeSplit(this, ${groupId})"><i class="fas fa-trash"></i></button>`;
+    
+    // Insert after the last row of this group
     const tbody = originalRow.parentNode;
     const groupRows = tbody.querySelectorAll(`tr[data-id="${groupId}"]`);
     groupRows[groupRows.length-1].after(newRow);
+    
+    // Validasi ulang
     qtyInput.onchange = function() { validateQty(groupId); };
-    if(currentTab === 'In Process') checkAllDone();
 }
 
 function removeSplit(btn, groupId) {
     const row = btn.closest('tr');
-    const tbody = row.parentNode;
     row.remove();
-    const remainingSplits = tbody.querySelectorAll(`.split-row[data-id="${groupId}"]`);
-    if(remainingSplits.length === 0) {
-        const main = tbody.querySelector(`.main-row[data-id="${groupId}"]`);
-        main.classList.remove('disabled-row');
-        // Reset logic main row
-        const target = main.querySelector('.target-qty') ? parseInt(main.querySelector('.target-qty').innerText) : 0;
-        main.querySelector('.qty-input').value = target;
-        main.querySelectorAll('select, input').forEach(el => el.disabled = false);
-        const cb = main.querySelector('.check-production');
-        if(cb) cb.disabled = false;
-    }
     validateQty(groupId);
-    if(currentTab === 'In Process') checkAllDone();
 }
 
 function generateWE(el) {
@@ -598,38 +607,53 @@ function generateWE(el) {
 }
 
 function validateQty(groupId) {
-    if(currentTab === 'Awaiting') return true; // Skip di awaiting karena readonly
     const tbody = document.getElementById('setupBody');
     const main = tbody.querySelector(`.main-row[data-id="${groupId}"]`);
-    const target = parseInt(main.querySelector('.target-qty').innerText);
+    
+    // Target selalu tersimpan di hidden span di main row
+    const targetBadge = main.querySelector('.target-qty');
+    const target = targetBadge ? parseInt(targetBadge.innerText) : 0;
+
     let current = 0;
-    tbody.querySelectorAll(`tr[data-id="${groupId}"]:not(.disabled-row)`).forEach(r => {
-        current += parseInt(r.querySelector('.qty-input').value || 0);
+    // Hitung semua row (main + split)
+    // Note: di Awaiting, main row juga inputannya aktif
+    tbody.querySelectorAll(`tr[data-id="${groupId}"]`).forEach(r => {
+        const inp = r.querySelector('.qty-input');
+        if(inp) current += parseInt(inp.value || 0);
     });
+    
     const msg = document.getElementById('validationMsg');
     const isErr = current !== target;
+    
+    // Warnai input merah jika salah
     tbody.querySelectorAll(`tr[data-id="${groupId}"] .qty-input`).forEach(el => el.style.borderColor = isErr ? 'red' : '#ccc');
-    if(isErr) { msg.style.display = 'block'; msg.innerText = `Total Qty (${current}) != Target (${target})`; } 
-    else { msg.style.display = 'none'; }
+    
+    if(isErr) { 
+        msg.style.display = 'block'; 
+        msg.innerHTML = `<i class="fas fa-times-circle"></i> Error: Total Qty Split (${current}) tidak sama dengan Order Asli (${target})`; 
+    } else { 
+        msg.style.display = 'none'; 
+    }
     return !isErr;
 }
 
 async function submitProduction(mode) {
-    if(document.getElementById('validationMsg').style.display === 'block') return alert("Perbaiki error Qty!");
+    if(document.getElementById('validationMsg').style.display === 'block') return;
     
     const rows = document.querySelectorAll('#setupBody tr:not(.disabled-row)');
     let data = [], valid = true;
-    
-    // Ambil Tanggal Delivery Baru
     const newDateVal = document.getElementById('newDeliveryDate').value;
 
     rows.forEach(r => {
         const type = r.dataset.type;
         const q = r.querySelector('.qty-input')?.value;
+        
+        // Skip jika qty 0 atau kosong
+        if (!q || parseInt(q) === 0) return;
+
         let item = { originalData: r.dataset.original, qty: q, isSplit: r.classList.contains('split-row') };
         if(currentTab === 'In Process') item.isFinished = r.querySelector('.check-production')?.checked || false;
         
-        // Validasi Mesin hanya wajib di In Process, di Awaiting bisa kosong dulu jika belum tau
         if(currentTab !== 'Awaiting' && type === 'spandek') {
             const m = r.querySelector('.machine-select').value;
             const k = r.querySelector('.kpc-select').value;
@@ -642,7 +666,6 @@ async function submitProduction(mode) {
     
     if(!valid && currentTab !== 'Awaiting') return alert("Lengkapi Data Mesin/KPC!");
     
-    // Kirim deliveryDate juga
     await sendAPI(mode === 'new' ? 'submitProduction' : 'updateProductionData', { 
         orderId: activeOrderId, 
         data: data, 
@@ -666,8 +689,6 @@ async function sendAPI(action, payload) {
 }
 
 function generatePDF(type) {
-    // ... (Sama persis dengan general order) ...
-    // Copy logic generatePDF dari kode sebelumnya, hanya pastikan referensi ID elemen benar
     const o = currentOrders[activeOrderId];
     document.getElementById('pdfOrderNo').innerText = activeOrderId;
     document.getElementById('pdfCustName').innerText = o.customer;
@@ -675,13 +696,12 @@ function generatePDF(type) {
     document.getElementById('pdfTitle').innerText = (type === 'SPK') ? "SPK BACKORDER" : "SURAT JALAN BACKORDER";
     document.getElementById('pdfType').innerText = "BackOrder";
     
-    // Header Logic
     const headDetail = document.getElementById('pdfHeadDetail');
     const headWE = document.getElementById('pdfHeadWE');
     if (type === 'SJ') { headDetail.innerText = "KETERANGAN"; headWE.style.display = 'none'; } 
     else { headDetail.innerText = "DETAIL MESIN/KPC"; headWE.style.display = 'table-cell'; }
 
-    let itemsToPrint = o.items; // Simplified for Backorder
+    let itemsToPrint = o.items; 
     const tbody = document.getElementById('pdfItemsBody');
     tbody.innerHTML = '';
     itemsToPrint.forEach((i, idx) => {
