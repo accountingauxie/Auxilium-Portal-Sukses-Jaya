@@ -8,31 +8,26 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-/* --- SYSTEM STYLES --- */
+/* --- SYSTEM STYLES (MATCHING GENERAL ORDER) --- */
 :root { --primary: #7e22ce; --bg: #f4f7f6; --text: #333; --red: #b91c1c; --green: #047857; --orange: #b75900; }
 * { box-sizing: border-box; }
 body { margin: 0; font-family: "Arial", sans-serif; font-size: 13px; background: var(--bg); color: var(--text); }
-
-/* Navbar */
 .aux-navbar { background: #fff; height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; box-shadow: 0 1px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
 .aux-menu { display: flex; gap: 10px; height: 100%; align-items: center; }
 .aux-link { text-decoration: none; color: #666; font-weight: 600; padding: 8px 14px; border-radius: 6px; }
-.aux-link.active { color: var(--primary); background: #f3e8ff; } 
+.aux-link.active { color: var(--primary); background: #f3e8ff; } /* Nuansa Ungu untuk Backorder */
 
-/* Layout */
 .page-wrap { padding: 30px 40px; max-width: 98%; margin: 0 auto; }
 .category-tabs { margin-bottom: 20px; border-bottom: 2px solid #ddd; }
 .cat-btn { background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; }
 .cat-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
 
-/* Table */
 .table-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; }
 table.xero-table { width: 100%; border-collapse: collapse; }
 table.xero-table th { text-align: left; padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; color: #555; font-size: 12px; font-weight: bold; text-transform: uppercase; }
 table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-align: middle; }
-.order-link { color: var(--primary); font-weight: bold; text-decoration: none; cursor: pointer; }
 
-/* Badges */
+.order-link { color: var(--primary); font-weight: bold; text-decoration: none; cursor: pointer; }
 .badge { padding: 4px 8px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; display: inline-block; }
 .badge-awaiting { background: #fff7e6; color: var(--orange); border: 1px solid #ffe8cc; }
 .badge-process { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
@@ -40,20 +35,22 @@ table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-ali
 .badge-delivery { background: #eef2ff; color: #4338ca; border: 1px solid #c7d2fe; }
 .badge-cancel { background: #fef2f2; color: var(--red); border: 1px solid #fecaca; }
 
-/* Modal */
+/* MODAL STYLES */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: flex-start; justify-content: center; z-index: 10000; padding-top: 50px; overflow-y: auto; }
 .modal-box { background: #fff; width: 1350px; max-width: 98%; height: auto; max-height: 90vh; display: flex; flex-direction: column; border-radius: 8px; margin-bottom: 50px; }
 .modal-header, .modal-footer { padding: 20px 30px; background: #fff; border-bottom: 1px solid #eee; }
 .modal-footer { background: #f9fafb; text-align: right; border-top: 1px solid #eee; }
 .modal-body { flex: 1; overflow-y: auto; padding: 20px; }
 
-/* Inputs & Buttons */
+/* FORM ELEMENTS */
 .prod-input, .prod-select { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
 .split-row { background-color: #fffde7; }
 .disabled-row { background-color: #f9fafb; color: #9ca3af; pointer-events: none; }
 .disabled-row input, .disabled-row select { background: #e5e7eb; border-color: #d1d5db; pointer-events: none; }
 .disabled-row .btn-split { display: inline-block; pointer-events: auto; opacity: 1; }
 .non-spandek-input { background-color: #f3f4f6 !important; border-color: #e5e7eb !important; color: #9ca3af !important; pointer-events: none; }
+
+/* BUTTONS */
 .btn { padding: 8px 16px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s; color: white; display: inline-flex; align-items: center; gap: 5px; }
 .btn-sm { padding: 4px 8px; font-size: 11px; }
 .btn-process { background: var(--primary); }
@@ -66,14 +63,14 @@ table.xero-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-ali
 .btn-remove { background: #fee2e2; color: #991b1b; }
 .check-production { width: 18px; height: 18px; cursor: pointer; accent-color: var(--green); }
 
-/* --- STYLE KHUSUS BACKORDER --- */
+/* KHUSUS BACKORDER */
 .stock-warning { color: var(--red); font-weight: bold; }
 .stock-ok { color: var(--green); font-weight: bold; }
 .insufficient-row { background-color: #fff1f2 !important; }
 .date-input-group { background: #f0fdf4; padding: 15px; border: 1px solid #bbf7d0; border-radius: 6px; margin-bottom: 15px; display: flex; align-items: center; gap: 15px; }
 .date-input-group label { font-weight: bold; color: #166534; }
 
-/* --- PDF GENERATION STYLES --- */
+/* PDF STYLES */
 #pdf-hidden-container { position: absolute; left: -9999px; top: 0; }
 #pdfContent { background: #fff; width: 100%; padding: 0; font-family: "Arial", sans-serif; color: #000; }
 .pdf-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; border-bottom: 2px solid #000; padding-bottom: 10px; }
@@ -156,7 +153,7 @@ table.pdf-table td { padding: 6px 4px; font-size: 10px; vertical-align: top; }
             <div id="validationMsg" style="color:red; font-weight:bold; margin-top:10px; display:none; background:#fee2e2; padding:10px; border-radius:4px;"></div>
             
             <div id="stockValidationMsg" style="color:var(--red); font-weight:bold; margin-top:5px; display:none;">
-                <i class="fas fa-exclamation-triangle"></i> Stok tidak mencukupi untuk memproses BackOrder ini.
+                <i class="fas fa-exclamation-triangle"></i> Stok tidak mencukupi. Process disabled.
             </div>
         </div>
         <div class="modal-footer">
@@ -222,18 +219,25 @@ table.pdf-table td { padding: 6px 4px; font-size: 10px; vertical-align: top; }
 </div>
 
 <script>
-// --- GANTI URL INI DENGAN DEPLOYMENT TERBARU ANDA ---
+// --- URL API APPSCRIPT (Update dengan URL Deployment terbaru) ---
 const API_URL = "https://script.google.com/macros/s/AKfycbzChnwQd89aWf7fgIATTU9TztXANtNjUnuhVXUML3vzZZuwHpDSujOCI7Bv9YybxfSd4g/exec";
 const ORDER_CATEGORY = 'backorder'; 
 
 let currentOrders = {}; 
-let masterStock = {}; // Menyimpan data stock dari Master List
+let masterStock = {}; // Data Stock
 let activeOrderId = null;
 let currentTab = 'Awaiting';
 const TYPE_CODES = { 'Custom': 'CS', 'Plat': 'PL' };
 
+// --- HELPERS ---
 function closeModal() { document.getElementById('setupModal').style.display = 'none'; }
+function fmtDate(val) {
+    if (!val) return "-";
+    const d = new Date(val);
+    return isNaN(d.getTime()) ? val : d.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
 
+// --- MODAL KONFIRMASI ---
 let confirmCallback = null;
 function showConfirm(message, callback) {
     document.getElementById('confirmMessage').innerText = message;
@@ -247,6 +251,7 @@ function closeConfirm(isConfirmed) {
 }
 document.getElementById('confirmYesBtn').onclick = () => closeConfirm(true);
 
+// --- INIT ---
 window.onload = async () => {
     await fetchStockData();
     switchTab('Awaiting');
@@ -256,18 +261,13 @@ async function fetchStockData() {
     try {
         const response = await fetch(`${API_URL}?action=getBackOrderStock`);
         masterStock = await response.json();
-    } catch(e) { console.error(e); }
-}
-
-function fmtDate(val) {
-    if (!val) return "-";
-    const d = new Date(val);
-    return isNaN(d.getTime()) ? val : d.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    } catch(e) { console.error("Stock Error:", e); }
 }
 
 function switchTab(tabName) {
     currentTab = tabName;
     document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    
     let btnId = 'tab-awaiting';
     if(tabName === 'In Process') btnId = 'tab-process';
     if(tabName === 'Completed') btnId = 'tab-completed';
@@ -322,54 +322,57 @@ function renderDashboard(data, status) {
     });
 }
 
+// --- SETUP MODAL LOGIC ---
 function openSetup(orderId) {
     activeOrderId = orderId;
     const order = currentOrders[orderId];
     document.getElementById('modalOrderNo').innerText = orderId;
     
-    // Reset inputs
+    // UI Reset
     const deliverySection = document.getElementById('deliveryDateSection');
     const dateInput = document.getElementById('newDeliveryDate');
     const stockMsg = document.getElementById('stockValidationMsg');
     stockMsg.style.display = 'none';
 
-    // Header Setup
+    // Header Generator
     const headerRow = document.getElementById('tableHeaderRow');
     let headers = `<th style="width:20%">Item</th>`;
     
     if (currentTab === 'Awaiting') {
-        // Tampilkan Kolom Meter, Qty, Total Meter, Stock, Status
+        // Kolom khusus Awaiting (Meter, Qty, Total, Stock, Status)
         headers += `<th style="width:5%; text-align:center;">Meter</th>
                     <th style="width:5%; text-align:center;">Qty</th>
-                    <th style="width:10%; text-align:center;">Total (M/Pcs)</th>
-                    <th style="width:10%; text-align:center;">Stock Available</th>
+                    <th style="width:10%; text-align:center;">Total Req</th>
+                    <th style="width:10%; text-align:center;">Stock</th>
                     <th style="width:8%; text-align:center;">Status</th>`;
         deliverySection.style.display = 'flex'; 
         dateInput.value = ""; 
     } else {
+        // Kolom standar
         headers += `<th style="width:5%; text-align:center;">M</th><th style="width:5%; text-align:center;">Qty</th>`;
         deliverySection.style.display = 'none';
     }
 
     headers += `<th style="width:12%">Mesin</th><th style="width:14%">KPC</th><th style="width:8%">Type</th><th style="width:14%">WE Code</th><th style="width:5%; text-align:center;">Act</th>`;
-    
     if (currentTab === 'In Process') headers += `<th style="width:5%; text-align:center;">Selesai?</th>`;
     headerRow.innerHTML = headers;
 
     const alertBox = document.getElementById('modalAlert');
     alertBox.style.display = 'block';
+    
+    // Alert Logic
+    let isOverallStockInsufficient = false;
+
     if (currentTab === 'Awaiting') {
-         alertBox.innerHTML = '<strong>Validasi Stock:</strong> Gunakan tombol <strong>(+)</strong> untuk Split jika stok kurang atau ingin membagi ke mesin lain.';
+         alertBox.innerHTML = '<strong>Awaiting:</strong> Gunakan tombol <strong>(+)</strong> untuk Split Qty/Mesin. Pastikan Stock Cukup.';
     } else if (currentTab === 'In Process') {
-        alertBox.innerHTML = '<strong>Produksi:</strong> Centang barang yang sudah selesai. Klik Update untuk simpan.';
+        alertBox.innerHTML = '<strong>Produksi:</strong> Centang barang yang selesai. Klik Update untuk simpan progres.';
     } else {
         alertBox.style.display = 'none';
     }
 
     const tbody = document.getElementById('setupBody');
     tbody.innerHTML = '';
-
-    let isStockInsufficient = false;
 
     order.items.forEach((item, idx) => {
         const isSpandek = (item.type && item.type.toLowerCase().includes('spandek') && !item.type.toLowerCase().includes('non'));
@@ -384,23 +387,26 @@ function openSetup(orderId) {
         let spandekClass = isSpandek ? 'prod-input' : 'prod-input non-spandek-input';
         let readonlyAttr = isSpandek && isEditable ? '' : 'disabled';
         
-        // --- LOGIKA VALIDASI STOCK BARU (TOTAL METER) ---
         let middleCols = '';
+        
+        // --- LOGIKA COMPARISON STOCK ---
         if (currentTab === 'Awaiting') {
             const reqQty = parseFloat(item.qty);
             const meterPerPcs = parseFloat(item.meter) || 0;
             const availStock = masterStock[item.item] || 0; 
             
-            // Hitung Total Requirement
+            // Jika ada meter, hitung total panjang. Jika tidak, pakai Qty.
             let totalReq = reqQty;
+            let unitLabel = "Pcs";
             if (isSpandek && meterPerPcs > 0) {
                 totalReq = reqQty * meterPerPcs;
+                unitLabel = "M'";
             }
 
             const isEnough = availStock >= totalReq;
             
             if (!isEnough) {
-                isStockInsufficient = true;
+                isOverallStockInsufficient = true;
                 tr.classList.add('insufficient-row');
             }
 
@@ -414,11 +420,12 @@ function openSetup(orderId) {
                     <input type="number" class="prod-input qty-input" value="${reqQty}" style="width:60px; text-align:center;" onchange="validateQty(${idx})">
                     <span class="target-qty" style="display:none;">${reqQty}</span>
                 </td>
-                <td style="text-align:center; font-weight:bold; color:#555;">${totalReq.toFixed(2)}</td>
+                <td style="text-align:center; font-weight:bold; color:#555;">${totalReq.toFixed(2)} ${unitLabel}</td>
                 <td style="text-align:center; font-weight:bold;">${availStock.toFixed(2)}</td>
                 <td style="text-align:center;">${statusIcon}</td>
             `;
         } else {
+            // Tampilan Process / Completed
             middleCols = `
                 <td style="text-align:center;"><span class="meter-val">${item.meter}</span></td>
                 <td style="text-align:center;">
@@ -433,8 +440,7 @@ function openSetup(orderId) {
         let valType = "Custom"; 
         if(item.we && item.we.includes('_PL_')) valType = "Plat";
 
-        // BUTTON SPLIT MUNCUL DI AWAITING
-        // Di sini kita izinkan split, tombol + selalu muncul
+        // Button Split selalu aktif jika editable
         let showSplit = isEditable;
 
         let inputs = `
@@ -474,8 +480,8 @@ function openSetup(orderId) {
         tbody.appendChild(tr);
     });
 
-    renderFooterButtons(isStockInsufficient);
-    if(isStockInsufficient && currentTab === 'Awaiting') {
+    renderFooterButtons(isOverallStockInsufficient);
+    if(isOverallStockInsufficient && currentTab === 'Awaiting') {
         stockMsg.style.display = 'block';
     }
 
@@ -491,6 +497,7 @@ function renderFooterButtons(isStockProblem) {
     const btnClose = `<button class="btn btn-secondary" onclick="closeModal()">Close</button>`;
     
     if (currentTab === 'Awaiting') {
+        // Disable tombol process jika stock bermasalah
         let processDisabled = isStockProblem ? 'disabled style="background:#ccc; cursor:not-allowed;"' : '';
         let processTitle = isStockProblem ? 'Stock Kurang' : 'Process';
         
@@ -520,79 +527,75 @@ function checkAllDone() {
     if(btn) btn.disabled = !allChecked;
 }
 
-function triggerAction(actionType) {
-    let msg = "";
-    let func = null;
-    
-    if (actionType === 'process') {
-        const dateInput = document.getElementById('newDeliveryDate');
-        
-        // 1. Cek Validasi Qty Split
-        if(document.getElementById('validationMsg').style.display === 'block') {
-            alert("Jumlah Qty Split tidak sesuai dengan Qty Asli! Perbaiki dulu.");
-            return;
-        }
-
-        // 2. Cek Tanggal Delivery
-        if (!dateInput.value) {
-            alert("Harap isi Tanggal Pengiriman Baru!");
-            dateInput.focus();
-            return;
-        }
-
-        msg = "Stock Cukup & Qty Sesuai. Lanjutkan Proses?"; 
-        func = () => submitProduction('new'); 
-    }
-    else if (actionType === 'update') { msg = "Simpan perubahan?"; func = () => submitProduction('update'); }
-    else if (actionType === 'complete') { msg = "Barang fisik sudah selesai?"; func = () => completeOrder(activeOrderId); }
-    else if (actionType === 'deliver') { msg = "Kirim barang sekarang?"; func = () => deliverOrder(activeOrderId); }
-    else if (actionType === 'cancel') { msg = "Yakin batalkan BackOrder?"; func = () => cancelOrder(activeOrderId); }
-    
-    if (msg && func) showConfirm(msg, func);
-}
-
-// --- LOGIKA SPLIT YANG DIPERBARUI UNTUK AWAITING ---
+// --- LOGIKA SPLIT UNLIMITED ---
 function splitRow(btn, groupId) {
     const originalRow = btn.closest('tr');
     
-    // Saat split pertama kali, row asli tidak didisable tapi hanya penanda
-    // Tapi karena kita ingin split KPC, row asli juga bisa diedit.
-    // Kita clone row baru
+    // Disable row asli agar jadi "Parent" (General Order Style)
+    // ATAU biarkan aktif (Backorder style). Disini kita ikuti General Order:
+    // Row asli jadi disable, buat row baru clone.
     
+    if (!originalRow.classList.contains('disabled-row')) {
+        originalRow.classList.add('disabled-row');
+        // Reset nilai row asli jadi 0 agar user input di row split
+        originalRow.querySelector('.qty-input').value = 0; 
+        originalRow.querySelectorAll('input, select').forEach(el => el.disabled = true);
+        const cb = originalRow.querySelector('.check-production');
+        if(cb) cb.disabled = true; 
+    }
+
     const newRow = originalRow.cloneNode(true);
-    newRow.classList.remove('main-row', 'insufficient-row'); 
+    newRow.classList.remove('main-row', 'disabled-row', 'insufficient-row'); 
     newRow.classList.add('split-row');
     
+    // Bersihkan nilai di row baru
     const qtyInput = newRow.querySelector('.qty-input');
     qtyInput.value = 0; 
+    qtyInput.disabled = false;
     
-    // Reset Data
+    // Bersihkan kolom info stock/total di row split (biar bersih)
+    if (currentTab === 'Awaiting') {
+        const cols = newRow.getElementsByTagName('td');
+        cols[2].innerText = "-"; // Total
+        cols[3].innerText = "-"; // Stock
+        cols[4].innerHTML = "";  // Status
+    }
+
     newRow.querySelectorAll('select').forEach(s => { s.value = ""; s.disabled = false; s.onchange = function(){ generateWE(this); } });
     newRow.querySelector('.we-code').value = "";
     
-    // Hapus total meter / stock di row split (biar bersih)
-    const cols = newRow.getElementsByTagName('td');
-    if (currentTab === 'Awaiting') {
-        cols[2].innerText = "-"; // Total Meter
-        cols[3].innerText = "-"; // Stock
-        cols[4].innerHTML = "";  // Status Icon
-    }
-
     const btnContainer = newRow.querySelector('.btn-split').parentElement;
     btnContainer.innerHTML = `<button class="btn-sm btn-remove" onclick="removeSplit(this, ${groupId})"><i class="fas fa-trash"></i></button>`;
     
-    // Insert after the last row of this group
+    // Insert after
     const tbody = originalRow.parentNode;
     const groupRows = tbody.querySelectorAll(`tr[data-id="${groupId}"]`);
     groupRows[groupRows.length-1].after(newRow);
     
-    // Validasi ulang
     qtyInput.onchange = function() { validateQty(groupId); };
 }
 
 function removeSplit(btn, groupId) {
     const row = btn.closest('tr');
+    const tbody = row.parentNode;
     row.remove();
+    
+    // Cek apakah masih ada split row
+    const remainingSplits = tbody.querySelectorAll(`.split-row[data-id="${groupId}"]`);
+    if(remainingSplits.length === 0) {
+        // Jika habis, enable kembali main row
+        const main = tbody.querySelector(`.main-row[data-id="${groupId}"]`);
+        main.classList.remove('disabled-row');
+        
+        let target = 0;
+        const targetEl = main.querySelector('.target-qty');
+        if(targetEl) target = parseInt(targetEl.innerText);
+        
+        main.querySelector('.qty-input').value = target;
+        main.querySelectorAll('select, input').forEach(el => el.disabled = false);
+        const cb = main.querySelector('.check-production');
+        if(cb) cb.disabled = false;
+    }
     validateQty(groupId);
 }
 
@@ -609,15 +612,11 @@ function generateWE(el) {
 function validateQty(groupId) {
     const tbody = document.getElementById('setupBody');
     const main = tbody.querySelector(`.main-row[data-id="${groupId}"]`);
-    
-    // Target selalu tersimpan di hidden span di main row
-    const targetBadge = main.querySelector('.target-qty');
-    const target = targetBadge ? parseInt(targetBadge.innerText) : 0;
+    const target = parseInt(main.querySelector('.target-qty').innerText);
 
     let current = 0;
-    // Hitung semua row (main + split)
-    // Note: di Awaiting, main row juga inputannya aktif
-    tbody.querySelectorAll(`tr[data-id="${groupId}"]`).forEach(r => {
+    // Hitung semua (main + split)
+    tbody.querySelectorAll(`tr[data-id="${groupId}"]:not(.disabled-row)`).forEach(r => {
         const inp = r.querySelector('.qty-input');
         if(inp) current += parseInt(inp.value || 0);
     });
@@ -625,7 +624,6 @@ function validateQty(groupId) {
     const msg = document.getElementById('validationMsg');
     const isErr = current !== target;
     
-    // Warnai input merah jika salah
     tbody.querySelectorAll(`tr[data-id="${groupId}"] .qty-input`).forEach(el => el.style.borderColor = isErr ? 'red' : '#ccc');
     
     if(isErr) { 
@@ -637,9 +635,42 @@ function validateQty(groupId) {
     return !isErr;
 }
 
-async function submitProduction(mode) {
-    if(document.getElementById('validationMsg').style.display === 'block') return;
+function triggerAction(actionType) {
+    let msg = "";
+    let func = null;
     
+    if (actionType === 'process') {
+        const dateInput = document.getElementById('newDeliveryDate');
+        
+        if(document.getElementById('validationMsg').style.display === 'block') {
+            alert("Jumlah Qty Split tidak sesuai dengan Qty Asli!");
+            return;
+        }
+
+        if (!dateInput.value) {
+            alert("Harap isi Tanggal Pengiriman Baru!");
+            dateInput.focus();
+            return;
+        }
+        
+        // Final Check Stock (baca dari dom status)
+        if(document.querySelector('.insufficient-row')) {
+            alert("Tidak bisa proses: Ada item dengan stock kurang!");
+            return;
+        }
+
+        msg = "Stock Cukup & Qty Sesuai. Lanjutkan Proses?"; 
+        func = () => submitProduction('new'); 
+    }
+    else if (actionType === 'update') { msg = "Simpan perubahan?"; func = () => submitProduction('update'); }
+    else if (actionType === 'complete') { msg = "Barang fisik sudah selesai?"; func = () => completeOrder(activeOrderId); }
+    else if (actionType === 'deliver') { msg = "Kirim barang sekarang?"; func = () => deliverOrder(activeOrderId); }
+    else if (actionType === 'cancel') { msg = "Yakin batalkan BackOrder?"; func = () => cancelOrder(activeOrderId); }
+    
+    if (msg && func) showConfirm(msg, func);
+}
+
+async function submitProduction(mode) {
     const rows = document.querySelectorAll('#setupBody tr:not(.disabled-row)');
     let data = [], valid = true;
     const newDateVal = document.getElementById('newDeliveryDate').value;
@@ -647,8 +678,6 @@ async function submitProduction(mode) {
     rows.forEach(r => {
         const type = r.dataset.type;
         const q = r.querySelector('.qty-input')?.value;
-        
-        // Skip jika qty 0 atau kosong
         if (!q || parseInt(q) === 0) return;
 
         let item = { originalData: r.dataset.original, qty: q, isSplit: r.classList.contains('split-row') };
@@ -674,11 +703,13 @@ async function submitProduction(mode) {
     });
 }
 
-async function completeOrder(id) { await sendAPI('completeOrder', { orderId: id, category: ORDER_CATEGORY }); }
-async function deliverOrder(id) { await sendAPI('deliverOrder', { orderId: id, category: ORDER_CATEGORY }); }
-async function cancelOrder(id) { await sendAPI('cancelOrder', { orderId: id, category: ORDER_CATEGORY }); }
+async function completeOrder(id) { await sendAPI('completeOrder', { orderId: id }); }
+async function deliverOrder(id) { await sendAPI('deliverOrder', { orderId: id }); }
+async function cancelOrder(id) { await sendAPI('cancelOrder', { orderId: id }); }
 
 async function sendAPI(action, payload) {
+    // Inject category ke payload
+    payload.category = ORDER_CATEGORY;
     try {
         payload.action = action;
         const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
