@@ -71,13 +71,29 @@ table.report-table th { background: #f3f4f6; padding: 10px; border: 1px solid #d
 table.report-table td { padding: 8px 10px; border: 1px solid #ddd; font-size: 12px; }
 .group-header { background-color: #e0f2fe; font-weight: bold; color: #0c4a6e; }
 .sub-row td { background-color: #fff; color: #555; font-style: italic; padding-left: 30px; }
-#pdf-hidden-container { position: absolute; left: -9999px; top: 0; }
-#pdfContent { background: #fff; width: 100%; padding: 0; font-family: "Arial", sans-serif; color: #000; }
-.pdf-header { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 2px solid #000; padding-bottom: 10px; }
-.pdf-title { font-size: 24px; font-weight: 700; text-transform: uppercase; }
-table.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-table.pdf-table th { font-size: 9px; font-weight: 700; border: 1px solid #000; padding: 5px; background: #eee; }
-table.pdf-table td { font-size: 10px; border: 1px solid #000; padding: 5px; }
+
+/* --- PDF GENERATION STYLE (A5 LANDSCAPE FIXED) --- */
+#pdf-hidden-container { position: fixed; left: -9999px; top: 0; z-index: -1; }
+.pdf-page {
+    width: 210mm; height: 148mm; /* A5 Landscape */
+    background: #fff; padding: 10mm 15mm; box-sizing: border-box;
+    font-family: "Arial", sans-serif; font-size: 10pt; color: #000;
+    position: relative; display: flex; flex-direction: column;
+}
+.pdf-header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.pdf-title { font-size: 16pt; font-weight: 800; text-transform: uppercase; text-decoration: underline; margin-bottom: 5px; }
+.pdf-recipient { font-size: 10pt; line-height: 1.3; }
+.pdf-meta-table { border-collapse: collapse; font-size: 9pt; margin-left: auto; }
+.pdf-meta-table td { border: 1px solid #000; padding: 2px 5px; }
+.pdf-main-table { width: 100%; border-collapse: collapse; margin-top: 5px; flex: 1; }
+.pdf-main-table th { border: 1px solid #000; padding: 4px; font-size: 9pt; font-weight: bold; text-align: center; background-color: #f0f0f0; }
+.pdf-main-table td { border: 1px solid #000; padding: 4px; font-size: 9pt; vertical-align: middle; }
+.pdf-footer-section { margin-top: auto; padding-top: 10px; }
+.company-info { font-size: 8pt; font-weight: bold; margin-bottom: 10px; line-height: 1.2; }
+.signature-row { display: flex; justify-content: space-between; text-align: center; width: 100%; margin-top: 5px; }
+.sig-box { flex: 1; display: flex; flex-direction: column; justify-content: space-between; height: 80px; }
+.sig-title { font-size: 9pt; font-weight: bold; margin-bottom: 40px; }
+.sig-name { font-size: 9pt; border-top: 1px solid #000; width: 80%; margin: 0 auto; padding-top: 2px; }
 </style>
 </head>
 <body>
@@ -137,8 +153,7 @@ table.pdf-table td { font-size: 10px; border: 1px solid #000; padding: 5px; }
                     <input type="date" id="inpDate" class="prod-input">
                 </div>
             </div>
-            <div id="createItemsContainer">
-                </div>
+            <div id="createItemsContainer"></div>
         </div>
         <div class="modal-footer">
             <button class="btn btn-secondary" onclick="closeModal('createModal')">Batal</button>
@@ -204,47 +219,43 @@ table.pdf-table td { font-size: 10px; border: 1px solid #000; padding: 5px; }
 </div>
 
 <div id="pdf-hidden-container">
-    <div id="pdfContent">
-        <div class="pdf-header">
-            <div class="pdf-title" id="pdfTitle">SURAT</div>
-            <div style="text-align:right; font-size:9px;">
-                <div style="font-weight:bold; font-size:11px;">CV. SUKSES JAYA MAKMUR LESTARI</div>
-                <div>Kendari, Sulawesi Tenggara</div>
+    <div id="pdfContent" class="pdf-page">
+        <div class="pdf-header-section">
+            <div style="width: 50%;">
+                <div class="pdf-title" id="pdfDocTitle">SURAT JALAN</div>
+                <div class="pdf-recipient">
+                    <strong>KEPADA YTH.</strong><br>
+                    <span id="pdfCustName" style="font-size: 11pt;">-</span>
+                </div>
+            </div>
+            <div style="width: 40%; display:flex; justify-content:flex-end;">
+                <table class="pdf-meta-table">
+                    <tr><td style="background:#eee; font-weight:bold;">No Order</td><td id="pdfOrderNo">-</td></tr>
+                    <tr><td style="background:#eee; font-weight:bold;">Tanggal</td><td id="pdfDate">-</td></tr>
+                    <tr><td style="background:#eee; font-weight:bold;">Tipe Order</td><td>General Order</td></tr>
+                </table>
             </div>
         </div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:10px;">
-            <div>
-                <strong>KEPADA YTH.</strong><br>
-                <span id="pdfCustName" style="font-size:12px; font-weight:bold;">-</span>
-            </div>
-            <div style="text-align:right;">
-                <strong>No Order:</strong> <span id="pdfOrderNo">-</span><br>
-                <strong>Tanggal:</strong> <span id="pdfDate">-</span>
-            </div>
+        <div style="flex-grow: 1;">
+            <table class="pdf-main-table">
+                <thead id="pdfTableHead"></thead>
+                <tbody id="pdfItemsBody"></tbody>
+            </table>
         </div>
-        <table class="pdf-table">
-            <thead>
-                <tr>
-                    <th style="width:5%; text-align:center;">NO</th>
-                    <th style="width:40%;">NAMA BARANG</th>
-                    <th style="width:10%; text-align:center;">METER</th>
-                    <th style="width:10%; text-align:center;">QTY</th>
-                    <th style="width:20%;" id="pdfHeadDetail">KET</th>
-                    <th style="width:15%;" id="pdfHeadWE">WE CODE</th>
-                </tr>
-            </thead>
-            <tbody id="pdfItemsBody"></tbody>
-        </table>
-        <div style="display:flex; justify-content:space-between; margin-top:40px; text-align:center; font-size:10px;">
-            <div style="width:30%;">Dibuat Oleh,<br><br><br><br>( Admin )</div>
-            <div style="width:30%;">Diketahui Oleh,<br><br><br><br>( .................... )</div>
+        <div class="pdf-footer-section">
+            <div class="company-info">
+                CV. SUKSES JAYA MAKMUR LESTARI<br>
+                <span style="font-weight:normal;">JL. D.I Panjaitan, RT/RW. 008/003, Kel. Wundudopi, Kec. Baruga, Kendari</span><br>
+                <span style="font-weight:normal;">Sulawesi Tenggara | Telp. 0822 4708 4908</span>
+            </div>
+            <div id="pdfSignatures" class="signature-row"></div>
         </div>
     </div>
 </div>
 
 <script>
 // --- KONFIGURASI API ---
-const API_URL = "https://script.google.com/macros/s/AKfycbyXS4HZALNgggpEwOucoNhtAeE21boEi6tFM_sy16z-qnkWISK2gg9ysy06jx4pvio_5Q/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyr2IHPU_J9VdO16MKBUi-MTEo-FVtKH3rCwHwFTMZSDv8BfD_gAvU-0FXX7yR1EOAwFA/exec";
 const TYPE_CODES = { 'Custom': 'CS', 'Plat': 'PL' };
 
 let currentView = 'Remaining';
@@ -327,12 +338,9 @@ function renderProduction(data) {
     });
 }
 
-// --- REPORT LOGIC (FIXED NON-SPANDEK UNIT) ---
+// --- REPORT LOGIC ---
 function openReportModal() {
-    if(globalRemainingData.length === 0) {
-        alert("Data belum siap, mohon tunggu loading selesai.");
-        return;
-    }
+    if(globalRemainingData.length === 0) { alert("Data belum siap, mohon tunggu loading selesai."); return; }
     document.getElementById('reportModal').style.display = 'flex';
     document.getElementById('reportContentArea').innerHTML = '<div style="text-align:center; color:#888; margin-top:50px;">Silakan pilih customer untuk melihat laporan.</div>';
     
@@ -345,51 +353,34 @@ function openReportModal() {
 
 function generateCustomerReport(cust) {
     const box = document.getElementById('reportContentArea');
-    if(!cust) {
-        box.innerHTML = ''; return;
-    }
+    if(!cust) { box.innerHTML = ''; return; }
     let reportMap = {};
     globalRemainingData.filter(d => d.customer === cust).forEach(po => {
         po.items.forEach(item => {
             let isQtyBased = item.isQtyBased; 
             let hasBalance = isQtyBased ? (item.remainingMeter > 0) : (item.remainingMeter > 0.1);
-
             if(!item.isLineClosed && hasBalance) {
-                if(!reportMap[item.name]) {
-                    reportMap[item.name] = { name: item.name, totalBalance: 0, details: [] };
-                }
+                if(!reportMap[item.name]) reportMap[item.name] = { name: item.name, totalBalance: 0, details: [] };
                 reportMap[item.name].totalBalance += item.remainingMeter;
                 reportMap[item.name].details.push({ 
                     inv: po.poId, date: po.date, balance: item.remainingMeter, 
-                    type: item.type, unit: item.unit, isQtyBased: item.isQtyBased // Tambahkan isQtyBased untuk cek nanti
+                    type: item.type, unit: item.unit, isQtyBased: item.isQtyBased 
                 });
             }
         });
     });
 
-    if(Object.keys(reportMap).length === 0) {
-        box.innerHTML = '<div style="text-align:center; padding:20px; color:red;">Tidak ada saldo tersisa untuk customer ini.</div>';
-        return;
-    }
+    if(Object.keys(reportMap).length === 0) { box.innerHTML = '<div style="text-align:center; padding:20px; color:red;">Tidak ada saldo tersisa untuk customer ini.</div>'; return; }
 
     let html = `<h4 style="border-bottom:2px solid #ddd; padding-bottom:5px;">Laporan Saldo: ${cust}</h4>`;
     html += `<table class="report-table"><thead><tr><th>Nama Barang</th><th>Invoice / PO</th><th>Tanggal PO</th><th>Satuan</th><th style="text-align:right;">Sisa</th></tr></thead><tbody>`;
     Object.values(reportMap).forEach(group => {
         let det0 = group.details[0];
-        // Logic Header: Jika QtyBased (Non Spandek), pakai satuan asli. Jika Spandek, paksa "Meter".
         let unitLabel = (det0.isQtyBased) ? (det0.unit || "Pcs") : "Meter";
-
         html += `<tr class="group-header"><td colspan="4">${group.name} <small>(${det0.type})</small></td><td style="text-align:right; font-size:13px;">Total: ${group.totalBalance.toFixed(2)}</td></tr>`;
         group.details.forEach(det => {
             let rowUnit = det.unit || "-";
-            
-            // FIX LOGIC:
-            // Override jadi "Meter" HANYA jika tipe Spandek DAN BUKAN Non-Spandek/QtyBased
-            // "Non Spandek" mengandung kata "spandek", jadi kita perlu pengecekan !isQtyBased agar tidak salah ubah.
-            if (!det.isQtyBased && det.type && det.type.toLowerCase().includes("spandek")) {
-                 rowUnit = "Meter";
-            }
-            
+            if (!det.isQtyBased && det.type && det.type.toLowerCase().includes("spandek")) rowUnit = "Meter";
             html += `<tr class="sub-row"><td></td><td>${det.inv}</td><td>${det.date}</td><td>${rowUnit}</td><td style="text-align:right;">${det.balance.toFixed(2)}</td></tr>`;
         });
     });
@@ -654,25 +645,57 @@ async function sendAPI(action, payload) {
     } catch(e) { alert("Error: " + e); }
 }
 
+// --- NEW PDF GENERATION LOGIC (A5 LANDSCAPE MATCH) ---
 function generatePDF(type) {
+    if (!activeOrderId || !currentOrders[activeOrderId]) return;
+    
     const o = currentOrders[activeOrderId];
+    const docTitle = document.getElementById('pdfDocTitle');
+    const tableHead = document.getElementById('pdfTableHead');
+    const tableBody = document.getElementById('pdfItemsBody');
+    const sigContainer = document.getElementById('pdfSignatures');
+
+    // 1. Header Info
     document.getElementById('pdfOrderNo').innerText = activeOrderId;
     document.getElementById('pdfCustName').innerText = o.customer;
-    document.getElementById('pdfDate').innerText = new Date().toLocaleDateString();
-    document.getElementById('pdfTitle').innerText = (type === 'SPK') ? "SURAT PERINTAH KERJA" : "SURAT JALAN";
-    const headDetail = document.getElementById('pdfHeadDetail');
-    const headWE = document.getElementById('pdfHeadWE');
-    if (type === 'SJ') { headDetail.innerText = "KETERANGAN"; headWE.style.display = 'none'; } 
-    else { headDetail.innerText = "DETAIL MESIN/KPC"; headWE.style.display = 'table-cell'; }
-    let itemsToPrint = o.items; 
-    const tbody = document.getElementById('pdfItemsBody');
-    tbody.innerHTML = '';
-    itemsToPrint.forEach((i, idx) => {
-        let weCell = (type === 'SPK') ? `<td style="border:1px solid #000; padding:5px;">${i.we||'-'}</td>` : '';
-        let detail = (type === 'SPK') ? `${i.machine||'-'} / ${i.kpc||'-'}` : '-';
-        tbody.innerHTML += `<tr><td style="border:1px solid #000; text-align:center;">${idx+1}</td><td style="border:1px solid #000;">${i.item}</td><td style="border:1px solid #000; text-align:center;">${i.meter}</td><td style="border:1px solid #000; text-align:center;">${i.qty}</td><td style="border:1px solid #000;">${detail}</td>${weCell}</tr>`;
-    });
-    html2pdf().set({ margin:0.5, filename:`${type}_${activeOrderId}.pdf` }).from(document.getElementById('pdfContent')).save();
+    const today = new Date();
+    const dateStr = today.getDate().toString().padStart(2, '0') + '/' + (today.getMonth()+1).toString().padStart(2, '0') + '/' + today.getFullYear();
+    document.getElementById('pdfDate').innerText = dateStr;
+
+    // 2. Type Configuration
+    tableBody.innerHTML = '';
+    sigContainer.innerHTML = '';
+
+    if (type === 'SJ') {
+        docTitle.innerText = "SURAT JALAN";
+        tableHead.innerHTML = `<tr><th style="width:5%;">NO</th><th style="width:45%;">NAMA BARANG</th><th style="width:10%;">METER</th><th style="width:10%;">QTY</th><th style="width:30%;">KETERANGAN</th></tr>`;
+        o.items.forEach((i, idx) => {
+            tableBody.innerHTML += `<tr><td style="text-align:center;">${idx + 1}</td><td>${i.item}<br><small style="font-style:italic;">${i.type || ''}</small></td><td style="text-align:center;">${i.meter}</td><td style="text-align:center;">${i.qty}</td><td></td></tr>`;
+        });
+        const signatures = ["Pembuat Nota", "Kepala Gudang", "Sopir", "Penerima Barang"];
+        signatures.forEach(role => {
+            sigContainer.innerHTML += `<div class="sig-box"><div class="sig-title">${role}</div><div class="sig-name">( ....................... )</div></div>`;
+        });
+
+    } else {
+        docTitle.innerText = "SURAT PERINTAH KERJA";
+        tableHead.innerHTML = `<tr><th style="width:5%;">NO</th><th style="width:35%;">NAMA BARANG</th><th style="width:10%;">METER</th><th style="width:10%;">QTY</th><th style="width:20%;">DETAIL MESIN/KPC</th><th style="width:20%;">WE CODE</th></tr>`;
+        o.items.forEach((i, idx) => {
+            const mesinInfo = (i.machine && i.kpc) ? `${i.machine} / ${i.kpc}` : '-/-';
+            tableBody.innerHTML += `<tr><td style="text-align:center;">${idx + 1}</td><td>${i.item}<br><small style="font-style:italic;">${i.type || ''}</small></td><td style="text-align:center;">${i.meter}</td><td style="text-align:center;">${i.qty}</td><td style="text-align:center;">${mesinInfo}</td><td style="text-align:center; font-family:monospace; font-size:8pt;">${i.we || ''}</td></tr>`;
+        });
+        sigContainer.innerHTML = `<div class="sig-box" style="flex: 0 0 30%;"><div class="sig-title">Admin Produksi</div><div class="sig-name">( ....................... )</div></div><div style="flex:1;"></div><div class="sig-box" style="flex: 0 0 30%;"><div class="sig-title">Kepala Gudang</div><div class="sig-name">( ....................... )</div></div>`;
+    }
+
+    const element = document.getElementById('pdfContent');
+    const opt = {
+        margin: 0,
+        filename: `${type}_${activeOrderId}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a5', orientation: 'landscape' }
+    };
+    html2pdf().set(opt).from(element).save();
 }
 
 // --- CREATE REQUEST LOGIC ---
@@ -705,16 +728,12 @@ function loadCustomerItemsAggregated(cust) {
             if(!item.isLineClosed && hasBalance) {
                 if(!aggregatedItemsMap[item.name]) {
                     aggregatedItemsMap[item.name] = { 
-                        name: item.name, 
-                        totalRemaining: 0, 
-                        isQtyBased: isQtyBased,
-                        poList: [] 
+                        name: item.name, totalRemaining: 0, isQtyBased: isQtyBased, poList: [] 
                     };
                 }
                 aggregatedItemsMap[item.name].totalRemaining += item.remainingMeter;
                 aggregatedItemsMap[item.name].poList.push({ 
-                    poId: po.poId, rowIndex: item.rowIndex, 
-                    remaining: item.remainingMeter, 
+                    poId: po.poId, rowIndex: item.rowIndex, remaining: item.remainingMeter, 
                     price: item.price, unit: item.unit, type: item.type 
                 });
             }
@@ -800,11 +819,8 @@ function calcMultiTotal(safeId) {
         let q = parseFloat(qRaw) || 0;
         if(qRaw.includes('.')) { row.querySelector('.inp-qty').value = Math.floor(q); q = Math.floor(q); }
         
-        if (isQtyBased) {
-             totalUsed += q;
-        } else {
-             totalUsed += (m * q);
-        }
+        if (isQtyBased) { totalUsed += q; } 
+        else { totalUsed += (m * q); }
     });
 
     totalDisplay.innerText = totalUsed.toFixed(2);
