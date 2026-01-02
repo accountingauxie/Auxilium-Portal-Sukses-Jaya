@@ -1,101 +1,94 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Input Hasil Produksi – AUXILIUM</title>
+<meta charset="UTF-8">
+<title>Production Entry - Auxilium</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
-<script src="https://unpkg.com/feather-icons"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://unpkg.com/feather-icons"></script>
 
 <style>
 /* =========================================
-   1. SYSTEM STYLE (Unified with Portal)
+   1. GLOBAL VARIABLES & RESET
    ========================================= */
 :root { 
-    --primary-color: #116999; 
-    --primary-hover: #0e5a85;
-    --bg-color: #f4f7f6; 
-    --text-color: #333; 
-    --red-bg: #fee2e2; 
-    --red-text: #991b1b;
-    --border-color: #eaecf0;
+  --primary-color: #116999; 
+  --primary-hover: #0e5a85;
+  --bg-color: #f8fafc; 
+  --text-color: #333; 
+  --border-color: #eaecf0;
+  --red-bg: #fee2e2; 
+  --red-text: #991b1b;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
 }
 
 * { box-sizing: border-box; outline: none; }
-body { 
-    margin: 0; 
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-    font-size: 14px; 
-    background: var(--bg-color); 
-    color: var(--text-color); 
-    -webkit-font-smoothing: antialiased; 
-}
+body { margin: 0; background: var(--bg-color); font-family: 'Inter', sans-serif; font-size: 14px; color: var(--text-color); -webkit-font-smoothing: antialiased; }
 
-/* --- NAVIGATION BAR (PERSIS PORTAL) --- */
+/* =========================================
+   2. NAVBAR STYLES (Uniform Standard)
+   ========================================= */
 .aux-navbar {
-    background-color: #ffffff;
-    height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 40px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    position: sticky; top: 0; z-index: 1000;
+    background-color: #ffffff; height: 70px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 32px; box-shadow: var(--shadow-sm); position: sticky; top: 0; z-index: 1000;
 }
-
-.aux-logo { display: flex; align-items: center; gap: 10px; }
-.aux-logo img { height: 45px; width: auto; object-fit: contain; }
-
-.aux-menu { display: flex; gap: 8px; align-items: center; height: 100%; }
+.aux-logo img { height: 32px; width: auto; }
+.aux-menu { display: flex; gap: 4px; align-items: center; height: 100%; }
 .nav-item { position: relative; height: 100%; display: flex; align-items: center; }
 
+/* Link Style */
 .aux-link { 
     text-decoration: none; color: #475467; font-weight: 600; font-size: 14px; 
-    padding: 8px 16px; border-radius: 6px; transition: all 0.2s; cursor: pointer;
+    padding: 8px 12px; border-radius: 6px; transition: all 0.2s; cursor: pointer;
     display: flex; align-items: center; gap: 6px;
 }
-
 .aux-link:hover, .nav-item:hover .aux-link { background-color: #f2f4f7; color: #101828; }
 .aux-link.active { background-color: #eff8ff; color: var(--primary-color); font-weight: 700; }
-
 .chevron-down { width: 14px; height: 14px; transition: transform 0.2s; }
 .nav-item:hover .chevron-down { transform: rotate(180deg); }
 
-/* DROPDOWN MENU */
+/* Dropdown */
 .dropdown-menu {
-    visibility: hidden; opacity: 0; position: absolute; top: 85%; left: 0;
+    visibility: hidden; opacity: 0; position: absolute; top: 100%; left: 0;
     background: white; min-width: 240px; border: 1px solid var(--border-color);
-    border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    padding: 8px; z-index: 9999; transform: translateY(10px); transition: all 0.2s ease-in-out;
+    border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    padding: 8px; z-index: 1001; transform: translateY(10px); transition: all 0.2s ease-in-out;
 }
-.dropdown-menu::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
-.nav-item:hover .dropdown-menu { visibility: visible; opacity: 1; transform: translateY(0); }
-
+.nav-item:hover .dropdown-menu { visibility: visible; opacity: 1; transform: translateY(0); margin-top: -10px; }
 .dropdown-item { display: flex; align-items: center; padding: 10px 12px; color: #344054; text-decoration: none; font-size: 14px; border-radius: 6px; transition: background 0.2s; }
 .dropdown-item:hover { background-color: #f9fafb; color: var(--primary-color); }
+.dropdown-header { font-size: 11px; text-transform: uppercase; color: #98a2b3; font-weight: 600; padding: 8px 12px 4px; }
 .dropdown-divider { height: 1px; background-color: #eaecf0; margin: 6px 0; }
-.dropdown-header { font-size: 11px; text-transform: uppercase; color: #98a2b3; font-weight: 600; padding: 8px 12px 4px; letter-spacing: 0.5px; }
 
-/* USER PANEL */
-.user-panel { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid var(--border-color); }
+/* User Panel */
+.user-panel { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid var(--border-color); margin-left: 10px; }
 .user-details { display: flex; flex-direction: column; text-align: right; line-height: 1.3; }
 .user-name { font-weight: 700; font-size: 13px; color: #101828; }
 .user-role { font-size: 11px; color: #667085; }
-.user-avatar { width: 36px; height: 36px; background-color: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; user-select: none; }
+.user-avatar { width: 36px; height: 36px; background-color: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; border: 2px solid #e0f2fe; }
 .logout-btn { background: none; border: 1px solid var(--border-color); color: #666; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
 .logout-btn:hover { background-color: var(--red-bg); color: var(--red-text); border-color: var(--red-bg); }
 
+/* --- LOGOUT MODAL --- */
+.modal { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); }
+.modal-content { background-color: #fff; margin: 15% auto; padding: 32px; border-radius: 16px; width: 360px; text-align: center; }
+.modal-buttons { display: flex; justify-content: center; gap: 12px; margin-top: 24px; }
+.btn-modal { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; }
+.btn-yes { background-color: #d92d20; color: #fff; }
+.btn-cancel { background-color: #f2f4f7; color: #344054; }
+
 /* =========================================
-   2. PAGE CONTENT STYLES (Form Specific)
+   3. PAGE CONTENT STYLES
    ========================================= */
-.main-container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 40px; }
-.card { background: #fff; border-radius: 12px; box-shadow: 0px 1px 3px rgba(16, 24, 40, 0.1), 0px 1px 2px rgba(16, 24, 40, 0.06); padding: 32px; border: 1px solid var(--border-color); }
+.page { max-width: 1400px; margin: 40px auto; padding: 0 24px; }
+.card { background: #fff; border-radius: 12px; box-shadow: var(--shadow-sm); padding: 32px; border: 1px solid var(--border-color); }
 .card-title { font-size: 20px; font-weight: 700; margin-bottom: 24px; color: #101828; display: flex; justify-content: space-between; align-items: center; }
 
 /* FORMS */
@@ -133,33 +126,27 @@ tr:last-child td { border-bottom: none; }
 textarea { width: 100%; border: 1px solid #d0d5dd; border-radius: 8px; padding: 12px; font-family: inherit; font-size: 14px; resize: vertical; min-height: 100px; transition: all 0.2s; }
 textarea:focus { border-color: #84CAFF; box-shadow: 0 0 0 4px #F2F4F7; outline: none; }
 
-/* MODALS & LOADERS */
-.modal { display: none; position: fixed; z-index: 10001; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); }
-.modal-content { background-color: #fff; margin: 15% auto; padding: 32px; border-radius: 16px; width: 360px; text-align: center; }
-.modal-buttons { display: flex; justify-content: center; gap: 12px; margin-top: 24px; }
-.btn-modal { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; }
-.btn-yes { background-color: #d92d20; color: #fff; }
-.btn-cancel { background-color: #f2f4f7; color: #344054; }
-
 #loadingOverlay { position: fixed; inset: 0; background: rgba(255,255,255,0.85); display: none; justify-content: center; align-items: center; z-index: 10001; backdrop-filter: blur(2px); }
 .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: var(--primary-color); border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Choices.js Overrides */
+/* Choices.js Custom Overrides */
 .choices { margin-bottom: 0; }
 .choices__inner { min-height: 38px !important; padding: 0 8px !important; border: 1px solid #d0d5dd !important; background-color: #fff !important; border-radius: 6px !important; display: flex !important; align-items: center !important; font-size: 13.5px !important; box-shadow: none !important; }
 .choices.is-focused .choices__inner { border-color: var(--primary-color) !important; box-shadow: 0 0 0 3px rgba(17, 105, 153, 0.1) !important; }
 .choices__input { background: transparent !important; border: none !important; }
 .choices__list--dropdown { border: 1px solid #d0d5dd !important; border-radius: 8px !important; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important; margin-top: 4px !important; z-index: 9000 !important; }
 .choices__item--choice { padding: 8px 12px !important; font-size: 13px !important; }
+
+/* KPC Balance Badge */
 .kpc-balance { float: right; font-size: 11px; background: #eff8ff; color: var(--primary-color); padding: 2px 8px; border-radius: 99px; font-weight: 600; border: 1px solid #b2ddff; }
 </style>
 </head>
 
 <body>
-  <div id="loadingOverlay"><div class="spinner"></div></div>
+<div id="loadingOverlay"><div class="spinner"></div></div>
 
-  <div class="aux-navbar">
+<div class="aux-navbar">
     <div class="aux-logo">
         <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png" alt="Auxilium Logo">
     </div>
@@ -213,7 +200,7 @@ textarea:focus { border-color: #84CAFF; box-shadow: 0 0 0 4px #F2F4F7; outline: 
                 <div class="dropdown-divider"></div>
                 
                 <div class="dropdown-header">Hasil Produksi</div>
-                <a href="#" class="dropdown-item" style="color:var(--primary-color); font-weight:600; background-color:#f9fafb;">Input Hasil Produksi (Entry)</a>
+                <a href="#" class="dropdown-item" style="color:var(--primary-color); font-weight:600; background:#f9fafb;">Input Hasil Produksi (Entry)</a>
                 <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/daftarproduksi/index.html" class="dropdown-item">List Barang Jadi</a>
             </div>
         </div>
@@ -239,72 +226,9 @@ textarea:focus { border-color: #84CAFF; box-shadow: 0 0 0 4px #F2F4F7; outline: 
             <i data-feather="log-out" style="width:16px; height:16px;"></i>
         </button>
     </div>
-  </div>
+</div>
 
-  <div class="main-container">
-    <div class="card">
-      <div class="card-title">
-        <div>
-            Input Hasil Produksi
-            <p style="font-size:13px; font-weight:400; color:#667085; margin-top:4px;">Masukkan data hasil produksi barang jadi untuk digenerate menjadi SPK.</p>
-        </div>
-        <span style="font-size:12px; font-weight:600; color:#027a48; background:#ecfdf5; padding:6px 12px; border-radius:20px; border:1px solid #d1fadf;">
-            <i class="fas fa-plus-circle mr-1"></i> New Entry
-        </span>
-      </div>
-
-      <div class="row-flex">
-        <div>
-          <label>Tanggal Produksi</label>
-          <input type="date" id="productionDate" class="input-box">
-        </div>
-        <div>
-          <label>Production Entry ID</label>
-          <input type="text" id="entryId" class="input-box" readonly placeholder="Generating ID...">
-        </div>
-      </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th style="width:40px;"></th>
-            <th style="width:22%;">Machine</th> 
-            <th style="width:22%;">Item</th>
-            <th class="hidden-col">Meter</th>
-            <th class="hidden-col">Qty</th>
-            <th class="hidden-col">Total</th>
-            <th style="width:25%;">KPC</th> 
-            <th>WE Number</th>
-            <th style="width:50px;"></th>
-          </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-      </table>
-
-      <button class="action-btn add-row-btn" onclick="addRow()">
-          <i class="fas fa-plus mr-2"></i> Tambah Baris
-      </button>
-      
-      <div style="margin-top: 24px;">
-        <label>Catatan Tambahan (Opsional)</label>
-        <textarea id="notes" placeholder="Contoh: Produksi prioritas untuk Order #123..."></textarea>
-      </div>
-      
-      <div style="margin-top:24px; border-top:1px solid #eaecf0; padding-top:24px;">
-        <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/daftarproduksi/index.html" class="view-list-btn action-btn">
-          <i class="fas fa-list mr-2"></i> Lihat Daftar
-        </a>
-
-        <button class="action-btn submit-btn" onclick="submitForm()">
-            Simpan Data
-        </button>
-        
-        <div style="clear:both;"></div>
-      </div>
-    </div>
-  </div>
-
-  <div id="logoutModal" class="modal">
+<div id="logoutModal" class="modal">
     <div class="modal-content">
       <div style="background:#fee2e2; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
         <i data-feather="alert-circle" style="color:#d92d20;"></i>
@@ -316,7 +240,70 @@ textarea:focus { border-color: #84CAFF; box-shadow: 0 0 0 4px #F2F4F7; outline: 
         <button class="btn-modal btn-yes" onclick="logout()">Keluar</button>
       </div>
     </div>
+</div>
+
+<div class="page">
+  <div class="card">
+    <div class="card-title">
+      <div>
+          Input Hasil Produksi
+          <p style="font-size:13px; font-weight:400; color:#667085; margin-top:4px;">Masukkan data hasil produksi barang jadi untuk digenerate menjadi SPK.</p>
+      </div>
+      <span style="font-size:12px; font-weight:600; color:#027a48; background:#ecfdf5; padding:6px 12px; border-radius:20px; border:1px solid #d1fadf;">
+          <i class="fas fa-plus-circle mr-1"></i> New Entry
+      </span>
+    </div>
+
+    <div class="row-flex">
+      <div>
+        <label>Tanggal Produksi</label>
+        <input type="date" id="productionDate" class="input-box">
+      </div>
+      <div>
+        <label>Production Entry ID</label>
+        <input type="text" id="entryId" class="input-box" readonly placeholder="Generating ID...">
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width:40px;"></th>
+          <th style="width:22%;">Machine</th> 
+          <th style="width:22%;">Item</th>
+          <th class="hidden-col">Meter</th>
+          <th class="hidden-col">Qty</th>
+          <th class="hidden-col">Total</th>
+          <th style="width:25%;">KPC</th> 
+          <th>WE Number</th>
+          <th style="width:50px;"></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+
+    <button class="action-btn add-row-btn" onclick="addRow()">
+        <i class="fas fa-plus mr-2"></i> Tambah Baris
+    </button>
+    
+    <div style="margin-top: 24px;">
+      <label>Catatan Tambahan (Opsional)</label>
+      <textarea id="notes" placeholder="Contoh: Produksi prioritas untuk Order #123..."></textarea>
+    </div>
+    
+    <div style="margin-top:24px; border-top:1px solid #eaecf0; padding-top:24px;">
+      <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/daftarproduksi/index.html" class="view-list-btn action-btn">
+        <i class="fas fa-list mr-2"></i> Lihat Daftar
+      </a>
+
+      <button class="action-btn submit-btn" onclick="submitForm()">
+          Simpan Data
+      </button>
+      
+      <div style="clear:both;"></div>
+    </div>
   </div>
+</div>
 
 <script>
 // --- INITIALIZE ICONS ---
