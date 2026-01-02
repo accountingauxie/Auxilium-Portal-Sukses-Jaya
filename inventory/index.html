@@ -4,184 +4,156 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard Inventory - Auxilium</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/feather-icons"></script>
 
 <style>
-:root {
-  /* Color Palette */
-  --primary: #2563eb;
-  --primary-dark: #1e40af;
-  --bg-body: #f1f5f9;
-  --bg-card: #ffffff;
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --border: #e2e8f0;
-  
-  /* Status Colors */
-  --success-bg: #dcfce7;
-  --success-text: #166534;
-  --warning-bg: #fef9c3;
-  --warning-text: #854d0e;
-  --danger-bg: #fee2e2;
-  --danger-text: #991b1b;
+/* --- 1. SYSTEM STYLE (Web UI) --- */
+:root { 
+    /* Navbar & Brand Colors */
+    --primary-color: #116999; 
+    --xero-blue: #116999; 
+    --bg-color: #f4f7f6; 
+    --text-color: #333; 
+    --red-bg: #fee2e2; --red-text: #991b1b; 
+    --border-color: #eaecf0;
+
+    /* Dashboard Specific Palette */
+    --primary: #2563eb;
+    --primary-dark: #1e40af;
+    --bg-body: #f1f5f9;
+    --bg-card: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    
+    /* Status Colors */
+    --success-bg: #dcfce7; --success-text: #166534;
+    --warning-bg: #fef9c3; --warning-text: #854d0e;
+    --danger-bg: #fee2e2; --danger-text: #991b1b;
 }
 
 * { box-sizing: border-box; }
 
 body { 
-  margin: 0; 
-  font-family: 'Inter', sans-serif; 
-  background-color: var(--bg-body); 
-  color: var(--text-main); 
-  font-size: 14px;
-  -webkit-font-smoothing: antialiased;
+    margin: 0; 
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+    font-size: 14px; 
+    background: var(--bg-body); 
+    color: var(--text-main); 
+    -webkit-font-smoothing: antialiased; 
 }
 
-/* --- NAVBAR --- */
-.navbar {
-  background: var(--bg-card);
-  border-bottom: 1px solid var(--border);
-  padding: 0 24px;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+/* --- NAVIGATION BAR (NEW STANDARD) --- */
+.aux-navbar {
+    background-color: #ffffff;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    position: sticky; top: 0; z-index: 1000;
 }
 
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 700;
-  font-size: 18px;
-  color: var(--primary);
+.aux-logo { display: flex; align-items: center; gap: 10px; }
+.aux-logo img { height: 45px; width: auto; object-fit: contain; }
+
+.aux-menu { display: flex; gap: 8px; align-items: center; height: 100%; }
+.nav-item { position: relative; height: 100%; display: flex; align-items: center; }
+
+.aux-link { 
+    text-decoration: none; color: #475467; font-weight: 600; font-size: 14px; 
+    padding: 8px 16px; border-radius: 6px; transition: all 0.2s; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
 }
+.aux-link:hover, .nav-item:hover .aux-link { background-color: #f2f4f7; color: #101828; }
+.aux-link.active { background-color: #eff8ff; color: var(--primary-color); font-weight: 700; }
 
-.brand span {
-  background: #eff6ff;
-  color: var(--primary-dark);
-  font-size: 11px;
-  padding: 4px 8px;
-  border-radius: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.chevron-down { width: 14px; height: 14px; transition: transform 0.2s; }
+.nav-item:hover .chevron-down { transform: rotate(180deg); }
+
+/* Dropdown Menu */
+.dropdown-menu {
+    visibility: hidden; opacity: 0; position: absolute; top: 85%; left: 0;
+    background: white; min-width: 240px; border: 1px solid var(--border-color);
+    border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    padding: 8px; z-index: 1001; transform: translateY(10px); transition: all 0.2s ease-in-out;
 }
+.dropdown-menu::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
+.nav-item:hover .dropdown-menu { visibility: visible; opacity: 1; transform: translateY(0); }
 
-.nav-links a {
-  text-decoration: none;
-  color: var(--text-muted);
-  font-weight: 500;
-  margin-left: 24px;
-  transition: 0.2s;
-  font-size: 13px;
+.dropdown-item {
+    display: flex; align-items: center; padding: 10px 12px; color: #344054;
+    text-decoration: none; font-size: 14px; border-radius: 6px; transition: background 0.2s;
 }
-.nav-links a:hover { color: var(--primary); }
-.nav-active { color: var(--primary) !important; font-weight: 600 !important; }
+.dropdown-item:hover { background-color: #f9fafb; color: var(--primary-color); }
+.dropdown-divider { height: 1px; background-color: #eaecf0; margin: 6px 0; }
+.dropdown-header { font-size: 11px; text-transform: uppercase; color: #98a2b3; font-weight: 600; padding: 8px 12px 4px; }
 
-/* --- MAIN LAYOUT --- */
-.container { max-width: 1280px; margin: 32px auto; padding: 0 24px; }
+/* User Panel */
+.user-panel { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid var(--border-color); }
+.user-details { display: flex; flex-direction: column; text-align: right; line-height: 1.3; }
+.user-name { font-weight: 700; font-size: 13px; color: #101828; }
+.user-role { font-size: 11px; color: #667085; }
+.user-avatar { width: 36px; height: 36px; background-color: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; user-select: none; }
+.logout-btn { background: none; border: 1px solid var(--border-color); color: #666; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.logout-btn:hover { background-color: var(--red-bg); color: var(--red-text); border-color: var(--red-bg); }
 
-/* --- HEADER AREA --- */
+/* --- DASHBOARD CONTENT STYLE --- */
+.container { max-width: 1400px; margin: 32px auto; padding: 0 40px; }
+
+/* HEADER AREA */
 .header-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-  gap: 16px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 24px; flex-wrap: wrap; gap: 16px;
 }
-
 .page-title h1 { margin: 0; font-size: 24px; font-weight: 700; color: var(--text-main); }
 .page-title p { margin: 4px 0 0; color: var(--text-muted); font-size: 14px; }
 
 .btn-refresh {
-  background: white;
-  border: 1px solid var(--border);
-  padding: 10px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  color: var(--text-main);
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: 0.2s;
-  font-size: 13px;
+  background: white; border: 1px solid var(--border); padding: 10px 16px;
+  border-radius: 8px; cursor: pointer; color: var(--text-main); font-weight: 600;
+  display: flex; align-items: center; gap: 8px; transition: 0.2s; font-size: 13px;
   box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 .btn-refresh:hover { background: #f8fafc; border-color: #cbd5e1; transform: translateY(-1px); }
 .btn-refresh:active { transform: translateY(0); }
 
-/* --- TABS NAVIGATION --- */
-.tabs-container {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 24px;
-  overflow-x: auto;
-  padding-bottom: 4px; /* for scrollbar spacing if needed */
-}
-
+/* TABS NAVIGATION */
+.tabs-container { display: flex; gap: 8px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 4px; }
 .tab-btn {
-  background: transparent;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 50px;
-  font-weight: 600;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 14px;
-  white-space: nowrap;
+  background: transparent; border: none; padding: 10px 20px;
+  border-radius: 50px; font-weight: 600; color: var(--text-muted);
+  cursor: pointer; transition: all 0.2s ease; font-size: 14px; white-space: nowrap;
 }
-
 .tab-btn:hover { background: #e2e8f0; color: var(--text-main); }
 .tab-btn.active {
-  background: var(--primary);
-  color: white;
+  background: var(--primary); color: white;
   box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
 }
 
-/* --- CARD & TABLE STYLE --- */
+/* CARD & TABLE STYLE */
 .card {
-  background: var(--bg-card);
-  border-radius: 16px;
-  border: 1px solid var(--border);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-  overflow: hidden;
+  background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02); overflow: hidden;
   animation: fadeIn 0.4s ease-in-out;
 }
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
 .card-header {
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #ffffff;
+  padding: 20px 24px; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center; background: #ffffff;
 }
 .card-title { font-size: 16px; font-weight: 700; margin: 0; }
 
 .search-wrapper { position: relative; }
 .search-input {
-  padding: 10px 16px 10px 36px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 13px;
-  width: 280px;
-  outline: none;
-  transition: 0.2s;
+  padding: 10px 16px 10px 36px; border: 1px solid var(--border);
+  border-radius: 8px; font-size: 13px; width: 280px; outline: none; transition: 0.2s;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: 10px center;
+  background-repeat: no-repeat; background-position: 10px center;
 }
 .search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
 
@@ -189,44 +161,19 @@ body {
 .table-responsive { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; min-width: 800px; }
 th {
-  text-align: left;
-  padding: 14px 24px;
-  background: #f8fafc;
-  color: var(--text-muted);
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-bottom: 1px solid var(--border);
+  text-align: left; padding: 14px 24px; background: #f8fafc;
+  color: var(--text-muted); font-size: 12px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border);
 }
 td { padding: 16px 24px; border-bottom: 1px solid var(--border); color: var(--text-main); font-size: 14px; }
 tr:last-child td { border-bottom: none; }
 tr:hover td { background-color: #f8fafc; }
 
 /* BADGES FOR STOCK */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 700;
-}
+.badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; }
 .badge-safe { background: var(--success-bg); color: var(--success-text); }
 .badge-low { background: var(--warning-bg); color: var(--warning-text); }
 .badge-empty { background: var(--danger-bg); color: var(--danger-text); }
-
-/* COMING SOON SECTION */
-.coming-soon-wrapper {
-  text-align: center;
-  padding: 80px 20px;
-  background: white;
-  border-radius: 16px;
-  border: 2px dashed var(--border);
-}
-.cs-icon { font-size: 48px; margin-bottom: 16px; display: block; }
-.cs-title { font-size: 20px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
-.cs-desc { color: var(--text-muted); max-width: 400px; margin: 0 auto; line-height: 1.5; }
 
 /* UTILITY */
 .d-none { display: none !important; }
@@ -235,18 +182,94 @@ tr:hover td { background-color: #f8fafc; }
 .spinner { width: 30px; height: 30px; border: 3px solid #e2e8f0; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .error-msg { background: var(--danger-bg); color: var(--danger-text); padding: 16px; border-radius: 8px; margin: 20px; text-align: center; font-weight: 600; }
-
+.coming-soon-wrapper { text-align: center; padding: 80px 20px; background: white; border-radius: 16px; border: 2px dashed var(--border); }
+.cs-icon { font-size: 48px; margin-bottom: 16px; display: block; }
+.cs-title { font-size: 20px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
+.cs-desc { color: var(--text-muted); max-width: 400px; margin: 0 auto; line-height: 1.5; }
 </style>
 </head>
 <body>
 
-<nav class="navbar">
-  <div class="brand">AUXILIUM <span>Warehouse</span></div>
-  <div class="nav-links">
-    <a href="../index.html">← Form Order</a>
-    <a href="#" class="nav-active">Monitoring Stok</a>
-  </div>
-</nav>
+<div class="aux-navbar">
+    <div class="aux-logo">
+        <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png" alt="Auxilium Logo">
+    </div>
+    
+    <nav class="aux-menu">
+        <div class="nav-item">
+            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/" class="aux-link">Home</a>
+        </div>
+
+        <div class="nav-item">
+            <div class="aux-link">
+                Penjualan 
+                <i data-feather="chevron-down" class="chevron-down"></i>
+            </div>
+            <div class="dropdown-menu">
+                <div class="dropdown-header">Sales Orders</div>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Order%20Penjualan/index.html" class="dropdown-item">Order Penjualan</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Review%20Penjualan/review_penjualan.html" class="dropdown-item">Review Penjualan</a>
+            </div>
+        </div>
+
+        <div class="nav-item">
+            <div class="aux-link">
+                Pembelian
+                <i data-feather="chevron-down" class="chevron-down"></i>
+            </div>
+            <div class="dropdown-menu">
+                <div class="dropdown-header">Purchasing</div>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/PurchaseOrder/index.html" class="dropdown-item">Pemesanan Pembelian</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/entry/index.html" class="dropdown-item">Penerimaan Barang (Entry)</a>
+                
+                <div class="dropdown-divider"></div>
+                
+                <div class="dropdown-header">Finance</div>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/CreateBill/index.html" class="dropdown-item">Daftar Tagihan (Bill)</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/ImportXeroPO/index.html" class="dropdown-item">Import Xero PO</a>
+            </div>
+        </div>
+
+        <div class="nav-item">
+            <div class="aux-link">
+                Produksi
+                <i data-feather="chevron-down" class="chevron-down"></i>
+            </div>
+            <div class="dropdown-menu">
+                <div class="dropdown-header">Input Mesin</div>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Produksi/Produksi%20-%20Back%20Order/produksi_backorder.html" class="dropdown-item">Back Order</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Produksi/Produksi%20-%20General%20Order/produksi_general.html" class="dropdown-item">General Order</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Produksi/Produksi%20-%20Pre%20Order/produksi_preorder.html" class="dropdown-item">Pre Order</a>
+
+                <div class="dropdown-divider"></div>
+                
+                <div class="dropdown-header">Hasil Produksi</div>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/daftarproduksi/index.html" class="dropdown-item">Produksi Barang Jadi</a>
+            </div>
+        </div>
+
+        <div class="nav-item">
+            <div class="aux-link active">
+                Persediaan
+                <i data-feather="chevron-down" class="chevron-down"></i>
+            </div>
+            <div class="dropdown-menu">
+                <a href="#" class="dropdown-item" style="color:var(--primary-color); font-weight:600; background:#f9fafb;">Cek Stok Inventory</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="user-panel">
+        <div class="user-details">
+            <span class="user-name">Admin Gudang</span>
+            <span class="user-role">CV Sukses Jaya</span>
+        </div>
+        <div class="user-avatar">AG</div>
+        <button class="logout-btn" onclick="alert('Logout')" title="Keluar Akun">
+            <i data-feather="log-out" style="width:16px; height:16px;"></i>
+        </button>
+    </div>
+</div>
 
 <div class="container">
   
@@ -256,7 +279,7 @@ tr:hover td { background-color: #f8fafc; }
       <p>Monitoring ketersediaan material dan barang jadi secara real-time.</p>
     </div>
     <button class="btn-refresh" onclick="loadData(true)">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38"/></svg>
+      <i data-feather="refresh-cw" style="width:16px; height:16px;"></i>
       Refresh Data
     </button>
   </div>
@@ -360,6 +383,9 @@ tr:hover td { background-color: #f8fafc; }
 </div>
 
 <script>
+  // Initialize Feather Icons
+  feather.replace();
+
   // =========================================================
   // GANTI URL DI BAWAH INI DENGAN URL DEPLOY SCRIPT KAMU
   // =========================================================
@@ -368,6 +394,8 @@ tr:hover td { background-color: #f8fafc; }
   let inventoryData = {}; // Cache data
 
   window.onload = () => {
+    // Re-init icons just in case
+    if(typeof feather !== 'undefined') feather.replace();
     loadData(false);
   }
 
@@ -492,12 +520,12 @@ tr:hover td { background-color: #f8fafc; }
   }
 
   function showGlobalError(msg) {
-     // Tampilkan error di tab yang aktif saja agar tidak berantakan
-     // (Sederhana: inject ke tab KPC sebagai default error location)
-     document.getElementById("loadingKPC").style.display = "none";
-     const errDiv = document.getElementById("errorKPC");
-     errDiv.textContent = "Gagal memuat data: " + msg;
-     errDiv.classList.remove("d-none");
+      // Tampilkan error di tab yang aktif saja agar tidak berantakan
+      // (Sederhana: inject ke tab KPC sebagai default error location)
+      document.getElementById("loadingKPC").style.display = "none";
+      const errDiv = document.getElementById("errorKPC");
+      errDiv.textContent = "Gagal memuat data: " + msg;
+      errDiv.classList.remove("d-none");
   }
 
   function searchTable(input, tableId) {
