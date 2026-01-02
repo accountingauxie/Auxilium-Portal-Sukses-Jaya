@@ -5,10 +5,8 @@
 <title>Production Entry - Auxilium</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
 <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -16,137 +14,239 @@
 
 <style>
 /* =========================================
-   1. GLOBAL VARIABLES & RESET
+   1. SYSTEM STYLE (Unified Navbar & UI)
    ========================================= */
 :root { 
-  --primary-color: #116999; 
-  --primary-hover: #0e5a85;
-  --bg-color: #f8fafc; 
-  --text-color: #333; 
-  --border-color: #eaecf0;
-  --red-bg: #fee2e2; 
-  --red-text: #991b1b;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --primary-color: #116999; 
+    --primary-hover: #0e5a85;
+    --bg-color: #f4f7f6; 
+    --text-color: #333; 
+    --red-bg: #fee2e2; 
+    --red-text: #991b1b;
+    --border-color: #eaecf0;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
 }
 
 * { box-sizing: border-box; outline: none; }
-body { margin: 0; background: var(--bg-color); font-family: 'Inter', sans-serif; font-size: 14px; color: var(--text-color); -webkit-font-smoothing: antialiased; }
 
-/* =========================================
-   2. NAVBAR STYLES (Standard Auxilium)
-   ========================================= */
+body { 
+    margin: 0; 
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+    font-size: 14px; 
+    background: var(--bg-color); 
+    color: var(--text-color); 
+    -webkit-font-smoothing: antialiased; 
+}
+
+/* --- NAVIGATION BAR --- */
 .aux-navbar {
-    background-color: #ffffff; height: 70px; display: flex; align-items: center; justify-content: space-between;
-    padding: 0 40px; box-shadow: var(--shadow-sm); position: sticky; top: 0; z-index: 1000;
+    background-color: #ffffff;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    position: sticky; top: 0; z-index: 1000;
 }
-.aux-logo img { height: 40px; width: auto; object-fit: contain; }
-.aux-menu { display: flex; gap: 8px; align-items: center; height: 100%; }
-.nav-item { position: relative; height: 100%; display: flex; align-items: center; }
 
-/* Link Style */
-.aux-link { 
-    text-decoration: none; color: #475467; font-weight: 600; font-size: 14px; 
-    padding: 8px 16px; border-radius: 6px; transition: all 0.2s; cursor: pointer;
-    display: flex; align-items: center; gap: 6px;
+/* Logo Setup */
+.aux-logo { display: flex; align-items: center; gap: 10px; }
+.aux-logo img { height: 45px; width: auto; object-fit: contain; }
+
+/* Menu Wrapper */
+.aux-menu { 
+    display: flex; 
+    gap: 8px; 
+    align-items: center; 
+    height: 100%; 
 }
-.aux-link:hover, .nav-item:hover .aux-link { background-color: #f2f4f7; color: #101828; }
-.aux-link.active { background-color: #eff8ff; color: var(--primary-color); font-weight: 700; }
+
+/* Navigation Item Wrapper */
+.nav-item {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+/* Main Link Style */
+.aux-link { 
+    text-decoration: none; 
+    color: #475467; 
+    font-weight: 600; 
+    font-size: 14px; 
+    padding: 8px 16px; 
+    border-radius: 6px; 
+    transition: all 0.2s; 
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.aux-link:hover, .nav-item:hover .aux-link { 
+    background-color: #f2f4f7; 
+    color: #101828;
+}
+
+.aux-link.active { 
+    background-color: #eff8ff; 
+    color: var(--primary-color); 
+    font-weight: 700; 
+}
+
 .chevron-down { width: 14px; height: 14px; transition: transform 0.2s; }
 .nav-item:hover .chevron-down { transform: rotate(180deg); }
 
-/* Dropdown */
+/* --- DROPDOWN MENU --- */
 .dropdown-menu {
-    visibility: hidden; opacity: 0; position: absolute; top: 85%; left: 0;
-    background: white; min-width: 240px; border: 1px solid var(--border-color);
-    border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    padding: 8px; z-index: 1001; transform: translateY(10px); transition: all 0.2s ease-in-out;
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    top: 85%; 
+    left: 0;
+    background: white;
+    min-width: 240px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    padding: 8px;
+    z-index: 9999;
+    transform: translateY(10px);
+    transition: all 0.2s ease-in-out;
 }
-.nav-item:hover .dropdown-menu { visibility: visible; opacity: 1; transform: translateY(0); }
-.dropdown-item { display: flex; align-items: center; padding: 10px 12px; color: #344054; text-decoration: none; font-size: 14px; border-radius: 6px; transition: background 0.2s; }
-.dropdown-item:hover { background-color: #f9fafb; color: var(--primary-color); }
-.dropdown-header { font-size: 11px; text-transform: uppercase; color: #98a2b3; font-weight: 600; padding: 8px 12px 4px; }
+
+.dropdown-menu::before {
+    content: "";
+    position: absolute;
+    top: -20px; left: 0; width: 100%; height: 20px; background: transparent;
+}
+
+.nav-item:hover .dropdown-menu {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    color: #344054;
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.dropdown-item:hover {
+    background-color: #f9fafb;
+    color: var(--primary-color);
+}
+
 .dropdown-divider { height: 1px; background-color: #eaecf0; margin: 6px 0; }
 
-/* User Panel */
-.user-panel { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid var(--border-color); }
+.dropdown-header {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #98a2b3;
+    font-weight: 600;
+    padding: 8px 12px 4px;
+    letter-spacing: 0.5px;
+}
+
+/* --- USER PANEL --- */
+.user-panel { 
+    display: flex; align-items: center; gap: 12px; 
+    padding-left: 20px; border-left: 1px solid var(--border-color); 
+}
 .user-details { display: flex; flex-direction: column; text-align: right; line-height: 1.3; }
 .user-name { font-weight: 700; font-size: 13px; color: #101828; }
 .user-role { font-size: 11px; color: #667085; }
-.user-avatar { width: 36px; height: 36px; background-color: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; }
-.logout-btn { background: none; border: 1px solid var(--border-color); color: #666; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.user-avatar { 
+    width: 36px; height: 36px; 
+    background-color: var(--primary-color); 
+    color: white; 
+    border-radius: 50%; 
+    display: flex; align-items: center; justify-content: center; 
+    font-weight: 600; font-size: 14px; user-select: none; 
+}
+.logout-btn { 
+    background: none; border: 1px solid var(--border-color); color: #666; 
+    width: 36px; height: 36px; border-radius: 8px; 
+    cursor: pointer; display: flex; align-items: center; justify-content: center; 
+    transition: all 0.2s; 
+}
 .logout-btn:hover { background-color: var(--red-bg); color: var(--red-text); border-color: var(--red-bg); }
 
-/* --- LOGOUT MODAL --- */
-.modal { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); }
+/* --- MODAL STYLE --- */
+.modal { display: none; position: fixed; z-index: 10001; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); }
 .modal-content { background-color: #fff; margin: 15% auto; padding: 32px; border-radius: 16px; width: 360px; text-align: center; }
 .modal-buttons { display: flex; justify-content: center; gap: 12px; margin-top: 24px; }
-.btn-modal { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; }
+.btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; }
 .btn-yes { background-color: #d92d20; color: #fff; }
 .btn-cancel { background-color: #f2f4f7; color: #344054; }
 
 /* =========================================
-   3. PAGE CONTENT STYLES
+   2. PAGE SPECIFIC STYLES (Production Entry)
    ========================================= */
-.page { max-width: 1400px; margin: 40px auto; padding: 0 24px; }
+.page { max-width: 1380px; margin: 40px auto; padding: 0 24px; }
 .card { background: #fff; border-radius: 12px; box-shadow: var(--shadow-sm); padding: 32px; border: 1px solid var(--border-color); }
 .card-title { font-size: 20px; font-weight: 700; margin-bottom: 24px; color: #101828; display: flex; justify-content: space-between; align-items: center; }
 
 /* FORMS */
-label { font-size: 12px; font-weight: 600; color: #344054; display: block; margin-bottom: 6px; }
-.input-box { width: 100%; height: 40px; padding: 0 12px; font-size: 14px; border: 1px solid #d0d5dd; border-radius: 8px; background: #fff; color: #101828; transition: all 0.2s; box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05); }
-.input-box:focus { border-color: #84CAFF; box-shadow: 0 0 0 4px #F2F4F7; outline: none; }
-.input-box[readonly] { background: #f9fafb; color: #667085; cursor: not-allowed; border-color: #eaecf0; }
+label { font-size: 12px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.03em; }
+.input-box { width: 100%; height: 40px; padding: 0 12px; font-size: 13.5px; border: 1px solid var(--border-color); border-radius: 6px; background: #fff; color: #333; transition: border 0.15s; }
+.input-box:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(17, 105, 153, 0.1); }
+.input-box[readonly] { background: #f1f5f9; color: #64748b; cursor: not-allowed; }
 .row-flex { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px; }
 
 /* TABLE */
-table { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 20px; overflow: hidden; }
-th { background: #f9fafb; padding: 12px 16px; font-size: 12px; font-weight: 600; color: #475467; border-bottom: 1px solid var(--border-color); text-align: left; }
+table { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 20px; }
+th { background: #f8fafc; padding: 12px 12px; font-size: 12px; font-weight: 700; text-transform: uppercase; color: #64748b; border-bottom: 1px solid var(--border-color); text-align: left; }
 td { padding: 10px 12px; border-bottom: 1px solid var(--border-color); background: #fff; vertical-align: top; }
 tr:last-child td { border-bottom: none; }
 .hidden-col { display: none; }
-
-.table-input { width: 100%; height: 38px; border: 1px solid #d0d5dd; border-radius: 6px; padding: 0 10px; font-size: 13.5px; }
-.table-input:focus { border-color: var(--primary-color); outline: none; }
-.we-number { background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; font-weight: 600; font-family: 'Monaco', 'Consolas', monospace; font-size: 12px; }
+.table-input { width: 100%; height: 38px; border: 1px solid var(--border-color); border-radius: 6px; padding: 0 10px; font-size: 13.5px; }
+.we-number { background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; font-weight: 600; font-family: 'Monaco', 'Consolas', monospace; font-size: 12px; }
 
 /* BUTTONS */
-.action-btn { border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; height: 40px; }
-.add-row-btn { background: #fff; color: var(--primary-color); border: 1px dashed #b2ddff; width: 100%; margin-top: 10px; }
-.add-row-btn:hover { background: #eff8ff; border-color: var(--primary-color); }
-.submit-btn { background: var(--primary-color); color: #fff; padding: 0 32px; float: right; margin-top: 16px; box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05); }
+.action-btn { border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; height: 38px; }
+.add-row-btn { background: #fff; color: var(--primary-color); border: 1px dashed var(--border-color); width: 100%; margin-top: 10px; }
+.add-row-btn:hover { background: #eff6ff; border-color: var(--primary-color); }
+.submit-btn { background: var(--primary-color); color: #fff; padding: 0 32px; height: 44px; float: right; margin-top: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
 .submit-btn:hover { background: var(--primary-hover); }
-.view-list-btn { float: left; margin-top: 16px; background: #fff; color: #344054; border: 1px solid #d0d5dd; text-decoration: none; padding: 0 20px; box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05); }
-.view-list-btn:hover { background: #f9fafb; color: #1d2939; }
-
-.delete-btn { color: #98a2b3; cursor: pointer; padding: 8px; border-radius: 6px; transition: 0.2s; text-align: center; font-size: 16px; height: 38px; display: flex; align-items: center; justify-content: center; }
+.view-list-btn { float: left; margin-top: 16px; background: #fff; color: #64748b; border: 1px solid var(--border-color); text-decoration: none; padding: 0 20px; }
+.view-list-btn:hover { background: #f1f5f9; color: #333; border-color: #cbd5e1; }
+.delete-btn { color: #94a3b8; cursor: pointer; padding: 8px; border-radius: 4px; transition: 0.2s; text-align: center; font-size: 16px; }
 .delete-btn:hover { color: var(--red-text); background: var(--red-bg); }
-.row-handle { cursor: grab; color: #d0d5dd; text-align: center; vertical-align: middle; font-size: 18px; width: 30px; padding-top: 18px; }
+.row-handle { cursor: grab; color: #cbd5e1; text-align: center; vertical-align: middle; font-size: 20px; width: 30px; }
 
-/* UTILS */
-textarea { width: 100%; border: 1px solid #d0d5dd; border-radius: 8px; padding: 12px; font-family: inherit; font-size: 14px; resize: vertical; min-height: 100px; transition: all 0.2s; }
-textarea:focus { border-color: #84CAFF; box-shadow: 0 0 0 4px #F2F4F7; outline: none; }
-
-#loadingOverlay { position: fixed; inset: 0; background: rgba(255,255,255,0.85); display: none; justify-content: center; align-items: center; z-index: 10001; backdrop-filter: blur(2px); }
+/* UTILS & CHOICES FIXES */
+textarea { width: 100%; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; font-family: inherit; font-size: 13.5px; resize: vertical; min-height: 100px; }
+textarea:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(17, 105, 153, 0.1); }
+#loadingOverlay { position: fixed; inset: 0; background: rgba(255,255,255,0.8); display: none; justify-content: center; align-items: center; z-index: 10001; backdrop-filter: blur(2px); }
 .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: var(--primary-color); border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Choices.js Custom Overrides */
-.choices { margin-bottom: 0; }
-.choices__inner { min-height: 38px !important; padding: 0 8px !important; border: 1px solid #d0d5dd !important; background-color: #fff !important; border-radius: 6px !important; display: flex !important; align-items: center !important; font-size: 13.5px !important; box-shadow: none !important; }
+/* Choices Override */
+.choices { margin-bottom: 0; overflow: visible; }
+.choices__inner { min-height: 40px !important; padding: 0 8px !important; border: 1px solid var(--border-color) !important; background-color: #fff !important; border-radius: 6px !important; display: flex !important; align-items: center !important; font-size: 13.5px !important; }
 .choices.is-focused .choices__inner { border-color: var(--primary-color) !important; box-shadow: 0 0 0 3px rgba(17, 105, 153, 0.1) !important; }
 .choices__input { background: transparent !important; border: none !important; }
-.choices__list--dropdown { border: 1px solid #d0d5dd !important; border-radius: 8px !important; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important; margin-top: 4px !important; z-index: 9000 !important; }
-.choices__item--choice { padding: 8px 12px !important; font-size: 13px !important; }
+.choices__list--dropdown { border: 1px solid var(--border-color) !important; border-radius: 8px !important; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1) !important; margin-top: 6px !important; z-index: 9000 !important; }
+.kpc-balance { float: right; font-size: 11px; background: #f1f5f9; color: #64748b; padding: 2px 8px; border-radius: 99px; font-weight: 600; border: 1px solid #e2e8f0; }
 
-/* KPC Balance Badge */
-.kpc-balance { float: right; font-size: 11px; background: #eff8ff; color: var(--primary-color); padding: 2px 8px; border-radius: 99px; font-weight: 600; border: 1px solid #b2ddff; }
+/* SweetAlert Font */
+.swal2-popup { font-family: 'Inter', sans-serif !important; border-radius: 12px !important; }
 </style>
 </head>
 
 <body>
-<div id="loadingOverlay"><div class="spinner"></div></div>
+  <div id="loadingOverlay"><div class="spinner"></div></div>
 
-<div class="aux-navbar">
+  <div class="aux-navbar">
     <div class="aux-logo">
         <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png" alt="Auxilium Logo">
     </div>
@@ -170,7 +270,7 @@ textarea:focus { border-color: #84CAFF; box-shadow: 0 0 0 4px #F2F4F7; outline: 
 
         <div class="nav-item">
             <div class="aux-link">
-                Pembelian
+                Pembelian 
                 <i data-feather="chevron-down" class="chevron-down"></i>
             </div>
             <div class="dropdown-menu">
@@ -188,7 +288,7 @@ textarea:focus { border-color: #84CAFF; box-shadow: 0 0 0 4px #F2F4F7; outline: 
 
         <div class="nav-item">
             <div class="aux-link active">
-                Produksi
+                Produksi 
                 <i data-feather="chevron-down" class="chevron-down"></i>
             </div>
             <div class="dropdown-menu">
@@ -200,14 +300,13 @@ textarea:focus { border-color: #84CAFF; box-shadow: 0 0 0 4px #F2F4F7; outline: 
                 <div class="dropdown-divider"></div>
                 
                 <div class="dropdown-header">Hasil Produksi</div>
-                <a href="#" class="dropdown-item" style="color:var(--primary-color); font-weight:600; background:#f9fafb;">Input Hasil Produksi (Entry)</a>
-                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/daftarproduksi/index.html" class="dropdown-item">List Barang Jadi</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/daftarproduksi/index.html" class="dropdown-item">Produksi Barang Jadi</a>
             </div>
         </div>
 
         <div class="nav-item">
             <div class="aux-link">
-                Persediaan
+                Persediaan 
                 <i data-feather="chevron-down" class="chevron-down"></i>
             </div>
             <div class="dropdown-menu">
@@ -226,9 +325,8 @@ textarea:focus { border-color: #84CAFF; box-shadow: 0 0 0 4px #F2F4F7; outline: 
             <i data-feather="log-out" style="width:16px; height:16px;"></i>
         </button>
     </div>
-</div>
-
-<div id="logoutModal" class="modal">
+  </div>
+  <div id="logoutModal" class="modal">
     <div class="modal-content">
       <div style="background:#fee2e2; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
         <i data-feather="alert-circle" style="color:#d92d20;"></i>
@@ -236,74 +334,66 @@ textarea:focus { border-color: #84CAFF; box-shadow: 0 0 0 4px #F2F4F7; outline: 
       <p style="font-size:18px; font-weight:600; color:#101828; margin-bottom:10px; margin-top:0;">Konfirmasi Keluar</p>
       <p style="color:#667085; font-size:14px; margin-bottom:24px;">Apakah Anda yakin ingin keluar dari sistem?</p>
       <div class="modal-buttons">
-        <button class="btn-modal btn-cancel" onclick="closeLogoutModal()">Batal</button>
-        <button class="btn-modal btn-yes" onclick="logout()">Keluar</button>
+        <button class="btn btn-cancel" onclick="closeLogoutModal()">Batal</button>
+        <button class="btn btn-yes" onclick="logout()">Keluar</button>
       </div>
-    </div>
-</div>
-
-<div class="page">
-  <div class="card">
-    <div class="card-title">
-      <div>
-          Input Hasil Produksi
-          <p style="font-size:13px; font-weight:400; color:#667085; margin-top:4px;">Masukkan data hasil produksi barang jadi untuk digenerate menjadi SPK.</p>
-      </div>
-      <span style="font-size:12px; font-weight:600; color:#027a48; background:#ecfdf5; padding:6px 12px; border-radius:20px; border:1px solid #d1fadf;">
-          <i class="fas fa-plus-circle mr-1"></i> New Entry
-      </span>
-    </div>
-
-    <div class="row-flex">
-      <div>
-        <label>Tanggal Produksi</label>
-        <input type="date" id="productionDate" class="input-box">
-      </div>
-      <div>
-        <label>Production Entry ID</label>
-        <input type="text" id="entryId" class="input-box" readonly placeholder="Generating ID...">
-      </div>
-    </div>
-
-    <table>
-      <thead>
-        <tr>
-          <th style="width:40px;"></th>
-          <th style="width:22%;">Machine</th> 
-          <th style="width:22%;">Item</th>
-          <th class="hidden-col">Meter</th>
-          <th class="hidden-col">Qty</th>
-          <th class="hidden-col">Total</th>
-          <th style="width:25%;">KPC</th> 
-          <th>WE Number</th>
-          <th style="width:50px;"></th>
-        </tr>
-      </thead>
-      <tbody id="tableBody"></tbody>
-    </table>
-
-    <button class="action-btn add-row-btn" onclick="addRow()">
-        <i class="fas fa-plus mr-2"></i> Tambah Baris
-    </button>
-    
-    <div style="margin-top: 24px;">
-      <label>Catatan Tambahan (Opsional)</label>
-      <textarea id="notes" placeholder="Contoh: Produksi prioritas untuk Order #123..."></textarea>
-    </div>
-    
-    <div style="margin-top:24px; border-top:1px solid #eaecf0; padding-top:24px;">
-      <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/daftarproduksi/index.html" class="view-list-btn action-btn">
-        <i class="fas fa-list mr-2"></i> Lihat Daftar
-      </a>
-
-      <button class="action-btn submit-btn" onclick="submitForm()">
-          Simpan Data
-      </button>
-      
-      <div style="clear:both;"></div>
     </div>
   </div>
-</div>
+
+  <div class="page">
+    <div class="card">
+      <div class="card-title">
+        Production Entry
+        <span style="font-size:12px; font-weight:500; color:#64748b; background:#f1f5f9; padding:4px 10px; border-radius:20px;">New Entry</span>
+      </div>
+
+      <div class="row-flex">
+        <div>
+          <label>Date</label>
+          <input type="date" id="productionDate" class="input-box">
+        </div>
+        <div>
+          <label>Production Entry ID</label>
+          <input type="text" id="entryId" class="input-box" readonly placeholder="Generating ID...">
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30px;"></th>
+            <th style="width:20%;">Machine</th> 
+            <th style="width:20%;">Item</th>
+            <th class="hidden-col">Meter</th>
+            <th class="hidden-col">Qty</th>
+            <th class="hidden-col">Total</th>
+            <th style="width:25%;">KPC</th> 
+            <th>WE Number</th>
+            <th style="width:40px;"></th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+
+      <button class="action-btn add-row-btn" onclick="addRow()">+ Add Row</button>
+      
+      <div style="margin-top: 24px;">
+        <label>Additional Notes</label>
+        <textarea id="notes" placeholder="Enter any specific notes regarding this production batch..."></textarea>
+      </div>
+      
+      <div style="margin-top:20px; border-top:1px solid #f1f5f9; padding-top:20px;">
+        
+        <a href="daftarproduksi/index.html" class="action-btn view-list-btn">
+          Lihat Daftar
+        </a>
+
+        <button class="action-btn submit-btn" onclick="submitForm()">Submit Entry</button>
+        
+        <div style="clear:both;"></div>
+      </div>
+    </div>
+  </div>
 
 <script>
 // --- INITIALIZE ICONS ---
@@ -312,22 +402,16 @@ feather.replace();
 // --- LOGOUT LOGIC ---
 function showLogoutModal() { document.getElementById("logoutModal").style.display = "block"; }
 function closeLogoutModal() { document.getElementById("logoutModal").style.display = "none"; }
-// Close modal if clicked outside
-window.onclick = function(event) {
-    if (event.target == document.getElementById("logoutModal")) {
-        closeLogoutModal();
-    }
-}
 function logout() {
     document.getElementById("loadingOverlay").style.display = "flex";
     setTimeout(() => {
         localStorage.removeItem("uxilium_current_user");
-        window.location.href = "login.html"; 
+        window.location.href = "login.html"; // Adjust if needed
     }, 800);
 }
 
-// --- APP LOGIC ---
-// !!! PERHATIKAN: URL INI HARUS DIGANTI JIKA ADA DEPLOYMENT BARU !!!
+// --- APP LOGIC (EXISTING) ---
+// !!! GANTI URL INI DENGAN DEPLOYMENT ID TERBARU ANDA !!!
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwL7aC8V1yubOABo4Te-UduMin9pWJDVS8Jo0TIUEvc00Xp7NuGIYO3LZ8A9BqN-g0lug/exec";
 
 let allItemsData = []; 
@@ -363,8 +447,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   } catch (e) {
     Swal.fire({
         icon: 'error',
-        title: 'Gagal Memuat Data',
-        text: 'Mohon periksa koneksi internet Anda.',
+        title: 'Network Error',
+        text: 'Failed to load data. Please check your internet connection.',
         confirmButtonColor: '#ef4444'
     });
     console.error(e);
@@ -376,16 +460,16 @@ window.addEventListener("DOMContentLoaded", async () => {
 function addRow() {
   const row = document.createElement("tr");
   row.innerHTML = `
-    <td class="row-handle"><i class="fas fa-grip-vertical"></i></td>
+    <td class="row-handle">⋮⋮</td>
     <td><select class="machine-select"></select></td>
     <td><select class="item-select"></select></td>
     <td class="hidden-col"><input class="table-input meter" type="number" value="0"></td>
     <td class="hidden-col"><input class="table-input qty" type="number" value="0"></td>
     <td class="hidden-col"><input class="table-input total" type="number" value="0"></td>
     <td><select class="kpc-select"></select></td>
-    <td><input class="table-input we-number" readonly placeholder="Auto Generated..."></td>
+    <td><input class="table-input we-number" readonly placeholder="Auto..."></td>
     <td class="delete-cell">
-       <div class="delete-btn" onclick="removeRow(this)"><i class="fas fa-trash-alt"></i></div>
+       <div class="delete-btn" onclick="removeRow(this)">✕</div>
     </td>
   `;
   document.getElementById("tableBody").appendChild(row);
@@ -428,7 +512,7 @@ function addRow() {
     refreshKPCOptionsForElement(kpcSelect, kpcOptions, placeholder);
   });
 
-  // EVENT: KPC Change (Trigger WE Number)
+  // EVENT: KPC Change (Trigger WE Number & Lock other rows)
   kpcSelect.addEventListener("change", function(e) {
       calculateWENumber(row); 
   });
@@ -446,7 +530,7 @@ function calculateWENumber(row) {
     const machine = row.querySelector(".machine-select").value;
     const item = row.querySelector(".item-select").value;
     const kpc = row.querySelector(".kpc-select").value;
-    const prodId = document.getElementById("entryId").value; 
+    const prodId = document.getElementById("entryId").value; // Contoh: FGP25120000010
     const weInput = row.querySelector(".we-number");
 
     if(!machine || !item || !kpc || !prodId) {
@@ -473,13 +557,14 @@ function calculateWENumber(row) {
         itemSuffix = lastGroup.slice(-2);
     }
 
-    // 3. ID Suffix
+    // 3. ID Suffix (UPDATE DISINI)
+    // Mengambil 3 digit TERAKHIR dari ID. 
+    // Contoh: FGP25120000010 -> menjadi "010"
     const idSuffix = prodId.slice(-3); 
 
-    // Format: Machine_KPC_010_ItemSuffix
+    // Format Baru: Machine_KPC_010_ItemSuffix
     weInput.value = `${finalMachineSegment}_${kpc}_${idSuffix}_${itemSuffix}`;
 }
-
 /* --- LOGIC: PREVENT DUPLICATE KPC --- */
 function refreshKPCOptionsForElement(el, rawData, placeholder) {
     const allSelects = document.querySelectorAll(".kpc-select");
@@ -576,7 +661,7 @@ async function loadNextEntryId() {
   } catch(e) {}
 }
 
-/* --- SUBMIT LOGIC --- */
+/* --- UPDATED SUBMIT LOGIC WITH MODERN POPUP --- */
 function submitForm() {
   const dateVal = document.getElementById("productionDate").value;
   
@@ -584,8 +669,8 @@ function submitForm() {
   if (!dateVal) {
     Swal.fire({
       icon: 'warning',
-      title: 'Tanggal Kosong',
-      text: 'Mohon pilih tanggal produksi.',
+      title: 'Missing Date',
+      text: 'Please select a Production Date.',
       confirmButtonColor: '#116999'
     });
     return;
@@ -596,8 +681,8 @@ function submitForm() {
   if (!rows.length) {
     Swal.fire({
       icon: 'warning',
-      title: 'Daftar Kosong',
-      text: 'Mohon tambahkan setidaknya satu baris item.',
+      title: 'Empty List',
+      text: 'Please add at least one item row.',
       confirmButtonColor: '#116999'
     });
     return;
@@ -618,7 +703,6 @@ function submitForm() {
 
     if(!m || !i || !k) {
         isValid = false;
-        // Visual indicator for invalid fields
         if(!m) mSelect.closest('.choices').style.borderColor = "#ef4444";
         if(!i) iSelect.closest('.choices').style.borderColor = "#ef4444";
         if(!k) kSelect.closest('.choices').style.borderColor = "#ef4444";
@@ -635,28 +719,31 @@ function submitForm() {
     });
   });
 
+  // Validation 3: Incomplete fields
   if (!isValid) {
     Swal.fire({
       icon: 'error',
-      title: 'Data Belum Lengkap',
-      text: 'Mohon lengkapi Mesin, Item, dan KPC pada setiap baris.',
+      title: 'Incomplete Data',
+      text: 'Please fill all required fields marked in red.',
       confirmButtonColor: '#ef4444'
     });
     return;
   }
 
+  // MODERN CONFIRMATION POPUP
   Swal.fire({
-    title: 'Simpan Entry?',
-    text: "Pastikan data sudah benar. Data akan masuk ke antrian produksi.",
+    title: 'Submit Entry?',
+    text: "Are you sure you want to submit this production entry?",
     icon: 'question',
     showCancelButton: true,
     confirmButtonColor: '#116999',
     cancelButtonColor: '#f2f4f7',
-    confirmButtonText: 'Ya, Simpan!',
-    cancelButtonText: '<span style="color:#333">Batal</span>',
+    confirmButtonText: 'Yes, Submit!',
+    cancelButtonText: '<span style="color:#333">Cancel</span>',
     reverseButtons: true
   }).then((result) => {
     if (result.isConfirmed) {
+      // IF USER CLICKS YES -> SHOW LOADING & FETCH
       document.getElementById("loadingOverlay").style.display = "flex";
 
       fetch(SCRIPT_URL, {
@@ -673,10 +760,11 @@ function submitForm() {
         document.getElementById("loadingOverlay").style.display = "none";
         
         if(r.status === "success") { 
+            // SUCCESS POPUP
             Swal.fire({
               icon: 'success',
-              title: 'Berhasil!',
-              text: 'Data produksi telah disimpan.',
+              title: 'Submitted!',
+              text: 'Data has been saved successfully.',
               confirmButtonColor: '#116999',
               timer: 2000,
               showConfirmButton: false
@@ -684,9 +772,10 @@ function submitForm() {
                window.location.reload(); 
             });
         } else { 
+            // SERVER ERROR POPUP
             Swal.fire({
               icon: 'error',
-              title: 'Gagal Menyimpan',
+              title: 'Submission Error',
               text: r.message,
               confirmButtonColor: '#ef4444'
             });
@@ -694,10 +783,11 @@ function submitForm() {
       })
       .catch(err => {
           document.getElementById("loadingOverlay").style.display = "none";
+          // NETWORK ERROR POPUP
           Swal.fire({
               icon: 'error',
-              title: 'Koneksi Gagal',
-              text: 'Tidak dapat terhubung ke server: ' + err,
+              title: 'Connection Failed',
+              text: 'Could not connect to server: ' + err,
               confirmButtonColor: '#ef4444'
           });
       });
