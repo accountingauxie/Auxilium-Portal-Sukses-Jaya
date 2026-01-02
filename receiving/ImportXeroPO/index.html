@@ -109,6 +109,8 @@
         /* =========================================
            2. APP SPECIFIC STYLES
            ========================================= */
+        .confidential-col { display: none !important; } /* HIDE UOM */
+
         .page-content { padding: 30px 40px; max-width: 1400px; margin: 0 auto; }
         .app-header { margin-bottom: 30px; }
         .header-top { display: flex; align-items: center; gap: 15px; margin-bottom: 8px; }
@@ -308,7 +310,9 @@
                             <th>Description</th>
                             <th style="text-align: right;">Ord</th>
                             <th style="text-align: right;">Rec</th>
-                            <th style="text-align: center;">UoM</th>
+                            
+                            <th class="confidential-col" style="text-align: center;">UoM</th>
+                            
                             <th style="text-align: right;">Price</th>
                             <th style="text-align: right;">Total</th>
                         </tr>
@@ -443,7 +447,15 @@
             data.items.forEach(i => {
                 tbody.innerHTML += `
                 <tr>
-                    <td><b>${i.itemCode}</b></td><td>${i.desc}</td><td style="text-align: right;">${i.ordered}</td><td style="text-align: right; font-weight:bold;">${i.qty}</td><td style="text-align: center;">${i.uom}</td><td style="text-align: right;">${i.price}</td><td style="text-align: right; font-weight:bold;">${i.lineTotalFormatted}</td>
+                    <td><b>${i.itemCode}</b></td>
+                    <td>${i.desc}</td>
+                    <td style="text-align: right;">${i.ordered}</td>
+                    <td style="text-align: right; font-weight:bold;">${i.qty}</td>
+                    
+                    <td class="confidential-col" style="text-align: center;">${i.uom}</td>
+                    
+                    <td style="text-align: right;">${i.price}</td>
+                    <td style="text-align: right; font-weight:bold;">${i.lineTotalFormatted}</td>
                 </tr>`;
             });
 
@@ -508,4 +520,4 @@
         }
     </script>
 </body>
-</html>
+</html>s
